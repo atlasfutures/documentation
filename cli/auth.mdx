@@ -1,0 +1,71 @@
+---
+title: "rl auth"
+icon: "right-to-bracket"
+description: "Authentication commands — login, logout, and token management."
+---
+
+## rl auth login
+
+Authenticate with Rayline by signing in through the browser.
+
+```bash
+rl auth login
+```
+
+Opens `platform.rayline.ai/cli-auth` in your default browser. After signing in, credentials are saved to `~/.config/rayline/credentials.json`.
+
+### Options
+
+| Flag | Description |
+|---|---|
+| `--env <name>` | Environment to authenticate against (`prod` or `dev`). Default: `prod` |
+
+### Example
+
+```bash
+rl auth login              # login to production
+rl auth login --env dev    # login to dev environment
+```
+
+## rl auth logout
+
+Remove stored credentials.
+
+```bash
+rl auth logout
+```
+
+### Options
+
+| Flag | Description |
+|---|---|
+| `--env <name>` | Environment to log out of. Default: `prod` |
+
+## rl auth token
+
+Print the current auth token to stdout. Useful for scripting or setting environment variables.
+
+```bash
+rl auth token
+```
+
+### Example
+
+```bash
+# Use the token in an environment variable
+export ANTHROPIC_API_KEY=$(rl auth token)
+```
+
+If not logged in, prints an error and exits with code 1.
+
+### Options
+
+| Flag | Description |
+|---|---|
+| `--env <name>` | Environment to get token for. Default: `prod` |
+
+## Credential storage
+
+Credentials are stored in plain JSON at `~/.config/rayline/credentials.json`. The file contains your auth token — treat it like any other secret. The file is readable only by your user (mode `0600`).
+
+To revoke access, run `rl auth logout` or delete the credentials file directly.

@@ -1,0 +1,98 @@
+---
+title: "How Routing Works"
+icon: "route"
+description: "Task classification, model selection, and the Arc-1 ML router."
+---
+
+When a request arrives at Rayline, three things happen in sequence: **classify**, **select**, **dispatch**. The whole process adds minimal latency — the classifier runs inline and Arc-1 responds in under 50ms.
+
+## Step 1: Classify the task
+
+Rayline examines the incoming request to determine:
+
+- **Task type** — exploration, implementation, architecture, lint/type repair, or general
+- **Risk level** — low, medium, or high (based on keywords like "authentication," "payment," "migration")
+- **Verifier strength** — whether the task has a strong external verifier (tests, linter, type checker) or relies on the model's own judgment
+
+The classifier looks at:
+
+| Signal | What it tells the router |
+|---|---|
+| System prompt | Subagent role fingerprints (e.g., "file search specialist" → exploration) |
+| Tool definitions | Read-only tools (Grep, Read) vs write tools (Edit, Bash) |
+| Message content | Keywords indicating risk level or task type |
+| Message length | Short prompts often indicate mechanical tasks |
+
+### Subagent detection
+
+Claude Code's built-in subagents (Explore, Plan, Verification, Frontend, etc.) have recognizable system prompt patterns. Rayline identifies these fingerprints and routes accordingly — an exploration subagent gets a cheap model, while a verification subagent gets something stronger.
+
+Custom subagents are detected via heuristic: if the system prompt follows the "You are [role] ... for Claude Code" convention, Rayline classifies it by the described role.
+
+## Step 2: Select the model
+
+Once the task is classified, Rayline picks the model. There are two routing strategies:
+
+### ML routing (default)
+
+**Arc-1** is a lightweight ML model (TF-IDF + logistic regression, served on Vertex AI) that predicts the optimal model for each classified task. It was trained on real subagent workloads and optimizes for:
+
+- **Success probability** — will this model produce a correct result for this task type?
+- **Cost efficiency** — among models likely to succeed, which is cheapest?
+- **Latency** — for time-sensitive tasks, prefer faster models
+
+Arc-1 returns a ranked list of candidate models with confidence scores. Rayline picks the top candidate, with fallback logic if the primary is unavailable.
+
+### Rules-based routing
+
+Users can switch to manual rules in the [dashboard settings](https://platform.rayline.ai/settings). Rules routing uses configurable **slots**:
+
+| Slot | Purpose | Default model |
+|---|---|---|
+| Quick Tasks | Low-cost work: exploration, summarization | GLM-5.1 |
+| Standard | Most tasks when a quick model is unsuitable | GLM-5.1 |
+| Complex | High-risk tasks, architectural decisions | Claude Opus 4.7 |
+| Subagent | Delegated subagent calls | GLM-5.1 |
+| Compact | Compact/summarize operations (Haiku-like) | DeepSeek V4 Pro |
+| Small | Lightweight tasks | DeepSeek V4 Flash |
+
+Each slot can be overridden to any supported model. See [Routing Settings](/guides/routing-settings) for configuration.
+
+### Model pinning
+
+You can also **pin the main model** — force all main-agent requests to a specific model regardless of classification. This is useful when you want routing only on subagent calls, keeping your main agent on a specific frontier model.
+
+## Step 3: Dispatch
+
+Once a model is selected, Rayline dispatches the request to the appropriate provider:
+
+- **Anthropic** — Claude models (direct API)
+- **OpenAI** — GPT models (direct API)
+- **Fireworks** — DeepSeek, other open-source models (hosted inference)
+- **OpenRouter** — DeepSeek, fallback routing
+- **Z.ai** — GLM models (Zhipu's API, Anthropic-compatible)
+- **Local** — On-device models via the `rld` daemon
+
+The response is streamed back to your agent in the same format it expects (Anthropic Messages API SSE). Your agent doesn't know or care that the model changed — the API contract is identical.
+
+## What about vision?
+
+Requests containing images are automatically routed to vision-capable models. The classifier detects image content blocks and constrains the model selection to models that support vision input.
+
+## Stickiness
+
+To maintain consistency within a conversation turn, Rayline applies light stickiness — once a model is selected for a subagent session, subsequent requests in the same session tend to stay on that model unless the task classification changes significantly.
+
+## Fallback behavior
+
+If the selected model is unavailable or returns an error:
+
+1. Rayline tries the slot's configured **fallback model**
+2. If the fallback fails, it falls back to the code-level default for that slot
+3. The fallback chain is designed so there's always a working model — no request should fail due to routing
+
+## Latency impact
+
+The routing decision adds **10–50ms** (warm) to request latency. For streaming responses that run 5–60 seconds, this is negligible. The Arc-1 ML prediction adds ~10–30ms on top of the heuristic classifier.
+
+In practice, routing to a faster model (e.g., GLM-5.1 at 105 tok/s vs Opus at 42 tok/s) often makes the total response *faster* despite the routing overhead.

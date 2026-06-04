@@ -1,0 +1,46 @@
+/* Rayline docs — custom styles
+   Palette: forest-black #0A1412, deep-earth #0E2A22, moss #7FA68A,
+   olive #4F6F5B, celadon #CDE7D6, bone #F6F4EF */
+
+/* Wider sidebar to prevent text wrapping on nav items */
+#sidebar {
+  width: 320px;
+}
+
+/* Thin, modern scrollbars for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4F6F5B transparent;
+}
+
+/* WebKit scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4F6F5B;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7FA68A;
+}
+
+/* Dark mode overrides */
+html.dark * {
+  scrollbar-color: #0E2A22 transparent;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: #0E2A22;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #4F6F5B;
+}

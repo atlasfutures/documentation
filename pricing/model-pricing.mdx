@@ -1,0 +1,90 @@
+---
+title: "Model Pricing"
+icon: "table"
+description: "Per-model token pricing through Rayline."
+---
+
+All prices are **USD per 1 million tokens**. Rayline price = provider base price × 1.075 (7.5% routing fee).
+
+## Anthropic
+
+| Model | Input | Output | Cache Read | Cache Write |
+|---|---|---|---|---|
+| Claude Sonnet 4.6 | `$3.23` | `$16.13` | `$0.32` | `$4.03` |
+| Claude Opus 4.7 | `$5.38` | `$26.88` | `$0.54` | `$6.72` |
+| Claude Haiku 4.5 | `$1.08` | `$5.38` | `$0.11` | `$1.34` |
+
+## OpenAI
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| GPT-5.5 | `$5.38` | `$32.25` | `$0.54` |
+| GPT-5.4 | `$2.69` | `$16.13` | `$0.27` |
+| GPT-5.4 Mini | `$0.81` | `$4.84` | `$0.08` |
+| GPT-5.4 Nano | `$0.22` | `$1.34` | `$0.02` |
+| GPT-4o | `$2.69` | `$10.75` | `$1.34` |
+
+## Google
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| Gemini 3.1 Pro | `$2.15` | `$12.90` | `$0.22` |
+| Gemini 3 Flash | `$0.54` | `$3.23` | — |
+| Gemini 3.1 Flash Lite | `$0.08` | `$0.32` | — |
+| Gemini 2.5 Pro | `$1.34` | `$10.75` | `$0.33` |
+
+## Zhipu (Z.ai)
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| GLM-5.1 | `$1.08` | `$3.44` | `$0.22` |
+| GLM-5 Turbo | `$1.29` | `$4.30` | `$0.26` |
+
+## Moonshot
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| Kimi K2.6 | `$0.86` | `$3.76` | `$0.22` |
+
+## DeepSeek
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| DeepSeek V4 Pro | `$1.87` | `$3.74` | `$0.16` |
+
+## MiniMax
+
+| Model | Input | Output | Cache Read |
+|---|---|---|---|
+| MiniMax M2.5 | `$0.32` | `$1.29` | `$0.03` |
+
+## On-Device
+
+| Model | Input | Output |
+|---|---|---|
+| Local (MLX) | **Free** | **Free** |
+
+<Note>
+On-device routing has zero token cost and zero markup. The model runs on your hardware — Rayline only routes the request locally.
+</Note>
+
+## How to read this table
+
+- **Input**: cost per 1M input tokens (the prompt you send)
+- **Output**: cost per 1M output tokens (the model's response)
+- **Cache Read**: discounted rate when tokens are served from the provider's prompt cache
+- **Cache Write**: rate for writing tokens into prompt cache (Anthropic only)
+- All prices include the 7.5% Rayline routing fee
+- Provider base prices are public — multiply any Rayline price by `÷ 1.075` to get the base
+
+## Cost estimation
+
+A typical Claude Code session with subagent delegation:
+
+| Scenario | Approx. cost without routing | Approx. cost with Rayline |
+|---|---|---|
+| Simple feature (10 subagent calls) | `$0.50`–`$2.00` | `$0.10`–`$0.50` |
+| Complex feature (50 subagent calls) | `$2.00`–`$8.00` | `$0.40`–`$2.00` |
+| Large refactor (100+ subagent calls) | `$5.00`–`$20.00` | `$1.00`–`$5.00` |
+
+Actual costs depend on token volumes, model mix, and how effectively routing matches tasks to cheaper models. Most users see 50–80% savings on subagent spend.

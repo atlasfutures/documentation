@@ -1,0 +1,114 @@
+---
+title: "On-Device Routing"
+icon: "microchip"
+description: "Run models locally on your Mac for zero-cost, zero-latency routing."
+---
+
+Rayline can route eligible tasks to models running on your own machine. This means:
+
+- **Zero token cost** — no API charges, no markup
+- **Zero network latency** — the model runs locally
+- **Full privacy** — your code never leaves your machine
+- **Offline capable** — works without an internet connection (for local-routed tasks)
+
+## How it works
+
+The Rayline router daemon (`rld`) manages a local inference server alongside the cloud routing proxy. When a request is classified as eligible for local routing, it's dispatched to the on-device model instead of a cloud provider.
+
+```
+Agent → Rayline Cloud Router → classifies task
+                                ├── Cloud model (high-risk, complex)
+                                └── Local model (low-risk, latency-sensitive)
+```
+
+### What routes locally
+
+The classifier marks a task as local-eligible when:
+
+- The task is **low risk** (no security, payment, or migration keywords)
+- The task has a **strong verifier** (tests, linter, type checker can catch errors)
+- The task is mechanical or exploratory (lint fixes, file search, summarization)
+
+High-risk tasks and tasks requiring deep reasoning always route to cloud models.
+
+## Requirements
+
+- **macOS with Apple Silicon** (M1 or later) — MLX requires Apple's Metal GPU
+- **32GB+ RAM recommended** — the default Qwen 3.6 35B model needs ~20GB in Q4 quantization
+- **~20GB disk space** for the model weights (downloaded once, cached locally)
+
+## Setup
+
+### Quick start
+
+```bash
+rl router start
+```
+
+This downloads the default model (Qwen 3.6 35B A3B, Q4_K_M quantization), starts llama-server, and configures the local routing pipeline.
+
+First run takes 5–15 minutes for the model download. Subsequent starts are near-instant.
+
+### What starts
+
+`rl router start` launches three local services:
+
+| Service | Port | Purpose |
+|---|---|---|
+| **llama-server** | 8081 | Local inference (Anthropic Messages API) |
+| **Adapter** | 20808 | Proxies requests to llama-server, reports usage telemetry |
+| **Injector** | 20809 | Intercepts Claude Code requests, redirects eligible ones locally |
+
+### Check status
+
+```bash
+rl router status
+```
+
+Shows the running state of each component, the loaded model, and port assignments.
+
+### View logs
+
+```bash
+rl router logs           # last 50 lines
+rl router logs -n 200    # last 200 lines
+```
+
+### Stop
+
+```bash
+rl router stop
+```
+
+Shuts down all local routing services. Cloud routing continues to work normally.
+
+## Custom models
+
+By default, Rayline uses `unsloth/Qwen3.6-35B-A3B-GGUF` (Q4_K_M quantization). You can specify a different model:
+
+```bash
+rl router start --model-repo "your-org/model-name-GGUF" --model-file "model-Q4_K_M.gguf"
+```
+
+The model must be in GGUF format and hosted on Hugging Face. It must support the Anthropic Messages API via llama-server's `--jinja` mode (which handles tool-use natively).
+
+## Proxy mode
+
+If you want cloud routing through Rayline's proxy (for HTTPS interception and transparent routing) without the local model:
+
+```bash
+rl router start --proxy-only
+```
+
+This starts only the MITM proxy that intercepts `api.anthropic.com` traffic and routes it through Rayline, without downloading or running a local model.
+
+## Combining cloud and local
+
+When the local router is running, Rayline's cloud classifier decides per-request whether to route to cloud or local. You don't need to configure this — it's automatic.
+
+The savings compound: tasks that route locally cost nothing, and tasks that route to cheap cloud models cost far less than frontier. Together, you get the best of both.
+
+## Next steps
+
+- [Local Models Guide](/guides/local-models) — detailed configuration and troubleshooting
+- [Router CLI Reference](/cli/router) — full command reference for `rl router`

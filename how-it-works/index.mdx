@@ -1,0 +1,63 @@
+---
+title: "What is Rayline"
+icon: "circle-info"
+description: "How Rayline fits into your coding agent workflow."
+---
+
+## The problem
+
+Modern coding agents delegate heavily. When you ask Claude Code to "build a dashboard with tests," it doesn't do everything itself — it spawns subagents for frontend work, code review, test generation, exploration, and more.
+
+Every one of those subagent calls goes to an Anthropic model — Opus, Sonnet, or Haiku — based on Claude Code's internal delegation logic. But for many of these tasks, Sonnet and Haiku are outperformed by open-source models that cost a fraction of the price.
+
+You're paying a [frontier tax](https://rayline.ai/research/the-frontier-tax): distilled models like Haiku and Sonnet carry the cost structure of their frontier parents without delivering proportionally better results on routine coding subtasks.
+
+## The solution
+
+Rayline is a routing layer that sits between Claude Code and model providers. It examines each request — the system prompt, tool definitions, message history — and routes it to the model most likely to succeed at the lowest cost.
+
+```
+Claude Code → Rayline → Best Model for This Task
+```
+
+The key insight: **route per subagent call, not per session**. Your main agent stays on the frontier model you chose. But each delegated task gets routed independently to the best model for that job — often an open-source model that outperforms Sonnet or Haiku at a fraction of the price.
+
+## What Rayline routes
+
+| Request type | Default routing | Why |
+|---|---|---|
+| **Main agent** | Frontier (Opus) | Judgment and long-context reasoning need the best model |
+| **Code review subagent** | Strong open-source (DeepSeek, Kimi) | High-quality review at a fraction of Sonnet's cost |
+| **Exploration subagent** | Cheap open-source (GLM, DeepSeek Flash) | Read-only search — Haiku-level work, better models available cheaper |
+| **Lint/type fix subagent** | Strong open-source (DeepSeek, GLM) | Bulk mechanical fixes — open-source excels here |
+| **Frontend subagent** | Mid-tier open-source (GLM, Kimi) | Implementation work with strong tooling support |
+| **Low-risk quick tasks** | Cheapest available | Summarization, listing, formatting |
+
+## Architecture at a glance
+
+Rayline has three layers:
+
+1. **Cloud router** — The `api.rayline.ai` endpoint. Authenticates your request, classifies the task, runs the Arc-1 ML model to pick the best provider, and dispatches the request. Streams the response back to your agent.
+
+2. **CLI + local daemon** (`rl` + `rld`) — Optional. The CLI manages auth and launches your agent with routing pre-configured. The daemon handles local model routing and telemetry hooks.
+
+3. **On-device inference** — Optional. Run models locally via MLX (Apple Silicon) or llama-server for zero-cost, zero-latency routing on tasks that fit.
+
+You can use just layer 1 (two env vars) and get full routing. Layers 2 and 3 add deeper integration.
+
+## Key concepts
+
+<CardGroup cols={2}>
+  <Card title="Routing" icon="route" href="/how-it-works/routing">
+    How Arc-1 classifies tasks and selects models.
+  </Card>
+  <Card title="Models" icon="grid-2" href="/how-it-works/models">
+    The full catalog of supported models and providers.
+  </Card>
+  <Card title="On-Device" icon="microchip" href="/how-it-works/on-device">
+    Local model routing via MLX — free and private.
+  </Card>
+  <Card title="Routing Settings" icon="sliders" href="/guides/routing-settings">
+    ML vs rules, slot overrides, and model pinning.
+  </Card>
+</CardGroup>

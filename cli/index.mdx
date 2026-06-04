@@ -1,0 +1,98 @@
+---
+title: "CLI Overview"
+icon: "square-terminal"
+description: "Install and use the rl command-line tool."
+---
+
+The `rl` CLI is Rayline's command-line tool. It manages authentication, launches Claude Code with routing pre-configured, controls the local router daemon, and manages the menubar app.
+
+## Install
+
+```bash
+curl -fsSL https://get.rayline.ai/install.sh | bash
+```
+
+This installs the `rl` binary to your PATH. Verify with:
+
+```bash
+rl --version
+```
+
+## Update
+
+```bash
+rl update
+```
+
+Downloads and installs the latest version. Use `--check` to see if an update is available without installing:
+
+```bash
+rl update --check
+```
+
+## Command overview
+
+| Command | Purpose |
+|---|---|
+| [`rl auth`](/cli/auth) | Authentication — login, logout, token management |
+| [`rl claude`](/cli/claude) | Launch Claude Code with Rayline routing |
+| [`rl router`](/cli/router) | Manage the local router daemon |
+| [`rl menubar`](/cli/menubar) | Manage the Mac menubar app |
+| `rl status` | Show current auth, router, and environment state |
+| `rl update` | Update to the latest CLI version |
+| `rl --version` | Print version |
+
+## Global options
+
+### `--env`
+
+Switch between environments:
+
+```bash
+rl --env dev auth login    # authenticate against dev environment
+rl --env prod claude       # use production (default)
+```
+
+Most users never need this — `prod` is the default.
+
+## Configuration
+
+The CLI stores configuration in `~/.config/rayline/`:
+
+| File | Contents |
+|---|---|
+| `credentials.json` | Auth tokens (written by `rl auth login`) |
+| `claude-daemon-launches.json` | Tracks menubar auto-launch state |
+
+The router daemon stores its state in `~/.rayline/rld/`:
+
+| File | Contents |
+|---|---|
+| `rl-rld.pid` | Daemon process ID |
+| `rl-rld.log` | Daemon logs |
+| `rl-rld.meta` | Daemon metadata (model, ports, mode) |
+
+## Environment variables
+
+| Variable | Effect |
+|---|---|
+| `RAYLINE_MENUBAR_OPT_OUT=1` | Disable menubar auto-install on `rl claude` |
+| `RAYLINE_HOOK_OPT_OUT=1` | Disable telemetry hooks |
+| `RAYLINE_ROUTER_HOOKS_ACTIVE` | Set by hooks when active (internal) |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="rl auth" icon="right-to-bracket" href="/cli/auth">
+    Login, logout, and token management.
+  </Card>
+  <Card title="rl claude" icon="terminal" href="/cli/claude">
+    Launch Claude Code through Rayline.
+  </Card>
+  <Card title="rl router" icon="server" href="/cli/router">
+    Start, stop, and monitor the local router.
+  </Card>
+  <Card title="rl menubar" icon="display" href="/cli/menubar">
+    Install and manage the menubar app.
+  </Card>
+</CardGroup>

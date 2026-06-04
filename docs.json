@@ -1,72 +1,106 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Rayline",
+  "description": "Intelligent model routing for coding agents. One endpoint. Every model. Lower cost.",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#7FA68A",
+    "light": "#CDE7D6",
+    "dark": "#0E2A22"
   },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
+  "favicon": "/images/favicon.svg",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/images/rayline-logo-light.svg",
+    "dark": "/images/rayline-logo-dark.svg",
+    "href": "https://rayline.ai"
   },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Dashboard",
+        "href": "https://platform.rayline.ai"
+      },
+      {
+        "label": "Research",
+        "href": "https://rayline.ai/research"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Get API Key",
+      "href": "https://platform.rayline.ai/signup"
     }
   },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "quickstart/index",
+          "quickstart/claude-code",
+          "quickstart/api-key"
+        ]
+      },
+      {
+        "group": "How It Works",
+        "pages": [
+          "how-it-works/index",
+          "how-it-works/routing",
+          "how-it-works/models",
+          "how-it-works/on-device"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/routing-settings",
+          "guides/dashboard",
+          "guides/menubar",
+          "guides/local-models",
+          "guides/billing"
+        ]
+      },
+      {
+        "group": "CLI Reference",
+        "pages": [
+          "cli/index",
+          "cli/auth",
+          "cli/claude",
+          "cli/router",
+          "cli/menubar"
+        ]
+      },
+      {
+        "group": "Pricing",
+        "pages": [
+          "pricing/index",
+          "pricing/model-pricing"
+        ]
+      },
+      {
+        "group": "Troubleshooting",
+        "pages": [
+          "troubleshooting/index",
+          "troubleshooting/connectivity",
+          "troubleshooting/billing-issues"
+        ]
+      }
     ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/workshopai_",
+      "website": "https://rayline.ai"
     }
+  },
+  "background": {
+    "color": {
+      "light": "#F6F4EF",
+      "dark": "#0A1412"
+    }
+  },
+  "search": {
+    "placeholder": "Search Rayline docs..."
   }
 }

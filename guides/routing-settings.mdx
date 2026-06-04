@@ -1,0 +1,97 @@
+---
+title: "Routing Settings"
+icon: "sliders"
+description: "Configure ML routing, rules-based routing, and model overrides."
+---
+
+Rayline gives you two routing strategies and fine-grained control over which models handle which tasks. Configure everything from the [dashboard settings page](https://platform.rayline.ai/settings).
+
+## Routing strategies
+
+### ML routing (default)
+
+Arc-1 automatically selects the best model for each request based on task classification. This is the recommended mode — it adapts to different task types without manual configuration.
+
+When ML routing is active, your slot overrides (below) are ignored. Arc-1 makes all routing decisions.
+
+### Rules-based routing
+
+Switch to rules mode when you want explicit control. In rules mode, each request is classified into a **slot** and routed to the model you've configured for that slot.
+
+To switch strategies, go to **Settings → Routing Strategy** in the dashboard and select **Rules**.
+
+## Slots
+
+Slots map task classifications to models. Each slot has a default model and can be overridden:
+
+| Slot | When it's used | Default model |
+|---|---|---|
+| **Quick Tasks** | Low-cost work — exploration, summarization, low-risk tasks | GLM-5.1 |
+| **Standard** | Most tasks when a quick model isn't suitable | GLM-5.1 |
+| **Complex** | High-risk tasks, architecture, security-sensitive work | Claude Opus 4.7 |
+| **Subagent** | Delegated subagent calls | GLM-5.1 |
+| **Compact** | Compact/summarize operations | DeepSeek V4 Pro |
+| **Small** | Lightweight, simple tasks | DeepSeek V4 Flash |
+
+### Overriding a slot
+
+1. Go to **Settings** in the dashboard
+2. Switch to **Rules** routing strategy
+3. For each slot, select a model from the dropdown
+4. Click **Save**
+
+You can override some slots and leave others at their defaults. For example, pin "Complex" to Claude Opus while letting everything else use the defaults.
+
+### Resetting to defaults
+
+Click **Reset to Defaults** to restore all slots to their original models.
+
+## Main model pin
+
+Independently of slot overrides, you can **pin the main model** — the model used for your main agent (not subagents).
+
+This is useful when you want:
+- Routing only on subagent calls, keeping your main agent on Opus
+- To try a different main model without changing your agent's configuration
+
+Set the main model pin under **Settings → Main Model** in the dashboard. Choose from:
+
+- **Dynamic (router decides)** — let Arc-1 or rules decide (default)
+- **Claude Opus 4.7**
+- **GPT 5.5**
+- **Gemini 3.5 Flash**
+- **Kimi K2.6**
+
+## Local model port
+
+If you're running on-device models via `rl router start`, you can configure the local port in settings. The default is `20808`. Most users never need to change this.
+
+## How classification maps to slots
+
+The classifier examines each request and assigns it properties. In rules mode, the mapping works roughly like this:
+
+```
+High risk + complex → Complex slot
+Subagent (delegated) → Subagent slot
+Exploration / read-only → Quick Tasks slot
+Lint/type repair → Quick Tasks or Standard
+Implementation → Standard slot
+Compact/summarize → Compact slot
+Simple/short → Small slot
+```
+
+The exact mapping considers multiple factors — risk level, verifier strength, message length, tool definitions. See [How Routing Works](/how-it-works/routing) for the full classification logic.
+
+## Tips
+
+<Tip>
+**Start with ML routing.** It handles most workloads well. Switch to rules only when you have specific preferences about which models handle which tasks.
+</Tip>
+
+<Tip>
+**Pin your main model** if you want to experiment with routing without changing your main agent experience. This way, only subagent calls get routed differently.
+</Tip>
+
+<Warning>
+Overriding all slots to the same frontier model defeats the purpose of routing — you'll pay full price with the 7.5% markup on top. The savings come from routing cheap tasks to cheap models.
+</Warning>

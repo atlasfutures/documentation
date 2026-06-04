@@ -1,0 +1,133 @@
+---
+title: "Local Models"
+icon: "server"
+description: "Set up on-device inference for zero-cost routing on your Mac."
+---
+
+Rayline's local model support lets you run inference on your own hardware. Tasks classified as low-risk and mechanically verifiable can route to a model on your machine — free, fast, and private.
+
+## Requirements
+
+- **macOS with Apple Silicon** (M1, M2, M3, M4 series)
+- **32GB+ unified memory** recommended for the default 35B parameter model
+- **~20GB free disk space** for model weights
+
+<Note>
+16GB Macs can run smaller quantizations or smaller models, but may experience slower inference due to memory pressure. The default model is optimized for 32GB+.
+</Note>
+
+## Quick start
+
+```bash
+rl router start
+```
+
+On first run, this:
+1. Downloads the default model (~20GB, one-time)
+2. Starts `llama-server` with the model loaded
+3. Starts the adapter (usage telemetry) and injector (request interception)
+4. Begins routing eligible requests locally
+
+The download uses Hugging Face's CDN and takes 5–15 minutes on typical connections. The model is cached at `~/.cache/huggingface/` and reused on subsequent starts.
+
+## Default model
+
+| Property | Value |
+|---|---|
+| Model | Qwen 3.6 35B A3B |
+| Quantization | Q4_K_M (4-bit) |
+| Size | ~20GB |
+| Repository | `unsloth/Qwen3.6-35B-A3B-GGUF` |
+| Context | 128K tokens |
+
+This model was chosen for its strong code generation quality, native tool-use support via Jinja templates, and efficient MoE architecture (35B total, 3B active parameters per token).
+
+## Custom models
+
+To use a different model:
+
+```bash
+rl router start \
+  --model-repo "your-org/model-name-GGUF" \
+  --model-file "model-Q4_K_M.gguf"
+```
+
+### Requirements for custom models
+
+- Must be in **GGUF format** (llama.cpp compatible)
+- Must be hosted on **Hugging Face**
+- Should support **tool use** via Jinja chat templates (llama-server's `--jinja` flag)
+- Must fit in your machine's available memory
+
+## Architecture
+
+When `rl router start` runs, three services start:
+
+```
+Claude Code → Injector (:20809) → checks if eligible for local
+                                   ├── Yes → Adapter (:20808) → llama-server (:8081)
+                                   └── No  → Cloud router (api.rayline.ai)
+```
+
+### Injector (port 20809)
+
+Intercepts TLS traffic to `api.anthropic.com`. When the cloud router returns a redirect indicating "route locally," the injector sends the request to the local adapter instead.
+
+### Adapter (port 20808)
+
+Proxies requests to llama-server and reports usage telemetry back to the cloud router. This is how local usage shows up in your dashboard.
+
+### llama-server (port 8081)
+
+The actual inference engine. Runs the GGUF model with Jinja template support for native Anthropic Messages API compatibility, including tool-use blocks.
+
+## Managing the daemon
+
+```bash
+rl router status    # check what's running
+rl router logs      # view recent logs
+rl router stop      # stop all local services
+```
+
+See [CLI Router Reference](/cli/router) for all options.
+
+## Proxy-only mode
+
+If you want Rayline's transparent HTTPS proxy (for routing through the cloud router) without downloading or running a local model:
+
+```bash
+rl router start --proxy-only
+```
+
+This starts only the TLS interception proxy. Useful when you want all routing to go through Rayline's cloud but want the transparent proxy integration (no env var changes needed).
+
+## Troubleshooting
+
+### Model download is slow
+
+The model downloads from Hugging Face's CDN. If it's slow, check your network connection. The download can be resumed — if interrupted, `rl router start` picks up where it left off.
+
+### Out of memory
+
+If llama-server crashes or is very slow, your machine may not have enough memory. Try a smaller quantization:
+
+```bash
+rl router start \
+  --model-repo "unsloth/Qwen3.6-35B-A3B-GGUF" \
+  --model-file "Qwen3.6-35B-A3B-UD-Q2_K.gguf"
+```
+
+### Port conflicts
+
+If the default ports are in use, specify alternatives:
+
+```bash
+rl router start --adapter-port 20818 --injector-port 20819
+```
+
+### llama-server won't start
+
+Check the logs: `rl router logs -n 100`. Common issues:
+- Model file corrupted (re-download by deleting the cached file)
+- Insufficient disk space
+- Another instance already running (check `rl router status`)

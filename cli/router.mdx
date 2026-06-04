@@ -1,0 +1,109 @@
+---
+title: "rl router"
+icon: "server"
+description: "Manage the local router daemon for on-device model routing."
+---
+
+The `rl router` commands control the local router daemon (`rld`), which manages on-device model inference and optional HTTPS proxy routing.
+
+## rl router start
+
+Start the local router daemon with on-device model inference.
+
+```bash
+rl router start
+```
+
+On first run, downloads the default model (~20GB) and starts all local services. Subsequent starts are near-instant.
+
+### Options
+
+| Flag | Default | Description |
+|---|---|---|
+| `--model-repo <repo>` | `unsloth/Qwen3.6-35B-A3B-GGUF` | Hugging Face repository for the model |
+| `--model-file <file>` | `Qwen3.6-35B-A3B-UD-Q4_K_M.gguf` | Specific GGUF file within the repository |
+| `--adapter-port <port>` | `20808` | Port for the local model adapter |
+| `--injector-port <port>` | `20809` | Port for the request injector |
+| `--proxy` | off | Also start the HTTPS proxy |
+| `--proxy-port <port>` | `20810` | Port for the HTTPS proxy |
+| `--router-url <url>` | `https://api.rayline.ai` | Cloud router URL |
+| `--env <name>` | `prod` | Environment |
+
+### Examples
+
+```bash
+# Start with defaults
+rl router start
+
+# Start with a custom model
+rl router start --model-repo "your-org/model-GGUF" --model-file "model-Q4_K_M.gguf"
+
+# Start with HTTPS proxy enabled
+rl router start --proxy
+
+# Custom ports
+rl router start --adapter-port 20818 --injector-port 20819
+```
+
+### What starts
+
+| Service | Default port | Purpose |
+|---|---|---|
+| llama-server | 8081 | Local inference engine |
+| Adapter | 20808 | Proxies to llama-server, reports usage |
+| Injector | 20809 | Intercepts requests, redirects eligible ones locally |
+| Proxy (optional) | 20810 | HTTPS MITM proxy for transparent routing |
+
+## rl router stop
+
+Stop all local router services.
+
+```bash
+rl router stop
+```
+
+Terminates the daemon, adapter, injector, and proxy (if running). Cloud routing through Rayline continues to work normally — only local routing is affected.
+
+## rl router status
+
+Show the current state of the local router.
+
+```bash
+rl router status
+```
+
+Output includes:
+- Daemon PID and running state
+- Loaded model
+- Port assignments for each service
+- Health check status for each endpoint
+- Proxy state (if running)
+
+### Example output
+
+```
+rld: pid 12345, running
+  model: Qwen3.6-35B-A3B-UD-Q4_K_M.gguf (unsloth/Qwen3.6-35B-A3B-GGUF)
+  adapter   :20808 ✓
+  injector  :20809 ✓
+  llama     :8081  ✓
+  router_url: https://api.rayline.ai
+  log: /Users/you/.rayline/rld/rl-rld.log
+```
+
+## rl router logs
+
+View recent daemon logs.
+
+```bash
+rl router logs            # last 50 lines
+rl router logs -n 200     # last 200 lines
+```
+
+Useful for diagnosing startup failures, model loading issues, or request errors.
+
+## Health checks
+
+`rl router start` waits for all services to become healthy before returning. The default health timeout is 240 seconds (longer on first run when downloading the model — up to 3600 seconds).
+
+If a service fails to start, check `rl router logs` for the error.

@@ -1,0 +1,55 @@
+---
+title: "Billing Issues"
+icon: "credit-card"
+description: "Troubleshoot balance, payment, and charging problems."
+---
+
+## Zero balance / requests failing
+
+If your requests are failing with balance-related errors:
+
+1. Check your balance in the [dashboard](https://platform.rayline.ai)
+2. Add funds — any amount from `$1` up
+3. Enable **auto top-up** to prevent this in the future
+
+### Enable auto top-up
+
+In the dashboard, go to Setup/Account and configure:
+- **Top-up amount**: How much to add (e.g., `$10`)
+- **Threshold**: Recharge when balance drops below this (e.g., `$5`)
+
+## Payment failed
+
+If a top-up payment fails:
+
+- **Card declined**: Check with your bank. Common causes: insufficient funds, international transaction blocks, card expiration.
+- **Stripe error**: Try a different card or payment method.
+- **Repeated failures**: Contact [help@rayline.ai](mailto:help@rayline.ai) with your account email.
+
+## Unexpected charges
+
+Rayline charges per token consumed, plus 7.5%. If your costs seem higher than expected:
+
+1. **Check the activity log** in the dashboard — see which models handled your requests and at what token volume
+2. **Check for long-running sessions** — a single complex task can generate many subagent calls
+3. **Cache write tokens** are charged at a premium by some providers (notably Anthropic) — this is pass-through, not a Rayline surcharge
+4. **Main agent requests** still cost frontier prices — savings come from subagent routing
+
+### Cost per session
+
+A rough guide:
+
+| Session type | Typical cost |
+|---|---|
+| Simple task, few subagents | `$0.10`–`$0.50` |
+| Medium feature build | `$0.50`–`$3.00` |
+| Complex refactor, many subagents | `$2.00`–`$10.00` |
+| Heavy all-day usage | `$10.00`–`$30.00` |
+
+## Refunds
+
+Rayline doesn't issue refunds for consumed tokens — the cost is passed through to model providers. If you believe there's a billing error (e.g., duplicate charges, incorrect amounts), contact [help@rayline.ai](mailto:help@rayline.ai) with specifics.
+
+## Enterprise billing
+
+Enterprise customers have different billing arrangements (invoiced, committed-use). Contact your account manager for billing questions, or email [sales@rayline.ai](mailto:sales@rayline.ai).

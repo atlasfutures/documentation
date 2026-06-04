@@ -1,0 +1,102 @@
+---
+title: "Connectivity Issues"
+icon: "wifi"
+description: "Troubleshoot router daemon, network, and proxy problems."
+---
+
+## Router daemon won't start
+
+### Check if it's already running
+
+```bash
+rl router status
+```
+
+If it shows a PID, the daemon is already running. Stop it first if you need to restart:
+
+```bash
+rl router stop
+rl router start
+```
+
+### Check the logs
+
+```bash
+rl router logs -n 100
+```
+
+Common errors:
+- **Port in use**: Another process is on port 20808/20809/8081. Either stop that process or use `--adapter-port` / `--injector-port` flags.
+- **Model download failed**: Network issue. `rl router start` will resume the download — just run it again.
+- **Permission denied**: Check that `~/.rayline/rld/` is writable.
+
+### Health check timeout
+
+`rl router start` waits up to 240 seconds (or 3600 seconds during model download) for all services to become healthy. If it times out:
+
+1. Check `rl router logs` for the specific service that failed
+2. Try stopping and starting again: `rl router stop && rl router start`
+3. If llama-server is the issue, verify your machine meets the [memory requirements](/guides/local-models#requirements)
+
+## Can't reach api.rayline.ai
+
+### Test connectivity
+
+```bash
+curl -v https://api.rayline.ai/healthz
+```
+
+Expected: HTTP 200. If this fails:
+
+- **DNS issue**: Try `nslookup api.rayline.ai` — it should resolve to a Google Cloud IP
+- **Firewall/VPN**: Corporate firewalls may block non-standard API endpoints. Check with your IT team.
+- **Proxy interference**: If you're behind a corporate proxy, it may interfere with Rayline's TLS. Try setting `HTTPS_PROXY` if your environment requires it.
+
+### SSL/TLS errors
+
+If you see certificate errors, your system's trust store may not include the CA that Rayline uses. This is uncommon on modern systems but can happen in locked-down corporate environments.
+
+## HTTPS proxy issues
+
+If using `rl router start --proxy`, the proxy intercepts TLS traffic to `api.anthropic.com` by generating a local CA certificate. Claude Code (and MCP servers) need to trust this CA.
+
+### CA certificate location
+
+The proxy generates its CA at:
+```
+~/.rayline/rld/ca-cert.pem
+```
+
+### Node.js trust
+
+For Node.js-based tools (including some MCP servers):
+```bash
+export NODE_EXTRA_CA_CERTS=~/.rayline/rld/ca-cert.pem
+```
+
+### Common proxy errors
+
+- **`ECONNRESET` or `ERR_SSL_WRONG_VERSION_NUMBER`**: The proxy may not be running. Check `rl router status`.
+- **Certificate rejected**: The local CA isn't trusted. Either add it to your system trust store or set `NODE_EXTRA_CA_CERTS`.
+- **MCP servers failing**: Some MCP servers (e.g., firecrawl) use axios's built-in proxy support. The Rayline proxy handles these via absolute-form request re-origination, but if they fail, check that the proxy port (default 20810) is accessible.
+
+## Menubar app won't connect
+
+The menubar app reads credentials from `~/.config/rayline/credentials.json`. If it shows "Not logged in":
+
+1. Run `rl auth login` in a terminal
+2. Click the Rayline icon in the menu bar → the app should pick up the new credentials
+3. If it still doesn't connect, quit and relaunch: `rl menubar stop && rl menubar start`
+
+## Still stuck?
+
+Include the output of these commands when asking for help:
+
+```bash
+rl status
+rl router status
+rl router logs -n 50
+curl -v https://api.rayline.ai/healthz 2>&1 | head -20
+```
+
+Reach out at [help@rayline.ai](mailto:help@rayline.ai).

@@ -1,0 +1,82 @@
+---
+title: "Dashboard"
+icon: "chart-mixed"
+description: "Track usage, savings, and model distribution in the Rayline dashboard."
+---
+
+The [Rayline dashboard](https://platform.rayline.ai) gives you visibility into how your routing is performing — cost savings, model distribution, and per-request detail.
+
+## Accessing the dashboard
+
+Sign in at [platform.rayline.ai](https://platform.rayline.ai). The main view is the **Router** page, which shows your usage analytics.
+
+## KPI cards
+
+At the top of the dashboard, you'll see headline metrics for the selected time range:
+
+- **Total cost** — what you actually paid through Rayline
+- **Requests** — total number of routed requests
+- **Tokens** — total input + output tokens processed
+- **Savings** — percentage saved compared to a counterfactual baseline
+
+### Counterfactual baseline
+
+The savings calculation compares your actual Rayline cost against what you'd have paid if every request used a single model at list price. You can toggle the baseline model:
+
+- **Sonnet** (default) — compares against Claude Sonnet pricing
+- **Opus** — compares against Claude Opus pricing
+- **Haiku** — compares against Claude Haiku pricing
+
+This helps you understand the value of routing relative to your likely alternative.
+
+## Savings chart
+
+The daily savings chart shows:
+- **Rayline cost** (filled area) — what you paid each day
+- **Baseline cost** (line) — what you'd have paid without routing
+
+The gap between the two is your daily savings. Hover over any day to see exact numbers.
+
+## Model distribution
+
+The **Routing Breakdown** panel shows which models handled your traffic:
+
+- Pie chart of request distribution by model
+- The current routing strategy (ML or Rules)
+- Percentage breakdown
+
+The **Model Bars** section shows per-model usage over time — useful for seeing how Arc-1's model selection evolves as your workload changes.
+
+## Activity log
+
+Expand the **Recent Activity** section to see individual requests:
+
+- Timestamp
+- Model used
+- Input/output tokens
+- Cost
+- Task classification
+
+This is useful for debugging routing decisions — if a particular request routed to an unexpected model, you can see the classification that drove that decision.
+
+## Time range
+
+Toggle between time ranges to zoom in or out:
+
+- **7 days** — recent activity
+- **30 days** — default view
+- **90 days** — quarterly overview
+
+## Other dashboard pages
+
+### API Keys
+
+Manage your Rayline API keys — create, revoke, and rotate.
+
+### Settings
+
+Configure routing strategy, model overrides, and local model port. See [Routing Settings](/guides/routing-settings).
+
+### Setup
+
+First-time onboarding — profile, funding, and API key creation.

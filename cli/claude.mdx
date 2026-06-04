@@ -1,0 +1,121 @@
+---
+title: "rl claude"
+icon: "terminal"
+description: "Launch Claude Code with Rayline routing pre-configured."
+---
+
+## rl claude
+
+The primary command for most users. Launches Claude Code with Rayline routing, telemetry hooks, and optional local model support — all pre-configured.
+
+```bash
+rl claude
+```
+
+### What it does
+
+1. **Sets `ANTHROPIC_BASE_URL`** to point at Rayline's router
+2. **Injects your Rayline API key** from stored credentials
+3. **Installs telemetry hooks** that track per-route cost and model selection (visible in the dashboard and menubar)
+4. **Starts the local router daemon** if on-device models are configured
+5. **Auto-installs the menubar app** on first run (macOS Apple Silicon, unless opted out)
+6. **Launches Claude Code** with all the above configured
+
+### Passing arguments to Claude Code
+
+Any arguments after `rl claude` are forwarded to Claude Code:
+
+```bash
+rl claude --model opus            # force Opus for main agent
+rl claude --project ~/my-app      # open specific project
+rl claude --verbose               # enable verbose mode
+rl claude --resume                # resume last conversation
+```
+
+All standard Claude Code flags work — Rayline doesn't intercept or modify them.
+
+### Options
+
+| Flag | Description |
+|---|---|
+| `--env <name>` | Environment (`prod` or `dev`). Default: `prod` |
+| `--router <url>` | Override the router URL |
+| `--no-statusline` | Disable the Rayline statusline in Claude Code |
+| `--no-skills` | Disable Rayline skills |
+
+### Setup subcommands
+
+#### rl claude setup
+
+Run the interactive setup wizard for Claude Code integration:
+
+```bash
+rl claude setup
+```
+
+Configures hooks, validates credentials, and verifies connectivity.
+
+#### rl claude hooks install
+
+Install Rayline's telemetry hooks into Claude Code's hook system:
+
+```bash
+rl claude hooks install
+```
+
+Hooks capture per-route data (model selected, tokens, cost) and forward it to the dashboard. They're installed automatically by `rl claude` but can be managed independently.
+
+#### rl claude hooks status
+
+Check if hooks are installed and active:
+
+```bash
+rl claude hooks status
+```
+
+#### rl claude hooks uninstall
+
+Remove Rayline hooks from Claude Code:
+
+```bash
+rl claude hooks uninstall
+```
+
+#### rl claude login
+
+Authenticate specifically for Claude Code integration (alias for `rl auth login` with Claude-specific setup):
+
+```bash
+rl claude login
+```
+
+#### rl claude key
+
+Set or display the Claude Code API key:
+
+```bash
+rl claude key
+```
+
+#### rl claude logout
+
+Remove Claude Code-specific credentials:
+
+```bash
+rl claude logout
+```
+
+### Telemetry
+
+Hooks installed by `rl claude` send non-sensitive metadata to Rayline for cost tracking:
+
+- Which model was selected for each route
+- Token counts (input, output, cache)
+- Latency
+- Task classification
+
+No code, prompts, or responses are captured. Opt out with:
+
+```bash
+export RAYLINE_HOOK_OPT_OUT=1
+```

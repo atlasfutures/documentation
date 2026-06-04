@@ -1,0 +1,78 @@
+---
+title: "Supported Models"
+icon: "grid-2"
+description: "Every model Rayline can route to — frontier, open-source, and on-device."
+---
+
+Rayline routes across model families from multiple providers through a single endpoint. You don't need separate API keys for each provider — Rayline handles authentication and dispatch.
+
+## Frontier models
+
+Top-tier models for tasks requiring deep reasoning, complex judgment, or high-stakes correctness.
+
+| Model | Provider | Strengths |
+|---|---|---|
+| Claude Opus 4.7 | Anthropic | Strongest reasoning, long-context, code architecture |
+| Claude Sonnet 4.6 | Anthropic | Strong all-around, good balance of quality and speed |
+| Claude Haiku 4.5 | Anthropic | Fast frontier, good for structured tasks |
+| GPT-5.5 | OpenAI | Strong reasoning, broad knowledge |
+| GPT-5.4 | OpenAI | Solid mid-tier, fast |
+| GPT-5.4 Mini | OpenAI | Cost-effective frontier |
+| GPT-5.4 Nano | OpenAI | Ultra-fast, simple tasks |
+
+## Open-source models
+
+High-quality models that deliver excellent results on many subagent tasks at a fraction of frontier cost.
+
+| Model | Provider | Strengths |
+|---|---|---|
+| DeepSeek V4 Pro | DeepSeek / Fireworks | Excellent at code, bulk fixes, implementation |
+| DeepSeek V4 Flash | DeepSeek | Fast and cheap for lightweight tasks |
+| GLM-5.1 | Zhipu (Z.ai) | Strong implementation, tool use, 190K context |
+| GLM-5 Turbo | Zhipu (Z.ai) | Fast general-purpose |
+| Kimi K2.6 | Moonshot | Strong code reasoning, good at review |
+| Qwen 3.7 Max | Qwen | Strong multi-task, good reasoning |
+| Qwen 3.6 35B A3B | Qwen | Efficient MoE, good cost/quality ratio |
+| MiniMax M2.5 | MiniMax | Very cheap, suitable for simple tasks |
+
+## Google models
+
+| Model | Provider | Strengths |
+|---|---|---|
+| Gemini 3.1 Pro | Google | Strong reasoning, long context |
+| Gemini 3 Flash | Google | Fast, cost-effective |
+| Gemini 3.1 Flash Lite | Google | Ultra-cheap for simple tasks |
+| Gemini 2.5 Pro | Google | Mature, reliable |
+
+## On-device models
+
+Run locally on your machine via MLX (Apple Silicon) or llama-server. Zero token cost, zero latency to provider, full privacy.
+
+| Model | Runtime | Notes |
+|---|---|---|
+| Qwen 3.6 35B A3B (Q4_K_M) | MLX / llama-server | Default on-device model. Strong code quality, runs well on 32GB+ M-series Macs |
+
+The default on-device model is downloaded automatically when you run `rl router start`. See [Local Models Guide](/guides/local-models) for setup and custom model configuration.
+
+<Note>
+On-device routing is always free — zero token cost, zero markup. The model runs on your hardware.
+</Note>
+
+## Provider routing
+
+You don't choose providers directly — Rayline handles provider selection as part of routing. Each model has a primary provider and a fallback:
+
+- **Anthropic** models route directly to Anthropic's API
+- **OpenAI** models route to OpenAI
+- **DeepSeek** models route through Fireworks (primary) or OpenRouter (fallback)
+- **GLM** models route through Z.ai, which speaks the Anthropic Messages API natively
+- **Kimi, Qwen, MiniMax** route through OpenRouter
+- **On-device** models route through the local `rld` daemon
+
+## Model catalog updates
+
+The model catalog is managed server-side and can be updated without a client release. When new models are added to Rayline, they become available to Arc-1 for routing immediately. You can see the current catalog in your [dashboard settings](https://platform.rayline.ai/settings).
+
+## Using a specific model
+
+If you want to force a specific model for certain task types, use [routing settings](/guides/routing-settings) to override individual slots. For example, you could pin "Complex" tasks to Claude Opus while letting everything else route via ML.

@@ -1,0 +1,93 @@
+---
+title: "Menubar App"
+icon: "display"
+description: "Monitor routing, savings, and status from your Mac menu bar."
+---
+
+The Rayline menubar app (RaylineBar) gives you a glanceable overview of your routing activity without opening the full dashboard. It lives in your macOS menu bar and shows live data.
+
+## Installation
+
+### Automatic (recommended)
+
+If you use the `rl` CLI, the menubar app is installed automatically on first run of `rl claude` on macOS (Apple Silicon).
+
+### Manual
+
+```bash
+rl menubar install
+```
+
+This downloads the latest RaylineBar release and installs it to `/Applications`.
+
+### Starting and stopping
+
+```bash
+rl menubar start    # launch the menubar app
+rl menubar stop     # quit the menubar app
+```
+
+Or just launch RaylineBar from `/Applications` like any Mac app.
+
+## What it shows
+
+Click the Rayline icon in your menu bar to open the popover:
+
+### Cost savings
+
+A summary of your routing savings — total cost, baseline comparison, and percentage saved. Same counterfactual calculation as the dashboard, updated in near-real-time.
+
+### Recent routes
+
+The last several routed requests, showing:
+- Model used
+- Tokens consumed
+- Cost
+- Timestamp
+
+### Router status
+
+Shows the state of the local router daemon (`rld`):
+- Whether the daemon is running
+- Which model is loaded (if on-device routing is active)
+- Port assignments
+
+### Account
+
+Your account email, current balance, and a link to the dashboard.
+
+## Authentication
+
+RaylineBar uses the same credentials as the `rl` CLI. If you've run `rl auth login`, the menubar app picks up those credentials automatically from `~/.config/rayline/credentials.json`.
+
+If you see "Not logged in" in the menubar, run:
+
+```bash
+rl auth login
+```
+
+Or click the "Open Login Terminal" button in the menubar popover.
+
+## Auto-start
+
+The menubar app can be configured to start with your Mac:
+
+```bash
+rl menubar autostart on    # start on login
+rl menubar autostart off   # don't start on login
+```
+
+## Opting out
+
+If you don't want the menubar app to auto-install when running `rl claude`:
+
+```bash
+export RAYLINE_MENUBAR_OPT_OUT=1
+```
+
+Add this to your `~/.zshrc` to make it permanent.
+
+## Requirements
+
+- macOS 13+ (Ventura or later)
+- Apple Silicon (M1 or later) for auto-install; Intel Macs can use manual install if a build is available

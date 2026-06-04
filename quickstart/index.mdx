@@ -1,0 +1,55 @@
+---
+title: "Quickstart"
+icon: "bolt"
+description: "Get Rayline routing your subagent calls in under 2 minutes."
+---
+
+Rayline works by sitting between your coding agent and the model providers. You point Claude Code at Rayline's endpoint instead of Anthropic's, and Rayline handles the rest — routing each subagent call to the optimal model.
+
+## Prerequisites
+
+1. **A Rayline API key** — [Sign up](https://platform.rayline.ai/signup) and grab one from the dashboard, or see [Getting your API key](/quickstart/api-key).
+2. **Claude Code** — Rayline currently supports Claude Code. Codex support is coming soon.
+
+## The quick version
+
+Set two environment variables and launch Claude Code:
+
+```bash
+export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
+export ANTHROPIC_API_KEY=rlk_your_key_here
+claude
+```
+
+Done.
+
+## What happens next
+
+- **Your main agent** continues using whatever model it was configured for (Opus, Sonnet, etc.). Rayline passes main-agent requests through to the frontier model.
+- **Subagent calls** — tasks Claude Code delegates to sub-agents like code review, exploration, and frontend work — get classified by Arc-1 and routed to the best model for that specific task. Instead of defaulting to Sonnet or Haiku, they may route to DeepSeek, Kimi, GLM, or other models that deliver equal or better quality at lower cost.
+- **You see the savings** in the [Rayline dashboard](https://platform.rayline.ai) — cost breakdown, model distribution, and a counterfactual comparison.
+
+<Card title="Claude Code Setup" icon="terminal" href="/quickstart/claude-code">
+  Full walkthrough — env vars or the `rl` CLI for deeper integration.
+</Card>
+
+## Optional: Install the CLI
+
+The `rl` CLI gives you deeper integration — auth management, local model routing, a Mac menubar app, and Claude Code hooks for per-route telemetry.
+
+```bash
+curl -fsSL https://get.rayline.ai/install.sh | bash
+```
+
+After install:
+
+```bash
+rl auth login
+rl claude        # launches Claude Code with Rayline routing pre-configured
+```
+
+See [CLI Reference](/cli) for the full command set.
+
+## Background reading
+
+New to the idea of model routing? Start with [The Frontier Tax](https://rayline.ai/research/the-frontier-tax) — our research on why distilled frontier models cost more without always delivering better outcomes than open-source alternatives.

@@ -1,0 +1,60 @@
+---
+title: "Pricing"
+icon: "receipt"
+description: "Simple, transparent pricing. Pay for what you use."
+---
+
+## How Rayline pricing works
+
+**Model pass-through + 7.5% routing fee.**
+
+You pay the model provider's per-token price, plus a 7.5% fee for Rayline's routing, classification, and infrastructure.
+
+- **No monthly fee** — pay only for tokens consumed
+- **No minimum spend** — start with `$5` or `$10`
+- **On-device routing is free** — local models cost nothing
+
+## Why it still saves money
+
+The 7.5% fee is applied to a *much smaller base*. When Arc-1 routes a subagent call from Opus (`$15`/MTok output) to DeepSeek V4 Pro (`$3.48`/MTok output), you pay:
+
+| | Without Rayline | With Rayline |
+|---|---|---|
+| Output price per 1M tokens | `$15.00` | `$3.48` × 1.075 = **`$3.74`** |
+| **Savings** | — | **75%** |
+
+The routing fee is 7.5% of the cheaper model's price — not 7.5% of the original. Net savings scale with how aggressively routing downgrades task-appropriate requests. See [The Frontier Tax](https://rayline.ai/research/the-frontier-tax) for the research behind this approach.
+
+## Plans
+
+<CardGroup cols={2}>
+  <Card title="Pay as you go" icon="wallet">
+    **No commitments.** Add funds, use them, top up when needed.
+    
+    - All models — frontier, open-source, on-device
+    - Mac menubar app included
+    - Custom routing rules
+    - No monthly minimums or platform fees
+    - Community support
+  </Card>
+  <Card title="Enterprise" icon="building">
+    **For platform teams at scale.**
+    
+    - Everything in Pay as you go
+    - Volume discounts & committed-use pricing
+    - Budget controls per team / project
+    - SSO / SAML
+    - Dedicated support & SLA
+    
+    Contact [sales@rayline.ai](mailto:sales@rayline.ai)
+  </Card>
+</CardGroup>
+
+## Getting started
+
+1. [Sign up](https://platform.rayline.ai/signup) for a Rayline account
+2. Add funds (`$5`–`$50` to start, or any custom amount)
+3. Optionally enable auto top-up to avoid running dry
+4. [Set up your agent](/quickstart) and start routing
+
+See [per-model pricing](/pricing/model-pricing) for the full cost table.

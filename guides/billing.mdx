@@ -1,0 +1,86 @@
+---
+title: "Billing & Funds"
+icon: "credit-card"
+description: "How Rayline billing works — pay-as-you-go with transparent pricing."
+---
+
+Rayline uses a prepaid balance model. You add funds, use them as you route requests, and top up when needed.
+
+## Pricing model
+
+**Pass-through + 7.5% routing fee.**
+
+You pay the model provider's list price for tokens consumed, plus a 7.5% fee for Rayline's routing service. No platform fees, no monthly minimums, no subscriptions.
+
+Example: If a request costs `$0.10` in tokens at provider list price, you pay `$0.1075` through Rayline.
+
+<Tip>
+The 7.5% fee is more than offset by routing savings. When Rayline routes a subagent call from Sonnet (`$15`/MTok output) to DeepSeek V4 Pro (`$3.48`/MTok output), the net savings are ~75% — even after the markup. Most users see 50–80% savings on subagent spend.
+</Tip>
+
+See [Model Pricing](/pricing/model-pricing) for per-model costs.
+
+## Adding funds
+
+### During onboarding
+
+When you first sign up, the setup flow offers preset amounts:
+
+- `$5`, `$10`, `$25`, `$50`, or a custom amount
+- Payment via credit/debit card (Stripe)
+
+### From the dashboard
+
+Go to [platform.rayline.ai](https://platform.rayline.ai) and navigate to your account to add funds anytime.
+
+## Auto top-up
+
+Enable auto top-up to avoid running out of balance mid-session:
+
+1. Go to **Setup** or **Account** in the dashboard
+2. Toggle **Auto top-up** on
+3. Set the **top-up amount** (how much to add each time)
+4. Set the **threshold** (recharge when balance drops below this amount)
+
+Example: Auto top-up `$10` when balance drops below `$5`.
+
+<Warning>
+If auto top-up is disabled and your balance hits zero, requests will fail. Enable auto top-up for uninterrupted routing.
+</Warning>
+
+## Checking your balance
+
+- **Dashboard** — balance is shown on the Router page
+- **Menubar app** — balance displayed in the Account section
+- **CLI** — `rl status` shows your current balance
+
+## What counts as usage
+
+Every request routed through Rayline is metered:
+
+- **Input tokens** — the prompt sent to the model
+- **Output tokens** — the model's response
+- **Cache read tokens** — discounted rate for tokens served from provider cache
+- **Cache write tokens** — slightly premium rate for tokens written to provider cache
+
+On-device routing (local models) is always free — zero tokens billed, zero markup.
+
+## Cost tracking
+
+The dashboard shows:
+
+- **Per-request cost** in the activity log
+- **Daily cost** in the savings chart
+- **Counterfactual comparison** — what you'd have paid without routing
+- **Model distribution** — which models are consuming your budget
+
+## Enterprise
+
+For teams with higher volume:
+
+- **Volume discounts** and committed-use pricing
+- **Budget controls** per team or project
+- **SSO / SAML** integration
+- **Dedicated support** and SLA
+
+Contact [sales@rayline.ai](mailto:sales@rayline.ai) for enterprise pricing.
