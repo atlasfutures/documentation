@@ -4,7 +4,7 @@ icon: "terminal"
 description: "Connect Claude Code to Rayline in under 2 minutes."
 ---
 
-Claude Code is the most common way to use Rayline. The fastest path is the `rl` CLI: `rl claude` signs you in, configures routing, and launches Claude Code in one command. On macOS you can do it with one click from the menubar app. Setting the Anthropic environment variables by hand still works and is covered under [Advanced setup](#advanced-manual-environment-variables).
+Claude Code is the most common way to use Rayline. The fastest path is the `rl` CLI: `rl claude` signs you in, configures routing, and launches Claude Code in one command. On macOS you can do it with one click from the Rayline app. Setting the Anthropic environment variables by hand still works and is covered under [Advanced setup](#advanced-manual-environment-variables).
 
 <Note>
 Rayline configures and launches Claude Code — it doesn't bundle it. Install Claude Code first if you haven't: see [Anthropic's setup guide](https://docs.claude.com/en/docs/claude-code/setup).
@@ -28,8 +28,8 @@ On a terminal, that single command does everything:
 
 - **Signs you in** — opens the browser to `platform.rayline.ai` the first time and provisions a routing key automatically. You don't need to create or paste a key.
 - **Configures routing** — starts a local proxy that forwards Claude Code's traffic to Rayline's router and injects your key. Claude Code keeps talking to its normal Anthropic-compatible endpoint; Rayline classifies each request and routes it.
-- **Installs telemetry hooks** — per-route cost and model selection, visible in the dashboard and menubar.
-- **Sets up the menubar app** on first run (macOS Apple Silicon, unless opted out).
+- **Installs telemetry hooks** — per-route cost and model selection, visible in the dashboard and the Rayline app.
+- **Sets up the Rayline app** on first run (macOS Apple Silicon, unless opted out).
 
 Any arguments after `rl claude` are forwarded to Claude Code:
 
@@ -38,15 +38,15 @@ rl claude --resume          # forward a standard Claude Code flag
 rl claude -m opus           # pin the main agent to a specific model
 ```
 
-## Even easier: the menubar app
+## Even easier: the Rayline app
 
-On macOS, `rl claude` installs the **Rayline menubar app** on first run. From then on you can launch Claude Code without touching the terminal — just click **Launch Claude Code** (⌘↩).
+On macOS, `rl claude` installs the **Rayline app** on first run. From then on you can launch Claude Code without touching the terminal — just click **Launch Claude Code** (⌘↩).
 
-<Frame caption="The Rayline menubar app — click Launch Claude Code to start a routed session.">
-  <img src="/images/menubar-popover.png" alt="Rayline menubar popover showing savings, a Launch Claude Code button, and routing controls" />
+<Frame caption="The Rayline app — click Launch Claude Code to start a routed session.">
+  <img src="/images/menubar-popover.png" alt="Rayline app popover showing savings, a Launch Claude Code button, and routing controls" />
 </Frame>
 
-The popover also shows your live savings, lets you pin a model, inspect recent routes, and copy the launch command. See the [Menubar Guide](/guides/menubar) for details.
+The popover also shows your live savings, lets you pin a model, inspect recent routes, and copy the launch command. See the [Rayline App guide](/guides/menubar) for details.
 
 ## Run on-device with `--local`
 

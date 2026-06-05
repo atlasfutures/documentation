@@ -4,7 +4,7 @@ icon: "square-terminal"
 description: "Install and use the rl command-line tool."
 ---
 
-The `rl` CLI is Rayline's command-line tool. It manages authentication, launches Claude Code with routing pre-configured, controls the local router daemon, and manages the menubar app.
+The `rl` CLI is Rayline's command-line tool. It manages authentication, launches Claude Code with routing pre-configured, controls the local router daemon, and manages the Rayline app.
 
 ## Install
 
@@ -37,7 +37,7 @@ rl update --check
 | [`rl auth`](/cli/auth) | Authentication — login, logout, token management |
 | [`rl claude`](/cli/claude) | Launch Claude Code with Rayline routing |
 | [`rl router`](/cli/router) | Manage the local router daemon |
-| [`rl menubar`](/cli/menubar) | Manage the Mac menubar app |
+| [`rl menubar`](/cli/menubar) | Manage the Rayline app |
 | `rl status` | Show current auth, router, and environment state |
 | `rl update` | Update to the latest CLI version |
 | `rl --version` | Print version |
@@ -62,7 +62,7 @@ The CLI stores configuration in `~/.config/rayline/`:
 | File | Contents |
 |---|---|
 | `credentials.json` | Auth tokens (written by `rl auth login`) |
-| `claude-daemon-launches.json` | Tracks menubar auto-launch state |
+| `claude-daemon-launches.json` | Tracks Rayline app auto-launch state |
 
 The router daemon stores its state in `~/.rayline/rld/`:
 
@@ -76,7 +76,7 @@ The router daemon stores its state in `~/.rayline/rld/`:
 
 | Variable | Effect |
 |---|---|
-| `RAYLINE_MENUBAR_OPT_OUT=1` | Disable menubar auto-install on `rl claude` |
+| `RAYLINE_MENUBAR_OPT_OUT=1` | Disable Rayline app auto-install on `rl claude` |
 | `RAYLINE_HOOK_OPT_OUT=1` | Disable telemetry hooks |
 | `RAYLINE_ROUTER_HOOKS_ACTIVE` | Set by hooks when active (internal) |
 
@@ -93,6 +93,6 @@ The router daemon stores its state in `~/.rayline/rld/`:
     Start, stop, and monitor the local router.
   </Card>
   <Card title="rl menubar" icon="display" href="/cli/menubar">
-    Install and manage the menubar app.
+    Install and manage the Rayline app.
   </Card>
 </CardGroup>

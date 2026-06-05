@@ -80,9 +80,9 @@ export NODE_EXTRA_CA_CERTS=~/.rayline/rld/ca-cert.pem
 - **Certificate rejected**: The local CA isn't trusted. Either add it to your system trust store or set `NODE_EXTRA_CA_CERTS`.
 - **MCP servers failing**: Some MCP servers (e.g., firecrawl) use axios's built-in proxy support. The Rayline proxy handles these via absolute-form request re-origination, but if they fail, check that the proxy port (default 20810) is accessible.
 
-## Menubar app won't connect
+## Rayline app won't connect
 
-The menubar app reads credentials from `~/.config/rayline/credentials.json`. If it shows "Not logged in":
+The Rayline app reads credentials from `~/.config/rayline/credentials.json`. If it shows "Not logged in":
 
 1. Run `rl auth login` in a terminal
 2. Click the Rayline icon in the menu bar → the app should pick up the new credentials

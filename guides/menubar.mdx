@@ -1,20 +1,20 @@
 ---
-title: "Menubar App"
+title: "Rayline App"
 icon: "display"
 description: "Monitor routing, savings, and status from your Mac menu bar."
 ---
 
-The Rayline menubar app gives you a glanceable overview of your routing activity — and a one-click way to launch Claude Code — without opening the full dashboard. It lives in your macOS menu bar and shows live data.
+The Rayline app gives you a glanceable overview of your routing activity — and a one-click way to launch Claude Code — without opening the full dashboard. It lives in your macOS menu bar and shows live data.
 
-<Frame caption="The Rayline menubar popover.">
-  <img src="/images/menubar-popover.png" alt="Rayline menubar popover showing savings, a Launch Claude Code button, and routing controls" />
+<Frame caption="The Rayline app popover.">
+  <img src="/images/menubar-popover.png" alt="Rayline app popover showing savings, a Launch Claude Code button, and routing controls" />
 </Frame>
 
 ## Installation
 
 ### Automatic (recommended)
 
-If you use the `rl` CLI, the menubar app is installed automatically on first run of `rl claude` on macOS (Apple Silicon).
+If you use the `rl` CLI, the Rayline app is installed automatically on first run of `rl claude` on macOS (Apple Silicon).
 
 ### Manual
 
@@ -27,8 +27,8 @@ This downloads the latest Rayline build and installs it to `/Applications`.
 ### Starting and stopping
 
 ```bash
-rl menubar start    # launch the menubar app
-rl menubar stop     # quit the menubar app
+rl menubar start    # launch the Rayline app
+rl menubar stop     # quit the Rayline app
 ```
 
 Or just launch Rayline from `/Applications` like any Mac app.
@@ -57,9 +57,9 @@ The footer shows your signed-in email and a quit button, and **Open dashboard** 
 
 ## Authentication
 
-The menubar app uses the same credentials as the `rl` CLI. If you've run `rl auth login`, it picks up those credentials automatically from `~/.config/rayline/credentials.json`.
+The Rayline app uses the same credentials as the `rl` CLI. If you've run `rl auth login`, it picks up those credentials automatically from `~/.config/rayline/credentials.json`.
 
-If you see "Not logged in" in the menubar, click the **Login** button in the popover (it runs `rl auth login` for you), or run it yourself:
+If you see "Not logged in" in the Rayline app, click the **Login** button in the popover (it runs `rl auth login` for you), or run it yourself:
 
 ```bash
 rl auth login
@@ -67,16 +67,11 @@ rl auth login
 
 ## Auto-start
 
-The menubar app can be configured to start with your Mac:
-
-```bash
-rl menubar autostart on    # start on login
-rl menubar autostart off   # don't start on login
-```
+On macOS (Apple Silicon), `rl claude` installs and launches the Rayline app for you on first run — there's no separate autostart command to configure.
 
 ## Opting out
 
-If you don't want the menubar app to auto-install when running `rl claude`:
+If you don't want the Rayline app to auto-install when running `rl claude`:
 
 ```bash
 export RAYLINE_MENUBAR_OPT_OUT=1
