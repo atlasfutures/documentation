@@ -4,7 +4,11 @@ icon: "display"
 description: "Monitor routing, savings, and status from your Mac menu bar."
 ---
 
-The Rayline menubar app (RaylineBar) gives you a glanceable overview of your routing activity without opening the full dashboard. It lives in your macOS menu bar and shows live data.
+The Rayline menubar app gives you a glanceable overview of your routing activity — and a one-click way to launch Claude Code — without opening the full dashboard. It lives in your macOS menu bar and shows live data.
+
+<Frame caption="The Rayline menubar popover.">
+  <img src="/images/menubar-popover.png" alt="Rayline menubar popover showing savings, a Launch Claude Code button, and routing controls" />
+</Frame>
 
 ## Installation
 
@@ -18,7 +22,7 @@ If you use the `rl` CLI, the menubar app is installed automatically on first run
 rl menubar install
 ```
 
-This downloads the latest RaylineBar release and installs it to `/Applications`.
+This downloads the latest Rayline build and installs it to `/Applications`.
 
 ### Starting and stopping
 
@@ -27,46 +31,39 @@ rl menubar start    # launch the menubar app
 rl menubar stop     # quit the menubar app
 ```
 
-Or just launch RaylineBar from `/Applications` like any Mac app.
+Or just launch Rayline from `/Applications` like any Mac app.
 
 ## What it shows
 
 Click the Rayline icon in your menu bar to open the popover:
 
+### Launch Claude Code
+
+The primary action (⌘↩) — one click starts a routed Claude Code session in a new Terminal window, running `rl claude` for you. Below it, **Copy launch command** (⌘C) copies the command to paste anywhere, and **Install command line tools** symlinks `rl` and `rld` into `/usr/local/bin` so they're on your PATH.
+
 ### Cost savings
 
-A summary of your routing savings — total cost, baseline comparison, and percentage saved. Same counterfactual calculation as the dashboard, updated in near-real-time.
+A summary of your routing savings at the top of the popover — the amount saved over Today / 7 days / 30 days, and how much cheaper that is versus running everything on a frontier model. Same counterfactual calculation as the dashboard, updated in near-real-time.
 
-### Recent routes
+### Routing controls
 
-The last several routed requests, showing:
-- Model used
-- Tokens consumed
-- Cost
-- Timestamp
-
-### Router status
-
-Shows the state of the local router daemon (`rld`):
-- Whether the daemon is running
-- Which model is loaded (if on-device routing is active)
-- Port assignments
+- **Main model** — pin the main agent to a specific model, or leave it on **Dynamic** to let the router decide.
+- **Activity** — recent routed requests with model, tokens, cache, latency, cost, and savings.
+- **Routing config** — switch between ML and rules-based routing and toggle on-device routing.
 
 ### Account
 
-Your account email, current balance, and a link to the dashboard.
+The footer shows your signed-in email and a quit button, and **Open dashboard** jumps to the full router dashboard in your browser.
 
 ## Authentication
 
-RaylineBar uses the same credentials as the `rl` CLI. If you've run `rl auth login`, the menubar app picks up those credentials automatically from `~/.config/rayline/credentials.json`.
+The menubar app uses the same credentials as the `rl` CLI. If you've run `rl auth login`, it picks up those credentials automatically from `~/.config/rayline/credentials.json`.
 
-If you see "Not logged in" in the menubar, run:
+If you see "Not logged in" in the menubar, click the **Login** button in the popover (it runs `rl auth login` for you), or run it yourself:
 
 ```bash
 rl auth login
 ```
-
-Or click the "Open Login Terminal" button in the menubar popover.
 
 ## Auto-start
 

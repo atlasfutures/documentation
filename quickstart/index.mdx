@@ -8,18 +8,19 @@ Rayline works by sitting between your coding agent and the model providers. You 
 
 ## Prerequisites
 
-1. **A Rayline API key** — [Sign up](https://platform.rayline.ai/signup) and grab one from the dashboard, or see [Getting your API key](/quickstart/api-key).
-2. **Claude Code** — Rayline currently supports Claude Code. Codex support is coming soon.
+1. **A Rayline account** — [Sign up](https://platform.rayline.ai/signup). `rl claude` provisions your routing key automatically; you only need to grab an API key by hand for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables).
+2. **Claude Code** — Rayline currently supports Claude Code. Codex support is coming soon. Rayline configures and launches Claude Code, so install it first if you haven't.
 
 ## The quick version
 
-Set two environment variables and launch Claude Code:
+Install the `rl` CLI and launch Claude Code through it:
 
 ```bash
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
-claude
+curl -fsSL https://get.rayline.ai/install.sh | bash
+rl claude
 ```
+
+`rl claude` signs you in, provisions a routing key, and launches Claude Code with Rayline routing configured — all in one command. On macOS it also sets up the **Rayline menubar app**, so you can launch Claude Code with one click from then on.
 
 Done.
 
@@ -30,25 +31,12 @@ Done.
 - **You see the savings** in the [Rayline dashboard](https://platform.rayline.ai) — cost breakdown, model distribution, and a counterfactual comparison.
 
 <Card title="Claude Code Setup" icon="terminal" href="/quickstart/claude-code">
-  Full walkthrough — env vars or the `rl` CLI for deeper integration.
+  Full walkthrough — `rl claude`, the menubar app, and manual env-var setup.
 </Card>
 
-## Optional: Install the CLI
+## Prefer to set environment variables yourself?
 
-The `rl` CLI gives you deeper integration — auth management, local model routing, a Mac menubar app, and Claude Code hooks for per-route telemetry.
-
-```bash
-curl -fsSL https://get.rayline.ai/install.sh | bash
-```
-
-After install:
-
-```bash
-rl auth login
-rl claude        # launches Claude Code with Rayline routing pre-configured
-```
-
-See [CLI Reference](/cli) for the full command set.
+You can point Claude Code at Rayline without the CLI — useful for CI, containers, or non-macOS setups. See [Advanced: manual environment variables](/quickstart/claude-code#advanced-manual-environment-variables), then browse the [CLI Reference](/cli) for the full command set.
 
 ## Background reading
 

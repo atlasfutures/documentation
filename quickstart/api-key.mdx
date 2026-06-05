@@ -4,7 +4,7 @@ icon: "key"
 description: "Sign up for Rayline and create your first API key."
 ---
 
-You need a Rayline API key (`rlk_...`) to authenticate requests. There are two ways to get one.
+A Rayline API key (`rlk-...`) authenticates your requests. If you launch with `rl claude`, one is provisioned for you automatically — you only need to create a key by hand for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables). There are two ways to get one.
 
 ## Option 1: Platform dashboard (web)
 
@@ -14,7 +14,7 @@ You need a Rayline API key (`rlk_...`) to authenticate requests. There are two w
 4. Navigate to **API Keys** in the sidebar
 5. Click **Create Key** — your key is shown once, so copy it immediately
 
-Your key looks like: `rlk_k9f2a7b3...`
+Your key looks like: `rlk-k9f2a7b3...`
 
 ## Option 2: CLI
 
@@ -24,12 +24,12 @@ If you've installed the `rl` CLI:
 rl auth login
 ```
 
-This opens a browser authentication flow. After signing in, your credentials are stored locally at `~/.config/rayline/credentials.json`. The CLI uses these credentials automatically — you don't need to manage the key manually.
+This opens a browser authentication flow. After signing in, your credentials are stored locally at `~/.config/rayline/credentials.json`. `rl claude` uses these automatically — you don't need to manage a key by hand.
 
-To retrieve your key for use in environment variables:
+To print your routing key (`rlk-…`) for use in environment variables:
 
 ```bash
-rl auth token
+rl claude key
 ```
 
 ## Adding funds
@@ -47,18 +47,18 @@ Starting with `$10` gives you plenty of runway to evaluate. A typical Claude Cod
 
 ## Key security
 
-- API keys are prefixed `rlk_` so they're easily identifiable in your shell history and config files.
+- API keys are prefixed `rlk-` so they're easily identifiable in your shell history and config files.
 - Keys authenticate all requests through Rayline — treat them like any other API key.
 - You can revoke and rotate keys from the [API Keys page](https://platform.rayline.ai/keys) at any time.
 - Never commit keys to version control. Use environment variables or a secrets manager.
 
 ## Environment setup
 
-Once you have your key, export it in your shell:
+Once you have your key, export it in your shell (note: no `/v1` suffix — Claude Code appends it):
 
 ```bash
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
+export ANTHROPIC_BASE_URL=https://api.rayline.ai
+export ANTHROPIC_API_KEY=rlk-your-key-here
 ```
 
 Then follow the setup guide for your agent:

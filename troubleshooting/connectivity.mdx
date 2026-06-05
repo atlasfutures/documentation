@@ -58,7 +58,7 @@ If you see certificate errors, your system's trust store may not include the CA 
 
 ## HTTPS proxy issues
 
-If using `rl router start --proxy`, the proxy intercepts TLS traffic to `api.anthropic.com` by generating a local CA certificate. Claude Code (and MCP servers) need to trust this CA.
+`rl claude` routes through a local proxy that intercepts TLS traffic to `api.anthropic.com` using a generated local CA certificate. Claude Code (and MCP servers) need to trust this CA — `rl claude` configures `NODE_EXTRA_CA_CERTS` for you, but other tools may need it set manually.
 
 ### CA certificate location
 

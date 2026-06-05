@@ -18,6 +18,8 @@ Rayline's local model support lets you run inference on your own hardware. Tasks
 
 ## Quick start
 
+The easiest entry point is `rl claude --local`, which starts the on-device router and launches Claude Code in one step. To manage the daemon on its own, use `rl router start`:
+
 ```bash
 rl router start
 ```
@@ -90,16 +92,6 @@ rl router stop      # stop all local services
 ```
 
 See [CLI Router Reference](/cli/router) for all options.
-
-## Proxy-only mode
-
-If you want Rayline's transparent HTTPS proxy (for routing through the cloud router) without downloading or running a local model:
-
-```bash
-rl router start --proxy-only
-```
-
-This starts only the TLS interception proxy. Useful when you want all routing to go through Rayline's cloud but want the transparent proxy integration (no env var changes needed).
 
 ## Troubleshooting
 

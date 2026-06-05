@@ -12,13 +12,16 @@ Rayline routes each subagent call to the model most likely to succeed, at the lo
 
 ## Start in 2 minutes
 
+Install the `rl` CLI and launch Claude Code through Rayline — one command handles sign-in, your routing key, and configuration:
+
 ```bash
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
-claude
+curl -fsSL https://get.rayline.ai/install.sh | bash
+rl claude
 ```
 
 That's it. Your main agent stays on the model you chose. Subagent calls route through Rayline automatically.
+
+On macOS you can skip the terminal entirely — the **Rayline menubar app** (installed on first run) launches Claude Code with one click. Prefer to wire the raw Anthropic environment variables yourself? See [Advanced setup](/quickstart/claude-code#advanced-manual-environment-variables).
 
 <CardGroup cols={2}>
   <Card title="Claude Code Quickstart" icon="terminal" href="/quickstart/claude-code">

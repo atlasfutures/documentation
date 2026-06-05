@@ -4,7 +4,7 @@ icon: "server"
 description: "Manage the local router daemon for on-device model routing."
 ---
 
-The `rl router` commands control the local router daemon (`rld`), which manages on-device model inference and optional HTTPS proxy routing.
+The `rl router` commands control the local router daemon (`rld`), which runs on-device model inference. You rarely need these directly — `rl claude --local` starts the daemon for you. Reach for `rl router` when you want to manage on-device inference on its own.
 
 ## rl router start
 
@@ -24,8 +24,6 @@ On first run, downloads the default model (~20GB) and starts all local services.
 | `--model-file <file>` | `Qwen3.6-35B-A3B-UD-Q4_K_M.gguf` | Specific GGUF file within the repository |
 | `--adapter-port <port>` | `20808` | Port for the local model adapter |
 | `--injector-port <port>` | `20809` | Port for the request injector |
-| `--proxy` | off | Also start the HTTPS proxy |
-| `--proxy-port <port>` | `20810` | Port for the HTTPS proxy |
 | `--router-url <url>` | `https://api.rayline.ai` | Cloud router URL |
 | `--env <name>` | `prod` | Environment |
 
@@ -38,9 +36,6 @@ rl router start
 # Start with a custom model
 rl router start --model-repo "your-org/model-GGUF" --model-file "model-Q4_K_M.gguf"
 
-# Start with HTTPS proxy enabled
-rl router start --proxy
-
 # Custom ports
 rl router start --adapter-port 20818 --injector-port 20819
 ```
@@ -52,7 +47,6 @@ rl router start --adapter-port 20818 --injector-port 20819
 | llama-server | 8081 | Local inference engine |
 | Adapter | 20808 | Proxies to llama-server, reports usage |
 | Injector | 20809 | Intercepts requests, redirects eligible ones locally |
-| Proxy (optional) | 20810 | HTTPS MITM proxy for transparent routing |
 
 ## rl router stop
 
@@ -62,7 +56,7 @@ Stop all local router services.
 rl router stop
 ```
 
-Terminates the daemon, adapter, injector, and proxy (if running). Cloud routing through Rayline continues to work normally — only local routing is affected.
+Terminates the daemon, adapter, and injector. Cloud routing through Rayline continues to work normally — only local routing is affected.
 
 ## rl router status
 
@@ -77,7 +71,6 @@ Output includes:
 - Loaded model
 - Port assignments for each service
 - Health check status for each endpoint
-- Proxy state (if running)
 
 ### Example output
 

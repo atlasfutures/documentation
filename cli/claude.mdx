@@ -14,34 +14,40 @@ rl claude
 
 ### What it does
 
-1. **Sets `ANTHROPIC_BASE_URL`** to point at Rayline's router
-2. **Injects your Rayline API key** from stored credentials
+On a terminal, `rl claude` configures everything and launches Claude Code in one step:
+
+1. **Signs you in** if needed — opens the browser to `platform.rayline.ai` and provisions a routing key automatically (no manual key handling)
+2. **Starts a local routing proxy** that forwards Claude Code's API traffic to Rayline's router and injects your key. Claude Code keeps talking to its normal Anthropic-compatible endpoint; the proxy handles routing transparently
 3. **Installs telemetry hooks** that track per-route cost and model selection (visible in the dashboard and menubar)
-4. **Starts the local router daemon** if on-device models are configured
-5. **Auto-installs the menubar app** on first run (macOS Apple Silicon, unless opted out)
-6. **Launches Claude Code** with all the above configured
+4. **Sets up the menubar app** on first run (macOS Apple Silicon, unless opted out)
+5. **Launches Claude Code** with all the above configured
+
+<Note>
+Because routing happens through the local proxy, `rl claude` does **not** set `ANTHROPIC_BASE_URL` in your environment — it sets `HTTPS_PROXY` and a trusted CA instead. To confirm routing, use the dashboard or `rl claude --diagnose`, not `echo $ANTHROPIC_BASE_URL`. The raw environment-variable approach is covered under [Claude Code Setup](/quickstart/claude-code#advanced-manual-environment-variables).
+</Note>
 
 ### Passing arguments to Claude Code
 
-Any arguments after `rl claude` are forwarded to Claude Code:
+Any arguments `rl claude` doesn't recognize are forwarded straight to Claude Code:
 
 ```bash
-rl claude --model opus            # force Opus for main agent
-rl claude --project ~/my-app      # open specific project
-rl claude --verbose               # enable verbose mode
-rl claude --resume                # resume last conversation
+rl claude --resume                # forward a standard Claude Code flag
+rl claude -- --some-claude-flag   # everything after -- is passed through verbatim
 ```
-
-All standard Claude Code flags work — Rayline doesn't intercept or modify them.
 
 ### Options
 
+These flags are interpreted by `rl`; everything else is forwarded to Claude Code.
+
 | Flag | Description |
 |---|---|
+| `--local` | Route eligible requests to an on-device model. See [On-Device Routing](/how-it-works/on-device) |
+| `-m, --model <model>` | Pin the main agent to a specific model |
 | `--env <name>` | Environment (`prod` or `dev`). Default: `prod` |
-| `--router <url>` | Override the router URL |
-| `--no-statusline` | Disable the Rayline statusline in Claude Code |
-| `--no-skills` | Disable Rayline skills |
+| `--diagnose` | Print the routing configuration before launching |
+| `--auto-compact-window <tokens>` | Override Claude Code's auto-compact threshold |
+| `--no-statusline` | Hide the picked-model status line in Claude Code |
+| `--no-telemetry` | Disable hook telemetry for this run |
 
 ### Setup subcommands
 
@@ -91,7 +97,7 @@ rl claude login
 
 #### rl claude key
 
-Set or display the Claude Code API key:
+Print the stored routing key (`rlk-…`) — handy for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables):
 
 ```bash
 rl claude key
