@@ -4,110 +4,114 @@ icon: "terminal"
 description: "Connect Claude Code to Rayline in under 2 minutes."
 ---
 
-Claude Code is the most common way to use Rayline. There are two paths: **environment variables** (quickest) or the **`rl` CLI** (deeper integration with telemetry, local models, and the menubar app).
+Claude Code is the most common way to use Rayline. The fastest path is the `rl` CLI: `rl claude` signs you in, configures routing, and launches Claude Code in one command. On macOS you can do it with one click from the menubar app. Setting the Anthropic environment variables by hand still works and is covered under [Advanced setup](#advanced-manual-environment-variables).
 
-## Option 1: Environment variables (fastest)
+<Note>
+Rayline configures and launches Claude Code — it doesn't bundle it. Install Claude Code first if you haven't: see [Anthropic's setup guide](https://docs.claude.com/en/docs/claude-code/setup).
+</Note>
 
-Set two environment variables before launching Claude Code:
+## The easy way: `rl claude`
 
-```bash
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
-```
-
-Then start Claude Code normally:
-
-```bash
-claude
-```
-
-<Tip>
-Add the exports to your `~/.zshrc` or `~/.bashrc` to make them persistent across sessions.
-</Tip>
-
-### What this does
-
-- Claude Code sends all API requests to `api.rayline.ai` instead of `api.anthropic.com`.
-- Rayline authenticates with your `rlk_` key, classifies each request, and routes it to the optimal model.
-- Main-agent requests pass through to the frontier model you configured (Opus, Sonnet, etc.).
-- Subagent requests — which Claude Code would normally send to Sonnet or Haiku — get routed by Arc-1 to the best-fit model for that task. Often that's an open-source model like DeepSeek or GLM that matches or beats Haiku/Sonnet quality at a fraction of the cost.
-
-## Option 2: The `rl` CLI (recommended)
-
-The CLI wraps Claude Code with pre-configured routing, telemetry hooks, and optional local model support.
-
-### Install
+Install the CLI:
 
 ```bash
 curl -fsSL https://get.rayline.ai/install.sh | bash
 ```
 
-### Authenticate
-
-```bash
-rl auth login
-```
-
-This opens a browser window to `platform.rayline.ai` where you sign in. Your credentials are stored locally at `~/.config/rayline/credentials.json`.
-
-### Launch Claude Code
+Then launch Claude Code through Rayline:
 
 ```bash
 rl claude
 ```
 
-This starts Claude Code with:
-- `ANTHROPIC_BASE_URL` pointed at Rayline
-- Your Rayline API key injected automatically
-- Telemetry hooks installed (per-route cost tracking visible in the dashboard and menubar)
-- The local router daemon started if you've configured on-device models
+On a terminal, that single command does everything:
 
-### First-run extras
+- **Signs you in** — opens the browser to `platform.rayline.ai` the first time and provisions a routing key automatically. You don't need to create or paste a key.
+- **Configures routing** — starts a local proxy that forwards Claude Code's traffic to Rayline's router and injects your key. Claude Code keeps talking to its normal Anthropic-compatible endpoint; Rayline classifies each request and routes it.
+- **Installs telemetry hooks** — per-route cost and model selection, visible in the dashboard and menubar.
+- **Sets up the menubar app** on first run (macOS Apple Silicon, unless opted out).
 
-On macOS (Apple Silicon), `rl claude` automatically installs the **Rayline menubar app** on first launch. The menubar shows live cost savings, recent routes, and router status. See [Menubar Guide](/guides/menubar) for details.
+Any arguments after `rl claude` are forwarded to Claude Code:
+
+```bash
+rl claude --resume          # forward a standard Claude Code flag
+rl claude -m opus           # pin the main agent to a specific model
+```
+
+## Even easier: the menubar app
+
+On macOS, `rl claude` installs the **Rayline menubar app** on first run. From then on you can launch Claude Code without touching the terminal — just click **Launch Claude Code** (⌘↩).
+
+<Frame caption="The Rayline menubar app — click Launch Claude Code to start a routed session.">
+  <img src="/images/menubar-popover.png" alt="Rayline menubar popover showing savings, a Launch Claude Code button, and routing controls" />
+</Frame>
+
+The popover also shows your live savings, lets you pin a model, inspect recent routes, and copy the launch command. See the [Menubar Guide](/guides/menubar) for details.
+
+## Run on-device with `--local`
+
+To route eligible requests to a model running on your own Mac instead of the cloud, add `--local`:
+
+```bash
+rl claude --local
+```
+
+This boots Rayline's on-device router and serves inference locally — zero token cost, full privacy. The first run downloads a model (several GB, one-time) and the first response is slow while it loads into memory. After that, eligible tasks route locally and everything else falls back to the cloud router automatically. See [On-Device Routing](/how-it-works/on-device) for what routes locally and the hardware requirements.
 
 ## Verify it's working
 
-After launching Claude Code through either method, give it a task that delegates to subagents:
+Give Claude Code a task that delegates to subagents:
 
 ```
 Build a React component with tests and a code review
 ```
 
-Then check the [Rayline dashboard](https://platform.rayline.ai) — you should see routed requests appearing within a few seconds, with model assignments and cost savings.
+Then open the [Rayline dashboard](https://platform.rayline.ai) — routed requests appear within a few seconds, with model assignments and savings.
 
-## Shell configuration
+<Tip>
+Because `rl claude` routes through a local proxy, it deliberately does **not** set `ANTHROPIC_BASE_URL` in your shell — so `echo $ANTHROPIC_BASE_URL` is empty even when routing is active. Confirm with the dashboard or `rl claude --diagnose`, not by inspecting environment variables.
+</Tip>
 
-To make Rayline the default for every Claude Code session, add to your shell profile:
+## Advanced: manual environment variables
+
+You can point Claude Code at Rayline without the `rl` CLI — useful for CI, containers, or non-macOS environments. Set two variables, then run Claude Code normally:
+
+```bash
+export ANTHROPIC_BASE_URL=https://api.rayline.ai
+export ANTHROPIC_API_KEY=rlk-your-key-here
+claude
+```
+
+<Warning>
+Use `https://api.rayline.ai` with **no** `/v1` suffix — Claude Code appends `/v1/messages` itself. Rayline API keys start with `rlk-` (hyphen). Grab one from the [API Keys page](https://platform.rayline.ai/keys).
+</Warning>
+
+To make this persistent, add the exports to your shell profile:
 
 <CodeGroup>
 ```bash ~/.zshrc
 # Rayline routing for Claude Code
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
+export ANTHROPIC_BASE_URL=https://api.rayline.ai
+export ANTHROPIC_API_KEY=rlk-your-key-here
 ```
 
 ```bash ~/.bashrc
 # Rayline routing for Claude Code
-export ANTHROPIC_BASE_URL=https://api.rayline.ai/v1
-export ANTHROPIC_API_KEY=rlk_your_key_here
+export ANTHROPIC_BASE_URL=https://api.rayline.ai
+export ANTHROPIC_API_KEY=rlk-your-key-here
 ```
 </CodeGroup>
 
-Or, if using the CLI, just run `rl claude` instead of `claude` — it handles configuration automatically.
-
 ## Disabling Rayline temporarily
 
-To run Claude Code without Rayline routing for a single session:
+If you launch with `rl claude`, just run `claude` directly to skip Rayline for a session. If you set environment variables, unset the base URL for a single run:
 
 ```bash
 ANTHROPIC_BASE_URL= claude
 ```
 
-Or if using the CLI, just run `claude` directly instead of `rl claude`.
-
 ## Next steps
 
 - [Configure routing settings](/guides/routing-settings) — choose ML or rules-based routing, override models per slot
-- [Set up local models](/guides/local-models) — run on-device inference via MLX for zero-cost routing
+- [Set up local models](/guides/local-models) — run on-device inference for zero-cost routing
 - [Explore the dashboard](/guides/dashboard) — track costs, savings, and model distribution

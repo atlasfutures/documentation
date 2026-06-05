@@ -21,18 +21,18 @@ This shows:
 
 <AccordionGroup>
   <Accordion title="Claude Code isn't using Rayline">
-    **Check your environment variables:**
+    **If you launch with `rl claude`:** routing goes through a local proxy, so `ANTHROPIC_BASE_URL` is intentionally empty — don't use it to check. Run `rl claude --diagnose` to print the active routing configuration, and make sure you're starting Claude Code with `rl claude`, not a bare `claude`.
+
+    **If you set environment variables manually:**
     ```bash
     echo $ANTHROPIC_BASE_URL
     echo $ANTHROPIC_API_KEY
     ```
-    
-    - `ANTHROPIC_BASE_URL` should be `https://api.rayline.ai/v1`
-    - `ANTHROPIC_API_KEY` should start with `rlk_`
-    
-    If using the CLI, try `rl claude` instead of `claude` — it sets these automatically.
-    
-    **Check the dashboard:** If env vars are set correctly, requests should appear in the [Rayline dashboard](https://platform.rayline.ai) within seconds of running a task.
+
+    - `ANTHROPIC_BASE_URL` should be `https://api.rayline.ai` (no `/v1` suffix)
+    - `ANTHROPIC_API_KEY` should start with `rlk-`
+
+    **Check the dashboard:** either way, requests should appear in the [Rayline dashboard](https://platform.rayline.ai) within seconds of running a task.
   </Accordion>
 
   <Accordion title="'Not logged in' error">
