@@ -39,7 +39,7 @@ Rayline has three layers:
 
 1. **Cloud router** — The `api.rayline.ai` endpoint. Authenticates your request, classifies the task, runs the Arc-1 ML model to pick the best provider, and dispatches the request. Streams the response back to your agent.
 
-2. **CLI + local daemon** (`rl` + `rld`) — Optional. The CLI manages auth and launches your agent with routing pre-configured. The daemon handles local model routing and telemetry hooks.
+2. **CLI + local daemon** (`rayline` + `rld`) — Optional. The CLI manages auth and launches your agent with routing pre-configured. The daemon handles local model routing and telemetry hooks.
 
 3. **On-device inference** — Optional. Run models locally via MLX (Apple Silicon) or llama-server for zero-cost, zero-latency routing on tasks that fit.
 

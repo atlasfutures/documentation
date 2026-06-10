@@ -1,17 +1,17 @@
 ---
-title: "rl router"
+title: "rayline router"
 icon: "server"
 description: "Manage the local router daemon for on-device model routing."
 ---
 
-The `rl router` commands control the local router daemon (`rld`), which runs on-device model inference. You rarely need these directly — `rl claude --local` starts the daemon for you. Reach for `rl router` when you want to manage on-device inference on its own.
+The `rayline router` commands control the local router daemon (`rld`), which runs on-device model inference. You rarely need these directly — `rayline claude --local` starts the daemon for you. Reach for `rayline router` when you want to manage on-device inference on its own.
 
-## rl router start
+## rayline router start
 
 Start the local router daemon with on-device model inference.
 
 ```bash
-rl router start
+rayline router start
 ```
 
 On first run, downloads the default model (~20GB) and starts all local services. Subsequent starts are near-instant.
@@ -31,13 +31,13 @@ On first run, downloads the default model (~20GB) and starts all local services.
 
 ```bash
 # Start with defaults
-rl router start
+rayline router start
 
 # Start with a custom model
-rl router start --model-repo "your-org/model-GGUF" --model-file "model-Q4_K_M.gguf"
+rayline router start --model-repo "your-org/model-GGUF" --model-file "model-Q4_K_M.gguf"
 
 # Custom ports
-rl router start --adapter-port 20818 --injector-port 20819
+rayline router start --adapter-port 20818 --injector-port 20819
 ```
 
 ### What starts
@@ -48,22 +48,22 @@ rl router start --adapter-port 20818 --injector-port 20819
 | Adapter | 20808 | Proxies to llama-server, reports usage |
 | Injector | 20809 | Intercepts requests, redirects eligible ones locally |
 
-## rl router stop
+## rayline router stop
 
 Stop all local router services.
 
 ```bash
-rl router stop
+rayline router stop
 ```
 
 Terminates the daemon, adapter, and injector. Cloud routing through Rayline continues to work normally — only local routing is affected.
 
-## rl router status
+## rayline router status
 
 Show the current state of the local router.
 
 ```bash
-rl router status
+rayline router status
 ```
 
 Output includes:
@@ -84,19 +84,19 @@ rld: pid 12345, running
   log: /Users/you/.rayline/rld/rl-rld.log
 ```
 
-## rl router logs
+## rayline router logs
 
 View recent daemon logs.
 
 ```bash
-rl router logs            # last 50 lines
-rl router logs -n 200     # last 200 lines
+rayline router logs            # last 50 lines
+rayline router logs -n 200     # last 200 lines
 ```
 
 Useful for diagnosing startup failures, model loading issues, or request errors.
 
 ## Health checks
 
-`rl router start` waits for all services to become healthy before returning. The default health timeout is 240 seconds (longer on first run when downloading the model — up to 3600 seconds).
+`rayline router start` waits for all services to become healthy before returning. The default health timeout is 240 seconds (longer on first run when downloading the model — up to 3600 seconds).
 
-If a service fails to start, check `rl router logs` for the error.
+If a service fails to start, check `rayline router logs` for the error.

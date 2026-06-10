@@ -4,13 +4,13 @@ icon: "terminal"
 description: "Connect Claude Code to Rayline in under 2 minutes."
 ---
 
-Claude Code is the most common way to use Rayline. The fastest path is the `rl` CLI: `rl claude` signs you in, configures routing, and launches Claude Code in one command. On macOS you can do it with one click from the Rayline app. Setting the Anthropic environment variables by hand still works and is covered under [Advanced setup](#advanced-manual-environment-variables).
+Claude Code is the most common way to use Rayline. The fastest path is the `rayline` CLI: `rayline claude` signs you in, configures routing, and launches Claude Code in one command. On macOS you can do it with one click from the Rayline app. Setting the Anthropic environment variables by hand still works and is covered under [Advanced setup](#advanced-manual-environment-variables).
 
 <Note>
 Rayline configures and launches Claude Code — it doesn't bundle it. Install Claude Code first if you haven't: see [Anthropic's setup guide](https://docs.claude.com/en/docs/claude-code/setup).
 </Note>
 
-## The easy way: `rl claude`
+## The easy way: `rayline claude`
 
 Install the CLI:
 
@@ -21,7 +21,7 @@ curl -fsSL https://get.rayline.ai/install.sh | bash
 Then launch Claude Code through Rayline:
 
 ```bash
-rl claude
+rayline claude
 ```
 
 On a terminal, that single command does everything:
@@ -31,16 +31,16 @@ On a terminal, that single command does everything:
 - **Installs telemetry hooks** — per-route cost and model selection, visible in the dashboard and the Rayline app.
 - **Sets up the Rayline app** on first run (macOS Apple Silicon, unless opted out).
 
-Any arguments after `rl claude` are forwarded to Claude Code:
+Any arguments after `rayline claude` are forwarded to Claude Code:
 
 ```bash
-rl claude --resume          # forward a standard Claude Code flag
-rl claude -m opus           # pin the main agent to a specific model
+rayline claude --resume          # forward a standard Claude Code flag
+rayline claude -m opus           # pin the main agent to a specific model
 ```
 
 ## Even easier: the Rayline app
 
-On macOS, `rl claude` installs the **Rayline app** on first run. From then on you can launch Claude Code without touching the terminal — just click **Launch Claude Code** (⌘↩).
+On macOS, `rayline claude` installs the **Rayline app** on first run. From then on you can launch Claude Code without touching the terminal — just click **Launch Claude Code** (⌘↩).
 
 <Frame caption="The Rayline app — click Launch Claude Code to start a routed session.">
   <img src="/images/menubar-popover.png" alt="Rayline app popover showing savings, a Launch Claude Code button, and routing controls" />
@@ -53,7 +53,7 @@ The popover also shows your live savings, lets you pin a model, inspect recent r
 To route eligible requests to a model running on your own Mac instead of the cloud, add `--local`:
 
 ```bash
-rl claude --local
+rayline claude --local
 ```
 
 This boots Rayline's on-device router and serves inference locally — zero token cost, full privacy. The first run downloads a model (several GB, one-time) and the first response is slow while it loads into memory. After that, eligible tasks route locally and everything else falls back to the cloud router automatically. See [On-Device Routing](/how-it-works/on-device) for what routes locally and the hardware requirements.
@@ -69,12 +69,12 @@ Build a React component with tests and a code review
 Then open the [Rayline dashboard](https://platform.rayline.ai) — routed requests appear within a few seconds, with model assignments and savings.
 
 <Tip>
-Because `rl claude` routes through a local proxy, it deliberately does **not** set `ANTHROPIC_BASE_URL` in your shell — so `echo $ANTHROPIC_BASE_URL` is empty even when routing is active. Confirm with the dashboard or `rl claude --diagnose`, not by inspecting environment variables.
+Because `rayline claude` routes through a local proxy, it deliberately does **not** set `ANTHROPIC_BASE_URL` in your shell — so `echo $ANTHROPIC_BASE_URL` is empty even when routing is active. Confirm with the dashboard or `rayline claude --diagnose`, not by inspecting environment variables.
 </Tip>
 
 ## Advanced: manual environment variables
 
-You can point Claude Code at Rayline without the `rl` CLI — useful for CI, containers, or non-macOS environments. Set two variables, then run Claude Code normally:
+You can point Claude Code at Rayline without the `rayline` CLI — useful for CI, containers, or non-macOS environments. Set two variables, then run Claude Code normally:
 
 ```bash
 export ANTHROPIC_BASE_URL=https://api.rayline.ai
@@ -104,7 +104,7 @@ export ANTHROPIC_API_KEY=rlk-your-key-here
 
 ## Disabling Rayline temporarily
 
-If you launch with `rl claude`, just run `claude` directly to skip Rayline for a session. If you set environment variables, unset the base URL for a single run:
+If you launch with `rayline claude`, just run `claude` directly to skip Rayline for a session. If you set environment variables, unset the base URL for a single run:
 
 ```bash
 ANTHROPIC_BASE_URL= claude

@@ -44,20 +44,20 @@ High-risk tasks and tasks requiring deep reasoning always route to cloud models.
 The simplest way is to add `--local` when you launch Claude Code — it starts the on-device router for you:
 
 ```bash
-rl claude --local
+rayline claude --local
 ```
 
 Or start the daemon on its own:
 
 ```bash
-rl router start
+rayline router start
 ```
 
 Either way, the first run downloads the default model (Qwen 3.6 35B A3B, Q4_K_M quantization), starts llama-server, and configures the local routing pipeline. First run takes 5–15 minutes for the model download; subsequent starts are near-instant.
 
 ### What starts
 
-`rl router start` launches three local services:
+`rayline router start` launches three local services:
 
 | Service | Port | Purpose |
 |---|---|---|
@@ -68,7 +68,7 @@ Either way, the first run downloads the default model (Qwen 3.6 35B A3B, Q4_K_M 
 ### Check status
 
 ```bash
-rl router status
+rayline router status
 ```
 
 Shows the running state of each component, the loaded model, and port assignments.
@@ -76,14 +76,14 @@ Shows the running state of each component, the loaded model, and port assignment
 ### View logs
 
 ```bash
-rl router logs           # last 50 lines
-rl router logs -n 200    # last 200 lines
+rayline router logs           # last 50 lines
+rayline router logs -n 200    # last 200 lines
 ```
 
 ### Stop
 
 ```bash
-rl router stop
+rayline router stop
 ```
 
 Shuts down all local routing services. Cloud routing continues to work normally.
@@ -93,7 +93,7 @@ Shuts down all local routing services. Cloud routing continues to work normally.
 By default, Rayline uses `unsloth/Qwen3.6-35B-A3B-GGUF` (Q4_K_M quantization). You can specify a different model:
 
 ```bash
-rl router start --model-repo "your-org/model-name-GGUF" --model-file "model-Q4_K_M.gguf"
+rayline router start --model-repo "your-org/model-name-GGUF" --model-file "model-Q4_K_M.gguf"
 ```
 
 The model must be in GGUF format and hosted on Hugging Face. It must support the Anthropic Messages API via llama-server's `--jinja` mode (which handles tool-use natively).
@@ -107,4 +107,4 @@ The savings compound: tasks that route locally cost nothing, and tasks that rout
 ## Next steps
 
 - [Local Models Guide](/guides/local-models) — detailed configuration and troubleshooting
-- [Router CLI Reference](/cli/router) — full command reference for `rl router`
+- [Router CLI Reference](/cli/router) — full command reference for `rayline router`

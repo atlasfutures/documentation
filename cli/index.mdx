@@ -1,10 +1,10 @@
 ---
 title: "CLI Overview"
 icon: "square-terminal"
-description: "Install and use the rl command-line tool."
+description: "Install and use the rayline command-line tool."
 ---
 
-The `rl` CLI is Rayline's command-line tool. It manages authentication, launches Claude Code with routing pre-configured, controls the local router daemon, and manages the Rayline app.
+The `rayline` CLI is Rayline's command-line tool. It manages authentication, launches Claude Code with routing pre-configured, controls the local router daemon, and manages the Rayline app.
 
 ## Install
 
@@ -12,35 +12,35 @@ The `rl` CLI is Rayline's command-line tool. It manages authentication, launches
 curl -fsSL https://get.rayline.ai/install.sh | bash
 ```
 
-This installs the `rl` binary to your PATH. Verify with:
+This installs the `rayline` binary to your PATH. Verify with:
 
 ```bash
-rl --version
+rayline --version
 ```
 
 ## Update
 
 ```bash
-rl update
+rayline update
 ```
 
 Downloads and installs the latest version. Use `--check` to see if an update is available without installing:
 
 ```bash
-rl update --check
+rayline update --check
 ```
 
 ## Command overview
 
 | Command | Purpose |
 |---|---|
-| [`rl auth`](/cli/auth) | Authentication — login, logout, token management |
-| [`rl claude`](/cli/claude) | Launch Claude Code with Rayline routing |
-| [`rl router`](/cli/router) | Manage the local router daemon |
-| [`rl menubar`](/cli/menubar) | Manage the Rayline app |
-| `rl status` | Show current auth, router, and environment state |
-| `rl update` | Update to the latest CLI version |
-| `rl --version` | Print version |
+| [`rayline auth`](/cli/auth) | Authentication — login, logout, token management |
+| [`rayline claude`](/cli/claude) | Launch Claude Code with Rayline routing |
+| [`rayline router`](/cli/router) | Manage the local router daemon |
+| [`rayline menubar`](/cli/menubar) | Manage the Rayline app |
+| `rayline status` | Show current auth, router, and environment state |
+| `rayline update` | Update to the latest CLI version |
+| `rayline --version` | Print version |
 
 ## Global options
 
@@ -49,8 +49,8 @@ rl update --check
 Switch between environments:
 
 ```bash
-rl --env dev auth login    # authenticate against dev environment
-rl --env prod claude       # use production (default)
+rayline --env dev auth login    # authenticate against dev environment
+rayline --env prod claude       # use production (default)
 ```
 
 Most users never need this — `prod` is the default.
@@ -61,7 +61,7 @@ The CLI stores configuration in `~/.config/rayline/`:
 
 | File | Contents |
 |---|---|
-| `credentials.json` | Auth tokens (written by `rl auth login`) |
+| `credentials.json` | Auth tokens (written by `rayline auth login`) |
 | `claude-daemon-launches.json` | Tracks Rayline app auto-launch state |
 
 The router daemon stores its state in `~/.rayline/rld/`:
@@ -76,23 +76,23 @@ The router daemon stores its state in `~/.rayline/rld/`:
 
 | Variable | Effect |
 |---|---|
-| `RAYLINE_MENUBAR_OPT_OUT=1` | Disable Rayline app auto-install on `rl claude` |
+| `RAYLINE_MENUBAR_OPT_OUT=1` | Disable Rayline app auto-install on `rayline claude` |
 | `RAYLINE_HOOK_OPT_OUT=1` | Disable telemetry hooks |
 | `RAYLINE_ROUTER_HOOKS_ACTIVE` | Set by hooks when active (internal) |
 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="rl auth" icon="right-to-bracket" href="/cli/auth">
+  <Card title="rayline auth" icon="right-to-bracket" href="/cli/auth">
     Login, logout, and token management.
   </Card>
-  <Card title="rl claude" icon="terminal" href="/cli/claude">
+  <Card title="rayline claude" icon="terminal" href="/cli/claude">
     Launch Claude Code through Rayline.
   </Card>
-  <Card title="rl router" icon="server" href="/cli/router">
+  <Card title="rayline router" icon="server" href="/cli/router">
     Start, stop, and monitor the local router.
   </Card>
-  <Card title="rl menubar" icon="display" href="/cli/menubar">
+  <Card title="rayline menubar" icon="display" href="/cli/menubar">
     Install and manage the Rayline app.
   </Card>
 </CardGroup>
