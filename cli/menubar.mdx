@@ -1,56 +1,56 @@
 ---
-title: "rl menubar"
+title: "rayline menubar"
 icon: "display"
 description: "Install and manage the Rayline app."
 ---
 
-The `rl menubar` commands manage the Rayline app.
+The `rayline menubar` commands manage the Rayline app.
 
-## rl menubar install
+## rayline menubar install
 
 Download and install the latest Rayline app.
 
 ```bash
-rl menubar install
+rayline menubar install
 ```
 
 Downloads the latest Rayline build from the Rayline CDN and installs it to `/Applications`. If the app is already installed, updates it to the latest version.
 
 <Note>
-On macOS Apple Silicon, `rl claude` auto-installs the Rayline app on first launch. You only need `rl menubar install` for manual installation or updates.
+On macOS Apple Silicon, `rayline claude` auto-installs the Rayline app on first launch. You only need `rayline menubar install` for manual installation or updates.
 </Note>
 
-## rl menubar start
+## rayline menubar start
 
 Launch the Rayline app.
 
 ```bash
-rl menubar start
+rayline menubar start
 ```
 
 Starts the Rayline app if it's installed. It appears in your menu bar. Pass `--env dev` to launch it against the dev environment (default is `prod`).
 
-## rl menubar stop
+## rayline menubar stop
 
 Quit the Rayline app.
 
 ```bash
-rl menubar stop
+rayline menubar stop
 ```
 
-## rl menubar status
+## rayline menubar status
 
 Check if the Rayline app is running.
 
 ```bash
-rl menubar status
+rayline menubar status
 ```
 
 Shows whether the Rayline app is installed, its version, and running state.
 
 ## Opting out of auto-install
 
-If you don't want `rl claude` to auto-install the Rayline app:
+If you don't want `rayline claude` to auto-install the Rayline app:
 
 ```bash
 export RAYLINE_MENUBAR_OPT_OUT=1

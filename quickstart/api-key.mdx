@@ -4,7 +4,7 @@ icon: "key"
 description: "Sign up for Rayline and create your first API key."
 ---
 
-A Rayline API key (`rlk-...`) authenticates your requests. If you launch with `rl claude`, one is provisioned for you automatically — you only need to create a key by hand for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables). There are two ways to get one.
+A Rayline API key (`rlk-...`) authenticates your requests. If you launch with `rayline claude`, one is provisioned for you automatically — you only need to create a key by hand for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables). There are two ways to get one.
 
 ## Option 1: Platform dashboard (web)
 
@@ -18,18 +18,18 @@ Your key looks like: `rlk-k9f2a7b3...`
 
 ## Option 2: CLI
 
-If you've installed the `rl` CLI:
+If you've installed the `rayline` CLI:
 
 ```bash
-rl auth login
+rayline auth login
 ```
 
-This opens a browser authentication flow. After signing in, your credentials are stored locally at `~/.config/rayline/credentials.json`. `rl claude` uses these automatically — you don't need to manage a key by hand.
+This opens a browser authentication flow. After signing in, your credentials are stored locally at `~/.config/rayline/credentials.json`. `rayline claude` uses these automatically — you don't need to manage a key by hand.
 
 To print your routing key (`rlk-…`) for use in environment variables:
 
 ```bash
-rl claude key
+rayline claude key
 ```
 
 ## Adding funds

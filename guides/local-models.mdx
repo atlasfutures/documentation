@@ -18,10 +18,10 @@ Rayline's local model support lets you run inference on your own hardware. Tasks
 
 ## Quick start
 
-The easiest entry point is `rl claude --local`, which starts the on-device router and launches Claude Code in one step. To manage the daemon on its own, use `rl router start`:
+The easiest entry point is `rayline claude --local`, which starts the on-device router and launches Claude Code in one step. To manage the daemon on its own, use `rayline router start`:
 
 ```bash
-rl router start
+rayline router start
 ```
 
 On first run, this:
@@ -49,7 +49,7 @@ This model was chosen for its strong code generation quality, native tool-use su
 To use a different model:
 
 ```bash
-rl router start \
+rayline router start \
   --model-repo "your-org/model-name-GGUF" \
   --model-file "model-Q4_K_M.gguf"
 ```
@@ -63,7 +63,7 @@ rl router start \
 
 ## Architecture
 
-When `rl router start` runs, three services start:
+When `rayline router start` runs, three services start:
 
 ```
 Claude Code → Injector (:20809) → checks if eligible for local
@@ -86,9 +86,9 @@ The actual inference engine. Runs the GGUF model with Jinja template support for
 ## Managing the daemon
 
 ```bash
-rl router status    # check what's running
-rl router logs      # view recent logs
-rl router stop      # stop all local services
+rayline router status    # check what's running
+rayline router logs      # view recent logs
+rayline router stop      # stop all local services
 ```
 
 See [CLI Router Reference](/cli/router) for all options.
@@ -97,14 +97,14 @@ See [CLI Router Reference](/cli/router) for all options.
 
 ### Model download is slow
 
-The model downloads from Hugging Face's CDN. If it's slow, check your network connection. The download can be resumed — if interrupted, `rl router start` picks up where it left off.
+The model downloads from Hugging Face's CDN. If it's slow, check your network connection. The download can be resumed — if interrupted, `rayline router start` picks up where it left off.
 
 ### Out of memory
 
 If llama-server crashes or is very slow, your machine may not have enough memory. Try a smaller quantization:
 
 ```bash
-rl router start \
+rayline router start \
   --model-repo "unsloth/Qwen3.6-35B-A3B-GGUF" \
   --model-file "Qwen3.6-35B-A3B-UD-Q2_K.gguf"
 ```
@@ -114,12 +114,12 @@ rl router start \
 If the default ports are in use, specify alternatives:
 
 ```bash
-rl router start --adapter-port 20818 --injector-port 20819
+rayline router start --adapter-port 20818 --injector-port 20819
 ```
 
 ### llama-server won't start
 
-Check the logs: `rl router logs -n 100`. Common issues:
+Check the logs: `rayline router logs -n 100`. Common issues:
 - Model file corrupted (re-download by deleting the cached file)
 - Insufficient disk space
-- Another instance already running (check `rl router status`)
+- Another instance already running (check `rayline router status`)

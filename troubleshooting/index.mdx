@@ -6,10 +6,10 @@ description: "Common issues and how to resolve them."
 
 ## Quick diagnostics
 
-Run `rl status` to get a snapshot of your current state — auth, router, and environment:
+Run `rayline status` to get a snapshot of your current state — auth, router, and environment:
 
 ```bash
-rl status
+rayline status
 ```
 
 This shows:
@@ -21,7 +21,7 @@ This shows:
 
 <AccordionGroup>
   <Accordion title="Claude Code isn't using Rayline">
-    **If you launch with `rl claude`:** routing goes through a local proxy, so `ANTHROPIC_BASE_URL` is intentionally empty — don't use it to check. Run `rl claude --diagnose` to print the active routing configuration, and make sure you're starting Claude Code with `rl claude`, not a bare `claude`.
+    **If you launch with `rayline claude`:** routing goes through a local proxy, so `ANTHROPIC_BASE_URL` is intentionally empty — don't use it to check. Run `rayline claude --diagnose` to print the active routing configuration, and make sure you're starting Claude Code with `rayline claude`, not a bare `claude`.
 
     **If you set environment variables manually:**
     ```bash
@@ -36,13 +36,13 @@ This shows:
   </Accordion>
 
   <Accordion title="'Not logged in' error">
-    Run `rl auth login` to re-authenticate. If you're using env vars instead of the CLI, verify your API key is valid at [platform.rayline.ai/keys](https://platform.rayline.ai/keys).
+    Run `rayline auth login` to re-authenticate. If you're using env vars instead of the CLI, verify your API key is valid at [platform.rayline.ai/keys](https://platform.rayline.ai/keys).
   </Accordion>
 
   <Accordion title="Requests are failing / 401 errors">
     - **Expired or invalid key**: Go to [API Keys](https://platform.rayline.ai/keys) and verify your key is active. Create a new one if needed.
     - **Zero balance**: Check your balance in the dashboard. Add funds or enable auto top-up.
-    - **Wrong environment**: If using `--env dev`, make sure you authenticated against dev: `rl auth login --env dev`
+    - **Wrong environment**: If using `--env dev`, make sure you authenticated against dev: `rayline auth login --env dev`
   </Accordion>
 
   <Accordion title="No savings showing in dashboard">
@@ -58,7 +58,7 @@ This shows:
     
     - Check your network to `api.rayline.ai`: `curl -o /dev/null -w '%{time_total}' https://api.rayline.ai/healthz`
     - The selected model may be slower than your usual model — check the activity log to see which model was used
-    - If using local models, check `rl router status` for health issues
+    - If using local models, check `rayline router status` for health issues
   </Accordion>
 </AccordionGroup>
 
@@ -76,4 +76,4 @@ This shows:
 ## Getting help
 
 - **Email**: [help@rayline.ai](mailto:help@rayline.ai)
-- **Include diagnostics**: When reporting issues, include the output of `rl status` and relevant `rl router logs` output
+- **Include diagnostics**: When reporting issues, include the output of `rayline status` and relevant `rayline router logs` output

@@ -1,20 +1,20 @@
 ---
-title: "rl claude"
+title: "rayline claude"
 icon: "terminal"
 description: "Launch Claude Code with Rayline routing pre-configured."
 ---
 
-## rl claude
+## rayline claude
 
 The primary command for most users. Launches Claude Code with Rayline routing, telemetry hooks, and optional local model support — all pre-configured.
 
 ```bash
-rl claude
+rayline claude
 ```
 
 ### What it does
 
-On a terminal, `rl claude` configures everything and launches Claude Code in one step:
+On a terminal, `rayline claude` configures everything and launches Claude Code in one step:
 
 1. **Signs you in** if needed — opens the browser to `platform.rayline.ai` and provisions a routing key automatically (no manual key handling)
 2. **Starts a local routing proxy** that forwards Claude Code's API traffic to Rayline's router and injects your key. Claude Code keeps talking to its normal Anthropic-compatible endpoint; the proxy handles routing transparently
@@ -23,21 +23,21 @@ On a terminal, `rl claude` configures everything and launches Claude Code in one
 5. **Launches Claude Code** with all the above configured
 
 <Note>
-Because routing happens through the local proxy, `rl claude` does **not** set `ANTHROPIC_BASE_URL` in your environment — it sets `HTTPS_PROXY` and a trusted CA instead. To confirm routing, use the dashboard or `rl claude --diagnose`, not `echo $ANTHROPIC_BASE_URL`. The raw environment-variable approach is covered under [Claude Code Setup](/quickstart/claude-code#advanced-manual-environment-variables).
+Because routing happens through the local proxy, `rayline claude` does **not** set `ANTHROPIC_BASE_URL` in your environment — it sets `HTTPS_PROXY` and a trusted CA instead. To confirm routing, use the dashboard or `rayline claude --diagnose`, not `echo $ANTHROPIC_BASE_URL`. The raw environment-variable approach is covered under [Claude Code Setup](/quickstart/claude-code#advanced-manual-environment-variables).
 </Note>
 
 ### Passing arguments to Claude Code
 
-Any arguments `rl claude` doesn't recognize are forwarded straight to Claude Code:
+Any arguments `rayline claude` doesn't recognize are forwarded straight to Claude Code:
 
 ```bash
-rl claude --resume                # forward a standard Claude Code flag
-rl claude -- --some-claude-flag   # everything after -- is passed through verbatim
+rayline claude --resume                # forward a standard Claude Code flag
+rayline claude -- --some-claude-flag   # everything after -- is passed through verbatim
 ```
 
 ### Options
 
-These flags are interpreted by `rl`; everything else is forwarded to Claude Code.
+These flags are interpreted by `rayline`; everything else is forwarded to Claude Code.
 
 | Flag | Description |
 |---|---|
@@ -51,69 +51,69 @@ These flags are interpreted by `rl`; everything else is forwarded to Claude Code
 
 ### Setup subcommands
 
-#### rl claude setup
+#### rayline claude setup
 
 Run the interactive setup wizard for Claude Code integration:
 
 ```bash
-rl claude setup
+rayline claude setup
 ```
 
 Configures hooks, validates credentials, and verifies connectivity.
 
-#### rl claude hooks install
+#### rayline claude hooks install
 
 Install Rayline's telemetry hooks into Claude Code's hook system:
 
 ```bash
-rl claude hooks install
+rayline claude hooks install
 ```
 
-Hooks capture per-route data (model selected, tokens, cost) and forward it to the dashboard. They're installed automatically by `rl claude` but can be managed independently.
+Hooks capture per-route data (model selected, tokens, cost) and forward it to the dashboard. They're installed automatically by `rayline claude` but can be managed independently.
 
-#### rl claude hooks status
+#### rayline claude hooks status
 
 Check if hooks are installed and active:
 
 ```bash
-rl claude hooks status
+rayline claude hooks status
 ```
 
-#### rl claude hooks uninstall
+#### rayline claude hooks uninstall
 
 Remove Rayline hooks from Claude Code:
 
 ```bash
-rl claude hooks uninstall
+rayline claude hooks uninstall
 ```
 
-#### rl claude login
+#### rayline claude login
 
-Authenticate specifically for Claude Code integration (alias for `rl auth login` with Claude-specific setup):
+Authenticate specifically for Claude Code integration (alias for `rayline auth login` with Claude-specific setup):
 
 ```bash
-rl claude login
+rayline claude login
 ```
 
-#### rl claude key
+#### rayline claude key
 
 Print the stored routing key (`rlk-…`) — handy for the [manual env-var setup](/quickstart/claude-code#advanced-manual-environment-variables):
 
 ```bash
-rl claude key
+rayline claude key
 ```
 
-#### rl claude logout
+#### rayline claude logout
 
 Remove Claude Code-specific credentials:
 
 ```bash
-rl claude logout
+rayline claude logout
 ```
 
 ### Telemetry
 
-Hooks installed by `rl claude` send non-sensitive metadata to Rayline for cost tracking:
+Hooks installed by `rayline claude` send non-sensitive metadata to Rayline for cost tracking:
 
 - Which model was selected for each route
 - Token counts (input, output, cache)
