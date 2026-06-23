@@ -44,6 +44,33 @@ The download uses Hugging Face's CDN and takes 5–15 minutes on typical connect
 
 This model was chosen for its strong code generation quality, native tool-use support via Jinja templates, and efficient MoE architecture (35B total, 3B active parameters per token).
 
+## Choosing a local model
+
+Rayline routes locally to a single model you select. There are two ways to provide it — the only difference is who runs the model.
+
+### Option 1 — Rayline runs the model
+
+Rayline serves the model with its bundled llama.cpp. List the models recommended for your machine, then select one — it downloads on first use:
+
+```bash
+rayline local models           # list models available for your machine
+rayline local use <model-id>   # downloads and sets it
+```
+
+### Option 2 — you run the model
+
+Already running a model in Ollama, LM Studio, or your own llama.cpp server? Point Rayline at it:
+
+```bash
+rayline local custom --url http://127.0.0.1:11434 --model <model-id>
+```
+
+Either way, start the router and your selection handles locally-routed requests:
+
+```bash
+rayline router start
+```
+
 ## Custom models
 
 To use a different model:

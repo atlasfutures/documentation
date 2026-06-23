@@ -1,0 +1,281 @@
+---
+title: "Rayline for Agents"
+icon: "robot"
+description: "Route your own code and custom agents through Rayline using the Anthropic SDK."
+---
+
+Any app or agent built on the official Anthropic SDK can route through Rayline — there's no Rayline-specific SDK to install. You point the standard `anthropic` client at Rayline and keep your existing code.
+
+There are two modes:
+
+- **Cloud** — if you only want model routing, this is the way to go. [Generate a key](https://platform.rayline.ai/keys), choose your [routing settings](https://platform.rayline.ai/settings), and use the `https://api.rayline.ai` endpoint instead of the standard Anthropic one.
+- **Local** — if you have local hardware and want to run local models, start the Rayline router on your machine and route certain subagent tasks to on-device models.
+
+Both work the same way from your code: construct an Anthropic client, point it at Rayline, and call `messages.create`. The examples below come from the [Rayline examples repo](https://github.com/rayline-ai/rayline/tree/main/examples).
+
+<Note>
+The cloud router needs a router key (`rlk-...`). Generate one at the [API Keys page](https://platform.rayline.ai/keys) — see [Getting Your API Key](/quickstart/api-key) for the full walkthrough. Local routing doesn't need one.
+</Note>
+
+## Cloud
+
+Point the official Anthropic SDK at `https://api.rayline.ai` and authenticate with a Rayline router key (`rlk-...`). The router decides where each request goes and forwards it on with your provider credentials. No local process is required.
+
+Install the SDK:
+
+<CodeGroup>
+```bash Python
+pip install "anthropic>=0.40"
+```
+
+```bash TypeScript
+npm install @anthropic-ai/sdk
+```
+</CodeGroup>
+
+Generate a router key at the [API Keys page](https://platform.rayline.ai/keys), then export it:
+
+```bash
+export RAYLINE_API_KEY=rlk-your-key-here
+```
+
+Now point the client at Rayline:
+
+<CodeGroup>
+```python main.py
+import os
+
+from anthropic import Anthropic
+
+# Hosted Rayline router endpoint.
+BASE_URL = "https://api.rayline.ai"
+
+# Router keys are *bearer* tokens, so they are passed via `auth_token=`
+# (Authorization: Bearer ...), not `api_key=`.
+API_KEY = os.environ.get("RAYLINE_API_KEY", "rlk-REPLACE_ME")
+
+client = Anthropic(base_url=BASE_URL, auth_token=API_KEY)
+
+message = client.messages.create(
+    # "rayline-router" lets the router pick the concrete model. You can also
+    # pass a concrete id such as "claude-sonnet-4-6".
+    model="rayline-router",
+    max_tokens=512,
+    messages=[
+        {"role": "user", "content": "In one sentence, what is Rayline?"},
+    ],
+)
+
+for block in message.content:
+    if block.type == "text":
+        print(block.text)
+```
+
+```typescript main.ts
+import Anthropic from "@anthropic-ai/sdk";
+
+// Hosted Rayline router endpoint.
+const BASE_URL = "https://api.rayline.ai";
+
+// Router keys are *bearer* tokens, so they are passed via `authToken`
+// (Authorization: Bearer ...), not `apiKey`.
+const API_KEY = process.env.RAYLINE_API_KEY ?? "rlk-REPLACE_ME";
+
+const client = new Anthropic({ baseURL: BASE_URL, authToken: API_KEY });
+
+const message = await client.messages.create({
+  // "rayline-router" lets the router pick the concrete model. You can also
+  // pass a concrete id such as "claude-sonnet-4-6".
+  model: "rayline-router",
+  max_tokens: 512,
+  messages: [{ role: "user", content: "In one sentence, what is Rayline?" }],
+});
+
+for (const block of message.content) {
+  if (block.type === "text") {
+    console.log(block.text);
+  }
+}
+```
+</CodeGroup>
+
+<Note>
+Router keys are **bearer** tokens. Pass them via `auth_token=` (Python) or `authToken` (TypeScript) — **not** `api_key`/`apiKey`. TypeScript requires Node 18+.
+</Note>
+
+<Tip>
+Use `model="rayline-router"` to let Rayline classify the request and pick the model. To pin a specific model, pass a concrete id like `claude-sonnet-4-6` instead.
+</Tip>
+
+## Local
+
+Route a call to a model running on your own machine. Traffic flows through Rayline's local proxy on `127.0.0.1:20810` to the on-device router (`rld`), which routes by your config — no special headers. The default local config maps the model name `rayline-local` to your on-device endpoint, so you just request that model.
+
+### Set the local model
+
+Choose the model that `rayline-local` resolves to. There are two options — the only difference is who hosts the model.
+
+**Option 1 — Rayline runs the model** (bundled llama.cpp):
+
+```bash
+rayline local models           # list models available for your machine
+rayline local use <model-id>   # downloads and sets it
+```
+
+**Option 2 — you run the model** (Ollama, LM Studio, etc.):
+
+```bash
+rayline local custom --url http://127.0.0.1:11434 --model <model-id>
+```
+
+Either way, start the router:
+
+```bash
+rayline router start
+```
+
+Give the on-device model a minute to load on first use, then confirm the router is ready:
+
+```bash
+curl -s http://127.0.0.1:20810/healthz   # expect "local_available": true
+```
+
+Stop it later with `rayline router stop`.
+
+<Note>
+Either way, the example code is identical — it requests `model="rayline-local"`, which resolves to whatever you set, and the call lands on that local model.
+</Note>
+
+### Trust the proxy CA
+
+Because Rayline intercepts TLS, your client must trust Rayline's proxy CA. Use the path for your OS:
+
+| OS | Path |
+| --- | --- |
+| macOS | `~/Library/Application Support/rayline/proxy-ca.pem` |
+| Linux | `~/.config/rayline/proxy-ca.pem` |
+| Windows | `%APPDATA%\rayline\proxy-ca.pem` |
+
+### Make the call
+
+Keep the client pointed at the real Anthropic base URL — the proxy intercepts that host. The `auth_token` is just a non-empty placeholder; Rayline injects the real credentials for requests it routes locally.
+
+Install the SDK:
+
+<CodeGroup>
+```bash Python
+pip install "anthropic>=0.40"   # pulls in httpx, used for the proxy + CA config
+```
+
+```bash TypeScript
+npm install @anthropic-ai/sdk undici   # Node 18+; undici routes fetch through the proxy
+```
+</CodeGroup>
+
+<CodeGroup>
+```python main.py
+import os
+
+import httpx
+from anthropic import Anthropic
+
+# Rayline's local transparent proxy (override port with RAYLINE_PROXY_PORT).
+PROXY = "http://127.0.0.1:20810"
+
+# Path to Rayline's proxy CA cert (use the path for your OS).
+CA_CERT = os.path.expanduser("~/Library/Application Support/rayline/proxy-ca.pem")
+
+# Keep the real Anthropic base URL — the proxy intercepts this host.
+BASE_URL = "https://api.anthropic.com"
+
+# Rayline injects the real credentials for locally-routed requests, so this is
+# just a non-empty placeholder the SDK requires to construct a client.
+API_KEY = "rayline"
+
+http_client = httpx.Client(proxy=PROXY, verify=CA_CERT)
+client = Anthropic(http_client=http_client, base_url=BASE_URL, auth_token=API_KEY)
+
+message = client.messages.create(
+    # The default local config maps this model name to your on-device endpoint.
+    model="rayline-local",
+    max_tokens=256,
+    messages=[
+        {"role": "user", "content": "In one sentence, what is Rayline?"},
+    ],
+)
+
+for block in message.content:
+    if block.type == "text":
+        print(block.text)
+```
+
+```typescript main.ts
+import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import Anthropic from "@anthropic-ai/sdk";
+import { ProxyAgent, setGlobalDispatcher } from "undici";
+
+// Rayline's local transparent proxy (override port with RAYLINE_PROXY_PORT).
+const PROXY = "http://127.0.0.1:20810";
+
+// Path to Rayline's proxy CA cert (use the path for your OS).
+const CA_PATH = join(
+  homedir(),
+  "Library/Application Support/rayline/proxy-ca.pem",
+);
+
+// Send all fetch traffic through the proxy and trust Rayline's CA for the
+// intercepted TLS.
+setGlobalDispatcher(
+  new ProxyAgent({
+    uri: PROXY,
+    requestTls: { ca: readFileSync(CA_PATH) },
+  }),
+);
+
+const client = new Anthropic({
+  // Keep the real Anthropic base URL — the proxy intercepts this host.
+  baseURL: "https://api.anthropic.com",
+  // Rayline injects the real credentials for locally-routed requests, so this
+  // is just a non-empty placeholder the SDK requires.
+  authToken: "rayline",
+});
+
+const message = await client.messages.create({
+  // The default local config maps this model name to your on-device endpoint.
+  model: "rayline-local",
+  max_tokens: 256,
+  messages: [{ role: "user", content: "In one sentence, what is Rayline?" }],
+});
+
+for (const block of message.content) {
+  if (block.type === "text") {
+    console.log(block.text);
+  }
+}
+```
+</CodeGroup>
+
+<Warning>
+A raw API call only gets the model, not an agent harness — so the on-device model has **no file tools**. It answers prompts; it doesn't browse files. To give an on-device model real tools, drive it through an agent harness like Claude Code.
+</Warning>
+
+For more on what routes locally and the hardware requirements, see [On-Device Routing](/how-it-works/on-device) and the [Local Models guide](/guides/local-models).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Examples repo" icon="github" href="https://github.com/rayline-ai/rayline/tree/main/examples">
+    Runnable cloud and local examples in Python and TypeScript.
+  </Card>
+  <Card title="Custom endpoints" icon="plug" href="https://github.com/rayline-ai/rayline/tree/main/examples">
+    Route subagents to Ollama, OpenRouter, or any OpenAI-compatible endpoint — see `openrouter.json`, `openai-compatible.json`, and `local-router.json`.
+  </Card>
+  <Card title="Routing settings" icon="sliders" href="/guides/routing-settings">
+    Choose ML or rules-based routing and override models per slot.
+  </Card>
+  <Card title="On-device routing" icon="microchip" href="/how-it-works/on-device">
+    What routes locally, plus hardware requirements.
+  </Card>
+</CardGroup>
