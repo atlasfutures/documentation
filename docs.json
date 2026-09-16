@@ -46,7 +46,7 @@
     "primary": {
       "type": "button",
       "label": "Get API key",
-      "href": "https://platform.rayline.ai/signup"
+      "href": "https://rayline.ai/signup"
     }
   },
   "navigation": {
