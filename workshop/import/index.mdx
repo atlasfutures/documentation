@@ -1,0 +1,73 @@
+---
+title: "Import & migrate"
+icon: "arrow-right-to-bracket"
+description: "Bring your existing projects from other AI builders into Workshop and keep building with full-stack capabilities."
+---
+
+Already have a project in another tool? You can bring it into Workshop and continue building -- adding backends, databases, AI connectors, and more.
+
+Workshop supports importing projects from any tool that can export code to GitHub. Choose your source tool below to get started.
+
+## Import guides
+
+<CardGroup cols={2}>
+  <Card title="Import from Lovable" icon="heart" href="/workshop/import/from-lovable">
+    Bring your Lovable project into Workshop via GitHub sync. Keep your React frontend and add backends, databases, and new AI models.
+  </Card>
+  <Card title="Import from Bolt" icon="bolt" href="/workshop/import/from-bolt">
+    Export your Bolt project to GitHub and continue building in Workshop with full-stack tools and local development.
+  </Card>
+  <Card title="Import from Replit" icon="code" href="/workshop/import/from-replit">
+    Connect your Replit project to GitHub and import it into Workshop for local development, custom backends, and more.
+  </Card>
+  <Card title="Import from FlutterFlow" icon="mobile" href="/workshop/import/from-flutterflow">
+    Push your FlutterFlow project to GitHub and continue developing in Workshop with full Flutter/Dart toolchain support.
+  </Card>
+  <Card title="Migrating from Bubble" icon="circle-nodes" href="/workshop/import/from-bubble">
+    Bubble projects can't be exported as code, but Workshop can help you rebuild with more flexibility and full ownership.
+  </Card>
+</CardGroup>
+
+## How it works
+
+The import process follows the same pattern for all tools:
+
+<Steps>
+  <Step title="Export your project to GitHub">
+    Use your current tool's GitHub integration to sync or export your project code to a GitHub repository.
+  </Step>
+  <Step title="Connect GitHub in Workshop">
+    Link your GitHub account in Workshop via the Hub connectors panel.
+  </Step>
+  <Step title="Create a new project from your repo">
+    Import the GitHub repository as a new Workshop project.
+  </Step>
+  <Step title="Ask the agent to set up your project">
+    Workshop's AI agent will configure the development environment, install dependencies, and get your project running.
+  </Step>
+</Steps>
+
+## Workshop Desktop vs Workshop Cloud
+
+Both Workshop Desktop and Workshop Cloud support importing projects from GitHub, but **Workshop Desktop is recommended** for imported projects because it gives you:
+
+- **Full local development environment** with terminal access and file system control
+- **Local model support** for privacy-sensitive work
+- **More flexibility** for custom build tools, runtimes, and deployment targets
+- **Direct "Import from Git"** in the new project flow
+
+Workshop Cloud works too -- you create a project, link the GitHub repository, and pull the code. See [Cloud vs Desktop](/workshop/getting-started/cloud-vs-desktop) for a detailed comparison.
+
+## After importing
+
+Once your project is running in Workshop, you can ask the agent to extend it in ways your original tool may not support:
+
+- Add AI capabilities with **Claude, GPT, or Gemini** connectors
+- Connect to **PostgreSQL, MySQL, MongoDB**, or other databases
+- Build a **Python/FastAPI backend** alongside your frontend
+- Integrate with **Salesforce, Stripe, Twilio**, or other APIs
+- Set up deployment to **Netlify, Vercel, Railway**, or your own infrastructure
+
+<Note>
+  Workshop's one-click publish is designed for projects built within Workshop. For imported projects, ask the agent to help you set up deployment to your preferred hosting provider (Netlify, Vercel, etc.).
+</Note>

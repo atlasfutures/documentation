@@ -1,0 +1,137 @@
+---
+title: "Sharing and teams"
+icon: "users"
+description: "Share conversations with links and collaborate with your team through shared credits and centralized billing."
+---
+
+Workshop Desktop supports the same sharing and team features as Workshop Cloud — share conversations via link, publish apps with access control, and manage team billing and credits on a Scale or Max plan.
+
+## Sharing conversations
+
+You can share any conversation via a private link — useful for showing someone a working prototype, demonstrating a concept, or getting support.
+
+### How to share
+
+Sharing always applies to the conversation you currently have open, so open it first.
+
+<Steps>
+  <Step title="Open the project">
+    Open the project that contains the conversation you want to share.
+  </Step>
+  <Step title="Open the conversation">
+    In the **Conversations** panel, click the conversation. It becomes the current conversation.
+  </Step>
+  <Step title="Open the menu">
+    Click the project name with the caret (⌄) in the top-left of the window to expand the menu. The menu shows the current conversation name at the top.
+  </Step>
+  <Step title="Select Share">
+    Under the **CONVERSATION** section, click **Share**.
+  </Step>
+  <Step title="Confirm">
+    In the **Share Conversation Privately** dialog, click **Share**. Workshop creates a private link — anyone with the link can view the conversation, but it won't appear in search or public indexes.
+  </Step>
+  <Step title="Copy the link">
+    Click **Copy link and close** (or the copy icon next to the URL) and send the link to your audience.
+  </Step>
+</Steps>
+
+The link looks like `https://threads.workshop.ai/c/<conversation-id>` and renders your conversation in a clean, readable format so recipients experience it just as you did.
+
+<Note>
+  **Share** is disabled until the conversation has at least one message.
+</Note>
+
+### Before sharing
+
+- Check for accidentally included secrets, credentials, or API keys
+- Confirm that any internal data is appropriate to share externally
+- Open the link in a private browser window to verify it renders correctly
+
+## Sharing published apps
+
+When you publish an app from Workshop Desktop, you control who can access it:
+
+- **Public** — Anyone with the URL. No sign-in required.
+- **Private** — Only people you invite by email. Requires a paid plan.
+
+If your project is linked to a **team subscription** (Scale or Max plan), you can use the **Team sharing** toggle in the Publish popover to grant access to all team members at once — no individual invitations needed.
+
+For full details on publishing mechanics, see [Publishing](/workshop/workshop-desktop/publishing).
+
+## Team management
+
+Teams let you collaborate with shared credit pools, centralized billing, and organization-wide settings.
+
+<Info>
+  Team management features require a **Scale** or **Max** plan subscription.
+</Info>
+
+### What teams include
+
+- **Shared credit pool** — All team members draw from a common credit allocation
+- **Centralized billing** — A single subscription covers all team members
+- **Privacy controls** — Enforce privacy mode across all team members
+- **Credit Pack bonuses** — 10% more credits on Scale; the largest discount on Max
+- **Dedicated support** — Priority support through shared team channels
+
+### Setting up a team
+
+<Steps>
+  <Step title="Upgrade to Scale or Max">
+    Team features are available on the Scale and Max plans. Upgrade from your account settings.
+  </Step>
+  <Step title="Configure team settings">
+    Set your team name, default member credit limits, and privacy enforcement preferences.
+  </Step>
+  <Step title="Invite team members">
+    Go to your team management dashboard, click **Invite Team Member**, and enter their email. You can optionally set individual credit limits.
+  </Step>
+</Steps>
+
+Invited users receive an email with a link to join. Once they accept, they inherit team privacy settings and their credit limits take effect immediately.
+
+### Member roles
+
+| Role | Capabilities |
+|------|-------------|
+| **Team Owner** | Full admin control: billing, invitations, member management, privacy enforcement, credit limit adjustments |
+| **Team Member** | Access to shared credits, subject to team policies and individual credit limits |
+
+### Seat management
+
+Both active team members and pending invitations count toward your seat limit. Free up capacity by removing a member, revoking a pending invitation, or upgrading your subscription.
+
+<Note>
+  Pending invitations reserve a seat until accepted, revoked, or expired (after 30 days).
+</Note>
+
+## Team credit management
+
+- All team members draw from a **shared credit pool** set by the team owner's subscription
+- Team owners can set **individual credit limits** per member (default: 1,000 credits)
+- Members cannot exceed their individual limit even if team credits remain
+- Credit Pack purchases receive a **10% bonus** for team accounts
+
+Team owners have real-time visibility into team-wide and per-member credit usage from the team management dashboard.
+
+## Privacy and security
+
+Team owners can **enforce privacy mode** for all members. Individual members cannot override this setting. Privacy Mode limits conversation-content collection for telemetry, but does not prevent transfers required by hosted models, publishing, syncing, or sharing. Usage metadata and error diagnostics may still be recorded. See [Privacy Mode settings](/workshop/core-concepts/settings#privacy-mode).
+
+## Plan comparison
+
+| Feature | Discover (Free) | Build | Scale | Max |
+|---------|-----------------|-------|-------|-----|
+| Share conversations via link | Yes | Yes | Yes | Yes |
+| Published app viewers | Public only | 5 per private app | Unlimited | Unlimited |
+| Team management | No | No | Yes | Yes |
+| Shared credit pool | No | No | Yes | Yes |
+| Privacy enforcement | No | No | Yes | Yes |
+| Credit Pack bonus | No | No | 10% | Max discount |
+| Remove Workshop badge | No | Yes | Yes | Yes |
+
+## Getting help
+
+- **Email:** help@workshop.ai
+- **Community:** [Discord](https://discord.gg/ggqJkUN3vx)
+- Scale and Max plan teams have access to **priority support** channels

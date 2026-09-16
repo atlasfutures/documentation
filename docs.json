@@ -2,105 +2,508 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Rayline",
-  "description": "Intelligent model routing for coding agents. One endpoint. Every model. Lower cost.",
+  "description": "ARC, Agent Gateway, and Workshop: API integration, explicit routing, and building with AI.",
   "colors": {
-    "primary": "#7FA68A",
-    "light": "#CDE7D6",
-    "dark": "#0E2A22"
+    "primary": "#B33100",
+    "light": "#FB923C",
+    "dark": "#B33100"
   },
-  "favicon": "/images/favicon.svg",
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "fonts": {
+    "body": {
+      "family": "Akkurat",
+      "weight": 400,
+      "source": "https://static.workshop.ai/rayline/site/v2026-08-01/fonts/Akkurat-Regular-0db55ef2a5.woff2",
+      "format": "woff2"
+    },
+    "heading": {
+      "family": "Sohne",
+      "weight": 600,
+      "source": "https://static.workshop.ai/rayline/site/v2026-08-01/fonts/Sohne-Halbfett-9f1241e1ab.woff2",
+      "format": "woff2"
+    }
+  },
+  "styling": {
+    "eyebrows": "section",
+    "codeblocks": "system"
+  },
+  "favicon": "/images/rayline-favicon.svg",
   "logo": {
-    "light": "/images/rayline-logo-light.svg",
-    "dark": "/images/rayline-logo-dark.svg",
+    "light": "https://static.workshop.ai/rayline/site/v2026-08-01/brand/rayline/rayline-horizontal.db66b1480b88.svg",
+    "dark": "https://static.workshop.ai/rayline/site/v2026-08-01/brand/rayline/rayline-horizontal-reversed.57225d8af24d.svg",
     "href": "https://rayline.ai"
   },
   "navbar": {
     "links": [
       {
-        "label": "Dashboard",
+        "label": "Platform",
         "href": "https://platform.rayline.ai"
-      },
-      {
-        "label": "Research",
-        "href": "https://rayline.ai/research"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Get API Key",
+      "label": "Get API key",
       "href": "https://platform.rayline.ai/signup"
     }
   },
   "navigation": {
-    "groups": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart/index",
-          "quickstart/claude-code",
-          "quickstart/agents",
-          "quickstart/api-key"
+        "tab": "ARC",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "arc/index",
+              "arc/quickstart",
+              "arc/availability"
+            ]
+          },
+          {
+            "group": "Use ARC",
+            "pages": [
+              "arc/responses/index",
+              "arc/decisions/index"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "arc/concepts/checkpoints",
+              "arc/concepts/caching",
+              "arc/concepts/evaluation"
+            ]
+          },
+          {
+            "group": "Open source",
+            "pages": [
+              "arc/open-source/index"
+            ]
+          },
+          {
+            "group": "API reference",
+            "pages": [
+              "arc/reference/compatibility",
+              "arc/reference/responses",
+              "arc/reference/decisions",
+              "arc/reference/errors"
+            ]
+          },
+          {
+            "group": "Platform and billing",
+            "pages": [
+              "platform/api-keys",
+              "platform/usage",
+              "arc/pricing"
+            ]
+          }
         ]
       },
       {
-        "group": "How It Works",
-        "pages": [
-          "how-it-works/index",
-          "how-it-works/routing",
-          "how-it-works/models",
-          "how-it-works/on-device"
+        "tab": "Agent Gateway",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "rules-router/index",
+              "rules-router/quickstart/index",
+              "rules-router/quickstart/claude-code",
+              "rules-router/quickstart/codex",
+              "rules-router/quickstart/agents"
+            ]
+          },
+          {
+            "group": "Configure routing",
+            "pages": [
+              "rules-router/policies",
+              "rules-router/how-it-works/models",
+              "rules-router/guides/local-models",
+              "rules-router/guides/menubar"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "rules-router/cli/index",
+              "rules-router/cli/auth",
+              "rules-router/cli/claude",
+              "rules-router/cli/router",
+              "rules-router/reference"
+            ]
+          },
+          {
+            "group": "Usage and pricing",
+            "pages": [
+              "rules-router/guides/dashboard",
+              "rules-router/pricing/index"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "rules-router/troubleshooting/index",
+              "rules-router/troubleshooting/connectivity",
+              "rules-router/troubleshooting/billing-issues"
+            ]
+          }
         ]
       },
       {
-        "group": "Guides",
-        "pages": [
-          "guides/routing-settings",
-          "guides/dashboard",
-          "guides/menubar",
-          "guides/local-models",
-          "guides/billing"
-        ]
-      },
-      {
-        "group": "CLI Reference",
-        "pages": [
-          "cli/index",
-          "cli/auth",
-          "cli/claude",
-          "cli/router",
-          "cli/menubar"
-        ]
-      },
-      {
-        "group": "Pricing",
-        "pages": [
-          "pricing/index",
-          "pricing/model-pricing"
-        ]
-      },
-      {
-        "group": "Troubleshooting",
-        "pages": [
-          "troubleshooting/index",
-          "troubleshooting/connectivity",
-          "troubleshooting/billing-issues"
+        "tab": "Workshop",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "workshop/index",
+              "workshop/getting-started/index",
+              "workshop/getting-started/cloud-quickstart",
+              "workshop/getting-started/desktop-quickstart",
+              "workshop/getting-started/cloud-vs-desktop"
+            ]
+          },
+          {
+            "group": "Build Guides",
+            "pages": [
+              "workshop/build-guides/index",
+              "workshop/build-guides/websites",
+              "workshop/build-guides/ai-apps",
+              "workshop/build-guides/dashboards",
+              "workshop/build-guides/internal-tools",
+              "workshop/build-guides/mobile-apps",
+              "workshop/build-guides/local-apps"
+            ]
+          },
+          {
+            "group": "Import & Migrate",
+            "pages": [
+              "workshop/import/index",
+              "workshop/import/from-lovable",
+              "workshop/import/from-bolt",
+              "workshop/import/from-replit",
+              "workshop/import/from-flutterflow",
+              "workshop/import/from-bubble"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "workshop/core-concepts/conversations-and-projects",
+              "workshop/core-concepts/working-with-the-agent",
+              "workshop/core-concepts/sub-agents",
+              "workshop/core-concepts/context-and-memory",
+              "workshop/core-concepts/skills",
+              "workshop/core-concepts/settings",
+              "workshop/core-concepts/web-desktop-sync"
+            ]
+          },
+          {
+            "group": "Workshop Cloud",
+            "pages": [
+              "workshop/workshop-cloud/index",
+              "workshop/workshop-cloud/templates",
+              "workshop/workshop-cloud/publishing",
+              "workshop/workshop-cloud/sharing-and-teams",
+              "workshop/workshop-cloud/github-integration"
+            ]
+          },
+          {
+            "group": "Workshop Desktop",
+            "pages": [
+              "workshop/workshop-desktop/index",
+              "workshop/workshop-desktop/local-models",
+              "workshop/workshop-desktop/publishing",
+              "workshop/workshop-desktop/sharing-and-teams",
+              "workshop/workshop-desktop/github-integration",
+              "workshop/workshop-desktop/mcp-servers",
+              "workshop/workshop-desktop/file-system-and-terminals",
+              "workshop/workshop-desktop/checkpoints"
+            ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "workshop/connectors/index",
+              {
+                "group": "AI Providers",
+                "pages": [
+                  "workshop/connectors/managed-ai-connectors",
+                  "workshop/connectors/anthropic",
+                  "workshop/connectors/openai",
+                  "workshop/connectors/gemini"
+                ]
+              },
+              {
+                "group": "Database Providers",
+                "pages": [
+                  "workshop/connectors/managed-database",
+                  "workshop/connectors/databases"
+                ]
+              },
+              {
+                "group": "Data Connectors",
+                "pages": [
+                  "workshop/connectors/data-warehouses",
+                  "workshop/connectors/google-sheets",
+                  "workshop/connectors/google-drive",
+                  "workshop/connectors/aws-s3",
+                  "workshop/connectors/github"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Solutions",
+            "pages": [
+              "workshop/solutions/trusted-dashboards",
+              "workshop/solutions/gtm-analytics",
+              "workshop/solutions/prototyping"
+            ]
+          },
+          {
+            "group": "Best Practices",
+            "pages": [
+              "workshop/best-practices/index",
+              "workshop/best-practices/using-credits-effectively",
+              "workshop/best-practices/vibe-coding-from-10k-projects",
+              "workshop/best-practices/refactoring"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "workshop/troubleshooting/index",
+              "workshop/troubleshooting/network-connectivity",
+              "workshop/troubleshooting/debugging-strategies",
+              "workshop/troubleshooting/when-to-start-fresh"
+            ]
+          },
+          {
+            "group": "Pricing and Billing",
+            "pages": [
+              "workshop/pricing/plans",
+              "workshop/pricing/billing-faqs"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "workshop/account-deletion"
+            ]
+          }
         ]
       }
     ]
   },
   "footer": {
+    "links": [
+      {
+        "header": "Rayline",
+        "items": [
+          {
+            "label": "Website",
+            "href": "https://rayline.ai"
+          },
+          {
+            "label": "Platform",
+            "href": "https://platform.rayline.ai"
+          }
+        ]
+      },
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "Workshop",
+            "href": "https://workshop.ai"
+          },
+          {
+            "label": "Support",
+            "href": "mailto:help@rayline.ai"
+          }
+        ]
+      }
+    ],
     "socials": {
       "website": "https://rayline.ai"
     }
   },
   "background": {
     "color": {
-      "light": "#F6F4EF",
-      "dark": "#0A1412"
+      "light": "#F0EEE6",
+      "dark": "#0A0D10"
     }
   },
   "search": {
     "placeholder": "Search Rayline docs..."
-  }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/arc",
+      "permanent": true
+    },
+    {
+      "source": "/cli/auth",
+      "destination": "/rules-router/cli/auth",
+      "permanent": true
+    },
+    {
+      "source": "/cli/claude",
+      "destination": "/rules-router/cli/claude",
+      "permanent": true
+    },
+    {
+      "source": "/cli",
+      "destination": "/rules-router/cli",
+      "permanent": true
+    },
+    {
+      "source": "/cli/menubar",
+      "destination": "/rules-router/guides/menubar",
+      "permanent": true
+    },
+    {
+      "source": "/cli/router",
+      "destination": "/rules-router/cli/router",
+      "permanent": true
+    },
+    {
+      "source": "/guides/billing",
+      "destination": "/rules-router/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/guides/dashboard",
+      "destination": "/rules-router/guides/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/guides/local-models",
+      "destination": "/rules-router/guides/local-models",
+      "permanent": true
+    },
+    {
+      "source": "/guides/menubar",
+      "destination": "/rules-router/guides/menubar",
+      "permanent": true
+    },
+    {
+      "source": "/guides/routing-settings",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/how-it-works",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/how-it-works/models",
+      "destination": "/rules-router/how-it-works/models",
+      "permanent": true
+    },
+    {
+      "source": "/how-it-works/on-device",
+      "destination": "/rules-router/guides/local-models",
+      "permanent": true
+    },
+    {
+      "source": "/how-it-works/routing",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/pricing",
+      "destination": "/rules-router/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/pricing/model-pricing",
+      "destination": "/rules-router/how-it-works/models",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart/api-key",
+      "destination": "/platform/api-keys",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart/claude-code",
+      "destination": "/rules-router/quickstart/claude-code",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart/codex",
+      "destination": "/rules-router/quickstart/codex",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/rules-router/quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/troubleshooting/billing-issues",
+      "destination": "/rules-router/troubleshooting/billing-issues",
+      "permanent": true
+    },
+    {
+      "source": "/troubleshooting/connectivity",
+      "destination": "/rules-router/troubleshooting/connectivity",
+      "permanent": true
+    },
+    {
+      "source": "/troubleshooting",
+      "destination": "/rules-router/troubleshooting",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/how-it-works",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/how-it-works/routing",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/guides/routing-settings",
+      "destination": "/rules-router/policies",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/how-it-works/on-device",
+      "destination": "/rules-router/guides/local-models",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/quickstart/api-key",
+      "destination": "/platform/api-keys",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/guides/billing",
+      "destination": "/rules-router/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/pricing/model-pricing",
+      "destination": "/rules-router/how-it-works/models",
+      "permanent": true
+    },
+    {
+      "source": "/rules-router/cli/menubar",
+      "destination": "/rules-router/guides/menubar",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart/agents",
+      "destination": "/rules-router/quickstart/agents",
+      "permanent": true
+    }
+  ]
 }

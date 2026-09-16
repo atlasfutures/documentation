@@ -1,0 +1,109 @@
+---
+title: "Web ↔ Desktop sync"
+icon: "arrows-left-right"
+description: "Sync project files between Workshop Cloud and Workshop Desktop so you can work on the same project from either environment."
+---
+
+Workshop Cloud and Workshop Desktop can sync project files directly, without a separate GitHub repository. This lets you start a project on the web, continue on desktop, and push changes back — or the other way around.
+
+<Info>
+  Web ↔ Desktop Sync is separate from [GitHub Integration](/workshop/workshop-desktop/github-integration). GitHub sync connects your project to your own repository for version control and collaboration. Web ↔ Desktop Sync moves files between Workshop's two environments — no GitHub account required.
+</Info>
+
+## How it works
+
+Push and pull to move your project files between Workshop Cloud and Workshop Desktop:
+
+| Action | What happens |
+|--------|-------------|
+| **Push from Desktop** | Sends your local project files to Workshop Cloud |
+| **Pull to Desktop** | Downloads the latest files from Workshop Cloud into your local project |
+| **Push from Cloud** | Sends your cloud project files to Workshop Desktop |
+| **Pull to Cloud** | Downloads the latest files from Workshop Desktop into your cloud project |
+
+Syncing is manual — you decide when to push and pull. Nothing happens automatically.
+
+## Getting started
+
+### Starting from Workshop Cloud
+
+<Steps>
+  <Step title="Create and build a project in Workshop Cloud">
+    Build your project on the web as usual. Your files are stored in the cloud workspace.
+  </Step>
+  <Step title="Push to sync">
+    Open the project settings and click **Push** in the **Web ↔ Desktop Sync** section. This sends your project files so Desktop can download them.
+  </Step>
+  <Step title="Download on Desktop">
+    In Workshop Desktop, go to the **Projects** page. Cloud projects that haven't been downloaded yet appear at the top. Click the **download** button to pull the project files to your machine.
+  </Step>
+  <Step title="Continue building">
+    Your project is now on Desktop with all its files. Push and pull as needed to keep both sides up to date.
+  </Step>
+</Steps>
+
+### Starting from Workshop Desktop
+
+<Info>
+  The **Web ↔ Desktop Sync** section only appears for a project that was downloaded from Workshop Cloud. A project created directly in Workshop Desktop does not have this section. To move a Desktop-created project to Workshop Cloud or another machine, use [GitHub Integration](/workshop/workshop-desktop/github-integration) instead.
+</Info>
+
+For a project that was originally downloaded from Workshop Cloud, you can push local changes back up:
+
+<Steps>
+  <Step title="Open the project settings on Desktop">
+    Navigate to your project and open the settings panel. The **Web ↔ Desktop Sync** section appears under **Integrations**.
+  </Step>
+  <Step title="Push to sync">
+    Click the **Push to web** button (up arrow). This sends your local project files so Workshop Cloud can access them.
+  </Step>
+  <Step title="Open in Workshop Cloud">
+    Sign in to Workshop Cloud with the same account. Your project appears in the project list. Open it and pull the latest changes.
+  </Step>
+</Steps>
+
+## Using the sync controls
+
+The **Web ↔ Desktop Sync** section appears in the project settings panel under **Integrations**. In Workshop Cloud it is always available; in Workshop Desktop it appears only for projects that were downloaded from Workshop Cloud. It shows:
+
+- The last push and pull timestamps
+- Sync status (when refreshed)
+- Three action buttons:
+
+| Button | Action |
+|--------|--------|
+| **Up arrow** | Push your changes to the other environment |
+| **Down arrow** | Pull changes from the other environment |
+| **Refresh** | Check the current sync status |
+
+### Sync status
+
+After clicking **Refresh**, the status indicator shows:
+
+| Status | Meaning |
+|--------|---------|
+| **In sync** | Both sides have the same files |
+| **Local ahead** | You have unpushed local changes |
+| **Remote ahead** | The other side has changes you haven't pulled |
+| **Diverged** | Both sides have independent changes |
+
+## Handling conflicts
+
+If both Workshop Cloud and Desktop have made independent changes to the same project, a pull may result in a merge conflict. Workshop detects this and prompts you:
+
+- **Force pull** overwrites your local files with the other side's version. Workshop asks for confirmation before proceeding.
+
+<Warning>
+  Force pull is a destructive operation. The overwritten local changes cannot be recovered. Make sure you know which version you want to keep before confirming.
+</Warning>
+
+## Web ↔ Desktop sync vs GitHub integration
+
+Both features sync project files, but they serve different purposes:
+
+| | Web ↔ Desktop Sync | GitHub Integration |
+|---|---|---|
+| **Purpose** | Move files between Workshop Cloud and Desktop | Version control with your own GitHub repo |
+| **GitHub account required** | No | Yes |
+| **Collaboration** | Between your own Cloud and Desktop environments | With anyone who has access to the repo |
+| **Use together** | Yes — both can be active on the same project | Yes |

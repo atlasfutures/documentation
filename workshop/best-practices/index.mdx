@@ -1,0 +1,249 @@
+---
+title: "Agent engineering essentials"
+icon: "star"
+description: "Master the art of agent engineering — the skill of getting the most out of your AI development partner."
+---
+
+## Understanding agent engineering
+
+Just like "prompt engineering" helps you get better results from language models, "agent engineering" is a set of best practices to maximize your success with Workshop. While Workshop is powerful and intuitive, following these practices will significantly improve your outcomes, especially for complex projects.
+
+Agent engineering is about designing thoughtful interactions with AI systems to ensure they operate reliably, efficiently, and successfully. Even as AI models become more sophisticated, these practices help guide them toward the results you want.
+
+## The five pillars of successful building
+
+### 1. Separate planning from execution
+
+Before diving into code, make sure you have clear requirements. If your project needs are still forming, start with collaborative planning:
+
+```
+I'm not sure about all the requirements for my project. I want to build
+a data dashboard for my team, but I need help working through the details.
+Don't start building until I give you the go-ahead.
+```
+
+Use **Plan Mode** to work through requirements systematically. This mode acts like an experienced technical product manager, asking the right questions and helping you scope appropriately.
+
+<Tip>
+Plan Mode is especially valuable at the start of a project. It helps you avoid the most common mistake: jumping into code before requirements are clear.
+</Tip>
+
+### 2. Build incrementally
+
+The most common mistake is asking for too much at once. Break your project into small, achievable steps:
+
+**Instead of this:**
+
+```
+Build me a complete e-commerce website with user authentication,
+payment processing, inventory management, and order tracking.
+```
+
+**Try this approach:**
+
+```
+Let's start by setting up a basic product catalog that displays
+items with images and prices.
+```
+
+Then continue step by step:
+
+```
+Great! Now let's add a shopping cart where users can add items.
+```
+
+```
+Perfect. Now let's add a simple checkout form (no payments yet).
+```
+
+This incremental approach has multiple benefits:
+
+- Higher success rate for each step
+- Easier to debug when issues arise
+- Natural checkpoints to save progress
+- Flexibility to change direction based on results
+
+### 3. Verify understanding before making changes
+
+When working with existing code, always ensure Workshop understands the current system before asking for modifications.
+
+**The wrong approach:**
+
+```
+Change the color scheme to dark mode with blue accents.
+```
+
+**The right approach:**
+
+```
+First, examine the existing CSS structure and explain how the current
+styling system works. Then show me the key files that control the
+color scheme.
+```
+
+```
+Now that you understand the structure, update it to use a dark mode
+theme with blue accents.
+```
+
+This pattern is crucial for success with existing codebases. Just like human developers study code before modifying it, Workshop needs guided exploration to understand how things work.
+
+### 4. Manage task execution
+
+Some tasks require multiple iterations. Instead of micromanaging every step, you can give Workshop more autonomy:
+
+**For ongoing work:**
+
+```
+Keep working on this until it's fully functional, but check with me
+if you hit any major roadblocks.
+```
+
+**For quick iterations:**
+
+```
+Proceed
+```
+
+**When things get complex:**
+
+```
+Take your time with this. Make sure each step works before moving
+to the next one, and commit your progress after each successful change.
+```
+
+### 5. Handle errors effectively
+
+When Workshop gets stuck or makes mistakes, use these recovery strategies:
+
+**For spinning wheels or repeated failures:**
+
+```
+Stop. Let's step back and reconsider our approach. Is there a simpler
+way to achieve this goal?
+```
+
+**For dependency or environment issues:**
+
+```
+Let's try a different approach. Can we use Docker, or is there an
+alternative library that might work better?
+```
+
+**For complex debugging:**
+
+```
+Let's break this down. First, create a minimal test case that
+reproduces the issue, then we can fix it step by step.
+```
+
+## Using `.workshop/rules.md` for project-specific instructions
+
+Workshop automatically reads a `.workshop/rules.md` file in your project root, making it the ideal place to document project-specific context:
+
+```markdown
+# Project: E-commerce Dashboard
+
+## Architecture
+- React frontend with TypeScript
+- Node.js backend (Express)
+- MongoDB database
+- Authentication via Auth0
+
+## Core Files
+- src/api/auth.ts: Authentication middleware
+- src/components/common/: Reusable UI components
+- src/pages/: Main application views
+
+## Style Guidelines
+- Use functional components with hooks
+- Use CSS modules for styling
+- Follow Airbnb JavaScript style guide
+
+## Testing
+- Jest for unit tests
+- React Testing Library for component tests
+```
+
+You do not need to write this file manually. Ask Workshop to create it:
+
+```
+Please create a .workshop/rules.md file for this project that documents
+our code style, architecture, and main files.
+```
+
+<Tip>
+Treat `.workshop/rules.md` as a living document. Update it as your project evolves. Focus on what is unique or non-obvious about your project — Workshop already understands common frameworks and patterns.
+</Tip>
+
+## Context management best practices
+
+As projects grow, help Workshop maintain context effectively:
+
+**Start new conversations for new topics.** Credit cost per message increases as conversations get longer because each new message includes the full context of prior messages. Starting fresh conversations for distinct tasks is both cheaper and more effective.
+
+**Use the `/compact` command.** When a conversation gets long but you are not ready to start fresh, the `/compact` command summarizes the conversation to reduce context size while preserving key information.
+
+**Reference files explicitly.** When you need Workshop to focus on specific parts of your codebase, point it to the relevant files rather than expecting it to search the entire project.
+
+**Keep `.workshop/rules.md` focused.** Add emphasis like "IMPORTANT:" or "NOTE:" for critical information. Avoid dumping massive amounts of context — prioritize what is most unique about your project.
+
+## Common success patterns
+
+### The MVP-first pattern
+
+Always start with the minimum viable version:
+
+1. **Core functionality only** — Get the basics working
+2. **Add one feature at a time** — Build on a solid foundation
+3. **Enhance the user experience** — Polish after functionality is proven
+
+### The version control pattern
+
+Establish good practices early:
+
+```
+Initialize git with a sensible .gitignore file and commit our initial setup.
+```
+
+```
+Great progress! Let's commit this working version before we add
+the next feature.
+```
+
+Regular commits create safety nets and clear progress markers. Workshop's built-in checkpointing provides an additional layer of safety for within-session changes.
+
+### The testing pattern
+
+Build confidence in your code:
+
+```
+Create some basic tests to verify the core functionality works correctly.
+```
+
+```
+Before we deploy this, let's test it thoroughly to make sure everything
+works as expected.
+```
+
+## Common anti-patterns to avoid
+
+| Anti-Pattern | What Happens | What to Do Instead |
+|---|---|---|
+| **"Do Everything"** | Asking for a complex multi-part app in a single request | Break it into smaller, focused steps |
+| **"No Verification"** | Not testing or verifying work at each step | Ask Workshop to test after each change |
+| **"Context Overload"** | Dumping massive context all at once | Introduce complexity gradually |
+| **"No Progress Saves"** | Forgetting to commit working versions | Use git checkpoints at logical milestones |
+| **"Too Specific"** | Over-prescribing implementation details | Give Workshop room to make good decisions |
+
+## Measuring success
+
+Good agent engineering leads to:
+
+- **Higher success rates** for complex tasks
+- **Fewer iterations** needed to achieve goals
+- **More maintainable** project outcomes
+- **Better project continuity** across conversations
+- **Reduced frustration** with debugging and errors
+
+Agent engineering is a skill that improves with practice. Start with these patterns, experiment with your own approaches, and share what works in our [Discord community](https://discord.gg/ggqJkUN3vx).

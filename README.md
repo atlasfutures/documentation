@@ -1,55 +1,55 @@
-# Mintlify Starter Kit
+# Rayline documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+One Mintlify site, three product tabs: **ARC · Agent Gateway · Workshop**.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Local preview and checks
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+Use Bun to install the pinned CLI if needed:
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## AI-assisted writing
-
-Set up your AI coding tool to work with Mintlify:
-
-```bash
-npx skills add https://mintlify.com/docs
+```sh
+bun add --global mint@4.2.387
+mint validate
+mint broken-links
+node tests/legacy-fragments.mjs
+mint dev --port 3014 --no-open
 ```
 
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
+Run validation before starting the preview; both use the CLI's shared generated files.
 
-See the [AI tools guides](/ai-tools) for tool-specific setup.
+From the parent monorepo:
 
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
-npm i -g mint
-```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
-mint dev
+```sh
+bun scripts/rayline-docs-rates.ts
+bun run node scripts/check-rayline-docs.mjs
+bun run node scripts/rayline-docs-smoke.mjs
+bun run node scripts/rayline-docs-navigation.mjs
 ```
 
-View your local preview at `http://localhost:3000`.
+The last two commands require the running preview and installed Playwright browsers. They check real Chromium, Firefox, and WebKit across mobile, tablet, desktop, and ultrawide widths in both themes, plus every route, legacy redirects, product switching, and history.
 
-## Publishing changes
+## Content ownership
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- `arc/`: Responses, Decisions, open source, compatibility, and launch pricing.
+- `rules-router/`: client setup, explicit policies, current CLI, usage, and troubleshooting.
+- `workshop/`: migrated Workshop articles, including Cloud and Desktop sidebar sections.
+- `platform/`: shared Rayline workspace keys and usage.
+- `snippets/arc-rates.mdx`: generated launch-price snapshot. In the parent, generate a patch with `bun scripts/rayline-docs-rates.ts --patch`, review it, and apply it.
 
-## Need help?
+Existing Rayline paths redirect inside this site's `docs.json`. Workshop's old domain needs host-level redirects; the parent repository contains their manifest at `docs/rayline-docs-workshop-redirects.json`.
 
-### Troubleshooting
+## Publication gates
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+This is an implementation preview, not a billing or API launch.
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+1. Approve the canonical docs domain and configure the old Workshop host to redirect paths and fragments into `/workshop/`.
+2. Test the hosted Mintlify preview, including real search indexing and old-domain redirects. Search is unavailable in the local CLI preview.
+   The local CLI also drops query strings on configured redirects. Verify query preservation on the hosted deployment; implement host-level forwarding if needed. Do not treat the local path-redirect check as evidence that query forwarding works.
+3. Confirm ARC production contracts, live inference, and supported features before removing preview notices or publishing executable production examples.
+4. Coordinate the 0% Agent Gateway commission and ARC rate card with actual billing enforcement and an effective date. The current docs do not change charges.
+5. Publish the documentation repository and update the parent submodule pointer together. Verify in-app documentation links through the redirects before retiring the old Workshop publishing source.
+
+The original Workshop `docs-site/` remains intact during this transition. Do not run the one-time migration over edited consolidated content. Before cutover, reconcile changes made to the still-published old source.
+
+Import provenance: the 64 Workshop articles and three local SVG assets came from `atlasfutures/memex-desktop/docs-site` at parent revision `55382d8d67996f794d5e33e4eb88060bd9b993cc`. Existing Rayline articles came from documentation revision `c09bb732544d9f2a225d3f24dc493cf7f325685a`. Consult those repositories for original author history. Current CLI guidance was checked against `rayline-ai/rayline` revision `7bd2849c99d26ef21be396360d4e4d61c5444c3d`.
+
+The design and migration rationale is in the parent repository's `docs/rayline-docs-evolution.md`.

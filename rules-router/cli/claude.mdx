@@ -1,0 +1,56 @@
+---
+title: "rayline claude"
+description: "Launch Claude Code with hosted or local routing."
+---
+
+<span id="rl-claude" />
+<span id="rayline-claude" />
+<span id="what-it-does" />
+
+
+Follow the [Claude Code quickstart](/rules-router/quickstart/claude-code) for your first routed session.
+
+```bash
+rayline claude
+rayline claude --isolated
+rayline claude --local
+```
+
+<span id="options" />
+
+| Option | Purpose |
+| --- | --- |
+| `--isolated` | Use a separate Claude configuration directory. |
+| `--local` | Use the local static router; the default routes eligible subagents locally, not every request. |
+| `--route all\|subagents` | Choose the routing scope. Explicit config can override this. |
+| `--via proxy\|env` | Choose transparent proxy or cloud-only environment wiring. |
+| `--model <model>` | Request a specific model. Check the current catalog first. |
+| `--config <path>` | Supply endpoint and route configuration for main-agent and subagent traffic. |
+| `--diagnose` | Print routing diagnostics before launch. |
+
+<span id="passing-arguments-to-claude-code" />
+<span id="setup-subcommands" />
+<span id="rl-claude-setup" />
+<span id="rayline-claude-setup" />
+<span id="rl-claude-hooks-install" />
+<span id="rayline-claude-hooks-install" />
+<span id="rl-claude-hooks-status" />
+<span id="rayline-claude-hooks-status" />
+<span id="rl-claude-hooks-uninstall" />
+<span id="rayline-claude-hooks-uninstall" />
+<span id="rl-claude-login" />
+<span id="rayline-claude-login" />
+<span id="rl-claude-key" />
+<span id="rayline-claude-key" />
+<span id="rl-claude-logout" />
+<span id="rayline-claude-logout" />
+
+Pass client arguments after `--`. Run `rayline claude --help` for the full version-specific options.
+
+<span id="telemetry" />
+
+## Verify the route
+
+Inspect [usage](/rules-router/guides/dashboard) or local router logs. Proxy mode does not depend on an `ANTHROPIC_BASE_URL` environment variable. It configures a local proxy and certificate trust; see [local routing](/rules-router/guides/local-models) for the security boundary.
+
+Do not assume a local subagent route makes the main agent, tools, or connectors offline.

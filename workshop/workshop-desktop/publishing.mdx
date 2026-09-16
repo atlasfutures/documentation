@@ -1,0 +1,131 @@
+---
+title: "Publishing"
+icon: "share-from-square"
+description: "Deploy Workshop Desktop apps to a shareable URL with one click, or to any platform you choose."
+---
+
+Workshop Desktop supports the same one-click publishing as Workshop Cloud. When you're ready to share your app, Workshop handles hosting and compute — nothing to provision, no server to manage.
+
+## One-click publish to Workshop
+
+Click **Publish** in the top-right corner of the interface. Workshop packages your project, injects secrets and connector credentials, and deploys to Workshop's hosting infrastructure. Your app gets a public URL you can share immediately.
+
+<Steps>
+  <Step title="Click Publish">
+    Click the **Publish** button in the Workshop Desktop interface. A popover opens showing your deployment settings and the URL your app will be available at.
+  </Step>
+  <Step title="Configure visibility">
+    Choose who can access your published app:
+
+    - **Public** — Anyone with the URL can use your app. No sign-in required.
+    - **Private** — Only people you explicitly invite by email can access it. Requires a paid plan.
+  </Step>
+  <Step title="Deploy">
+    Click **Publish** in the popover. Workshop validates that all secrets and connectors your code references are included, packages your project files, injects credentials, and deploys to hosting infrastructure. If any resources are missing, you'll be prompted to fix the issue before deploying (see [Resource Validation](/workshop/workshop-cloud/publishing#resource-validation)).
+  </Step>
+  <Step title="Share the URL">
+    Once deployed, copy the shareable URL and send it to anyone. They can use your app immediately — no install, no setup on their end.
+  </Step>
+</Steps>
+
+## App URLs
+
+Every published app gets a unique URL based on your project's **slug**:
+
+```
+https://{your-project-slug}.workshop.build
+```
+
+On a paid plan (Build, Scale, or Max), you can rename the slug to something more meaningful. Rename while the app is stopped — stop it first, rename, then republish.
+
+## Custom domains
+
+On any paid plan — **Build**, **Scale**, or **Max** — you can serve your published app from your own domain (e.g. `app.yourcompany.com`) instead of the default `workshop.build` URL. You'll need a domain you already own and access to its DNS settings — Workshop doesn't register domains on your behalf.
+
+Open the Publish popover on a deployed app, click **Add custom domain**, enter your hostname, then add a CNAME record at your registrar or DNS provider pointing it to `origin.workshop.build`:
+
+```
+CNAME  app.yourcompany.com  →  origin.workshop.build
+```
+
+Once the CNAME propagates, Workshop verifies it and provisions the SSL certificate automatically. The Custom Domain section shows **Pending** until verification completes, then flips to **Active**. One custom domain per app; the default `{slug}.workshop.build` URL stays live alongside it.
+
+For the full walkthrough, troubleshooting, and limits, see [Custom Domains in Workshop Cloud publishing](/workshop/workshop-cloud/publishing#custom-domains) — the flow is identical for desktop-published apps.
+
+## Redirects and custom status codes
+
+By default, published apps answer every URL with your app shell and a `200` "success" status — great for client-side routing, but a problem for search engines: when a page moves or is removed, crawlers keep seeing "this page exists," so a moved page never passes its search ranking to its new address and a deleted page stays in search results. Getting this right is a core part of SEO (search engine optimization) — see [Google's guidance on redirects](https://developers.google.com/search/docs/crawling-indexing/301-redirects).
+
+To return real HTTP status codes on specific URLs, add a `public/_redirects` file to your project and republish. It uses the same `_redirects` format as [Netlify](https://docs.netlify.com/manage/routing/redirects/redirect-options/) and [Cloudflare Pages](https://developers.cloudflare.com/pages/configuration/redirects/) — Workshop supports a compatible subset (the rules below), so files that stick to these features carry over unchanged, and anything outside the subset fails the publish with a clear error rather than behaving differently:
+
+```
+# source          destination           status
+/old-pricing      /pricing              301
+/discontinued     /gone.html            410
+/app/*            /index.html           200
+/*                /404.html             404
+```
+
+Each line is `source destination status`, whitespace-separated; `#` starts a comment and the status defaults to `301` when omitted.
+
+- **`301` / `302`** redirect the browser (and search engines) to the destination — a path on your app or a full `https://` URL. The request's query string is passed through unless the destination declares its own.
+- **`410` / `404`** serve the destination file's *content* with that status code, so you can ship your own not-found page (e.g. `public/404.html`) and search engines de-index removed pages properly.
+- **`200`** serves the destination in place of the requested URL (a rewrite) — use it to keep client-side routes working ahead of a `/*` catch-all.
+
+Rules are checked top to bottom and the **first match wins**, so list your app's real routes as `200` rewrites *before* a `/*` catch-all. Sources are exact paths or a trailing `/*` wildcard. A real file at the requested URL always wins over a rule — append `!` to the status (e.g. `301!`) to force the rule instead.
+
+Plain HTML projects published as-is (no build step) should place `_redirects` at the project root — and the same goes for any files your rules serve, like `404.html`: the project root is the publish directory, so a rule target `/404.html` means a root-level `404.html`, not `public/404.html`.
+
+If the file contains something unsupported, publishing fails with an error naming the line, so a typo can never silently change your live routing. Removing the file (and republishing) restores the default behavior. On apps with a Python backend, note that `/api/*` always goes to your backend — rules apply to everything else.
+
+## Public vs private apps
+
+### Public apps
+Anyone with the URL can access the app. No sign-in required. Available on all plans.
+
+### Private apps
+Only people you invite by email can access it. Visitors who aren't invited see an "Access Restricted" page. Private apps require a paid plan.
+
+| Feature | Discover (Free) | Build | Scale | Max |
+|---------|-----------------|-------|-------|-----|
+| Public apps | Unlimited | Unlimited | Unlimited | Unlimited |
+| Private apps | Not available | 1 | Unlimited | Unlimited |
+| Invited viewers (per private app) | N/A | 5 | Unlimited | Unlimited |
+| Custom slug rename | No | Yes | Yes | Yes |
+| Custom domains | No | Yes | Yes | Yes |
+| Hide branding | No | Yes | Yes | Yes |
+
+## Updating a published app
+
+After making changes to your project, click **Update** in the Publish popover to push the latest version. The URL stays the same — visitors see the new version once the update completes.
+
+## Stopping a published app
+
+Open the Publish popover and click **Stop**. Stopped apps show a friendly "App Temporarily Unavailable" page instead of a technical error. You can republish at any time.
+
+## Deploying to external platforms
+
+Because Workshop Desktop projects are standard files on your local machine, you can also deploy to any external platform — Vercel, AWS, Railway, Fly.io, your own server, or anywhere else.
+
+This is entirely optional. If Workshop's built-in hosting meets your needs, there's no reason to set up external infrastructure. External deployment makes sense when you need:
+
+- Custom domains on your own infrastructure
+- Integration with an existing CI/CD pipeline
+- Compliance requirements around where your app runs
+- A platform you're already using for other services
+
+For external deployment, ask Workshop directly — describe your target platform and it will configure the deployment for you.
+
+```
+Deploy this app to Vercel and set up a custom domain.
+```
+```
+Set up a GitHub Actions pipeline that deploys to AWS on push to main.
+```
+```
+Dockerize this app and write a docker-compose file for self-hosting.
+```
+
+## Sharing and access control
+
+Published apps support granular access control — share publicly or limit to specific people. For team-level sharing and managing access across your organization, see [Sharing and Teams](/workshop/workshop-desktop/sharing-and-teams).

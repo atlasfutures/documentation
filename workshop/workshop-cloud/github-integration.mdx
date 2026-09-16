@@ -1,0 +1,124 @@
+---
+title: "GitHub integration"
+icon: "code-branch"
+description: "Connect Workshop Cloud projects to GitHub for version control, backup, and collaboration."
+---
+
+Workshop Cloud integrates with GitHub so you can back up your projects, collaborate with others, and maintain version history — all without leaving the browser.
+
+<Info>
+  Workshop Desktop also has GitHub integration with the same push/pull mechanics and the added ability to import directly from a repository URL. See [GitHub Integration](/workshop/workshop-desktop/github-integration) in the Desktop section.
+</Info>
+
+## Connecting GitHub
+
+Before linking projects, you need to connect your GitHub account to Workshop.
+
+<Steps>
+  <Step title="Open Hub Connectors">
+    Navigate to **Hub** and select the **Connectors** tab (or go directly to `/hub?tab=connectors`).
+  </Step>
+  <Step title="Install the GitHub App">
+    Click **Connect** on the GitHub connector. This starts a GitHub App OAuth flow where you authorize Workshop to access your repositories.
+
+    During installation, you choose which repositories Workshop can access — either **all repositories** or **selected repositories** in your account or organization.
+  </Step>
+  <Step title="Confirm the connection">
+    After authorizing, you're redirected back to Workshop. Your GitHub username and avatar appear in the Connectors panel, confirming the connection is active.
+  </Step>
+</Steps>
+
+<Note>
+  If you belong to multiple GitHub organizations, you can install the GitHub App on each one. Use the installation selector in the Connectors panel to switch between them.
+</Note>
+
+## Linking a project to a repository
+
+Once GitHub is connected, you can link any Workshop Cloud project to a GitHub repository.
+
+1. Open your project and navigate to the **GitHub** section in the project settings
+2. Click **Link GitHub Repository**
+3. In the modal that appears, search for or select the repository you want to link
+4. Choose the branch (defaults to the repository's default branch)
+5. Confirm the link
+
+After linking, the GitHub section shows the repository name, branch, sync status, and timestamps for the last push and pull.
+
+## Push and pull workflow
+
+Once linked, you can sync changes between your Workshop Cloud project and GitHub:
+
+### Pushing to GitHub
+
+Click the **push** button (up arrow) to send your local project changes to the linked GitHub repository. This creates a commit on the linked branch with your latest changes.
+
+### Pulling from GitHub
+
+Click the **pull** button (down arrow) to fetch the latest changes from GitHub into your Workshop Cloud project. This is useful when collaborators push changes directly to the repository.
+
+## Sync status indicators
+
+The GitHub section displays a real-time sync status icon:
+
+| Status | Icon | Meaning |
+|--------|------|---------|
+| **In sync** | Green checkmark | Your local project matches the remote repository |
+| **Local ahead** | Yellow up arrow | You have unpushed local changes (shows count, e.g., "3 ahead") |
+| **Remote ahead** | Yellow down arrow | The remote has changes you haven't pulled yet (shows count, e.g., "2 behind") |
+| **Diverged** | Red warning | Both local and remote have independent changes that conflict |
+
+## Handling diverged histories
+
+When the sync status shows **Diverged**, it means both your Workshop Cloud project and the GitHub repository have changes that the other doesn't. You have two options:
+
+- **Force push** — Overwrites the remote repository with your local state. Use this when your local version is the one you want to keep. Workshop will prompt you to confirm before force pushing.
+- **Force pull** — Overwrites your local project with the remote state. Use this when the GitHub version is the one you want to keep. Workshop will prompt you to confirm before force pulling.
+
+<Warning>
+  Force push and force pull are destructive operations. The overwritten changes cannot be recovered. Make sure you know which version you want to keep before confirming.
+</Warning>
+
+## Importing a repository as a new project
+
+To start a Workshop Cloud project from an existing GitHub repository:
+
+1. Create a new project and select **Import from GitHub** as the template
+2. Choose the repository from your connected GitHub account
+3. Workshop pulls the code into your project — you're ready to build from there
+
+Alternatively, create any new project, [link it to an existing repository](#linking-a-project-to-a-repository), and pull the code.
+
+## Unlinking a repository
+
+To disconnect a project from its GitHub repository:
+
+1. Open the GitHub section in your project
+2. Click the **three dots** menu
+3. Select **Unlink**
+4. Confirm the action
+
+Unlinking does not delete any code — your Workshop Cloud project and the GitHub repository both remain intact. You can re-link the same or a different repository at any time.
+
+## Refreshing status
+
+If you suspect the sync status is stale (for example, after someone else pushes to the repository), click the **three dots** menu and select **Refresh** to fetch the latest status from GitHub.
+
+## Use cases
+
+<AccordionGroup>
+  <Accordion title="Version control and history">
+    Push regularly to maintain a commit history of your project's evolution. If something breaks, you can always pull a previous state from GitHub.
+  </Accordion>
+
+  <Accordion title="Collaboration">
+    Multiple people can work on the same project — one person builds in Workshop Cloud and pushes, while others pull the latest changes from GitHub and continue building.
+  </Accordion>
+
+  <Accordion title="Backup">
+    GitHub acts as an automatic backup for your Workshop Cloud projects. Even if you delete a project in Workshop, the code remains in your GitHub repository.
+  </Accordion>
+
+  <Accordion title="CI/CD integration">
+    Since your code lives in GitHub, you can set up GitHub Actions or other CI/CD pipelines to run tests, linting, or deploy to additional environments when changes are pushed.
+  </Accordion>
+</AccordionGroup>

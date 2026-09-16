@@ -1,0 +1,123 @@
+---
+title: "MCP server configuration"
+icon: "puzzle-piece"
+description: "Extend Workshop Desktop with Model Context Protocol servers for databases, APIs, and custom tools."
+---
+
+Model Context Protocol (MCP) servers let you give Workshop's agent access to external tools and data sources — databases, APIs, file systems, and custom integrations — through a standardized interface. MCP is an open protocol that defines how AI agents communicate with tool servers.
+
+MCP is a **Workshop Desktop-only feature**. It requires the local backend to manage server processes and connections.
+
+## What MCP servers do
+
+When you connect an MCP server, its tools become available to the Workshop agent during conversations. For example:
+
+- A **database MCP server** lets the agent query your PostgreSQL or SQLite database directly
+- A **filesystem MCP server** gives access to files outside the project directory
+- A **web search MCP server** lets the agent search the internet during conversations
+- A **custom MCP server** can expose any API or service you build
+
+The agent sees available tools and calls them when relevant to your request — no manual invocation needed.
+
+## Adding MCP servers
+
+Workshop Desktop provides three ways to add MCP servers. Open **Settings** and navigate to the **MCP Servers** tab to get started.
+
+### Server directory
+
+The **Server Directory** tab lists popular, pre-configured MCP servers that you can install with one click.
+
+<Steps>
+  <Step title="Browse the directory">
+    Open Settings, go to the MCP Servers tab, and click **Server Directory**.
+  </Step>
+  <Step title="Install a server">
+    Find the server you want and click **Install**. Workshop handles downloading the package and configuring the connection.
+  </Step>
+  <Step title="Configure if needed">
+    Some servers require setup values (API keys, database URLs, etc.). Workshop prompts you to provide these during installation.
+  </Step>
+</Steps>
+
+### Custom server
+
+The **Add Custom Server** tab lets you manually configure any MCP server by specifying its runtime command and arguments.
+
+<Steps>
+  <Step title="Open the Custom tab">
+    In the MCP Servers settings, click **Add Custom Server**.
+  </Step>
+  <Step title="Enter server details">
+    Provide:
+    - **Server name** — A display name for the server
+    - **Runtime** — The command to run the server (e.g., `npx`, `uvx`, `node`, `python`)
+    - **Arguments** — Command-line arguments for the server process
+    - **Environment variables** — Any environment variables the server needs (API keys, config values)
+  </Step>
+  <Step title="Save and enable">
+    Click **Add Server**. Workshop starts the server process and validates the connection. The server appears in your **Configured Servers** list.
+  </Step>
+</Steps>
+
+### Deep links
+
+Third-party websites and documentation can provide deep links that automatically configure an MCP server in Workshop Desktop. When you click a deep link, Workshop opens with the server configuration pre-populated — you just confirm the installation.
+
+Deep links use the format:
+
+```
+workshop://deeplink/v1/mcp/install?config=<encoded-config>&name=<server-name>
+```
+
+<Note>
+  Deep links only work when Workshop Desktop is installed. They use the `workshop://` protocol handler registered by the desktop app.
+</Note>
+
+## Managing configured servers
+
+The **Configured Servers** tab shows all MCP servers you've added.
+
+### Enabling and disabling servers
+
+Each server has an enable/disable toggle. Disabling a server stops its process and removes its tools from the agent's available tools — but keeps the configuration saved so you can re-enable it later.
+
+When you enable a server, Workshop starts the server process and waits for initialization. The status indicator shows:
+
+| Status | Meaning |
+|--------|---------|
+| **Pending** | Server is starting up |
+| **Connected** | Server is running and tools are available |
+| **Error** | Server failed to start (expand for error details) |
+
+### Enabling and disabling individual tools
+
+Expand a server to see its available tools. Each tool has its own toggle — disable specific tools you don't want the agent to use while keeping the server running.
+
+This is useful when a server exposes many tools but you only need a few, or when you want to prevent the agent from using a particular tool during a conversation.
+
+### Connection monitoring
+
+Workshop Desktop polls MCP servers periodically to verify they're still running and responsive. If a server becomes unresponsive, the status updates automatically. You can also manually refresh the status from the three-dots menu.
+
+## Configuration storage
+
+MCP server configurations are stored in a `mcp.json` file within your Workshop Desktop data directory. You can edit this file directly if you prefer, then use **Reload Configuration** in the settings to pick up changes.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Server shows 'Error' status">
+    Expand the server entry to see the error message. Common issues:
+    - **Runtime not found** — The command (e.g., `npx`, `uvx`) isn't installed or not in your PATH. Install the required runtime and try again.
+    - **Connection refused** — The server process started but crashed. Check the error message for details.
+    - **Authentication failed** — The server requires credentials. Update the environment variables in the server configuration.
+  </Accordion>
+
+  <Accordion title="Server tools not appearing in conversations">
+    Make sure the server is enabled (toggle is on) and the status shows **Connected**. If individual tools are disabled, they won't appear even when the server is connected.
+  </Accordion>
+
+  <Accordion title="Deep link not opening Workshop">
+    Deep links require Workshop Desktop to be installed and the `workshop://` protocol handler to be registered. Try reinstalling Workshop Desktop if deep links aren't being recognized by your OS.
+  </Accordion>
+</AccordionGroup>

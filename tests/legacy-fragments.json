@@ -1,0 +1,377 @@
+[
+  {
+    "source": "/",
+    "destination": "/arc",
+    "fragments": [
+      "start-in-2-minutes",
+      "what-rayline-does",
+      "how-much-does-it-save",
+      "why-open-source-models",
+      "learn-more"
+    ]
+  },
+  {
+    "source": "/cli/auth",
+    "destination": "/rules-router/cli/auth",
+    "fragments": [
+      "rl-auth-login",
+      "options",
+      "example",
+      "rl-auth-logout",
+      "options-1",
+      "rl-auth-token",
+      "example-1",
+      "options-2",
+      "credential-storage",
+      "rayline-auth-login",
+      "rayline-auth-logout",
+      "rayline-auth-token"
+    ]
+  },
+  {
+    "source": "/cli/claude",
+    "destination": "/rules-router/cli/claude",
+    "fragments": [
+      "rl-claude",
+      "what-it-does",
+      "passing-arguments-to-claude-code",
+      "options",
+      "setup-subcommands",
+      "rl-claude-setup",
+      "rl-claude-hooks-install",
+      "rl-claude-hooks-status",
+      "rl-claude-hooks-uninstall",
+      "rl-claude-login",
+      "rl-claude-key",
+      "rl-claude-logout",
+      "telemetry",
+      "rayline-claude",
+      "rayline-claude-setup",
+      "rayline-claude-hooks-install",
+      "rayline-claude-hooks-status",
+      "rayline-claude-hooks-uninstall",
+      "rayline-claude-login",
+      "rayline-claude-key",
+      "rayline-claude-logout"
+    ]
+  },
+  {
+    "source": "/cli",
+    "destination": "/rules-router/cli",
+    "fragments": [
+      "install",
+      "update",
+      "command-overview",
+      "global-options",
+      "--env",
+      "configuration",
+      "environment-variables",
+      "next-steps"
+    ]
+  },
+  {
+    "source": "/cli/menubar",
+    "destination": "/rules-router/guides/menubar",
+    "fragments": [
+      "rl-menubar-install",
+      "rl-menubar-start",
+      "rl-menubar-stop",
+      "rl-menubar-status",
+      "opting-out-of-auto-install",
+      "rayline-menubar-install",
+      "rayline-menubar-start",
+      "rayline-menubar-stop",
+      "rayline-menubar-status"
+    ]
+  },
+  {
+    "source": "/cli/router",
+    "destination": "/rules-router/cli/router",
+    "fragments": [
+      "rl-router-start",
+      "options",
+      "examples",
+      "what-starts",
+      "rl-router-stop",
+      "rl-router-status",
+      "example-output",
+      "rl-router-logs",
+      "health-checks",
+      "rayline-router-start",
+      "rayline-router-stop",
+      "rayline-router-status",
+      "rayline-router-logs"
+    ]
+  },
+  {
+    "source": "/guides/billing",
+    "destination": "/rules-router/pricing",
+    "fragments": [
+      "pricing-model",
+      "adding-funds",
+      "during-onboarding",
+      "from-the-dashboard",
+      "auto-top-up",
+      "checking-your-balance",
+      "what-counts-as-usage",
+      "cost-tracking",
+      "enterprise"
+    ]
+  },
+  {
+    "source": "/guides/dashboard",
+    "destination": "/rules-router/guides/dashboard",
+    "fragments": [
+      "accessing-the-dashboard",
+      "kpi-cards",
+      "counterfactual-baseline",
+      "savings-chart",
+      "model-distribution",
+      "activity-log",
+      "time-range",
+      "other-dashboard-pages",
+      "api-keys",
+      "settings",
+      "setup"
+    ]
+  },
+  {
+    "source": "/guides/local-models",
+    "destination": "/rules-router/guides/local-models",
+    "fragments": [
+      "requirements",
+      "quick-start",
+      "default-model",
+      "custom-models",
+      "requirements-for-custom-models",
+      "architecture",
+      "injector-port-20809",
+      "adapter-port-20808",
+      "llama-server-port-8081",
+      "managing-the-daemon",
+      "troubleshooting",
+      "model-download-is-slow",
+      "out-of-memory",
+      "port-conflicts",
+      "llama-server-wont-start",
+      "choosing-a-local-model",
+      "option-1--rayline-runs-the-model",
+      "option-2--you-run-the-model"
+    ]
+  },
+  {
+    "source": "/guides/menubar",
+    "destination": "/rules-router/guides/menubar",
+    "fragments": [
+      "installation",
+      "automatic-recommended",
+      "manual",
+      "starting-and-stopping",
+      "what-it-shows",
+      "launch-claude-code",
+      "cost-savings",
+      "routing-controls",
+      "account",
+      "authentication",
+      "auto-start",
+      "opting-out",
+      "requirements"
+    ]
+  },
+  {
+    "source": "/guides/routing-settings",
+    "destination": "/rules-router/policies",
+    "fragments": [
+      "routing-strategies",
+      "ml-routing-default",
+      "rules-based-routing",
+      "slots",
+      "overriding-a-slot",
+      "resetting-to-defaults",
+      "main-model-pin",
+      "local-model-port",
+      "how-classification-maps-to-slots",
+      "tips"
+    ]
+  },
+  {
+    "source": "/how-it-works",
+    "destination": "/rules-router/policies",
+    "fragments": [
+      "the-problem",
+      "the-solution",
+      "what-rayline-routes",
+      "architecture-at-a-glance",
+      "key-concepts"
+    ]
+  },
+  {
+    "source": "/how-it-works/models",
+    "destination": "/rules-router/how-it-works/models",
+    "fragments": [
+      "frontier-models",
+      "open-source-models",
+      "google-models",
+      "on-device-models",
+      "provider-routing",
+      "model-catalog-updates",
+      "using-a-specific-model"
+    ]
+  },
+  {
+    "source": "/how-it-works/on-device",
+    "destination": "/rules-router/guides/local-models",
+    "fragments": [
+      "how-it-works",
+      "what-routes-locally",
+      "requirements",
+      "setup",
+      "quick-start",
+      "what-starts",
+      "check-status",
+      "view-logs",
+      "stop",
+      "custom-models",
+      "combining-cloud-and-local",
+      "next-steps"
+    ]
+  },
+  {
+    "source": "/how-it-works/routing",
+    "destination": "/rules-router/policies",
+    "fragments": [
+      "step-1-classify-the-task",
+      "subagent-detection",
+      "step-2-select-the-model",
+      "ml-routing-default",
+      "rules-based-routing",
+      "model-pinning",
+      "step-3-dispatch",
+      "what-about-vision",
+      "stickiness",
+      "fallback-behavior",
+      "latency-impact"
+    ]
+  },
+  {
+    "source": "/pricing",
+    "destination": "/rules-router/pricing",
+    "fragments": [
+      "how-rayline-pricing-works",
+      "why-it-still-saves-money",
+      "plans",
+      "getting-started"
+    ]
+  },
+  {
+    "source": "/pricing/model-pricing",
+    "destination": "/rules-router/how-it-works/models",
+    "fragments": [
+      "anthropic",
+      "openai",
+      "google",
+      "zhipu-zai",
+      "moonshot",
+      "deepseek",
+      "minimax",
+      "on-device",
+      "how-to-read-this-table",
+      "cost-estimation"
+    ]
+  },
+  {
+    "source": "/quickstart/api-key",
+    "destination": "/platform/api-keys",
+    "fragments": [
+      "option-1-platform-dashboard-web",
+      "option-2-cli",
+      "adding-funds",
+      "key-security",
+      "environment-setup"
+    ]
+  },
+  {
+    "source": "/quickstart/claude-code",
+    "destination": "/rules-router/quickstart/claude-code",
+    "fragments": [
+      "the-easy-way-rl-claude",
+      "even-easier-the-rayline-app",
+      "run-on-device-with---local",
+      "verify-its-working",
+      "advanced-manual-environment-variables",
+      "disabling-rayline-temporarily",
+      "next-steps",
+      "the-easy-way-rayline-claude"
+    ]
+  },
+  {
+    "source": "/quickstart/codex",
+    "destination": "/rules-router/quickstart/codex",
+    "fragments": []
+  },
+  {
+    "source": "/quickstart",
+    "destination": "/rules-router/quickstart",
+    "fragments": [
+      "prerequisites",
+      "the-quick-version",
+      "what-happens-next",
+      "prefer-to-set-environment-variables-yourself",
+      "background-reading"
+    ]
+  },
+  {
+    "source": "/troubleshooting/billing-issues",
+    "destination": "/rules-router/troubleshooting/billing-issues",
+    "fragments": [
+      "zero-balance--requests-failing",
+      "enable-auto-top-up",
+      "payment-failed",
+      "unexpected-charges",
+      "cost-per-session",
+      "refunds",
+      "enterprise-billing"
+    ]
+  },
+  {
+    "source": "/troubleshooting/connectivity",
+    "destination": "/rules-router/troubleshooting/connectivity",
+    "fragments": [
+      "router-daemon-wont-start",
+      "check-if-its-already-running",
+      "check-the-logs",
+      "health-check-timeout",
+      "cant-reach-apiraylineai",
+      "test-connectivity",
+      "ssltls-errors",
+      "https-proxy-issues",
+      "ca-certificate-location",
+      "nodejs-trust",
+      "common-proxy-errors",
+      "rayline-app-wont-connect",
+      "still-stuck"
+    ]
+  },
+  {
+    "source": "/troubleshooting",
+    "destination": "/rules-router/troubleshooting",
+    "fragments": [
+      "quick-diagnostics",
+      "common-issues",
+      "specific-areas",
+      "getting-help"
+    ]
+  },
+  {
+    "source": "/quickstart/agents",
+    "destination": "/rules-router/quickstart/agents",
+    "fragments": [
+      "cloud",
+      "local",
+      "set-the-local-model",
+      "trust-the-proxy-ca",
+      "make-the-call",
+      "next-steps"
+    ]
+  }
+]

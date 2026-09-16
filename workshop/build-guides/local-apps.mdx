@@ -1,0 +1,116 @@
+---
+title: "Build local apps"
+icon: "laptop"
+description: "Build native utilities and tools that run directly on your machine — from keyboard tools and transcription to file processors and ad hoc tasks. Workshop Desktop only."
+---
+
+## What you'll build
+
+A native app or utility that runs directly on your machine — no browser, no server, no deployment step. Local apps can be anything from a keyboard remapper or transcription tool to a file organizer, video resizer, CSV processor, or any task you find yourself doing repeatedly.
+
+<Warning>
+  Local app development requires **Workshop Desktop**. Workshop Cloud does not have access to your local file system, hardware, or system APIs.
+</Warning>
+
+## Before you start
+
+<Steps>
+  <Step title="Download Workshop Desktop">
+    Install Workshop Desktop from [workshop.ai/download](https://workshop.ai/download). No other setup is required — Workshop handles everything else, including downloading libraries and installing dependencies.
+  </Step>
+  <Step title="Choose your model">
+    Workshop Desktop gives you the option to build with local models running on your own machine. Workshop will help you select the best fit based on your hardware. Building with a local model means no API costs, nothing leaving your machine, and no internet connection required.
+
+    If you prefer to build with an online model, that works too — just select one from the model picker in the toolbar.
+
+    See [Local Models](/workshop/workshop-desktop/local-models) to get set up.
+  </Step>
+  <Step title="Know what your app needs to access">
+    Think about what system resources your app will use — files and folders, keyboard input, microphone, camera, clipboard, or system APIs. Having this in mind before you start helps Workshop make the right architecture decisions from the beginning.
+  </Step>
+</Steps>
+
+## Step-by-step flow
+
+<Steps>
+  <Step title="Describe your app">
+    Start a new conversation and tell Workshop what the app should do. Be specific about what it needs to access on your system.
+
+    **Example prompts:**
+    - *"Build a menu bar app for macOS that transcribes whatever I'm listening to in real time and shows it as scrolling text."*
+    - *"Create a folder watcher that automatically renames files in a target directory using a date-prefix format I can configure."*
+    - *"Build a desktop app that takes a folder of videos, lets me pick a resolution and format, and batch-converts them."*
+    - *"Make a utility that reads a CSV, lets me preview it, apply simple transformations, and export the result."*
+    - *"Build a global keyboard shortcut tool that expands text snippets as I type — e.g., typing `;addr` expands to my full address."*
+  </Step>
+
+  <Step title="Workshop sets up the environment">
+    Workshop installs the right libraries and frameworks for your platform — whether that's a Python script with a native UI, an Electron app, a Swift app on macOS, or a system tray utility. You don't need to install dependencies or configure toolchains manually.
+
+    <Tip>
+      Tell Workshop your platform upfront if it matters: *"This should be a macOS app"* or *"It needs to work on both Windows and macOS."* Workshop will choose the right approach.
+    </Tip>
+  </Step>
+
+  <Step title="Build and run immediately">
+    Local apps run directly on your machine as soon as they're built — no deployment, no server, no URL to visit. Workshop launches the app so you can test it right away.
+
+    Iterate naturally:
+
+    ```
+    The file picker doesn't show hidden folders — can you include those?
+    Add a progress bar while it's processing.
+    Make the window remember its position between launches.
+    ```
+
+    Workshop has full access to your file system and terminal, so it can fix issues, install missing packages, and make changes without any manual steps on your part.
+  </Step>
+
+  <Step title="Make it feel native">
+    Workshop can style your app to match the platform it runs on — native macOS window chrome, Windows controls, or Linux conventions. If you want it to feel at home on your desktop rather than like a generic tool, just ask.
+
+    - *"Make this look like a native macOS app with a proper menu bar and dark mode support."*
+    - *"Add a system tray icon so it runs in the background."*
+    - *"Use the platform's native file picker instead of a custom one."*
+  </Step>
+
+</Steps>
+
+## Tips and best practices
+
+<AccordionGroup>
+  <Accordion title="Describe what the app needs to access upfront">
+    Tell Workshop what system resources your app requires — files, keyboard, microphone, camera, clipboard, network. This lets it make the right architecture and permissions decisions from the start, rather than retrofitting them later.
+  </Accordion>
+  <Accordion title="Let Workshop handle the dependencies">
+    Don't try to pre-install libraries or frameworks. Give Workshop the task and let it choose and install what's needed. It will resolve errors and missing packages as part of the build process.
+  </Accordion>
+  <Accordion title="Use local models for on-device inference">
+    Workshop Desktop lets you power the agent with a local model running on your machine without hosted-model inference charges. Other features and diagnostics can still send data externally; see [local model setup and privacy limits](/workshop/workshop-desktop/local-models). Switch to a hosted model when you need its capabilities.
+  </Accordion>
+  <Accordion title="Build incrementally">
+    Start with the core function, run it, verify it works, then add features:
+
+    1. *"Build the basic folder watcher that prints file names to the console"*
+    2. *"Add the rename logic with the date prefix"*
+    3. *"Add a config file so I can change the format without editing code"*
+    4. *"Add a simple UI so I can toggle it on and off"*
+  </Accordion>
+  <Accordion title="Ask for native platform behaviors">
+    Workshop knows the conventions for each platform. If you want your app to feel native — launch at startup, live in the menu bar or system tray, use native dialogs — just describe it. You don't need to know the implementation details.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Local models](/workshop/workshop-desktop/local-models) — Set up on-device inference and understand its limits
+- [AI Providers](/workshop/connectors/managed-ai-connectors) — Add cloud-powered AI features to your app
+- [File System and Terminals](/workshop/workshop-desktop/file-system-and-terminals) — How Workshop Desktop interacts with your local environment
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent) — Prompting tips and communicating with Workshop
+- [Checkpoints](/workshop/workshop-desktop/checkpoints) — Save and restore project states
+
+---
+
+<Card title="Download Workshop Desktop" icon="arrow-down-to-bracket" href="https://workshop.ai/download">
+  Build local apps that run natively on your machine — no deployment required.
+</Card>

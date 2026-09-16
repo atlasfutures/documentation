@@ -1,0 +1,320 @@
+---
+title: "Running local AI models"
+icon: "microchip"
+description: "Power the Workshop agent with local AI models on your own hardware — lower cost, more private, and offline-capable."
+---
+
+Workshop Desktop can use local AI models running on your own machine to power the Workshop agent — the same agent that plans, writes code, and builds your projects.
+
+If you're new to local models, think of this as running inference on-device instead of sending requests to a hosted API.
+
+Workshop supports two paths:
+
+1. **Managed mode (recommended):** Download and run models directly inside Workshop Desktop from **Agent Settings → Local Models**.
+2. **Manual mode (advanced):** Connect an external server after verifying the request, streaming, and tool-use behavior described [below](#compatible-servers).
+
+**Why use local models:**
+
+- **No hosted inference charges** — Run inference using your own hardware
+- **On-device inference** — The local model processes your prompts and context on your computer
+- **Offline inference** — A downloaded model can run without an internet connection
+
+Local inference does not make every Workshop feature offline or local-only. Network tools, hosted models, publishing, syncing, sharing, and diagnostics can still send data to external services. See [Privacy Mode settings](/workshop/core-concepts/settings#privacy-mode).
+
+If you prefer cloud models, those work too — just pick from the model selector. Local and cloud models are interchangeable from Workshop's perspective.
+
+<Info>
+  Local models power the **Workshop agent** — the assistant you talk to while building. This is separate from [AI Providers](/workshop/connectors/managed-ai-connectors), which add AI features to the apps you build.
+</Info>
+
+## Quick start (managed local models)
+
+<Steps>
+  <Step title="Open Local Models settings">
+    In Workshop Desktop, go to **Agent Settings → Local Models**.
+  </Step>
+  <Step title="Choose a recommendation in Guided">
+    Start in the **Guided** tab. Workshop detects your hardware and recommends **Fast**, **Balanced**, and **Genius** options at practical context lengths.
+  </Step>
+  <Step title="Download a model">
+    Click a recommendation card to download. Downloads happen in the background with progress indicators.
+  </Step>
+  <Step title="Activate and run">
+    Once downloaded, click to activate. Workshop automatically starts the local runtime and routes the **Local** model option to your selected model.
+  </Step>
+  <Step title="Switch anytime">
+    Use the model picker to switch between local and cloud models whenever you want.
+  </Step>
+</Steps>
+
+![Local Models settings with Guided recommendations](https://static.workshop.ai/docs-site/local-models/local-models-guided-overview.webp)
+*Guided view in Agent Settings → Local Models, showing hardware-aware recommendations and context presets.*
+
+The tab also includes:
+
+- **All Models** — browse the full supported model catalog
+- **Downloaded** — start/stop active model, re-activate, and delete local model files
+
+![All Models catalog in Local Models settings](https://static.workshop.ai/docs-site/local-models/local-models-all-models.webp)
+*All Models view for browsing the full supported catalog and selecting a specific model family.*
+
+## Advanced: connect your own local server
+
+Workshop's managed path uses `llama-server` from [llama.cpp](https://github.com/ggml-org/llama.cpp), with runtime build **b8648** selected by the current Desktop settings. Prefer that managed path when you do not need to maintain a server yourself.
+
+For a manual server, confirm the [compatibility requirements](#compatible-servers) for your exact server version, model, and configuration. Merely exposing `/v1/messages` is not sufficient, and an OpenAI-compatible endpoint is not interchangeable with the Anthropic Messages request format.
+
+In **Agent Settings → Local Models**, expand **Advanced: Connect your own server**, enter your base URL, and click **Test Connection**.
+
+![Advanced local model server connection in Local Models settings](https://static.workshop.ai/docs-site/local-models/local-models-advanced-connection.webp)
+*Advanced connection panel for attaching Workshop Desktop to an external Anthropic-compatible local server.*
+
+### Starting llama-server
+
+You can ask Workshop itself to help you set it up:
+
+<AccordionGroup>
+  <Accordion title="Sample prompts for Workshop to help you set up">
+    Try these prompts in a Workshop Desktop conversation:
+
+    - *"Help me install llama-server and download the Qwen3-Coder-Next Q4_K_M GGUF model"*
+    - *"Set up a local model server on port 8080 for coding"*
+    - *"Download and run the Step 3.5 Flash Q4_K_M model with llama-server"*
+
+    Workshop can install llama.cpp, download model files from HuggingFace, and start the server — all within a single conversation.
+  </Accordion>
+</AccordionGroup>
+
+If you prefer to set it up manually, here's the typical workflow:
+
+```bash
+# Get the runtime version used by Workshop Desktop
+git clone --branch b8648 --depth 1 https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+```
+
+Choose the build for your hardware. The NVIDIA build requires the CUDA toolkit; see the [pinned llama.cpp build instructions](https://github.com/ggml-org/llama.cpp/blob/b8648/docs/build.md#cuda) for prerequisites.
+
+<CodeGroup>
+```bash macOS (Metal)
+# Metal is enabled by default on macOS
+cmake -B build
+cmake --build build --config Release
+```
+
+```bash Linux (NVIDIA CUDA)
+cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release
+```
+</CodeGroup>
+
+Then download a model that fits your available memory and start the server:
+
+```bash
+# Download a GGUF model (example: Qwen3-Coder-Next Q4_K_M)
+# Get the URL from https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF
+
+# Start llama-server
+./build/bin/llama-server \
+  -m /path/to/Qwen3-Coder-Next-Q4_K_M.gguf \
+  --port 8080 \
+  --ctx-size 32768 \
+  --temp 1.0 \
+  --top-p 0.95 \
+  --top-k 40 \
+  --min-p 0.01
+```
+
+The server is ready when you see output indicating it's listening on port 8080. Workshop connects to it at `http://127.0.0.1:8080`.
+
+---
+
+## Recommended models
+
+The following three models are well-suited for agentic coding tasks with Workshop Desktop. All are available in GGUF format for local deployment.
+
+<Warning>
+  Hardware requirements listed below are estimates based on model size, quantization level, and context window. Actual requirements vary by system configuration, other running processes, and llama.cpp version. Always leave headroom beyond the minimum.
+</Warning>
+
+### Qwen3-Coder-Next (80B MoE, 3B active)
+
+The top recommendation for local coding. Qwen3-Coder-Next is an 80-billion parameter Mixture-of-Experts model with only **3 billion parameters active per token**. This means it delivers large-model quality at small-model speed. Released February 2026 by Alibaba.
+
+- **Native context window:** 256K tokens
+- **Architecture:** MoE with selective activation — only a small fraction of the model processes each token
+- **Strengths:** Long-horizon reasoning, complex tool use, recovery from execution failures
+
+| Quantization | Model Size | Min. Memory | Best For |
+|---|---|---|---|
+| **Q3_K** (3-bit) | ~30 GB | ~34 GB | Machines with 36–48 GB available memory |
+| **Q4_K_M** (4-bit) | ~42 GB | ~46 GB | Recommended default — best quality/speed tradeoff |
+| **Q8_0** (8-bit) | ~80 GB | ~85 GB | Maximum quality, requires high-end hardware |
+
+Context window impact on memory (Q4_K_M):
+
+| Context Length | Total Memory |
+|---|---|
+| 4K tokens | ~47 GB |
+| 32K tokens | ~48 GB |
+| 64K tokens | ~49 GB |
+| 256K tokens (full) | ~54 GB |
+
+The MoE architecture keeps KV cache growth minimal — going from 4K to 256K context adds only ~7 GB.
+
+**Performance:** Expect 20+ tokens/second when the model fits entirely on your device. On high-end NVIDIA GPUs (RTX PRO 6000), prompt processing reaches 1,400–2,900 tokens/second with generation at 60–85 tokens/second.
+
+<Tip>
+  GGUF files are available from [unsloth/Qwen3-Coder-Next-GGUF](https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF) on HuggingFace. Use the Dynamic GGUF variants from Unsloth for the best quality-per-bit.
+</Tip>
+
+### Step 3.5 Flash (196B MoE, 11B active)
+
+A larger model from StepFun with frontier-level coding capability and impressive speed. Step 3.5 Flash has **196 billion total parameters** with **11 billion active per token**, using a sophisticated MoE architecture with 288 experts per layer.
+
+- **Native context window:** 256K tokens
+- **Architecture:** 45 transformer layers (3 dense + 42 MoE), hybrid sliding-window/full attention (3:1 ratio), Multi-Token Prediction for faster generation
+- **Strengths:** Complex multi-step tasks, high throughput (100–350 tokens/second on server hardware), strong general-purpose coding
+
+| Quantization | Model Size | Min. Memory | Best For |
+|---|---|---|---|
+| **Q4_K_S** (4-bit) | ~105 GB | ~112 GB | 128 GB systems with tight memory budget |
+| **Q4_K_M** (4-bit) | ~110 GB | ~118 GB | Recommended default on 128 GB+ systems |
+| **Q8_0** (8-bit) | ~200 GB | ~210 GB | Multi-GPU setups or very high RAM systems |
+
+Step 3.5 Flash is a significantly larger model than Qwen3-Coder-Next and requires more memory. It's best suited for machines with 128 GB+ unified memory or multi-GPU configurations.
+
+**Performance:** On consumer hardware with sufficient memory, expect 10–20 tokens/second at Q4 quantization. The model's Multi-Token Prediction architecture can produce bursts of faster throughput depending on the inference engine.
+
+<Tip>
+  GGUF files are available from [stepfun-ai on HuggingFace](https://huggingface.co/stepfun-ai/Step-3.5-Flash-GGUF-Q4_K_S). Third-party quantizations (including lower-bit options) are also available from community contributors.
+</Tip>
+
+### MiniMax M2.5 (230B MoE, ~10B active)
+
+A strong general-purpose model with excellent coding ability and a massive 1M token native context. MiniMax M2.5 has **230 billion total parameters** with approximately **10 billion active per token**.
+
+- **Native context window:** 1M tokens (one of the largest available for local deployment)
+- **Architecture:** MoE with lightning attention
+- **Strengths:** Very long context windows, broad capability across coding and reasoning tasks
+
+| Quantization | Model Size | Min. Memory | Best For |
+|---|---|---|---|
+| **UD-Q3_K_XL** (3-bit) | ~101 GB | ~110 GB | 128 GB systems; best quality at this memory tier |
+| **Q3_K_L** (3-bit) | ~110 GB | ~128 GB | 128 GB Apple Silicon (runs without swap) |
+| **Q8_0** (8-bit) | ~243 GB | ~256 GB | Multi-GPU or high-RAM server setups |
+
+**Performance on Apple Silicon:** On an M3 Max with 128 GB unified memory, the Q3_K_L quantization runs at ~29 tokens/second for generation and ~99 tokens/second for prompt processing, supporting context windows up to 196K tokens without swap.
+
+<Tip>
+  Unsloth provides Dynamic GGUF quantizations for MiniMax M2.5 with improved quality-per-bit. Available at [unsloth on HuggingFace](https://huggingface.co/collections/unsloth). Also check [ox-ox/MiniMax-M2.5-GGUF](https://huggingface.co/ox-ox/MiniMax-M2.5-GGUF) for additional quantization options.
+</Tip>
+
+---
+
+## Hardware guide
+
+### Apple silicon (unified memory)
+
+Apple Silicon Macs share memory between the CPU and GPU, making them efficient for running local models. The entire model must fit in unified memory.
+
+| Unified Memory | What You Can Run |
+|---|---|
+| **32 GB** | Choose a smaller model from the hardware-aware **Guided** recommendations. Qwen3-Coder-Next Q3_K exceeds this tier's memory budget; allow headroom for macOS, Workshop, and the context cache. |
+| **64 GB** | Qwen3-Coder-Next Q4_K_M comfortably with 32K context. The recommended entry point for local model coding. |
+| **96 GB** | Qwen3-Coder-Next Q8_0, or Step 3.5 Flash/MiniMax M2.5 at aggressive 2-bit quantization (experimental). |
+| **128 GB** | Step 3.5 Flash Q4_K_M, MiniMax M2.5 Q3_K_L, or Qwen3-Coder-Next Q8_0 with full 256K context. |
+
+### NVIDIA GPUs
+
+NVIDIA GPUs with CUDA are the fastest option for local inference. The model must fit in VRAM for best performance (partial offloading to system RAM is possible but much slower).
+
+| GPU | VRAM | What Fits |
+|---|---|---|
+| **RTX 3090 / 4090** | 24 GB | Too small for the recommended models at useful quantization levels. Consider smaller models (7B–14B) for these GPUs. |
+| **RTX A6000 / RTX 6000 Ada** | 48 GB | Qwen3-Coder-Next Q4_K_M with moderate context. The sweet spot for single-GPU coding agents. |
+| **RTX PRO 6000** | 96 GB | Qwen3-Coder-Next at any quantization with full 256K context. Excellent performance. |
+| **2x RTX 3090/4090** | 48 GB total | Qwen3-Coder-Next Q4_K_M with split-GPU inference. Requires multi-GPU support in llama.cpp. |
+
+### AMD GPUs
+
+AMD GPUs are supported through ROCm. Support has improved significantly but remains less mature than CUDA. If you have an AMD GPU with 24+ GB VRAM, build llama.cpp with ROCm support and follow the same sizing guidelines as NVIDIA GPUs.
+
+### CPU-only
+
+Running models on CPU alone (system RAM) is possible but slow — expect 1–5 tokens/second depending on the model and quantization. Useful for testing and experimentation but not practical for interactive agentic coding sessions. Apple Silicon is the exception, since its unified memory architecture means "CPU-only" still benefits from the GPU's memory bandwidth.
+
+---
+
+## Approval mode recommendation
+
+<Warning>
+  **Strongly recommended:** Enable **Approval Mode** (Code Execution set to Manual) in Agent Settings when using local models. This requires you to approve each code execution before it runs.
+
+  This is especially critical for models outside the three recommended above.
+</Warning>
+
+Local models are less reliable than cloud-hosted frontier models at following tool-use contracts and respecting safety boundaries. They may:
+
+- Execute commands you didn't intend
+- Misinterpret tool schemas and call tools incorrectly
+- Generate code that modifies files or system state unexpectedly
+
+Approval Mode adds a confirmation step before any code runs, giving you the chance to review what the agent wants to execute. You can toggle this in **Agent Settings → Code Execution → Manual**.
+
+For the three recommended models (Qwen3-Coder-Next, Step 3.5 Flash, MiniMax M2.5) at their recommended quantizations, tool-use reliability is generally good. For other models — especially smaller or more aggressively quantized ones — Approval Mode is essential.
+
+---
+
+## Compatible servers
+
+The managed runtime is llama.cpp **b8648**. These docs do not certify arbitrary LM Studio, Ollama, vLLM, or adapter versions for Workshop.
+
+Before using an external server, verify all capabilities your task requires:
+
+- Anthropic Messages request and response bodies, including system instructions and conversation history.
+- Streaming events consumed by the agent, not just a non-streaming text reply.
+- Tool definitions, tool-use responses, and subsequent tool-result messages across multiple turns.
+- Image input only when the selected model and runtime configuration support it.
+
+**Test Connection** sends a small, non-streaming text request. A successful check establishes basic connectivity, not tool-use, streaming, vision, or complete agent compatibility. Follow it with a small representative task using manual approval before relying on that server for project work.
+
+---
+
+## Ecosystem and resources
+
+The local model ecosystem is evolving rapidly. New models with better quality at smaller sizes are released frequently. If the recommended models above don't fit your hardware, check back — options for 16 GB and 32 GB machines improve with each new model release.
+
+**Useful links:**
+
+- [Unsloth Documentation — Local Models](https://unsloth.ai/docs/) — Guides for running Qwen3, MiniMax, and other models locally with optimized quantizations
+- [llama.cpp — Anthropic Messages API](https://huggingface.co/blog/ggml-org/anthropic-messages-api-in-llamacpp) — Setup guide for llama-server with Anthropic API support
+- [HuggingFace GGUF Models](https://huggingface.co/models?library=gguf&sort=trending) — Browse trending GGUF models available for download
+- [LM Studio](https://lmstudio.ai/) — GUI-based model runner with model discovery and download built in
+- [Unsloth Tool Calling Guide](https://unsloth.ai/docs/basics/inference-and-deployment/tool-calling) — Guide for tool calling with local models (relevant for agentic use)
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Test Connection fails with 'Connection refused'">
+    The local model server isn't running, or it's on a different port than the URL you entered. Verify the server is started and check the port number.
+  </Accordion>
+
+  <Accordion title="Test Connection fails with 'Endpoint not found'">
+    Check that the server exposes Anthropic Messages requests at `/v1/messages`, rather than only an OpenAI-compatible API. Prefer Workshop's managed runtime, or validate your exact external server and adapter against the compatibility requirements above.
+  </Accordion>
+
+  <Accordion title="Model is very slow (< 5 tokens/second)">
+    The model likely doesn't fit entirely in your GPU VRAM or unified memory, causing parts to be offloaded to system RAM. Try a more aggressive quantization (e.g., Q3_K instead of Q4_K_M) or reduce the context window with the `--ctx-size` flag.
+  </Accordion>
+
+  <Accordion title="Model produces poor quality or nonsensical output">
+    Check your sampling parameters. The recommended settings for coding models are: `temperature=1.0`, `top_p=0.95`, `top_k=40`, `min_p=0.01`. Also verify you're using a model intended for instruction following, not a base (pre-trained) model.
+  </Accordion>
+
+  <Accordion title="Out of memory errors">
+    The model plus context window exceeds your available memory. Reduce `--ctx-size` (e.g., from 32768 to 8192) or use a smaller quantization. On macOS, check Activity Monitor to see actual memory pressure.
+  </Accordion>
+</AccordionGroup>

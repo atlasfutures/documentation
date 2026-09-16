@@ -1,0 +1,592 @@
+---
+title: "Sub-agents"
+icon: "diagram-project"
+description: "Orchestrate multiple AI models — across providers and environments — in a single workflow."
+---
+
+## What are sub-agents?
+
+Workshop's main agent can spin up helper agents to handle specific tasks inside the same workflow. These are called **sub-agents**.
+
+Each sub-agent runs in its own separate context window. It reads files, runs tools, and does its work without consuming the main agent's context. When it's done, only a short summary comes back to your main conversation.
+
+Sub-agents don't all need to use the same model. They can use different models, from different providers — and in Workshop Desktop, they can even run in different environments, including local models on your device.
+
+![Three sub-agents researching weather APIs, React patterns, and Tailwind layouts in parallel — each running on Claude Haiku 4.5 with live activity feeds](https://static.workshop.ai/docs-site/subagents/subagents-parallel-active.webp)
+*Three sub-agents researching in parallel, each with a live progress indicator.*
+
+## Why this matters
+
+You no longer need one model to do everything. Different parts of a workflow can be delegated to the models best suited for those parts.
+
+<CardGroup cols={2}>
+  <Card title="Better performance" icon="chart-line">
+    Some models are better at certain types of tasks than others. By delegating subtasks to better-fit models, the overall workflow produces better results than any single model could.
+  </Card>
+  <Card title="Lower cost" icon="circle-dollar-to-slot">
+    Not every task needs a top-tier model. Simpler or narrower subtasks can be routed to more affordable models, reducing overall cost without sacrificing quality where it matters.
+  </Card>
+  <Card title="Faster workflows" icon="bolt">
+    Some tasks benefit more from speed than from maximum intelligence — reading large volumes of text, scanning files, repetitive processing. These can be delegated to faster models to keep things moving.
+  </Card>
+  <Card title="More usable context over time" icon="infinity">
+    Sub-agents work without consuming the main agent's context in the same way. You can keep building in the same conversation without hitting limits as quickly.
+  </Card>
+</CardGroup>
+
+### Privacy and control
+
+Workshop can combine a cloud-hosted main agent with a local sub-agent. In this setup, only the sub-agent's inference runs on your device. The cloud-hosted main agent creates the delegation prompt and receives the sub-agent's summary, so sensitive context or results can still reach the main agent's provider.
+
+Choosing a local sub-agent does not make the whole workflow local or establish a data-residency guarantee. Do not use this hybrid setup for information that must never reach a cloud provider. Check the models, tools, and data transfers of the entire workflow before sharing sensitive information.
+
+<Info>
+Local model routing requires [Workshop Desktop](/workshop/workshop-desktop/local-models). Workshop Cloud uses cloud-hosted models only.
+</Info>
+
+### The real differentiator
+
+It's not just "multiple models." Workshop lets you orchestrate multiple models, from multiple providers, across cloud and local environments, in the same workflow — frontier cloud models, open-source models, and local models working together in one product experience.
+
+Use the best AI for each part of the job, instead of forcing one model to do everything.
+
+---
+
+## How sub-agents work
+
+As conversations grow longer, the agent's performance gradually declines — it may lose track of earlier decisions, repeat work, or miss details it would have caught earlier. This happens because every AI conversation has a **context window**: the total amount of information the agent can work with at once. Everything counts — your messages, files it reads, tool outputs, its own responses. You can see the context window filling up as a percentage in the UI. As it fills, quality drops. Eventually, you'll need to either start fresh or use `/compact` to summarize and continue.
+
+Sub-agents solve this by working outside your main conversation — each one gets its own fresh context window, does its work, and returns only a short summary. That keeps your main conversation lean and focused.
+
+### Why sub-agents matter
+
+<CardGroup cols={3}>
+  <Card title="Take on bigger projects">
+    Without sub-agents, every file read and tool call fills your context window, limiting how complex a task can be. Sub-agents handle the heavy lifting in their own space, so your main conversation stays focused on the big picture and stays sharp for longer.
+  </Card>
+  <Card title="Get higher quality results">
+    A sub-agent with a single clear objective — "review this diff for security issues" or "explore how the payment flow works" — dedicates its full attention to that one job, without being distracted by the rest of your conversation.
+  </Card>
+  <Card title="Run work in parallel">
+    Up to 3 sub-agents run simultaneously, each potentially on a different model. A quick search uses a fast model; a thorough code review uses a more capable one. You get speed and specialization without managing any of it.
+  </Card>
+</CardGroup>
+
+### Built-in agents
+
+Workshop's **Sub Agents** settings list ten specialized agents, including the bundled `visual-qa` agent:
+
+| Agent | What it does | Default model | Why | Best for |
+| ----- | ------------ | ------------- | --- | -------- |
+| **explore** | Searches code, reads files, traces call chains. Read-only. | GLM 5.3 Flash | Fast codebase investigation | "Where is this defined?", "How does auth work?", pattern searches |
+| **plan** | Analyzes codebase, produces structured implementation plans with steps, critical files, and risks. | Inherits yours | Benefits from the same model you're reasoning with | Planning before coding — especially multi-step features |
+| **verification** | Adversarial checker that reviews your changes for regressions, missing tests, and edge cases. Returns PASS/FAIL verdict. | GPT 5.6 Terra | Focused correctness checks | Sanity check after implementation, before you move on |
+| **reviewer** | Code review specialist. Hunts for bugs, security issues, correctness problems. Can run linters and tests. | GPT 5.6 Terra | Code review and reasoning about diffs | PR-style review of a diff or changed files |
+| **web-search** | Searches the web for docs, best practices, API references, error solutions. | Gemini 3.1 Flash-Lite | Fast information gathering | Looking up documentation, debugging error messages |
+| **frontend** | Builds and fixes interfaces; can edit files and run development tools. | GLM 5.3 Flash | UI implementation | Components, CSS, frontend code |
+| **backend** | Implements backend functionality. | Kimi K2.6 | Backend implementation | Services and backend features |
+| **eng-ops** | Works on builds, CI, dependencies, and infrastructure. | GLM 5.3 Flash | Engineering operations | Build failures and infrastructure tasks |
+| **debug** | Investigates bugs systematically. | GPT 5.6 Terra | Troubleshooting | Reproductions and root-cause analysis |
+| **visual-qa** | Exercises a running app in the browser and checks its behavior and layout. | Claude Sonnet 5 | Vision-capable browser QA | Testing user flows and responsive layouts |
+
+<Info>
+You can override the default model for any built-in agent mid-conversation — see [Choosing models](#choosing-models-for-sub-agents) below.
+</Info>
+
+### How to trigger sub-agents
+
+Tell Workshop to use sub-agents in your prompt. The key phrase is **"use sub-agents"** or **"delegate"** — Workshop will recognize the intent and spin up the right agents:
+
+```
+Build me a landing page. Use sub-agents to research color palette
+trends, look up hero section best practices, and find open-source
+icon libraries — all in parallel before you start coding.
+```
+
+You can also name specific agents:
+
+```
+Have the reviewer agent check the changes we just made.
+```
+
+```
+Use the explore agent to trace how the payment flow works.
+```
+
+```
+Use visual-qa to test the checkout flow at http://localhost:3000.
+Check that it works on desktop and mobile-sized screens.
+```
+
+Workshop may also delegate on its own when it judges a task benefits from specialization — but being explicit gives you more control over what gets delegated and how.
+
+Multiple sub-agents can run simultaneously. Each one appears as a collapsible card in your chat with a live progress indicator.
+
+![All 3 agents complete in 73.9s — the main agent immediately synthesizes the research into a plan](https://static.workshop.ai/docs-site/subagents/subagents-parallel-complete.webp)
+*All three research agents finished in 73.9 seconds. The main agent synthesizes the results and starts building.*
+
+### Limits
+
+- Sub-agents **cannot spawn their own sub-agents** (depth limit of 1)
+- Each sub-agent starts fresh — it cannot see your conversation history, so include everything it needs in the delegation prompt
+- Sub-agents complete autonomously — they cannot ask you questions mid-task
+
+## Choosing models for sub-agents
+
+Each built-in agent has a default model chosen for its task type — shown in the Built-in agents table above. You can override any of them two ways: **mid-conversation** by just asking, or **persistently** in Settings.
+
+<Tip>
+To set a default model for a built-in agent that applies to **every new conversation**, open the **Sub Agents** tab in [Settings](/workshop/core-concepts/settings#sub-agents). The mid-conversation method below is best for one-off overrides.
+</Tip>
+
+### Changing a model mid-conversation
+
+You don't need to configure anything upfront. Just tell Workshop which model you want a sub-agent to use, and it will apply that for the delegation:
+
+```
+Have the reviewer agent check these changes, but use Gemini 3.1 Pro.
+```
+
+```
+Run the explore agent on Sonnet for this one — I need deeper analysis.
+```
+
+```
+Use Claude Opus for the plan agent on this refactor.
+```
+
+Workshop passes the model assignment through to the sub-agent when it delegates. The available models are:
+
+| Model | Provider | Best for | Speed | Cost |
+| ----- | -------- | -------- | ----- | ---- |
+| `haiku` | Anthropic | Fast, focused tasks — searches, file scans, checklists | Fastest | Low |
+| `sonnet` | Anthropic | Balanced — code review, refactoring, documentation | Fast | Medium |
+| `opus` | Anthropic | Complex reasoning — architecture, multi-file analysis | Slower | Highest |
+| `gpt-5.4` | OpenAI | Backend coding, code review, general-purpose reasoning | Fast | Medium |
+| `gpt-5.4-mini` | OpenAI | Lighter tasks at lower cost | Fast | Low |
+| `gpt-5.4-nano` | OpenAI | Simple tasks, lowest cost | Fastest | Lowest |
+| `gemini-3.1-pro` | Google | Frontend dev, long-context analysis (1M token window) | Fast | Medium |
+| `gemini-3.1-flash` | Google | Fast general-purpose tasks, large context | Fastest | Low |
+| `glm-5.1` | Z.ai | Frontend dev, long-horizon tasks, cost-efficient coding | Fast | Lowest |
+| `glm-5` | Z.ai | General-purpose coding | Fast | Low |
+| `glm-5-turbo` | Z.ai | Fast coding tasks | Fastest | Lowest |
+| `glm-5v-turbo` | Z.ai | Vision + coding tasks | Fast | Low |
+| `kimi-k2.6` | Moonshot | Coding, reasoning, multilingual tasks | Fast | Low |
+
+---
+
+## Create your own agents
+
+<Info>
+Workshop's included agents handle most workflows out of the box — you don't need to create custom agents to use sub-agents. This section is for teams who want to define their own reusable agents for specialized or repeated tasks.
+</Info>
+
+Beyond the built-in agents, you can define **custom agents** — reusable markdown files that give Workshop specialized personas, toolsets, and instructions for tasks you run repeatedly.
+
+Custom agent definitions are separate from [skills](/workshop/core-concepts/skills). Support for the Agent Skills standard does not imply support for these agent files or their configuration fields in another client.
+
+### Quick start
+
+Create an `agents/` directory in one of the supported paths and add a markdown file:
+
+```
+your-project/
+├── .workshop/agents/    # Workshop-native (recommended)
+├── .agents/agents/      # Alternate path read by Workshop
+└── .claude/agents/      # Alternate path read by Workshop
+```
+
+Use `.workshop/agents/` for Workshop projects. Workshop also reads the two alternate paths shown above; verify each other client's discovery paths and supported fields before sharing definitions with it.
+
+Each file is one agent. The filename (minus `.md`) becomes the agent name.
+
+<Tabs>
+  <Tab title="qa-reviewer.md">
+    ```markdown
+    ---
+    description: Reviews code changes for quality, test coverage, and common pitfalls.
+    model: haiku
+    tools:
+      - Read
+      - Grep
+      - Bash
+    ---
+
+    You are a QA reviewer. When given a branch or set of changes:
+
+    1. Read every changed file
+    2. Check for missing error handling, edge cases, and test coverage gaps
+    3. Verify naming conventions match the surrounding code
+    4. Report findings as a numbered list with file:line references
+    ```
+  </Tab>
+  <Tab title="Using it">
+    ```
+    Have the qa-reviewer agent check the changes on this branch.
+    ```
+
+    Workshop matches your request to the agent by its **description** field and delegates the task with the specified model and tools.
+  </Tab>
+</Tabs>
+
+### Agent file format
+
+Each agent file uses YAML frontmatter followed by markdown instructions:
+
+```markdown
+---
+description: What this agent does (required — this is how Workshop decides when to use it)
+model: haiku
+tools:
+  - Read
+  - Grep
+  - Bash
+maxTurns: 10
+---
+
+Your detailed instructions go here. This is the agent's system prompt —
+tell it what role to play, what steps to follow, and what output format to use.
+```
+
+**Frontmatter fields:**
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `description` | Yes | What the agent does. Workshop uses this to match your requests to the right agent. Be specific. |
+| `model` | No | Model to use: `haiku`, `sonnet`, or `opus`. Defaults to your conversation's model. Use `haiku` for fast, focused tasks. |
+| `tools` | No | List of tools the agent can use (e.g., `Read`, `Bash`, `Grep`, `Edit`). Defaults to all tools. |
+| `maxTurns` | No | Maximum number of turns before the agent stops. Useful for keeping agents focused. |
+| `disallowedTools` | No | Tools the agent cannot use, even if otherwise available. |
+| `hidden` | No | If `true`, the agent won't appear in the agent list but can still be used by name. |
+| `memory` | No | Memory scope: `user`, `project`, or `local`. Controls where the agent stores learned context. |
+
+<Info>
+The `description` field is crucial — it's how Workshop decides which agent to delegate to. Write it like a job title and responsibility summary, not a vague label.
+</Info>
+
+### Where to put agents
+
+<Tabs>
+  <Tab title="Project agents">
+    Place agents in `.workshop/agents/` at your project root. These are shared with your team via version control — great for project-specific workflows like deployment checks, code review standards, or domain-specific analysis.
+
+    ```
+    your-project/
+    └── .workshop/
+        └── agents/
+            ├── deploy-check.md
+            ├── api-reviewer.md
+            └── db-migration-validator.md
+    ```
+  </Tab>
+  <Tab title="Personal agents">
+    Place agents in `~/.workshop/agents/` (your home directory). These are available in every project but aren't shared with your team — useful for personal productivity agents.
+
+    ```
+    ~/.workshop/
+    └── agents/
+        ├── commit-message-writer.md
+        └── research-assistant.md
+    ```
+  </Tab>
+</Tabs>
+
+Project agents take precedence over personal agents when names conflict.
+
+### Cross-client compatibility
+
+Workshop can read agent definitions from several directory conventions. This does not guarantee that another client reads the same files or interprets their fields the same way.
+
+Workshop discovers agents from three directory paths in priority order:
+
+| Path | Purpose |
+| ---- | ------- |
+| `.workshop/agents/` | Workshop-native (recommended) |
+| `.agents/agents/` | Alternate discovery path supported by Workshop |
+| `.claude/agents/` | Alternate discovery path supported by Workshop |
+
+If the same agent name exists in multiple directories, the first match wins.
+
+<Tip>
+If your team uses multiple AI tools, check each client's documentation and test the definition there. In particular, do not assume that `model`, `tools`, or `maxTurns` has identical support across clients.
+</Tip>
+
+### Writing effective agents
+
+The quality of your agent depends on three things: a precise description, the right model, and clear instructions.
+
+#### Descriptions that trigger reliably
+
+The `description` field is how Workshop decides which agent to delegate to. Front-load the key action and context:
+
+<Tabs>
+  <Tab title="Weak descriptions">
+    ```yaml
+    # Too vague — when would Workshop use this?
+    description: Helps with code
+
+    # Too broad — matches everything
+    description: A general purpose assistant for development tasks
+
+    # Missing the "when" — what triggers it?
+    description: Knows about our API conventions
+    ```
+  </Tab>
+  <Tab title="Strong descriptions">
+    ```yaml
+    # Specific action + clear trigger
+    description: Reviews code changes for security vulnerabilities, injection risks, and auth bypass. Use when reviewing PRs or before merging.
+
+    # Domain + action + scope
+    description: Validates database migrations for safety, rollback paths, and index impact. Use before applying migrations to production.
+
+    # Clear capability boundary
+    description: Generates TypeScript types from OpenAPI specs. Use when API contracts change or when adding new endpoints.
+    ```
+  </Tab>
+</Tabs>
+
+#### Choosing the right model
+
+Workshop supports models from multiple providers. Refer to the [full model table](#choosing-models-for-sub-agents) above for the complete list with speed and cost guidance. When setting the `model` field in your agent file:
+
+- Use `haiku` for fast, focused tasks (searches, file scans, checklists)
+- Use `sonnet` for balanced tasks (code review, refactoring, documentation)
+- Use `opus` for complex reasoning (architecture decisions, multi-file analysis)
+- For frontend-heavy agents, `glm-5.1` or `gemini-3.1-pro` are strong choices
+- For backend code review, `gpt-5.4` excels
+
+If you omit `model`, the agent inherits your conversation's current model.
+
+#### Structuring instructions
+
+Write instructions like you're briefing a capable colleague who has no context. Include:
+
+1. **Role** — Who the agent is and what lens it uses
+2. **Steps** — Numbered sequence of what to do
+3. **Constraints** — What to avoid or what boundaries to respect
+4. **Output format** — How to structure the response
+
+```markdown
+---
+description: Reviews PRs for security issues including injection, auth bypass, and data exposure.
+model: haiku
+tools:
+  - Read
+  - Grep
+  - Bash
+maxTurns: 12
+---
+
+You are a security reviewer. For each changed file:
+
+1. Read the diff with `git diff main...HEAD`
+2. Check for:
+   - SQL injection (string concatenation in queries)
+   - XSS (unescaped user input in templates)
+   - Auth bypass (missing permission checks)
+   - Secret exposure (hardcoded keys, tokens, passwords)
+3. For each finding, cite the exact file and line
+
+## Output
+
+Return findings as:
+
+| Severity | File:Line | Issue | Fix |
+|----------|-----------|-------|-----|
+| HIGH | src/api.ts:42 | Raw SQL interpolation | Use parameterized query |
+
+If no issues found, say "No security issues detected" — don't fabricate findings.
+```
+
+### Agents vs skills
+
+Workshop supports both **agents** and **[skills](/workshop/core-concepts/skills)**. They serve different purposes:
+
+| | Agents | Skills |
+| --- | ------ | ------ |
+| **What they are** | Autonomous sub-conversations with their own model, tools, and context window | Instruction documents loaded into your current conversation |
+| **How they run** | In a separate context — can't see your chat history | Inline — become part of your conversation |
+| **Best for** | Delegated tasks: "review this", "check that", "research X" | Persistent knowledge: conventions, patterns, reference material |
+| **File format** | Single `.md` file with frontmatter | Directory with `SKILL.md` and optional supporting files |
+| **Location** | `.workshop/agents/`, `.agents/agents/`, `.claude/agents/` | `.workshop/skills/`, `.agents/skills/`, `.claude/skills/` |
+
+Use an **agent** when you want to hand off a complete task. Use a **skill** when you want Workshop to know something while working with you.
+
+### Example agents
+
+<AccordionGroup>
+  <Accordion title="Deployment checklist">
+    An agent that runs pre-deployment safety checks with a structured PASS/FAIL verdict:
+
+    ```markdown
+    ---
+    description: Runs pre-deployment safety checks including test status, migration review, and environment variable validation.
+    model: haiku
+    tools:
+      - Read
+      - Grep
+      - Bash
+    maxTurns: 15
+    ---
+
+    You are a deployment readiness checker. Run through this checklist
+    and report a PASS/FAIL verdict for each item:
+
+    ## Checklist
+
+    1. **Tests passing** — Run the test suite and confirm 0 failures
+    2. **No debugger statements** — Grep for `debugger`, `binding.pry`,
+       `console.log` in changed files
+    3. **Migration safety** — If any new migrations exist, verify they
+       have a rollback path
+    4. **Environment variables** — Check that any new env vars referenced
+       in code are documented in `.env.example`
+    5. **No secrets in code** — Scan for hardcoded API keys, tokens,
+       or passwords
+
+    ## Output format
+
+    Return a summary table:
+
+    | Check | Status | Details |
+    |-------|--------|---------|
+    | Tests | PASS/FAIL | ... |
+    | ... | ... | ... |
+
+    End with a clear **DEPLOY** or **DO NOT DEPLOY** recommendation.
+    ```
+  </Accordion>
+  <Accordion title="API documentation generator">
+    An agent that reads your code and generates API documentation:
+
+    ```markdown
+    ---
+    description: Generates API documentation from source code. Reads route handlers, extracts endpoints, parameters, and response shapes, and produces markdown documentation.
+    model: sonnet
+    tools:
+      - Read
+      - Grep
+    maxTurns: 20
+    ---
+
+    You are an API documentation writer. Given a codebase:
+
+    1. Find all route/endpoint definitions (look for decorators like
+       @app.get, @router.post, or framework-specific patterns)
+    2. For each endpoint, extract:
+       - HTTP method and path
+       - Request parameters (path, query, body)
+       - Response shape and status codes
+       - Authentication requirements
+    3. Organize by resource (e.g., /users/*, /projects/*)
+
+    ## Output format
+
+    For each endpoint:
+
+    ### `METHOD /path`
+
+    > Brief description
+
+    **Auth:** Required / Public
+    **Parameters:**
+    | Name | In | Type | Required | Description |
+    |------|----|------|----------|-------------|
+
+    **Response:** `200 OK`
+    ```json
+    { "example": "response" }
+    ```
+
+    Sort endpoints alphabetically within each resource group.
+    ```
+  </Accordion>
+  <Accordion title="Codebase onboarding">
+    A read-only agent that helps new team members understand a codebase:
+
+    ```markdown
+    ---
+    description: Explores and explains a codebase for new team members. Maps architecture, identifies key patterns, and answers questions about how things work.
+    model: haiku
+    tools:
+      - Read
+      - Grep
+    maxTurns: 25
+    ---
+
+    You are a codebase guide helping a new team member get oriented.
+
+    Start by understanding the project structure:
+    1. Read the top-level directory and key config files
+    2. Identify the tech stack (languages, frameworks, build tools)
+    3. Map the main modules and their responsibilities
+    4. Find the entry points (main files, route definitions, etc.)
+
+    Then answer the user's specific questions with:
+    - File paths and line numbers for every claim
+    - Diagrams (ASCII) for complex relationships
+    - "I don't know" when you genuinely can't determine something
+
+    Never guess. If you're unsure, say so and suggest where to look.
+    ```
+  </Accordion>
+  <Accordion title="Test writer">
+    An agent that generates tests for existing code:
+
+    ```markdown
+    ---
+    description: Writes tests for existing code. Reads the implementation, identifies edge cases, and generates comprehensive test files following the project's testing conventions.
+    model: sonnet
+    tools:
+      - Read
+      - Grep
+      - Edit
+      - Bash
+    maxTurns: 20
+    ---
+
+    You are a test engineer. When asked to write tests:
+
+    1. Read the target file and understand its public interface
+    2. Grep for existing test files to learn the project's testing
+       conventions (framework, assertion style, file naming)
+    3. Identify test cases:
+       - Happy path for each public function/method
+       - Edge cases (empty input, null, boundary values)
+       - Error cases (invalid input, missing dependencies)
+    4. Write the test file following the project's existing patterns
+    5. Run the tests to verify they pass
+
+    ## Rules
+
+    - Match the existing test style exactly (don't introduce new patterns)
+    - Use real implementations over mocks when possible
+    - Each test should be independent — no shared mutable state
+    - Name tests descriptively: what's being tested and what's expected
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Best practices
+
+<CardGroup cols={2}>
+  <Card title="Keep agents focused">
+    One agent, one job. An agent that "reviews code, writes tests, and deploys" will do all three poorly. Create separate agents for each concern.
+  </Card>
+  <Card title="Use haiku for speed">
+    Most custom agents don't need the most powerful model. `haiku` is fast, cheap, and capable enough for grep-and-report tasks. Save `sonnet` and `opus` for complex reasoning.
+  </Card>
+  <Card title="Limit turns">
+    Set `maxTurns` to prevent agents from spiraling. A focused agent should finish in 10-15 turns. If it needs more, the instructions probably aren't specific enough.
+  </Card>
+  <Card title="Restrict tools">
+    Only give agents the tools they need. A read-only reviewer doesn't need `Edit` or `Bash`. Fewer tools means fewer ways to go wrong.
+  </Card>
+  <Card title="Specify output format">
+    Tell the agent exactly how to structure its response — tables, checklists, JSON. Without this, you'll get inconsistent free-form text.
+  </Card>
+  <Card title="Version control your agents">
+    Commit project agents to your repo. They're documentation of your team's workflows, reviewable in PRs, and automatically available to anyone who clones the project.
+  </Card>
+</CardGroup>

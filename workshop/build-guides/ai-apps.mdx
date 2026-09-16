@@ -1,0 +1,100 @@
+---
+title: "Build AI-powered apps"
+icon: "microchip-ai"
+description: "Ship full-stack AI applications with Anthropic, OpenAI, and Google models built in — not wrappers, real apps with intelligent backends."
+---
+
+## What you'll build
+
+A complete, deployable AI-powered application — with a frontend, backend, and AI model integration — that you can publish and share with a link.
+
+## Before you start
+
+<Steps>
+  <Step title="Create a Workshop account">
+    Sign up at [app.workshop.ai](https://app.workshop.ai). Both Workshop Cloud and Workshop Desktop support AI app development.
+  </Step>
+  <Step title="Choose your AI connector">
+    Your app needs access to an AI model to power its intelligent features. You have two options:
+
+    <Tabs>
+      <Tab title="Managed connectors (recommended)">
+        Managed connectors for Anthropic, OpenAI, and Gemini are **on by default** — no API keys, no setup required. Usage is billed to your Workshop credits.
+
+        To use one, just reference it in your prompt using the **@** mention selector or the **Add Functionality** button. Workshop handles the rest — model selection, API calls, streaming, and error handling.
+
+        Managed connectors support everything the underlying models do. For example:
+        - *"Add image generation using @Gemini"* — Workshop will use Gemini's image capabilities
+        - *"Use @Anthropic to analyze this document and return structured data"*
+        - *"Build a voice transcription feature powered by @OpenAI"*
+      </Tab>
+      <Tab title="Bring your own key (BYOK)">
+        If you have your own API key from a provider, you can connect it directly instead. This bills usage directly to your provider account.
+
+        1. Get an API key from [Anthropic](https://console.anthropic.com/), [OpenAI](https://platform.openai.com/api-keys), or [Google AI Studio](https://aistudio.google.com/apikey)
+        2. Open the **Hub** → **Connectors**
+        3. Search for the provider (e.g., "OpenAI (your API key)")
+        4. Enter your API key and save
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Step-by-step flow
+
+<Steps>
+  <Step title="Describe your AI app">
+    Start a new conversation and describe the application. Mention the AI capabilities you want — don't worry about the implementation details, Workshop handles that.
+
+    **Example prompts:**
+    - *"Build an AI writing assistant that lets users paste text and rewrite it in different tones — professional, casual, concise, persuasive. Include a side-by-side comparison view."*
+    - *"Create a document Q&A app where users upload PDFs and ask questions about the content. Use Claude for accurate answers with source citations."*
+    - *"Build a customer support chatbot with an admin panel to manage FAQ entries and a chat interface with conversation history."*
+  </Step>
+  <Step title="Workshop wires up the AI backend">
+    Workshop generates the full stack: frontend UI, backend API routes, and AI model integration. It uses whichever AI connector you enabled and writes the code to call it correctly — prompt engineering, streaming responses, error handling, and all.
+  </Step>
+  <Step title="Test and iterate">
+    Use the live preview to test the AI features. Send real inputs and verify the responses make sense. Refine as needed:
+
+    - *"Make the AI responses stream in word by word instead of appearing all at once."*
+    - *"Add a system prompt field in the admin panel so I can customize the AI's behavior."*
+    - *"Limit response length to 500 words and add a regenerate button."*
+  </Step>
+  <Step title="Publish your app">
+    Click **Publish** and Workshop handles hosting and compute. Your app gets a live URL with built-in authentication. You can make it public or limit access to specific people or teams — Workshop handles the access control as part of the same flow.
+  </Step>
+</Steps>
+
+## Tips and best practices
+
+<AccordionGroup>
+  <Accordion title="Be specific about the AI behavior">
+    Instead of *"add AI to my app,"* describe exactly what the AI should do: *"When a user uploads a CSV, have the AI analyze the data and generate a summary with three key insights and a recommended next step."*
+  </Accordion>
+  <Accordion title="Start with managed connectors">
+    Managed connectors are the fastest way to get started — no API key setup, no billing configuration, no rate limit management. Switch to BYOK later if you need to.
+  </Accordion>
+  <Accordion title="Mention the AI connector in your prompt">
+    Reference the specific connector when it matters: *"Use the Anthropic connector for the analysis — I want Claude's reasoning capabilities for this."* Workshop will route to the right model.
+  </Accordion>
+  <Accordion title="Build real apps, not chat wrappers">
+    Workshop's strength is building full applications around AI — with forms, databases, visualizations, and user accounts. Don't just build a chatbot; build the complete tool your users need.
+  </Accordion>
+  <Accordion title="Test with edge cases">
+    Try empty inputs, very long inputs, and adversarial prompts. Ask Workshop to add input validation and error handling: *"Add a 10,000 character limit on the input field and show a friendly error if the AI call fails."*
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [AI Providers reference](/workshop/connectors/managed-ai-connectors) — Deep dive on managed vs. BYOK connectors
+- [Publishing](/workshop/workshop-cloud/publishing) — Deploy your app with authentication and custom domains
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent) — Prompting tips and communicating with Workshop
+- [Checkpoints](/workshop/workshop-desktop/checkpoints) — Save working versions before experimenting (Workshop Desktop only)
+
+---
+
+<Card title="Start Building Free" icon="arrow-right" href="https://app.workshop.ai">
+  Ship AI apps, not wrappers. Describe your app and go.
+</Card>

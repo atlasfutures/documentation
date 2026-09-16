@@ -1,0 +1,28 @@
+---
+title: "Get started"
+description: "Connect a coding agent, then choose hosted or local routing."
+---
+
+<span id="prerequisites" />
+<span id="the-quick-version" />
+
+
+Start with the guide for your coding agent. These integrations cover main-agent requests and supported subagent workflows; you do not need to run subagents to use Agent Gateway.
+
+<CardGroup cols={2}>
+<Card title="Claude Code" icon="terminal" href="/rules-router/quickstart/claude-code">Hosted rules or an on-device hybrid session.</Card>
+<Card title="Codex" icon="code" href="/rules-router/quickstart/codex">Codex CLI and desktop through Rayline Local.</Card>
+</CardGroup>
+
+Use hosted Agent Gateway when you want workspace-managed model assignments and usage. Use Rayline Local when you want the router on your machine. The selected route determines which requests leave your machine and where inference is charged.
+
+<span id="what-happens-next" />
+<span id="background-reading" />
+
+Next: [API keys](/platform/api-keys), [routing policies](/rules-router/policies), and [pricing](/rules-router/pricing).
+
+<span id="prefer-to-set-environment-variables-yourself" />
+
+## Other agents and apps
+
+Agent Gateway is not restricted to coding agents. Before connecting another client, check its request protocol, authentication, model identifiers, and required features against [client compatibility](/rules-router/reference). A configurable API base URL alone does not guarantee compatibility.

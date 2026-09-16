@@ -1,0 +1,45 @@
+---
+title: "Your first ARC request"
+description: "Request early access and explore the proposed ARC interfaces."
+icon: "bolt"
+---
+<Note>
+ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.
+</Note>
+
+The examples below illustrate the proposed interfaces, not currently available public endpoints. Creating an API key or funding a workspace does not enable ARC. Wait for the Rayline team to confirm access and provide an enabled endpoint before sending requests.
+
+<Steps>
+<Step title="Get access and a key">
+Request early access from the Rayline team. Once your access is confirmed, follow the team's instructions to create a key for the assigned environment and workspace. See [API keys](/platform/api-keys). A gateway key is not a substitute for ARC access.
+</Step>
+<Step title="Copy the preview base URL">
+Use the ARC API base URL provided by the Rayline team. Do not substitute the Agent Gateway host. Keep the URL and key in environment variables, outside your source code.
+</Step>
+<Step title="Send a Responses request">
+
+```bash
+# Set ARC_BASE_URL and RAYLINE_API_KEY to your preview URL and key first.
+curl --fail-with-body "$ARC_BASE_URL/v1/responses" \
+  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"input":"Summarize the purpose of a regression test."}'
+```
+
+API access is limited during private preview. Confirm your access and the supported request and response fields with the Rayline team before integrating.
+</Step>
+<Step title="Try a decision">
+
+```bash
+curl --fail-with-body "$ARC_BASE_URL/v1/decisions" \
+  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"input":"Review a database migration for data-loss risks."}'
+```
+
+Decisions is designed to return a model and reasoning choice for execution in your own stack. Confirm the available response fields as part of your private-preview onboarding.
+</Step>
+<Step title="Inspect the request">
+Once access is enabled, follow the Rayline team's guidance for inspecting requests in your workspace. See the [Responses reference](/arc/reference/responses) or [Decisions reference](/arc/reference/decisions) for availability.
+</Step>
+</Steps>

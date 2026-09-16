@@ -1,0 +1,138 @@
+---
+title: "Unified GTM analytics"
+icon: "chart-line"
+description: "Unify sales, marketing, and product data in one place. Get answers and build dashboards in seconds — no SQL required."
+---
+
+## The problem: scattered data, slow answers
+
+Go-to-market teams depend on data from dozens of tools — CRM, marketing automation, product analytics, billing, ad platforms — yet getting a unified view requires BI tickets, SQL expertise, and weeks of waiting. Metrics conflict across spreadsheets, tribal knowledge replaces governed definitions, and operators spend more time requesting data than acting on it.
+
+## How Workshop solves it
+
+Workshop gives marketing ops, revenue ops, and growth teams a self-serve analytics layer on top of their existing data warehouse and semantic layer. Connect your data, ask questions in natural language, and get trusted answers — no SQL required.
+
+<Steps>
+  <Step title="Connect your warehouse">
+    Plug in Snowflake, BigQuery, Postgres, or Redshift. Workshop reads your schema and dbt documentation automatically, so it understands your data from day one.
+  </Step>
+  <Step title="Leverage your semantic layer">
+    Workshop natively understands dbt metrics, dimensions, and relationships. Queries are governed from the start — everyone works from the same source of truth.
+  </Step>
+  <Step title="Ask questions in plain English">
+    Type what you want to know. Workshop generates the SQL, runs it on your warehouse, and returns charts, tables, and explanations.
+
+    ```
+    Show pipeline coverage ratio by quarter against quota targets,
+    broken down by sales team and deal stage.
+    ```
+  </Step>
+  <Step title="Build dashboards and share">
+    Turn answers into live dashboards. Share with your team via built-in auth — everyone sees the same governed numbers.
+  </Step>
+</Steps>
+
+## Why Workshop for GTM analytics
+
+<CardGroup cols={3}>
+  <Card title="Instant Answers, No SQL Required">
+    Ask questions in natural language and get numbers, charts, and reasoning back. No BI tickets, no waiting.
+  </Card>
+  <Card title="dbt-Native Semantic Layer">
+    Workshop reads your dbt models, metrics, and documentation natively. Queries run on your infrastructure and respect your metric definitions — governed by default.
+  </Card>
+  <Card title="Governed Metrics Everyone Trusts">
+    Analytics engineers define the source of truth. Everyone else gets self-serve access to the same governed metrics — no conflicting spreadsheets, no tribal knowledge.
+  </Card>
+</CardGroup>
+
+## Analytics across every function
+
+<AccordionGroup>
+  <Accordion title="Marketing Attribution">
+    Multi-touch attribution, channel ROI, and funnel analysis across all your marketing platforms. Ask Workshop to compare spend, CPA, and ROAS across Google Ads, Meta, and LinkedIn with interactive date filtering.
+  </Accordion>
+  <Accordion title="Sales Forecasting">
+    Pipeline coverage, forecast accuracy, and deal velocity metrics your revenue team can trust. Build a unified view from first touch to closed-won.
+  </Accordion>
+  <Accordion title="Product Analytics">
+    Retention cohorts, feature adoption, and engagement metrics connected to your product database. Compare behavior between free and paid user segments.
+  </Accordion>
+  <Accordion title="Executive Reporting">
+    Board-ready dashboards with KPIs across marketing, sales, product, and finance — always up to date and always governed.
+  </Accordion>
+  <Accordion title="Funnel Optimization">
+    End-to-end conversion funnels from first touch to revenue, with drop-off analysis at every stage.
+  </Accordion>
+  <Accordion title="Revenue Analytics">
+    MRR, churn, expansion, and cohort LTV analysis powered by your billing and CRM data.
+  </Accordion>
+</AccordionGroup>
+
+## Example prompts
+
+These are the kinds of questions teams ask Workshop every day:
+
+```
+Show me pipeline coverage by quarter vs quota
+```
+
+```
+Which marketing channels have the best LTV:CAC ratio?
+```
+
+```
+Build a multi-touch attribution report showing how marketing
+channels contribute to pipeline and closed revenue.
+```
+
+```
+Create a cohort retention analysis showing weekly retention
+rates by acquisition channel with trend comparison.
+```
+
+```
+What drove the revenue dip last month?
+```
+
+## Who this is for
+
+- **Marketing Ops** — channel attribution, campaign performance, funnel conversion
+- **Revenue Ops** — pipeline forecasting, quota attainment, deal velocity
+- **Growth Teams** — cohort analysis, retention metrics, feature adoption
+- **Data Teams** — governed self-serve analytics that reduce BI ticket volume
+- **Executives** — real-time dashboards with metrics they can trust
+
+## Dbt integration
+
+Workshop reads your dbt project natively:
+
+- **Models and metrics** are understood as first-class objects
+- **Documentation and descriptions** provide context for natural language queries
+- **Tests and constraints** ensure data quality at query time
+- **Relationships** between models inform how Workshop joins data
+
+If your analytics engineering team already maintains a dbt project, Workshop becomes the self-serve layer on top — no additional modeling required.
+
+### Compile your dbt project into an agent skill
+
+For teams that want the deepest integration, [dbt-skillz](https://github.com/atlasfutures/dbt-skillz) is an open-source compiler that converts your entire dbt project into a structured skill the agent can consume. This goes beyond schema reading — it includes metric definitions, test constraints, column documentation, and the full lineage graph.
+
+```bash
+pip install dbt-skillz
+dbt-skillz compile --project-dir ./analytics --output ./skills/data
+```
+
+Import the compiled skill into Workshop from a GitHub repo. See [Skills](/workshop/core-concepts/skills) for setup instructions.
+
+<Card title="Ready to unify your GTM data?" href="https://app.workshop.ai">
+  Start building with Workshop for free. Connect your warehouse and ask your first question in minutes.
+</Card>
+
+<Card title="Trusted Dashboards" icon="shield-check" href="/workshop/solutions/trusted-dashboards">
+  Learn how the dbt-skillz compiler powers a full lifecycle for keeping dashboards accurate — from grounded creation through automated review and maintenance.
+</Card>
+
+<Card title="Want help getting started?" icon="handshake" href="https://workshop.ai/solutions/white-glove-services">
+  Our white-glove team sets up your analytics stack, builds the first dashboards, and trains your team to self-serve.
+</Card>

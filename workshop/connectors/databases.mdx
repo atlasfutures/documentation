@@ -1,0 +1,395 @@
+---
+title: "Database connectors"
+icon: "database"
+description: "Connect PostgreSQL, MySQL, SQL Server, MongoDB, Supabase, Neon, TiDB, and TigerGraph databases to Workshop."
+---
+
+## Overview
+
+Workshop supports eight database connectors covering relational, document, distributed, and graph databases. Once connected, Workshop can query your databases, explore schemas, and help you analyze data through natural conversation.
+
+| Database | Type | Default Port | Required Fields |
+|----------|------|-------------|-----------------|
+| [PostgreSQL](#postgresql) | Relational | 5432 | Host, Port, Database, Username, Password |
+| [MySQL](#mysql) | Relational | 3306 | Host, Port, Database, Username, Password |
+| [Microsoft SQL Server](#microsoft-sql-server) | Relational | 1433 | Server, Database, Username, Password |
+| [MongoDB](#mongodb) | Document (NoSQL) | 27017 | Host, Port, Username, Password |
+| [Supabase](#supabase) | PostgreSQL backend | — | API URL, API Key |
+| [Neon](#neon) | Serverless PostgreSQL | — | Connection URL |
+| [TiDB](#tidb) | Distributed SQL | 4000 | Host, Port, Database, Username, Password |
+| [TigerGraph](#tigergraph) | Graph | — | Host URL, Username, Password, Graph Name |
+
+## General setup
+
+All database connectors follow the same workflow:
+
+<Steps>
+  <Step title="Open Hub > Connectors">
+    Open the **Workshop Hub** from the sidebar and click the **Connectors** tab.
+  </Step>
+  <Step title="Select your database">
+    Find and click the card for your database type.
+  </Step>
+  <Step title="Enter credentials">
+    Fill in the connection fields described for your database below.
+  </Step>
+  <Step title="Name and save">
+    Give your connection a memorable name and click **Add Connection**.
+  </Step>
+</Steps>
+
+## General security recommendations
+
+These apply to all database connectors:
+
+- **Create a dedicated read-only user** for Workshop — avoid admin or superuser accounts
+- **Use SSL/TLS connections** when available (most cloud providers enable this by default)
+- **Restrict network access** via firewalls, IP allowlists, or VPC/private networking
+- **Rotate credentials** periodically and update your Workshop connection when you do
+
+<Warning>
+Never use superuser or admin accounts (`postgres`, `root`, `sa`, etc.) for Workshop connections. Always follow the principle of least privilege.
+</Warning>
+
+---
+
+<Tabs>
+  <Tab title="PostgreSQL">
+    ## PostgreSQL
+
+    PostgreSQL is a powerful, open-source relational database. Workshop connects using standard host-based credentials.
+
+    <Info>
+    If you're using **Neon** (serverless PostgreSQL) or **Supabase**, use their dedicated connectors for a simpler setup.
+    </Info>
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Host | Server hostname or IP | `postgres.example.com` |
+    | Port | Server port | `5432` |
+    | Database | Database name | `myapp_production` |
+    | Username | PostgreSQL user | `app_user` |
+    | Password | User password | — |
+
+    ### Finding Credentials by Provider
+
+    - **Amazon RDS:** Endpoint and Port in the Connectivity section of your instance
+    - **Google Cloud SQL:** Public/Private IP in the instance overview
+    - **Azure Database:** Server name in the Overview page
+    - **Self-hosted:** Contact your database administrator
+
+    ### Read-Only User Setup
+
+    ```sql
+    CREATE USER workshop_reader WITH PASSWORD 'YourSecurePassword';
+    GRANT CONNECT ON DATABASE your_database TO workshop_reader;
+    GRANT USAGE ON SCHEMA public TO workshop_reader;
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO workshop_reader;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO workshop_reader;
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection refused | Verify host/port. Check `listen_addresses` and `pg_hba.conf`. Verify firewall rules. |
+    | Authentication failed | Check username/password. Verify `pg_hba.conf` auth method (`md5` or `scram-sha-256`). |
+    | Database does not exist | Verify exact database name (case-sensitive). Run `\l` in psql to list databases. |
+    | SSL required | Ensure `sslmode=require` is used. Most cloud providers require SSL by default. |
+
+    **Learn more:** [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+  </Tab>
+
+  <Tab title="MySQL">
+    ## MySQL
+
+    MySQL is one of the world's most popular open-source relational databases. Workshop connects using standard host-based credentials.
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Host | Server hostname or IP | `mysql.example.com` |
+    | Port | Server port | `3306` |
+    | Database | Database name | `myapp_production` |
+    | Username | MySQL user | `app_user` |
+    | Password | User password | — |
+
+    ### Finding Credentials by Provider
+
+    - **Amazon RDS:** Endpoint and Port in the Connectivity section
+    - **Google Cloud SQL:** IP address in the instance overview
+    - **PlanetScale / other managed:** Check provider dashboard for connection details
+
+    ### Read-Only User Setup
+
+    ```sql
+    CREATE USER 'workshop_reader'@'%' IDENTIFIED BY 'YourSecurePassword';
+    GRANT SELECT ON your_database.* TO 'workshop_reader'@'%';
+    FLUSH PRIVILEGES;
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection refused | Verify host/port. Check `bind-address` in my.cnf. Verify firewall rules on port 3306. |
+    | Access denied | Check username/password. Verify user host part (`'user'@'%'` vs `'user'@'localhost'`). |
+    | Unknown database | Verify database name spelling and that the user has access. |
+
+    **Learn more:** [MySQL Documentation](https://dev.mysql.com/doc/)
+  </Tab>
+
+  <Tab title="SQL Server">
+    ## Microsoft SQL Server
+
+    SQL Server is Microsoft's enterprise relational database. Workshop connects using SQL Authentication (username/password).
+
+    <Info>
+    Windows Authentication is not supported through Workshop. Use SQL Authentication mode.
+    </Info>
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Server | Hostname or IP | `myserver.database.windows.net` |
+    | Database | Database name | `SalesDB` |
+    | Username | SQL login | `app_user` |
+    | Password | SQL password | — |
+
+    ### Finding Credentials by Provider
+
+    - **Azure SQL Database:** Server name in the Overview section of the Azure Portal
+    - **On-premises:** Contact your database administrator
+
+    ### Read-Only User Setup
+
+    ```sql
+    CREATE LOGIN workshop_reader WITH PASSWORD = 'YourSecurePassword';
+    USE YourDatabase;
+    CREATE USER workshop_reader FOR LOGIN workshop_reader;
+    ALTER ROLE db_datareader ADD MEMBER workshop_reader;
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection refused | Verify server address. Check firewall rules on port 1433. For Azure, verify IP is allowed. |
+    | Login failed | Check credentials. Ensure SQL Authentication is enabled (mixed mode). |
+    | Database not found | Verify database name (case-sensitive on some configs). Check user permissions. |
+
+    **Learn more:** [SQL Server Documentation](https://docs.microsoft.com/en-us/sql/sql-server/)
+  </Tab>
+
+  <Tab title="MongoDB">
+    ## MongoDB
+
+    MongoDB is a NoSQL document database that stores data in flexible, JSON-like documents.
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Host | Server hostname | `cluster0.abc123.mongodb.net` |
+    | Port | Server port | `27017` |
+    | Username | Database user | `app_user` |
+    | Password | User password | — |
+
+    <Info>
+    For MongoDB Atlas (cloud), the host is your cluster address. The default port is typically handled automatically.
+    </Info>
+
+    ### Finding Credentials (Atlas)
+
+    1. Log in to [MongoDB Atlas](https://cloud.mongodb.com/)
+    2. Navigate to your cluster and click **Connect > Connect your application**
+    3. Use the cluster address as the host and credentials from the **Database Access** section
+
+    ### Read-Only User Setup
+
+    ```javascript
+    use admin
+    db.createUser({
+      user: "workshop_reader",
+      pwd: "YourSecurePassword",
+      roles: [
+        { role: "read", db: "yourDatabase" }
+      ]
+    })
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection refused | Verify host/port. For Atlas, ensure your IP is in the **Network Access** allowlist. |
+    | Authentication failed | Check username/password. Ensure user is in the correct auth database (`admin`). |
+    | No collections found | Verify the user has read permissions. Check you're connecting to the correct database. |
+
+    **Learn more:** [MongoDB Documentation](https://docs.mongodb.com/)
+  </Tab>
+
+  <Tab title="Supabase">
+    ## Supabase
+
+    Supabase is an open-source PostgreSQL backend with authentication, storage, and real-time capabilities. Workshop connects via the Supabase API.
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | API URL | Your project's API URL | `https://abcdefgh.supabase.co` |
+    | API Key | Your project's anon or service role key | `eyJhbGciOiJIUzI1NiIs...` (JWT) |
+
+    ### Finding Credentials
+
+    1. Go to [supabase.com](https://supabase.com) and open your project
+    2. Click **Settings > API** for the project URL and API keys
+
+    <Info>
+    **Which key?** The **anon (public) key** respects Row Level Security (RLS). The **service role key** bypasses RLS and gives full database access. Use the service role key only when you need to bypass RLS.
+    </Info>
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | "Invalid API key" | Verify the key and ensure it's from the correct project. |
+    | "Connection refused" | Confirm the project is active (free-tier projects pause after 7 days of inactivity). |
+    | Can't see tables | If using the anon key, check RLS policies. Try the service role key to verify tables exist. |
+
+    **Learn more:** [Supabase Documentation](https://supabase.com/docs)
+  </Tab>
+
+  <Tab title="Neon">
+    ## Neon
+
+    Neon provides serverless PostgreSQL with on-demand scaling and instant database branching. Workshop connects via a PostgreSQL connection string.
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Connection URL | Full PostgreSQL connection string | `postgresql://user:pass@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require` |
+
+    ### Finding Your Connection String
+
+    1. Go to [console.neon.tech](https://console.neon.tech) and select your project
+    2. Click the **Connect** button
+    3. Select your Branch, Database, and Role
+    4. Copy the connection string
+
+    <Info>
+    **Default database:** New Neon projects create a database called `neondb` with a role called `neondb_owner`.
+
+    **Pooled vs. Direct:** Pooled connections (hostname includes `-pooler`) support up to 10,000 connections and work well for most Workshop use cases.
+    </Info>
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | "Connection refused" | Verify the connection string is complete. Check the project is active. Ensure `sslmode=require`. |
+    | Slow initial queries | Normal if the compute has scaled to zero. First query triggers a cold start. |
+    | "Authentication failed" | Verify username/password in the connection string. Try regenerating the password in the Neon console. |
+
+    **Learn more:** [Neon Documentation](https://neon.tech/docs)
+  </Tab>
+
+  <Tab title="TiDB">
+    ## TiDB
+
+    TiDB is an open-source, MySQL-compatible distributed SQL database designed for HTAP workloads.
+
+    <Info>
+    TiDB uses port **4000** by default, not 3306 like standard MySQL.
+    </Info>
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Host | Cluster hostname | `gateway01.us-east-1.prod.aws.tidbcloud.com` |
+    | Port | Server port | `4000` |
+    | Database | Database name | `myapp` |
+    | Username | TiDB user | `app_user` |
+    | Password | User password | — |
+
+    ### Finding Credentials (TiDB Cloud)
+
+    1. Log in to [TiDB Cloud](https://tidbcloud.com/) and navigate to your cluster
+    2. Click **Connect** and choose **General** connection type
+    3. Copy the Host and Port from the connection string
+
+    ### Read-Only User Setup
+
+    ```sql
+    CREATE USER 'workshop_reader'@'%' IDENTIFIED BY 'YourSecurePassword';
+    GRANT SELECT ON your_database.* TO 'workshop_reader'@'%';
+    FLUSH PRIVILEGES;
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection refused | Verify host/port. Remember TiDB uses port **4000**. For TiDB Cloud, check IP allowlist. |
+    | Authentication failed | Check credentials. Verify user exists and has the correct password. |
+    | Slow first query | TiDB Cloud Serverless may have cold start latency. Subsequent queries will be faster. |
+
+    **Learn more:** [TiDB Documentation](https://docs.pingcap.com/tidb/stable)
+  </Tab>
+
+  <Tab title="TigerGraph">
+    ## TigerGraph
+
+    TigerGraph is a native parallel graph database for advanced analytics and machine learning on connected data.
+
+    ### Required Fields
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Host | Server or Cloud URL | `https://myinstance.i.tgcloud.io/` |
+    | Username | TigerGraph user | `tigergraph` |
+    | Password | User password | — |
+    | Graph Name | Graph to connect to | `MyGraph` |
+
+    ### Finding Credentials (TigerGraph Cloud)
+
+    1. Log in to [TigerGraph Cloud](https://tgcloud.io/) and select your instance
+    2. Copy the instance URL from the dashboard
+    3. Open GraphStudio to find available graph names in the top-left dropdown
+    4. Use the credentials set during instance creation
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Connection failed | Verify Host URL includes `https://`. Ensure the instance is running. |
+    | Authentication failed | Check username/password. Verify the user has access to the specified graph. |
+    | Graph not found | Verify graph name (case-sensitive). Check user permissions for the graph. |
+    | Timeout | Large graph traversals take time. Add limits to queries or check instance resources. |
+
+    **Learn more:** [TigerGraph Documentation](https://docs.tigergraph.com/)
+  </Tab>
+</Tabs>
+
+## Verifying any database connection
+
+After connecting, ask Workshop:
+
+```
+Show me all tables in my database
+```
+```
+What columns are in the users table?
+```
+```
+How many rows are in each table?
+```
+
+If Workshop returns your data, the connection is working.

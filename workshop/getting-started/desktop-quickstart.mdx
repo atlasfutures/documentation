@@ -1,0 +1,128 @@
+---
+title: "Workshop Desktop in 5 minutes"
+icon: "desktop"
+---
+
+Workshop Desktop is a native application for macOS, Windows, and Linux. It gives you full access to your local file system, any programming language or framework, and your existing tools — with no constraints on what you can build or how you ship it.
+
+## Step-by-step
+
+<Steps>
+  <Step title="Download and install">
+    Go to [workshop.ai](https://workshop.ai) and download the installer for your platform:
+
+    - **macOS** — `.dmg` installer (Apple Silicon and Intel)
+    - **Windows** — `.exe` installer
+    - **Linux** — `.AppImage` or `.deb` package
+
+    Run the installer and launch Workshop Desktop. Sign in with your account or create one.
+  </Step>
+
+  <Step title="Choose how to power the agent">
+    Something that sets Desktop apart: you can power the Workshop agent with a local model running on your machine, without hosted-model inference charges. See [local model setup and privacy limits](/workshop/workshop-desktop/local-models); local inference does not make all Workshop features offline or local-only.
+
+    Click the model selector in the toolbar to choose between a frontier model (Claude) or a local model you have running. See [Local Models](/workshop/workshop-desktop/local-models) for setup instructions.
+  </Step>
+
+  <Step title="Create a new project">
+    Click **New Project** and give it a name. You can start from a template or from scratch:
+
+    - **Web App / Website** — Fullstack app with a Python backend and modern web frontend. Supports one-click publish.
+    - **Streamlit** — Python-native data apps. Supports one-click publish.
+    - **Anything** — The most flexible option. Any framework, any language, any stack.
+    - **Import from GitHub** — Clone an existing repository into a new project.
+
+    Workshop creates a project directory on your local file system. You can open this folder in any editor at any time.
+  </Step>
+
+  <Step title="Describe what you want to build">
+    This is where the magic starts. Describe your project in plain language:
+
+    ```
+    I want to build a React app with a Node.js backend that manages
+    a task list with due dates, priorities, and categories.
+    ```
+
+    If you want to scope and clarify before writing any code, use **Plan Mode** — open the **+** menu next to the chat input and pick **Plan**, or just type "Use Plan mode." Workshop will ask about requirements, design decisions, and technical preferences, then create a structured plan. When it looks right, switch to **Build Mode**.
+
+    If you already know what you want, skip straight to **Build Mode** and Workshop will start immediately. You don't need to specify a tech stack upfront — Workshop will recommend one based on your description.
+  </Step>
+
+  <Step title="Build and iterate">
+    In Build Mode, Workshop writes code, installs packages, creates files, and runs your application — all on your local machine. For web projects, a live preview pane shows your app as it's being built. Watch the progress in the chat and iterate naturally:
+
+    ```
+    Add a dark mode toggle to the settings page.
+    The task list should sort by due date by default.
+    ```
+
+    Workshop has full access to your project files and terminal. It can run dev servers, install dependencies, execute scripts, and debug issues directly.
+  </Step>
+
+  <Step title="Deploy anywhere">
+    When your project is ready, click **Publish** to deploy it to Workshop's infrastructure — Workshop handles hosting and compute, just like in Cloud. You can make it public or limit access to specific people or teams.
+
+    For projects that need to live somewhere else, you have full flexibility:
+
+    - Push to **GitHub** and deploy with Vercel, Netlify, Railway, or any CI/CD pipeline
+    - Build **Docker containers** and deploy to any cloud
+    - Use platform CLIs (AWS, GCP, Azure, Fly.io) directly
+    - Run **locally** for personal tools and internal utilities
+
+    You can also ask Workshop to help:
+
+    ```
+    Help me deploy this to Vercel. Set up the configuration and walk me through it.
+    ```
+  </Step>
+</Steps>
+
+## Desktop-only features
+
+<CardGroup cols={2}>
+  <Card title="Local Apps" icon="laptop">
+    Workshop Desktop is the only place to build local apps — native utilities and tools that run directly on your machine. From keyboard tools and transcription to file organization and ad hoc data tasks, these run immediately without any deployment step.
+  </Card>
+  <Card title="Terminal Access" icon="terminal">
+    Workshop runs commands in integrated terminals on your local machine. You see exactly what it's doing and can interact with the terminal yourself at any time.
+  </Card>
+</CardGroup>
+
+## Tips for better results
+
+<AccordionGroup>
+  <Accordion title="Drag files into the chat for context">
+    Workshop can read files you drag into the conversation — PDFs, images, data files, design mockups. Use this to give it reference material, existing specs, or visual inspiration.
+  </Accordion>
+
+  <Accordion title="Build incrementally">
+    Start with core functionality, verify it works, then add features:
+
+    1. "Set up the project with React and Express"
+    2. "Create the task list with add/edit/delete"
+    3. "Add categories and filtering"
+    4. "Add the dark mode toggle"
+  </Accordion>
+
+  <Accordion title="Use version control early">
+    Ask Workshop to initialize Git and commit at logical milestones. This gives you safety nets to roll back if needed:
+
+    ```
+    Initialize git for this project and commit our current progress.
+    ```
+
+    You can also connect a GitHub repository using Workshop's native [GitHub integration](/workshop/workshop-desktop/github-integration) to keep your code backed up and collaborate with others.
+  </Accordion>
+
+  <Accordion title="For local apps, describe what your app needs to access">
+    Tell Workshop upfront what system resources your app needs — files, keyboard, microphone, camera. This lets it make the right architecture decisions from the start rather than retrofitting permissions later.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- **Explore local models** in [Workshop Desktop → Local Models](/workshop/workshop-desktop/local-models)
+- **Set up MCP servers** in [Workshop Desktop → MCP Servers](/workshop/workshop-desktop/mcp-servers)
+- **Learn how to work with the agent** in [Working with the Agent](/workshop/core-concepts/working-with-the-agent)
+- **Read prompting tips** in [Working with the Agent](/workshop/core-concepts/working-with-the-agent)
+- **Join the community** on [Discord](https://discord.gg/ggqJkUN3vx)

@@ -1,0 +1,22 @@
+---
+title: "Context and caching"
+description: "Separate routing context, provider caches, and billable token categories."
+icon: "database"
+---
+ARC's decision context and a provider's generation context are different things. Reusing text in your application does not prove that either service served it from cache.
+
+## Responses
+
+The proposed launch rate card separates uncached input, cache reads, and output. The routing fee is waived for Responses. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
+
+## Decisions
+
+The launch rate card has input and cache-read categories only. Your inference provider meters its own input, caches, and output separately.
+
+Generated output may become input on a later turn. Count each actual metered event once; do not add an extra copy merely because the same text has appeared before.
+
+<Note>
+ARC is in private preview. Confirm the cache behavior and usage fields available to your integration with the Rayline team before relying on cache retention, cache keys, or invalidation rules.
+</Note>
+
+Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the launch token categories.

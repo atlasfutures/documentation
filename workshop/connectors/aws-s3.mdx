@@ -1,0 +1,111 @@
+---
+title: "AWS S3"
+icon: "bucket"
+description: "Connect your Amazon S3 buckets to Workshop for cloud storage access."
+---
+
+## Overview
+
+Amazon Simple Storage Service (S3) is a cloud object storage service for storing and retrieving any amount of data. Once connected, Workshop can help you explore buckets, list objects, and work with your S3 data through natural conversation.
+
+## What you'll need
+
+| Credential | Description | Example |
+|------------|-------------|---------|
+| **Access Key ID** | AWS access key identifier | `AKIAIOSFODNN7EXAMPLE` |
+| **Secret Access Key** | AWS secret access key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| **Default Region** | AWS region for your buckets | `us-east-1` |
+
+## Creating AWS credentials
+
+<Steps>
+  <Step title="Open the IAM Console">
+    Log in to the [AWS Management Console](https://console.aws.amazon.com/) and navigate to **IAM** (Identity and Access Management).
+  </Step>
+  <Step title="Create or select a user">
+    Go to **Users** in the sidebar. Either select an existing user or click **Create user** to create one specifically for Workshop.
+  </Step>
+  <Step title="Set permissions">
+    Attach the **AmazonS3ReadOnlyAccess** managed policy for read-only access. For access to specific buckets only, create a custom IAM policy.
+  </Step>
+  <Step title="Create an access key">
+    Select your user, go to the **Security credentials** tab, click **Create access key**, and select **Application running outside AWS**.
+  </Step>
+  <Step title="Copy credentials">
+    Copy both the **Access Key ID** and **Secret Access Key** immediately. The secret is only shown once.
+  </Step>
+</Steps>
+
+<Info>
+For security, create a dedicated IAM user for Workshop with only the permissions needed to access your S3 buckets. Avoid using root account credentials.
+</Info>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select AWS S3">
+    Click the **AWS S3** card.
+  </Step>
+  <Step title="Enter details">
+    Enter a **Connection Name** (e.g., "Production S3"), your **Access Key ID**, **Secret Access Key**, and **Default Region**.
+  </Step>
+  <Step title="Save">
+    Click **Add Connection**.
+  </Step>
+</Steps>
+
+## Verifying your connection
+
+Ask Workshop:
+
+```
+List all buckets in my S3 connection
+```
+
+If Workshop returns your bucket list, the connection is working.
+
+## Using your connection
+
+```
+Show me all objects in my "data-exports" bucket
+```
+```
+What files were uploaded to my S3 bucket in the last 7 days?
+```
+```
+List all CSV files in the "reports" folder of my analytics bucket
+```
+```
+What's the total size of objects in my backup bucket?
+```
+
+## Security best practices
+
+- **Least privilege:** Use `AmazonS3ReadOnlyAccess` for read-only operations. For specific buckets, create a custom policy.
+- **Dedicated users:** Create a dedicated IAM user for Workshop. Never use root credentials.
+- **Key rotation:** Rotate access keys regularly. Create a new key, update Workshop, then delete the old key.
+- **Never share keys:** Don't commit credentials to version control or share them publicly.
+
+<Warning>
+If you suspect your access key has been compromised, immediately deactivate it in the IAM console and create a new one.
+</Warning>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Invalid access key | Verify the Access Key ID was copied correctly. Check it's active in IAM (not deactivated). |
+| Access denied | Verify the IAM user has S3 permissions. Check bucket policies. Ensure the correct region is specified. |
+| Bucket not found | Verify the bucket name (case-sensitive). Ensure it exists in the specified region. |
+
+## Learn more
+
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [S3 Security Best Practices](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html)

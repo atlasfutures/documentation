@@ -1,0 +1,109 @@
+---
+title: "Conversations and projects"
+icon: "messages"
+description: "How Workshop organizes your work into projects and conversations for a structured, productive development experience."
+---
+
+## Conversations
+
+Conversations are the primary way you interact with Workshop. They follow a chat structure and are made up of pairs of user-Workshop interactions called _turns_.
+
+Each conversation lives within a project and maintains its own history, context, and state. You can have multiple conversations within the same project — useful for separating different features, debugging sessions, or exploration threads.
+
+### Starting a new conversation in a new project
+
+Click the **Home** button at the top of the left panel, then type your prompt. Starting a conversation from the Home screen creates a new project and assigns the conversation to it.
+
+### Starting a new conversation in an existing project
+
+Navigate to the project you want from the Home screen, then write your prompt in the input field. The new conversation will be associated with that project, sharing its files, context, and settings.
+
+<Info>
+A conversation can only belong to a single project, but a project can contain many conversations.
+</Info>
+
+### When to start a new conversation
+
+Start a **new conversation** when you:
+
+- Begin working on a separate feature or task
+- Want a clean context window after a long session
+- Need to explore an alternative approach without affecting your current thread
+- Have used `/compact` to condense and continue (the parent becomes read-only)
+
+**Continue an existing conversation** when you:
+
+- Are iterating on the same feature
+- Need Workshop to remember recent decisions and context
+- Are debugging something discussed earlier in the thread
+
+## Projects
+
+A project is a structured container for your work with Workshop. It groups conversations, files, settings, and context around a specific goal or codebase. On your file system, a project corresponds to a specific directory.
+
+Projects ensure that all actions, code, and files are associated with the correct context. The environment you set up in one conversation is available to other conversations in the same project.
+
+### The project screen
+
+Each project has its own page with the following sections:
+
+<CardGroup cols={2}>
+  <Card title="Project Overview">
+    A description rendered from the `README.md` file in the project directory.
+  </Card>
+  <Card title="Conversations">
+    A list of all conversations in the project. Click any conversation to navigate to it.
+  </Card>
+  <Card title="Rules for AI">
+    Project-specific rules rendered from `.workshop/rules.md` that guide Workshop's behavior.
+  </Card>
+  <Card title="Files">
+    A browser for all assets in the project directory.
+  </Card>
+</CardGroup>
+
+### Creating a new project
+
+Click **"+ New Project"** on the Home screen. You will be prompted to choose between:
+
+1. **Create new project** under the Workspace directory — use this when starting from scratch. Provide a project name and Workshop creates the directory for you.
+2. **Select existing folder** (Workshop Desktop only) — use this when you have an existing codebase or directory on your machine you want Workshop to work on.
+3. **Import from Git** — use this when your code is in a repository. Paste the repository URL and Workshop clones it for you. See [GitHub integration](/workshop/workshop-desktop/github-integration). On Workshop Cloud the same option appears in the template picker as **Import from GitHub**, and clones into your cloud project — see [Templates](/workshop/workshop-cloud/templates#import-from-github).
+
+### Creating a project from a template
+
+Workshop Templates are ready-made starting points. Browse them under **Templates** on the Home screen.
+
+When you select a template, Workshop clones it into your local environment and it becomes available as one of your projects.
+
+### Renaming a project
+
+Rename a project from the **top bar breadcrumb** — click the project name and select **Rename**, or use the project dropdown menu (⋯). You can also rename via the desktop menu bar under **Project → Rename Project**.
+
+### Renaming a conversation
+
+Click the conversation name in the top bar or open the conversation dropdown menu (⋯) and select **Rename**. Giving conversations descriptive names makes it easier to find them later — especially in projects with many threads.
+
+## Project context
+
+Every Workshop project can include a `.workshop/` directory at its root containing project-level configuration that Workshop reads automatically — including context files, rules, and custom skills.
+
+For details on the `.workshop/` directory structure, context file precedence, and how project memory works, see [Context and Memory](/workshop/core-concepts/context-and-memory).
+
+## Working across environments
+
+**Workshop Cloud** — Projects live on a cloud virtual machine. You can sync projects to Workshop Desktop using [Web ↔ Desktop Sync](/workshop/core-concepts/web-desktop-sync) to continue working locally.
+
+**Workshop Desktop** — A project corresponds to a directory in your Workspace folder on your computer. Workshop has direct access to your local file system. You can push changes back to Workshop Cloud using Web ↔ Desktop Sync.
+
+Projects created with **Create new project** go into your Workspace folder, which by default lives in your home directory:
+
+| Platform | Location |
+|----------|----------|
+| **Windows** | `%USERPROFILE%\Workspace` |
+| **macOS** | `~/Workspace` |
+| **Linux** | `~/Workspace` |
+
+Projects created with **Select existing folder** stay where they already are and are not moved into Workspace. To open the folder for the project you are working on, whichever way it was created, see [Opening the project folder](/workshop/workshop-desktop/file-system-and-terminals#opening-the-project-folder).
+
+Both environments share the same project structure and conversation model, so your workflow stays consistent regardless of where you build.

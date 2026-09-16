@@ -1,0 +1,144 @@
+---
+title: "Project templates"
+icon: "file-code"
+description: "Choose a starting template when creating a new Workshop Cloud project — React App, Web App, Data App, Anything, or Import from GitHub."
+---
+
+When you create a new project in Workshop Cloud, you choose one of five starting templates. Each sets up a different tech stack and project structure that Workshop uses as a foundation when building your app.
+
+## Template options
+
+### React app
+
+A **React** frontend with a **Python (FastAPI)** backend. The best choice for custom, design-rich applications where you want full control over the UI.
+
+**Best for:**
+
+- Custom-designed dashboards and data apps
+- Interactive single-page applications
+- Projects requiring specific React component libraries or design systems
+- Apps with complex frontend state management
+
+**What you get:**
+
+- React frontend with full component architecture
+- FastAPI Python backend for APIs and business logic
+- Built-in frontend build pipeline
+- One-click publish support
+
+### Web app
+
+A **Python (FastAPI)** backend with a plain **HTML/CSS/JavaScript** frontend. The most lightweight option for simple websites and apps that don't need a framework.
+
+**Best for:**
+
+- Websites and landing pages
+- API-first applications with minimal frontend
+- Projects using vanilla JavaScript or lightweight libraries
+- Quick prototypes that need server-side logic
+
+**What you get:**
+
+- FastAPI backend for building Python APIs
+- Full control over HTML, CSS, and JavaScript — no framework overhead
+- Flexible architecture for straightforward applications
+- One-click publish support
+
+### Data app
+
+A **Streamlit** application — a Python-native framework optimized for data apps. Streamlit handles UI rendering automatically — you write Python, and it generates interactive widgets, charts, and layouts.
+
+**Best for:**
+
+- Rapid analytics and data exploration tools
+- KPI dashboards and chart-heavy applications
+- Interactive data tools with sliders, dropdowns, and forms
+- Quick prototypes that need a polished UI fast
+
+**What you get:**
+
+- Built-in UI components (buttons, charts, tables, forms, sliders)
+- Automatic state management and caching
+- Native data connector integrations
+- Less code needed for interactive interfaces
+- One-click publish support
+
+### Anything
+
+An empty project with no preset stack. You start with a clean slate and tell Workshop exactly what to build. Use this when your project doesn't fit the other templates or you want to experiment with a specific framework or approach.
+
+<Warning>
+  **Anything** projects don't support one-click publishing because there's no predefined tech stack for Workshop to detect and deploy automatically. If you need one-click publish, start with **Web App / Website** or **Streamlit**.
+</Warning>
+
+### Import from GitHub
+
+Start from an existing repository. Workshop clones the repo into a new project so you can continue building on top of existing code.
+
+**Best for:**
+
+- Continuing work from an existing codebase
+- Collaborating on a project that lives in GitHub
+- Migrating a project into Workshop Cloud
+
+## How to select a template
+
+<Steps>
+  <Step title="Click New Project">
+    From the Projects page, click the **New Project** button.
+  </Step>
+  <Step title="Choose your template">
+    In the project creation dialog, you'll see five options: **React App**, **Web App**, **Data App**, **Anything**, and **Import from GitHub**. Click the one you want.
+  </Step>
+  <Step title="Name your project and create">
+    Enter a project name and click **Create Project**. Workshop remembers your last template selection, so it will be pre-selected next time.
+  </Step>
+</Steps>
+
+## Add-ons
+
+When creating a project, you can enable **Add-Ons** — AI Providers and Database Providers — that Workshop provisions automatically alongside your project.
+
+- **Web App**, **React App**, and **Static React App** templates auto-enable **Gemini** (AI Provider) and **Neon** (Database Provider with Neon Auth) by default. You can toggle these on or off before creating the project.
+- **Data App** and **Anything** templates start with no Add-Ons enabled.
+
+You can change Add-Ons at any time in **Settings** → **Resources** → **Add-Ons**.
+
+<Info>
+  **AI Providers** provision managed connectors for Anthropic, OpenAI, or Gemini — no API keys or setup required. Usage is billed to your Workshop credits.
+
+  **Database Providers** provision a managed Neon serverless Postgres database with built-in authentication (Neon Auth). Workshop handles credentials, auth domain syncing, and cleanup automatically.
+</Info>
+
+## When to use each template
+
+<AccordionGroup>
+  <Accordion title="I want to build a dashboard or data app">
+    Start with **React App** if you care about design and layout. Use **Data App** (Streamlit) if you want to move fast and the built-in components are sufficient.
+  </Accordion>
+
+  <Accordion title="I want interactive charts and filters with minimal effort">
+    **Data App** (Streamlit) is the best choice. Its built-in widgets (date pickers, dropdowns, sliders) and charting libraries let you create interactive data exploration tools with very little frontend code.
+  </Accordion>
+
+  <Accordion title="I need full control over the frontend">
+    Choose **React App** for component-based architecture with a design system, or **Web App** for lightweight HTML/CSS/JavaScript without framework overhead.
+  </Accordion>
+
+  <Accordion title="I want to experiment or build something unusual">
+    Start with **Anything**. You can install any packages, use any framework, and structure the project however you want. Keep in mind that one-click publishing won't be available.
+  </Accordion>
+
+  <Accordion title="I'm not sure what I need yet">
+    Go with **React App** — it's the most flexible default for anything interactive, or **Web App** for simple sites.
+  </Accordion>
+</AccordionGroup>
+
+## Template and preview behavior
+
+Both **React App**, **Web App**, and **Data App** templates work seamlessly with the preview pane and one-click publishing:
+
+- **Preview** — Your app automatically appears in the preview pane as Workshop builds it, regardless of which template you chose
+- **Publish** — Both templates support one-click deployment to a shareable URL
+
+If you outgrow what Workshop Cloud supports, you can sync your project to [Workshop Desktop](/workshop/workshop-desktop) and continue with full-stack flexibility.

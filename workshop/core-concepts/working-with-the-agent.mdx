@@ -1,0 +1,369 @@
+---
+title: "Working with the agent"
+icon: "messages"
+description: "How to communicate with Workshop, scope your work, and get the best results — from first prompt to iterative refinement."
+---
+
+## How Workshop builds
+
+Workshop defaults to **Build Mode** — you describe what you want, and it starts building. For most tasks, this is all you need. Describe the goal, provide context, and iterate on the results.
+
+When a project needs more upfront thinking, **Plan Mode** is available as a scoping tool. It acts like an experienced technical product manager — asking questions, pushing back on scope, and producing a structured plan before any code gets written.
+
+Neither mode is "the right way." Build Mode is the default because most interactions are iterative. Plan Mode is there when you need it.
+
+## Model selector
+
+Workshop is multi-model and multi-provider — you choose which model powers your main agent. Open the model selector in the top-left of the conversation to switch at any time.
+
+**For most projects, we recommend a strong orchestrator model** like Claude Sonnet 4.6, GLM-5.1, or GPT-5.4. These models are especially good at breaking down complex tasks, using tools effectively, and delegating work to [sub-agents](/workshop/core-concepts/sub-agents) when needed. If you need maximum performance on a complex project, top-tier models like Claude Opus will produce excellent results — just note they consume more credits. A strong orchestrator will also delegate simpler subtasks to faster, cheaper models automatically, so you're not paying top-tier rates for everything.
+
+**Smaller models like Gemini 3.1 Flash or Claude Haiku 4.5** are a good choice for quick, focused tasks that aren't part of a larger project — reading a document, summarizing something, or answering a question. They're fast and cost-efficient, but may underperform on multi-step builds or complex orchestration.
+
+If you're using Workshop Desktop, local models are also available in the selector — see [Local Models](/workshop/workshop-desktop/local-models) to set them up.
+
+To let Workshop pick a model for your task, choose **ARC** in the selector. This is Workshop's in-app router, not access to the separate ARC APIs. The [Responses and Decisions APIs](/arc/availability) remain in private preview and require Rayline approval; your Workshop account does not enable them. See [ARC in Settings](/workshop/core-concepts/settings#arc).
+
+<Tip>
+Open the model selector and click **"What's this?"** at the top for a detailed breakdown of what each model is best at.
+</Tip>
+
+The currently available models are:
+
+| Model | Provider | Best for | Speed | Cost |
+| ----- | -------- | -------- | ----- | ---- |
+| Claude Sonnet 4.6 | Anthropic | Balanced — code, review, orchestration | Fast | Medium |
+| Claude Haiku 4.5 | Anthropic | Fast, focused tasks — searches, scans, checklists | Fastest | Low |
+| Claude Opus 4 | Anthropic | Complex reasoning — architecture, multi-file analysis | Slower | Highest |
+| GPT-5.4 | OpenAI | Backend coding, code review, general-purpose reasoning | Fast | Medium |
+| GPT-5.4 Mini | OpenAI | Lighter tasks at lower cost | Fast | Low |
+| GPT-5.4 Nano | OpenAI | Simple tasks, lowest cost | Fastest | Lowest |
+| Gemini 3.1 Pro | Google | Frontend dev, long-context analysis (1M token window) | Fast | Medium |
+| Gemini 3.1 Flash | Google | Fast general-purpose tasks, large context | Fastest | Low |
+| GLM-5.1 | Z.ai | Frontend dev, long-horizon tasks, cost-efficient coding | Fast | Lowest |
+| GLM-5 | Z.ai | General-purpose coding | Fast | Low |
+| GLM-5 Turbo | Z.ai | Fast coding tasks | Fastest | Lowest |
+| GLM-5v Turbo | Z.ai | Vision + coding tasks | Fast | Low |
+| Kimi K2.6 | Moonshot | Coding, reasoning, multilingual tasks | Fast | Low |
+
+<Note>
+This list is updated regularly as new models become available. For the latest, check the model selector in the app.
+</Note>
+
+For more on how different models work together in a single workflow, see [Sub-agents](/workshop/core-concepts/sub-agents).
+
+## Communicating effectively
+
+The clearer you are about what you want, the better Workshop can deliver. Think of it as a collaborative conversation.
+
+### Be specific and descriptive
+
+Vague prompts produce generic results. Specificity gives Workshop the information it needs to make the right decisions.
+
+<Tabs>
+  <Tab title="Vague">
+    ```
+    Make me a website.
+    ```
+  </Tab>
+  <Tab title="Specific">
+    ```
+    Create a responsive website for my consulting business with a home page,
+    services page, about page, and contact form. Use a professional design
+    with navy blue and gold. Include a sticky navigation menu.
+    ```
+  </Tab>
+</Tabs>
+
+### Provide context and purpose
+
+Tell Workshop _why_ you're building something, not just _what_. Context about your situation, audience, and constraints leads to better decisions.
+
+<Tabs>
+  <Tab title="No context">
+    ```
+    Build a database.
+    ```
+  </Tab>
+  <Tab title="With context">
+    ```
+    I need a database to track inventory for my small retail business. Store
+    information about products (name, SKU, price, quantity, category, supplier),
+    suppliers (name, contact info, payment terms), and sales transactions.
+    ```
+  </Tab>
+</Tabs>
+
+### Iterate and refine
+
+Building software is iterative. Instead of expecting perfection on the first try, guide Workshop through incremental improvements with specific feedback.
+
+<Tabs>
+  <Tab title="Unhelpful">
+    ```
+    This isn't right. Fix it.
+    ```
+  </Tab>
+  <Tab title="Actionable">
+    ```
+    The layout looks good, but I'd like three changes: 1) Make the navigation
+    menu more prominent, 2) Add email validation to the contact form, and
+    3) Add a gallery section to showcase past projects.
+    ```
+  </Tab>
+</Tabs>
+
+## Prompting by intent
+
+### Starting a project
+
+Give Workshop a clear picture of what you're building, who it's for, and what success looks like.
+
+```
+I'd like to create a fitness tracking app called "FitTracker". The goal is to
+monitor workouts, nutrition, and progress toward specific goals. Users should
+see a dashboard summarizing their activity, calorie intake, and workout
+history. Include data visualization for tracking progress.
+```
+
+### Describing design and UI
+
+Reference specific styles, colors, layouts, and interaction patterns rather than abstract adjectives.
+
+```
+The interface should follow a minimalist design with navy, white, and light gray.
+Use subtle shadows and rounded corners for a modern feel.
+```
+
+```
+Add a navigation menu with Home, Products, Services, About, and Contact. Fixed
+at the top, collapses into a hamburger on mobile. Highlight the active page.
+```
+
+### Defining functionality
+
+Describe user interactions as specific scenarios — what the user does, what should happen, and what edge cases to handle.
+
+```
+When a user clicks "Submit", validate all form fields. If validation fails,
+show error messages below the problematic fields. On success, send the data
+and show a confirmation.
+```
+
+### Backend and API work
+
+Specify data models, integrations, performance requirements, and security considerations.
+
+```
+Connect to the OpenWeatherMap REST API. Authenticate with our API key, fetch
+current weather and 5-day forecast, and cache responses for 30 minutes.
+```
+
+### Debugging and troubleshooting
+
+Describe what you expected, what actually happened, and any relevant context about when the issue occurs.
+
+```
+The contact form fails silently when attachments exceed 5MB. Instead of a blank
+error page, show a user-friendly message with the file size limit.
+```
+
+### Requesting changes
+
+Be specific about _what_ to change, _where_ to change it, and _why_.
+
+```
+On the product detail page: 1) Move description above specifications,
+2) Make images larger with a zoom feature, 3) Add a "Frequently bought
+together" section at the bottom.
+```
+
+## Plan mode
+
+Plan Mode is an optional scoping tool for when you want structured requirements gathering before building. It's especially useful when starting a new project from scratch or when you're not sure exactly what you need.
+
+### What plan mode does
+
+- **Asks probing questions** to understand your true needs — typically 2–3 structured questions per turn
+- **Scopes down to an MVP** before expanding — build something valuable first
+- **Pushes back** when you're over-engineering or adding unnecessary complexity
+- **Produces a plan document** that Build Mode can follow step by step
+
+### How it works
+
+<Steps>
+  <Step title="Discovery">
+    Plan Mode asks questions to understand your needs using structured multiple-choice for clear, efficient communication.
+  </Step>
+  <Step title="MVP Scoping">
+    Based on your answers, Plan Mode identifies the smallest version that delivers real value. It steers away from scope creep.
+  </Step>
+  <Step title="Summary Checkpoint">
+    Before generating the plan, Plan Mode presents a concise summary of scope and technical decisions. You review and approve — or request adjustments.
+  </Step>
+  <Step title="Plan Generation">
+    Plan Mode creates a structured `plan.md` file saved in your project under `./plans/[timestamp_topic-name]/`.
+  </Step>
+</Steps>
+
+### The plan document
+
+Each plan is append-only — new plans never overwrite existing ones, preserving your decision history. The plan includes:
+
+- **Spec Header** — Name, smallest scope, non-goals
+- **Decision Snapshot** — Key technical and product decisions
+- **Architecture at a Glance** — Recommended stack and structure
+- **Implementation Plan** — Step-by-step development phases
+- **Verification & Demo Script** — How to test each phase
+- **Deploy** — Deployment strategy
+
+<Info>
+Plan Mode is read-only — it cannot modify files or execute code. Planning stays separate from implementation.
+</Info>
+
+### Switching between modes
+
+Open the **+** menu to the left of the conversation input and choose **Mode: Build** to reveal the mode picker, then select **Plan** or **Build**. You can also just type "Use Plan mode." (or "Switch to Build mode.") — Workshop will flip the toggle for you. The mode persists across sessions and defaults to Build Mode.
+
+![Plan Mode menu under the + button, with Build and Plan options](https://static.workshop.ai/docs-site/plan-mode/plan-mode-menu-v2.webp)
+
+A common workflow for new projects:
+
+1. **Plan Mode** — Define requirements, scope the MVP, create a plan
+2. **Build Mode** — Implement Phase 1
+3. **Plan Mode** — Evaluate results, plan Phase 2
+4. **Build Mode** — Continue implementation
+
+For existing projects or clear requirements, skip Plan Mode entirely and work in Build Mode.
+
+## Voice input
+
+Workshop supports voice dictation — speak your prompt instead of typing it. Your speech is transcribed and inserted into the message input.
+
+**How to use it:**
+
+- Click the **microphone icon** in the message input toolbar, or press <kbd>⌘</kbd><kbd>⇧</kbd><kbd>D</kbd> (Mac) / <kbd>Ctrl</kbd><kbd>⇧</kbd><kbd>D</kbd> (Windows/Linux)
+- Speak your prompt — the button pulses while recording
+- Click the microphone again (or press the shortcut again) to stop — Workshop transcribes your audio and inserts the text
+- Edit the transcription if needed, then send as usual
+
+Voice input works in both Workshop Cloud and Desktop. Audio is sent to a transcription service for processing — it is not stored after transcription completes.
+
+<Tip>
+Voice input is especially useful for describing UI changes, explaining bugs, or dictating long prompts where typing would be slower.
+</Tip>
+
+## Files and attachments
+
+You can attach files directly in the message input — but how you attach a file determines what Workshop can do with it.
+
+**Attaching in the input box (drag-and-drop, paste, or clipboard)**
+
+The model can read and understand the file — useful for showing Workshop a design reference, a screenshot of a bug, or a spec to follow. The file is _not_ stored anywhere your app can access, so it won't appear in what gets built.
+
+**Uploading a file for your app to use**
+
+If you want Workshop to use a file inside your app — a logo, a background image, a data file — you need to upload it first:
+
+1. Click the **+** button in the message input and choose **Files & Uploads**, or go to Workshop Hub → **Uploads**
+2. Type **@** in the message input and select the file by name
+3. Tell Workshop how to use it — e.g. *"Use @logo.png as the logo in the header"*
+
+**Context vs content — when it matters:**
+
+- **Context** files help Workshop _understand_ your project — reference material, design specs, data schemas, or documentation it should read but not directly include in output. Add files to your project's context through the sidebar Sources panel.
+- **Content** files are material Workshop should _use directly_ — images to display, data files to process, CSVs to transform. Upload these and reference with @ in your message.
+
+For persistent context across conversations, use the Sources panel in the sidebar or the `.workshop/` directory structure described in [Context and Memory](/workshop/core-concepts/context-and-memory).
+
+## Message queuing
+
+You can keep typing while Workshop is responding. Messages you send during an active response are queued and delivered automatically once the current response completes.
+
+This means you don't need to wait for the agent to finish before giving your next instruction — just type and send as you think of things. Queued messages appear above the input so you can review or remove them before they're sent.
+
+### Send now
+
+If you want your queued messages sent immediately without waiting for the current response to finish, click **Send now**. This interrupts the agent's current response and delivers your queued messages as a single combined prompt.
+
+## Managing long conversations
+
+Every conversation has a finite context window — the amount of information Workshop can hold in memory at once. As a conversation grows, responses can slow down and quality can degrade toward the end of the window.
+
+Workshop handles this automatically so you can focus on building.
+
+### Auto-compaction
+
+When your conversation approaches the context window limit, Workshop automatically compacts it. This creates an intelligent summary of the conversation so far and continues seamlessly — no action needed from you.
+
+Here's what happens:
+
+1. Workshop detects that the conversation is nearing its context limit
+2. It generates a focused summary that preserves the key decisions, code context, and current task state
+3. Your conversation continues in a new child conversation, carrying forward the essential context
+4. The original conversation becomes read-only history you can review anytime
+
+Auto-compaction is always active. You don't need to configure or enable anything — long conversations stay fast without manual intervention.
+
+### The `/compact` command
+
+You can also compact manually at any time using the `/compact` command. This is useful when you want to start a fresh context on your own terms — for example, after completing a milestone.
+
+When a conversation nears the context limit, a banner appears suggesting compaction:
+
+![Workshop suggests compaction when context is running low](https://static.workshop.ai/docs-site/compact/compact-banner.png)
+
+You can click **Compact conversation and continue** in the banner, or type `/compact` in the chat input at any time.
+
+```
+/compact
+```
+Summarizes everything and continues in a new conversation.
+
+```
+/compact focus on the authentication flow
+```
+Prioritizes specific context in the summary.
+
+Workshop analyzes the full conversation and distills it into a structured summary — capturing your original request, key decisions, current project state, and what to do next.
+
+<video
+  controls
+  aria-label="Workshop compacts a conversation into a summary and continues the task"
+  alt="Workshop compacts a conversation into a summary and continues the task"
+  muted
+  playsInline
+  src="https://static.workshop.ai/docs-site/compact/compact-video-v2.mp4"
+/>
+
+Once complete, the conversation is replaced with a clean summary. You can expand it to review what was captured, and continue prompting as usual — the agent retains full understanding of what was built.
+
+![The conversation after compaction — a clean summary with full project context preserved](https://static.workshop.ai/docs-site/compact/compact-result-v3.png)
+
+### Other useful commands
+
+| Command | Description | Example |
+| ------- | ----------- | ------- |
+| `/context [guidance]` | Update project context from conversation | `/context focus on API patterns` |
+| `/summarize [focus]` | Summarize the current conversation | `/summarize action items` |
+
+
+## Tips for better results
+
+<CardGroup cols={2}>
+  <Card title="Use version control">
+    Projects can evolve quickly and it's easy to lose a working state. Ask Workshop to initialize Git and commit at key milestones so you can always go back to a version that worked — or connect a GitHub repository using the native [GitHub integration](/workshop/workshop-cloud/github-integration) to back up your code and collaborate with others.
+  </Card>
+  <Card title="Try Plan Mode for new projects">
+    When starting from scratch, Plan Mode helps you define clear requirements and creates a structured plan — even from vague ideas.
+  </Card>
+  <Card title="Work incrementally">
+    Build features one at a time. Get core functionality working before adding complexity. This makes debugging easier and progress more visible.
+  </Card>
+  <Card title="Use custom instructions">
+    Set consistent preferences in [Settings](/workshop/core-concepts/settings) so you don't repeat the same guidance in every conversation.
+  </Card>
+  <Card title="Leverage project context">
+    Keep your `.workshop/context.md` updated so Workshop always understands your project's current state and conventions. See [Context and Memory](/workshop/core-concepts/context-and-memory).
+  </Card>
+</CardGroup>

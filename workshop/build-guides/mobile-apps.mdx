@@ -1,0 +1,149 @@
+---
+title: "Build mobile apps"
+icon: "mobile"
+description: "Build iOS and Android apps with Workshop Desktop. Expo and React Native for cross-platform, or native Swift and Kotlin for platform-specific development."
+---
+
+## What you'll build
+
+A mobile application for iOS, Android, or both — from project scaffolding through development to store-ready builds — using Workshop Desktop's terminal access and filesystem control.
+
+<Warning>
+  Mobile app development requires **Workshop Desktop**. Workshop Cloud does not have access to the native toolchains (Xcode, Android Studio, simulators) needed for mobile development.
+</Warning>
+
+## Before you start
+
+<Steps>
+  <Step title="Download Workshop Desktop">
+    Install Workshop Desktop from [workshop.ai/download](https://workshop.ai/download). Workshop Desktop runs on your local machine with full filesystem and terminal access.
+  </Step>
+  <Step title="Choose your framework">
+    Workshop supports multiple mobile development paths. Choose based on your needs:
+
+    | Framework | Platforms | Best for |
+    |---|---|---|
+    | **Expo / React Native** | iOS + Android | Cross-platform apps, fastest path to both stores |
+    | **Swift / SwiftUI** | iOS only | Native iOS performance, Apple ecosystem features |
+    | **Kotlin / Jetpack Compose** | Android only | Native Android performance, Google ecosystem features |
+  </Step>
+</Steps>
+
+## Recommended path: Expo / React native
+
+Expo is the recommended starting point for most mobile apps. It gives you a single codebase that runs on both iOS and Android, with a fast development cycle and straightforward path to the app stores.
+
+<Steps>
+  <Step title="Set up the development environment">
+    Open Workshop Desktop, start a new conversation, and ask Workshop to set up your Expo project:
+
+    *"Help me set up Expo CLI and create a new React Native project with TypeScript, React Navigation, and a tab-based layout."*
+
+    Workshop will install the necessary tools, scaffold the project, and configure the development environment.
+  </Step>
+  <Step title="Describe your app">
+    Once the project is set up, describe what you want to build:
+
+    **Example prompts:**
+    - *"Build a task management app with categories, due dates, push notifications for reminders, and a dark mode toggle."*
+    - *"Create a recipe app with a searchable catalog, favorites list, grocery list generator, and offline support."*
+    - *"Build a fitness tracker with workout logging, progress charts, and a calendar view."*
+  </Step>
+  <Step title="Test in the simulator">
+    Ask Workshop to launch the app in the iOS Simulator or Android Emulator:
+
+    - *"Run this in the iOS Simulator."*
+    - *"Start the Expo development server so I can test on my phone."*
+
+    Use the Expo Go app on your physical device for the fastest testing loop.
+  </Step>
+  <Step title="Iterate on features and design">
+    Refine specific screens, add features, and polish the UI:
+
+    - *"Add pull-to-refresh on the home screen."*
+    - *"Make the navigation transitions smoother with shared element animations."*
+    - *"Add camera access for the profile photo feature."*
+    - *"Implement offline data persistence so the app works without internet."*
+  </Step>
+  <Step title="Build for distribution">
+    When your app is ready, ask Workshop to prepare it for the stores:
+
+    *"Help me configure EAS Build for both iOS and Android, generate app icons and splash screens, and prepare for App Store and Google Play submission."*
+  </Step>
+</Steps>
+
+## Alternative: native iOS with Swift
+
+For apps that need deep Apple ecosystem integration (HealthKit, ARKit, Watch connectivity), native Swift development is the way to go.
+
+<Steps>
+  <Step title="Set up the environment">
+    *"Help me set up an iOS development environment with Xcode. Create a new SwiftUI project with a tab-based navigation structure."*
+
+    <Note>
+      Xcode is required and only runs on macOS. Make sure you have it installed from the Mac App Store before starting.
+    </Note>
+  </Step>
+  <Step title="Build and iterate">
+    Describe your screens, data models, and interactions. Workshop writes Swift/SwiftUI code and can help with Core Data, CloudKit, notifications, and other Apple frameworks.
+
+    *"Create a SwiftUI app with a list view of items from Core Data, a detail view with editing, and iCloud sync."*
+  </Step>
+  <Step title="Prepare for the App Store">
+    *"Help me prepare my iOS app for App Store submission — code signing, app icons, screenshots, and review guidelines."*
+  </Step>
+</Steps>
+
+## Alternative: native Android with Kotlin
+
+For apps that need deep Android platform features (widgets, background services, Wear OS), native Kotlin is the best choice.
+
+<Steps>
+  <Step title="Set up the environment">
+    *"Help me configure Android Studio and create a new Kotlin project with Jetpack Compose, navigation, and Material Design 3."*
+  </Step>
+  <Step title="Build and iterate">
+    Workshop writes Kotlin code with Jetpack Compose and can help with Room database, WorkManager, Firebase integration, and other Android frameworks.
+
+    *"Build an Android app with a Compose UI showing a list from Room database, with search, swipe-to-delete, and a floating action button to add items."*
+  </Step>
+  <Step title="Prepare for Google Play">
+    *"Help me prepare my Android app for Google Play — generate signed APK, create store listing assets, and configure the release track."*
+  </Step>
+</Steps>
+
+## Tips and best practices
+
+<AccordionGroup>
+  <Accordion title="Start with Expo unless you have a reason not to">
+    Expo handles the build system, native module linking, and over-the-air updates. It covers the vast majority of mobile app use cases. Only go native if you need a specific platform API that Expo doesn't support.
+  </Accordion>
+  <Accordion title="Let Workshop handle the toolchain setup">
+    Mobile development environments are notoriously tricky to configure. Give Workshop the full setup task — it will handle dependency installation, SDK configuration, and emulator setup, resolving errors along the way.
+  </Accordion>
+  <Accordion title="Test on real devices early">
+    Simulators are great for rapid iteration, but real-device testing catches performance issues, gesture behavior, and hardware-specific bugs that simulators miss. Ask Workshop to help you set up device testing.
+  </Accordion>
+  <Accordion title="Describe screens, not code">
+    Say *"Build a settings screen with toggles for notifications, dark mode, and data sync, plus an account section with profile photo, name, and logout button"* rather than specifying components. Workshop knows which UI primitives to use for each platform.
+  </Accordion>
+  <Accordion title="Use checkpoints before major changes">
+    Mobile apps have complex state. Before adding a major feature or refactoring navigation, ask Workshop to create a checkpoint so you can roll back if needed.
+  </Accordion>
+  <Accordion title="Use local models for AI-powered mobile apps">
+    If your app includes AI features, you can develop and test inference against a local model running on your machine without hosted-model inference charges. This does not prevent other app features or development tools from using network services. Switch to a managed AI connector when you're ready to ship.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Workshop Desktop overview](/workshop/workshop-desktop) — Learn more about Desktop's capabilities
+- [File system and terminals](/workshop/workshop-desktop/file-system-and-terminals) — How Workshop Desktop interacts with your local environment
+- [Checkpoints](/workshop/workshop-desktop/checkpoints) — Save and restore project states
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent) — Prompting tips and communicating with Workshop
+
+---
+
+<Card title="Download Workshop Desktop" icon="arrow-down-to-bracket" href="https://workshop.ai/download">
+  Build mobile apps with full terminal access and native toolchain support.
+</Card>

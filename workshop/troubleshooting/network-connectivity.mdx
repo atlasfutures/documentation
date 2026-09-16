@@ -1,0 +1,103 @@
+---
+title: "Network and connectivity"
+icon: "wifi"
+description: "Troubleshoot network, firewall, and connectivity issues with Workshop."
+---
+
+## Connection issues
+
+Experiencing connectivity issues with Workshop? This guide helps you troubleshoot and resolve network or firewall-related problems.
+
+## Required connections
+
+To function correctly, Workshop needs access to several services. Ensure the following domains are accessible if you are on a restricted network:
+
+| Domain/Service | Purpose | Port | Protocol |
+|---|---|---|---|
+| `*.workshop.ai` | Core services and updates | 443 | HTTPS |
+| `*.googleapis.com` | Authentication and cloud services | 443 | HTTPS |
+| `accounts.google.com` | Sign-in | 443 | HTTPS |
+| `*.cloudfunctions.net` | Backend services | 443 | HTTPS |
+| `*.firebaseio.com` | Real-time data sync | 443 | HTTPS / WSS |
+| `api.github.com` | Template resources | 443 | HTTPS |
+| `github.com` | Model downloads (local AI) | 443 | HTTPS |
+| `huggingface.co` | Model downloads (local AI) | 443 | HTTPS |
+| `us.i.posthog.com` | Analytics | 443 | HTTPS |
+| `us-assets.i.posthog.com` | Analytics | 443 | HTTPS |
+| `*.ingest.us.sentry.io` | Error reporting | 443 | HTTPS |
+| `*.lemonsqueezy.com` | Payment processing | 443 | HTTPS |
+
+## Identifying connectivity issues
+
+You may have network issues if:
+
+- You cannot start or send messages in Workshop
+- You encounter error messages about connection failures
+- You experience delayed responses or timeouts
+
+## Troubleshooting steps
+
+<Steps>
+  <Step title="Check your internet connection">
+    Verify your device is online by visiting other websites in your browser.
+  </Step>
+  <Step title="Check firewall restrictions">
+    If you are behind a corporate firewall, request IT to allowlist the domains listed above. For personal firewalls, check settings to allow Workshop access.
+  </Step>
+  <Step title="Check proxy server settings">
+    Verify your proxy allows connections to the required services.
+  </Step>
+  <Step title="Test VPN interference">
+    Temporarily disable your VPN to test connectivity. If that resolves the issue, adjust VPN settings to allow traffic to the necessary domains.
+  </Step>
+  <Step title="Check DNS configuration">
+    Try alternative DNS servers such as `8.8.8.8` (Google) or `1.1.1.1` (Cloudflare). Flush your DNS cache to update records.
+  </Step>
+</Steps>
+
+## Testing your connection
+
+Verify network access from a terminal:
+
+```bash
+# Ping the main Workshop domain
+ping workshop.ai
+
+# Test HTTPS connection
+curl -I https://workshop.ai
+```
+
+Repeat for other required domains if needed.
+
+## SSL intercept issues (proxy)
+
+If you see an error like:
+
+```
+ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify
+failed: self-signed certificate in certificate chain
+```
+
+This typically means a corporate proxy is intercepting SSL traffic. To resolve:
+
+1. **Obtain the proxy's CA certificate** — this is usually a `.pem` or `.crt` file from your IT department
+2. **Install the CA certificate system-wide:**
+   - **macOS**: Add it to the "System" keychain in Keychain Access and set trust to "Always Trust" for SSL
+   - **Windows**: Import into the "Trusted Root Certification Authorities" store for "Local Computer"
+   - **Linux**: Place the `.crt` file in `/usr/local/share/ca-certificates/` and run `sudo update-ca-certificates`
+
+## Upgrading Workshop
+
+Many connectivity issues are resolved by upgrading to the latest version. Visit [workshop.ai](https://workshop.ai) to download the latest release, or check the announcements section within the application.
+
+## Need more help?
+
+If issues persist:
+
+1. Document your network setup details (firewall type, proxy configuration, VPN provider)
+2. Capture any error messages you see
+3. Contact Workshop support with this information:
+   - **Email**: help@workshop.ai
+   - **Discord**: [Join our community](https://discord.gg/ggqJkUN3vx)
+
+Network configurations vary widely between organizations. Your IT department may need to implement specific solutions for your environment.

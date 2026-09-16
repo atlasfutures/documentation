@@ -1,0 +1,16 @@
+---
+title: "ARC pricing"
+description: "Separate token rates for hosted responses and standalone decisions."
+---
+
+import Rates from '/snippets/arc-rates.mdx';
+
+<Note>ARC is in private preview. These proposed launch rates are not active billing rates. Contact [hello@rayline.ai](mailto:hello@rayline.ai) for early access and pricing availability.</Note>
+
+<Rates />
+
+Responses includes routing and generation, with no additional Decisions charge for the same call.
+
+Decisions is billed on encoded input and cache reads. Your chosen provider charges for inference separately. The fixed Decisions rates were calibrated to approximately 2.5% of a reference blended workload's inference cost; they are not a percentage commission or a guarantee across workloads.
+
+For explicit coding-agent policies, [Agent Gateway](/rules-router/pricing) has a 0% commission launch policy. Workshop has its own [plans and credits](/workshop/pricing/plans).

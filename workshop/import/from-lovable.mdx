@@ -1,0 +1,122 @@
+---
+title: "Import from Lovable"
+icon: "heart"
+description: "Bring your Lovable project into Workshop via GitHub and continue building with backends, databases, AI connectors, and more."
+---
+
+You can bring your Lovable project into Workshop and continue building with full-stack capabilities that go beyond what Lovable offers -- custom backends, multiple database options, multi-model AI support, and local development.
+
+**Workshop Desktop is recommended** for the best import experience, but Workshop Cloud works too.
+
+## Step 1: sync your Lovable project to GitHub
+
+Lovable has built-in GitHub integration. If you haven't already connected it:
+
+<Steps>
+  <Step title="Open your project in Lovable">
+    Navigate to the project you want to import.
+  </Step>
+  <Step title="Connect to GitHub">
+    Go to your project's **Settings** and find the **GitHub** section. Click **Connect to GitHub** and authorize Lovable to access your GitHub account.
+  </Step>
+  <Step title="Create or select a repository">
+    Choose to create a new repository or connect to an existing one. Lovable will sync your project code to this repository.
+  </Step>
+  <Step title="Verify the sync">
+    Confirm that your project code appears in the GitHub repository. You should see your React/Vite source files, `package.json`, and other project files.
+  </Step>
+</Steps>
+
+<Tip>
+  Copy the GitHub repository URL -- you'll need it in the next step. It looks like `https://github.com/your-username/your-project`.
+</Tip>
+
+## Step 2: connect GitHub in Workshop
+
+If you haven't already connected your GitHub account to Workshop:
+
+<Tabs>
+  <Tab title="Workshop Desktop">
+    1. Open Workshop Desktop and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App and select which repositories to grant access to
+    4. Confirm the connection
+
+    See [GitHub Integration (Desktop)](/workshop/workshop-desktop/github-integration) for detailed instructions.
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Open Workshop Cloud and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App
+    4. Confirm the connection
+
+    See [GitHub Integration (Cloud)](/workshop/workshop-cloud/github-integration) for detailed instructions.
+  </Tab>
+</Tabs>
+
+## Step 3: create a project from your Lovable repository
+
+<Tabs>
+  <Tab title="Workshop Desktop (Recommended)">
+    1. Click **New Project** from the Projects page
+    2. Select **Import from Git**
+    3. Choose your Lovable repository from the list, or paste the repository URL
+    4. Workshop clones the repository and creates your project
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Create a new blank project (select **None** as the template)
+    2. Open the project settings and navigate to the **GitHub** section
+    3. Click **Link GitHub Repository** and select your Lovable repository
+    4. Pull the code from GitHub into your project
+  </Tab>
+</Tabs>
+
+## Step 4: set up and run your project
+
+Once the project is created, open a conversation and ask the agent to get your project running:
+
+<CodeGroup>
+```text Recommended Prompt
+Please set up and run my Lovable project so I can begin extending it with new features. 
+This is a React/Vite project that was built in Lovable. Install the dependencies and 
+start the development server.
+```
+</CodeGroup>
+
+The agent will:
+- Detect the project structure (React + Vite + TypeScript + Tailwind is typical for Lovable projects)
+- Install dependencies with `npm install`
+- Start the development server
+- Verify everything is running correctly
+
+## What you can do Next
+
+With your Lovable project now in Workshop, you can extend it in ways that weren't possible before:
+
+| Capability | Example Prompt |
+|---|---|
+| **Add AI models** | *"Add a Gemini connector so users can interact with Google's AI models"* |
+| **Connect databases** | *"Set up a PostgreSQL database to store user data instead of local storage"* |
+| **Build a backend** | *"Create a Python/FastAPI backend with authentication and API routes"* |
+| **Add integrations** | *"Integrate Stripe for payment processing"* |
+| **Custom deployment** | *"Help me set up deployment to Netlify with automatic deploys from GitHub"* |
+
+## Deployment
+
+Workshop's one-click publish is designed for projects built natively in Workshop. For your imported Lovable project, ask the agent to set up deployment to a hosting provider that suits your stack:
+
+<CodeGroup>
+```text Netlify Deployment
+Help me set up deployment for my project to Netlify. I want automatic deploys 
+when I push to the main branch on GitHub.
+```
+
+```text Vercel Deployment
+Help me deploy this React/Vite project to Vercel and configure it for 
+production builds.
+```
+</CodeGroup>
+
+<Card title="Ready to get started?" icon="rocket" href="https://workshop.ai/download">
+  Download Workshop Desktop to import your Lovable project with the best experience.
+</Card>

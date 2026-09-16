@@ -1,0 +1,29 @@
+---
+title: "ARC Decisions"
+description: "The routing decision. Your inference stack."
+icon: "route"
+---
+ARC Decisions chooses a model and reasoning effort without generating the answer. Use it when you want adaptive selection while retaining control of inference, provider access, and your application's agent loop.
+
+## The handoff
+
+1. Send the context for the task to ARC.
+2. Read the returned model and reasoning effort.
+3. Map that choice to a provider model and execute the request in your own stack.
+4. Handle the provider response, tools, retries, and next turn in your application.
+
+<Note>
+ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.
+</Note>
+
+Start with the [decision example](/arc/quickstart) and [field reference](/arc/reference/decisions).
+
+## What you own
+
+Your application owns provider credentials, execution, provider compatibility, retries, and fallback behavior. A successful decision is not a successful generation. If a selected model is unavailable, handle that explicitly in your integration rather than assuming ARC executed a fallback.
+
+## How billing differs
+
+Decisions meters input and cache-read tokens. It has no output-token pricing category. Provider inference is a separate cost, paid through your execution stack.
+
+The launch rates are fixed token prices. Their calibration to about 2.5% of a reference workload's inference cost is not a percentage commission. See [ARC pricing](/arc/pricing).

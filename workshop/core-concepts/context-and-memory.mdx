@@ -1,0 +1,133 @@
+---
+title: "Context and memory"
+icon: "brain"
+description: "How Workshop remembers your project — the .workshop/ directory, context files, rules, skills, and how context carries across conversations."
+---
+
+## How Workshop knows your project
+
+Every conversation starts fresh in terms of the AI context window — but Workshop doesn't start from zero. It reads project context files at the beginning of each conversation, giving it persistent knowledge about your project's architecture, conventions, and current state.
+
+This context lives in the `.workshop/` directory at your project root.
+
+## The `.workshop/` directory
+
+```
+your-project/
+├── .workshop/
+│   ├── context.md      # Project context — what Workshop should know
+│   ├── rules.md        # Project rules — how Workshop should behave
+│   └── skills/         # Custom skills for specialized tasks
+├── src/
+├── README.md
+└── ...
+```
+
+### `context.md`
+
+The primary project context file. Workshop reads this at the start of every conversation to understand your project's architecture, current state, and conventions.
+
+**How to update it:**
+
+- **Using `/context`:** Type `/context` in any conversation. Workshop analyzes your project files and conversation history, then updates `context.md` with an intelligent summary.
+- **With custom focus:** Type `/context focus on API patterns` to steer what gets emphasized.
+- **Manually:** Edit `.workshop/context.md` directly to add or correct information.
+
+**When to update:**
+
+- After completing a major feature or milestone
+- Before starting a new conversation in an existing project
+- When Workshop seems to have forgotten important project details
+
+### `rules.md`
+
+Project-specific rules that guide Workshop's behavior. Use this for coding standards, naming conventions, framework preferences, and any guidelines Workshop should follow consistently.
+
+```markdown
+# Project Rules
+
+- Use TypeScript for all new files
+- Follow BEM naming for CSS classes
+- All API endpoints must include input validation
+- Write tests for every new utility function
+```
+
+Rules are different from context: context describes _what your project is_, rules describe _how Workshop should behave_ when working on it.
+
+### `skills/` directory
+
+Custom skills are reusable instruction sets for specialized tasks. They extend Workshop's capabilities for project-specific workflows like deployment, testing patterns, or domain operations.
+
+## Context file precedence
+
+Workshop checks for context files in a specific order, using the first one found:
+
+| Priority | File | Description |
+| -------- | ---- | ----------- |
+| 1 (highest) | `.workshop/context.md` | Workshop's native context format |
+| 2 | `.workshop/rules.md` | Workshop's rules file |
+| 3 | `.cursor/rules/*.mdc` | Cursor-compatible rules (all `.mdc` files concatenated) |
+| 4 (lowest) | `.cursorrules` | Legacy Cursor rules file |
+
+<Warning>
+Only the highest-priority file found is loaded — they are not merged. If you have both `.workshop/context.md` and `.cursorrules`, only `context.md` is used.
+</Warning>
+
+<Info>
+If you're migrating from another AI coding tool, Workshop automatically picks up your existing `.cursorrules` or `.cursor/rules/` files — no changes needed.
+</Info>
+
+## Custom instructions
+
+Custom Instructions are global preferences set in **Settings** (wrench icon) that Workshop follows across **all** conversations and projects. Think of them as your personal defaults.
+
+```
+Every visualization should have a transparent background and white labels.
+```
+```
+When building web applications, prioritize clean, accessible design and responsive layouts.
+```
+```
+Always commit working code after each major milestone.
+```
+
+Custom Instructions differ from `rules.md` in scope: custom instructions apply everywhere, rules apply to a specific project.
+
+For details on where to set them, see [Settings](/workshop/core-concepts/settings).
+
+## Context window management
+
+AI models have limited context windows — the amount of information they can process at once. As you use more of the window, costs increase, latency increases, and response quality can degrade.
+
+### Keep conversations focused
+
+Each conversation should have a clear purpose — one feature, one bug fix, one exploration thread. Starting new conversations for different tasks keeps context clean and relevant.
+
+### Use `/compact` proactively
+
+Don't wait for Workshop to warn you. If a conversation has been going for a while and you've completed a logical milestone, compact and continue. See [Working with the Agent](/workshop/core-concepts/working-with-the-agent) for details on the `/compact` command.
+
+### Maintain your `context.md`
+
+A well-maintained `context.md` means Workshop starts every conversation with a solid understanding of your project. This reduces the need to re-explain architecture, conventions, and current state.
+
+### Provide files strategically
+
+There are two ways to give Workshop files, and they serve different purposes:
+
+**Inline attachments (content)** — Drag and drop files into the chat, paste images, or use the upload button in the message toolbar. These files are sent as part of your message. Use this for material Workshop should _work with directly_ — images to display, CSVs to process, reference screenshots, or code files you want modified.
+
+**Project sources (context)** — Add files, connectors, and secrets through the **Sources panel** in the sidebar. These become persistent project context that Workshop reads across all conversations. Use this for material Workshop should _understand and reference_ — design specs, API documentation, data schemas, or configuration files.
+
+| Method | When to use | Persists across conversations? |
+| ------ | ----------- | ----------------------------- |
+| **Attach in chat** (drag/paste/upload) | Workshop should act on this file _now_ | No — scoped to the current message |
+| **Sources panel** (sidebar) | Workshop should _know about_ this file in every conversation | Yes — part of project context |
+
+<Tip>
+If you find yourself re-attaching the same file in multiple conversations, add it to your project sources instead. Workshop will reference it automatically.
+</Tip>
+
+### Auto-compaction
+
+When your conversation approaches the context window limit, Workshop automatically compacts it — summarizing the conversation so far and continuing seamlessly. You don't need to do anything; long conversations stay fast without manual intervention. See [Working with the Agent](/workshop/core-concepts/working-with-the-agent#auto-compaction) for details.

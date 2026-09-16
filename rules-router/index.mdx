@@ -1,0 +1,31 @@
+---
+title: "Agent Gateway"
+description: "Connect your agents and subagents to models, with routing policies you control."
+---
+
+Agent Gateway connects agents and their subagents to models through hosted or local routing. It is built primarily for coding-agent workflows, with guides for Claude Code and Codex. Other agents and apps can connect when their requests match a supported protocol and configuration.
+
+Keep your preferred main-agent model, route delegated work to different models, and inspect which routes actually ran. You control model assignments and routing policies; the gateway handles model access along the configured path.
+
+## Choose your gateway
+
+**Hosted gateway** uses your Rayline workspace and API key for managed model access, routing settings, and usage visibility.
+
+**Rayline Local** runs the open-source gateway on your machine and connects to configured on-device models or cloud endpoints. A hybrid session can keep the main agent in the cloud while routing eligible subagent work locally. Running a local gateway does not automatically make the whole session offline.
+
+<CardGroup cols={2}>
+<Card title="Claude Code" icon="terminal" href="/rules-router/quickstart/claude-code">Set up a hosted or local routed session.</Card>
+<Card title="Codex" icon="code" href="/rules-router/quickstart/codex">Use Codex CLI or desktop with the Rayline local router.</Card>
+<Card title="Routing policies" icon="sliders" href="/rules-router/policies">Understand slots, main-agent pinning, and compatibility guards.</Card>
+<Card title="0% commission" icon="receipt" href="/rules-router/pricing">No routing commission at launch. Hosted inference remains separate.</Card>
+</CardGroup>
+
+## Agents and subagents
+
+Agent Gateway is not limited to delegated tasks. It can route a main agent's requests as well as work the agent delegates to subagents. Their model assignments can differ: pin the main agent and use an efficient model for exploration or a stronger model for demanding work.
+
+The available routing controls depend on the client, protocol, and hosted or local configuration. Start with a supported client guide and check [compatibility](/rules-router/reference) before connecting another agent or app.
+
+## Agent Gateway versus ARC
+
+Agent Gateway provides model access and routing policies. [ARC](/arc) provides adaptive model and reasoning selection through Decisions and Responses, currently in private preview. A gateway client using the Responses protocol is not necessarily using the ARC Responses product. Use [Workshop](/workshop) if you want a complete building app.

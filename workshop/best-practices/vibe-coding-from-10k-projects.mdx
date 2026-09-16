@@ -1,0 +1,232 @@
+---
+title: "Patterns from 10,000+ projects"
+icon: "trophy"
+description: "Proven strategies for effective agentic coding, distilled from thousands of real-world Workshop projects."
+---
+
+Workshop is the everything builder that enables agentic coding through natural language. This guide covers proven strategies distilled from over 10,000 projects across various tech stacks and environments.
+
+Workshop is intentionally flexible and unopinionated, providing a natural language interface to create any type of software without forcing specific workflows. This design philosophy creates a powerful tool that adapts to your needs. While powerful, this flexibility presents a learning curve — at least until you develop your own best practices.
+
+Nothing in this guide is set in stone nor universally applicable. Consider these suggestions as starting points, and experiment to find what works best for you.
+
+## 1. Customize your environment
+
+### Create `.workshop/rules.md` files
+
+`.workshop/rules.md` is a special file that Workshop automatically pulls into context when working with your project. This is the single most impactful thing you can do to improve Workshop's output. Document:
+
+- Project architecture and structure
+- Core files and utility functions
+- Code style guidelines
+- Testing frameworks and methodologies
+- Environment setup instructions
+- Deployment processes
+
+You do not need to write this file manually:
+
+```
+Please create a rules.md file for this project that documents our
+code style, architecture, and main files.
+```
+
+### Optimize your rules files
+
+Your `.workshop/rules.md` files become part of Workshop's understanding of your project. Treat them as living documents:
+
+- Focus on what is most unique or non-obvious about your project
+- Keep documentation minimal for projects with standard frameworks
+- Add emphasis like "IMPORTANT:" or "NOTE:" for critical constraints
+- Update the file as your project evolves
+
+### Configure secrets management
+
+Workshop includes built-in secrets management for sensitive information like API keys. Configure secrets in Settings, then reference them by name:
+
+```
+Connect to the OpenAI API using the OPENAI_API_KEY secret.
+```
+
+Workshop stores secrets in your system's keychain, keeping them protected while making them available for your projects.
+
+### Control Workshop's autonomy
+
+Three controls let you tune how independently Workshop works:
+
+- **Code Execution Approval** — Review and approve each code block before it runs
+- **Turns Control** — Set a maximum number of autonomous turns between your messages
+- **Thinking Mode** — Enable visible step-by-step reasoning for complex problems
+
+<Note>
+**Thinking Mode tends to reduce overall credit consumption.** Although it may increase credit usage per message, the structured reasoning produces more focused, accurate results — reducing wasted iterations.
+</Note>
+
+## 2. Give Workshop more context
+
+### Start with clear high-level vision
+
+Begin by describing the overall picture, not technical details:
+
+```
+I want to build a personal expense tracker app that helps me
+categorize my spending and visualize trends over time. It should:
+- Import transactions from CSV bank statements
+- Automatically categorize transactions based on patterns
+- Show monthly spending breakdowns by category
+- Generate reports I can export to PDF
+- Work offline without requiring cloud services
+```
+
+### Use multimodal input
+
+Workshop supports text, wireframes, screenshots, diagrams, and reference images. For visual elements like UIs, providing visual references dramatically improves output. Drag and drop images directly into the conversation.
+
+### Reference external documentation
+
+Provide links to relevant docs when working with specific libraries or APIs:
+
+```
+I want to build a React Native app that uses the Stripe API.
+Search for the relevant docs.
+```
+
+Workshop fetches and incorporates external documentation into its understanding of your project.
+
+### Use project templates
+
+Browse available templates when starting a new project. Templates provide pre-configured projects with appropriate structure, dependencies, and starter code. They save time and ensure your project follows established patterns from the start.
+
+## 3. Effective workflows
+
+### Separate design from execution
+
+Clearly separate planning from building:
+
+1. **Discuss requirements first**: _"I want to build a dashboard that shows analytics from our API, but I need help working through the details. Don't jump to execution until I instruct you to."_
+2. **Refine together**: Use Workshop as a collaborative partner to explore options
+3. **Signal when to build**: Once satisfied with the plan, explicitly tell Workshop to start
+
+### Take incremental steps
+
+1. **Start with the simplest version** that demonstrates core functionality
+2. **Verify each step works** before moving to the next
+3. **Build progressively** once the foundation is solid
+
+This incremental approach significantly increases success rates by avoiding complexity too early.
+
+### Iterate through conversation
+
+1. Describe your initial idea in simple terms
+2. Let Workshop build a minimal implementation
+3. Refine through natural language feedback: _"Make the activity feed more compact"_
+4. Use visual input when possible — attach screenshots with feedback
+
+This conversational approach yields far better results than specifying everything in a single prompt.
+
+### Switch modes as needed
+
+- **Higher autonomy** for rapid development when you want quick results
+- **Manual approval** when you need precise control over specific features
+- **Extended execution**: _"Keep working until you really need my input"_
+
+## 4. Optimize your prompting
+
+### Be specific and prioritize
+
+| Less Effective | More Effective |
+|---|---|
+| Make me a weather app | Create a weather app showing the 5-day forecast for the user's current location. Display temperature, precipitation chance, and wind speed. Use React and the OpenWeatherMap API. Clean, minimalist UI with a blue color scheme. |
+| Fix the authentication bugs | Debug the authentication flow in auth.js. Users are logged out after 10 minutes even though JWT expiration is set to 24 hours. Check for token refresh issues. |
+| Make this code better | Refactor for performance. The database query loads all records instead of paginating. Implement pagination with 20 items per page using indexed fields for sorting. |
+
+### Use the right level of guidance
+
+- **High-level**: _"Build a shopping cart component for an e-commerce site"_ — good for standard patterns
+- **Directed**: _"Build a shopping cart with these specific requirements: [list]"_ — when you have specific needs
+- **Step-by-step**: _"First create a CartContext, then CartItem and CartSummary components"_ — for precise control
+
+Start with high-level guidance and become more specific if results do not match expectations.
+
+### Show examples
+
+When you have a specific style in mind, reference existing code:
+
+```
+I need a user profile page similar to the product detail page in
+products.js, but focused on user information. Use the same styling
+approach but adapt the layout for user data.
+```
+
+## 5. Leverage Workshop's tools
+
+### File system tools
+
+Workshop can create, read, edit, and search files in your project. Explicitly tell it which files to focus on for best results. Its file editing is especially powerful for targeted changes to large codebases.
+
+### CLI / shell tools
+
+Workshop runs shell commands, package managers, build tools, version control, and deployment scripts. It can determine the right commands for a task or execute specific commands you provide.
+
+### Search tools
+
+Workshop searches both your local codebase and the web for relevant patterns, documentation, error solutions, and reference materials.
+
+## 6. Guide Workshop's learning
+
+### Understand before modifying
+
+Before asking Workshop to change existing code:
+
+1. **Ask it to explain** how the existing code works
+2. **Verify its understanding** is correct
+3. **Then make changes** with confidence
+
+This dramatically improves success rates with established codebases.
+
+### Embrace iteration over perfection
+
+1. Start small with minimal functionality
+2. Get feedback early
+3. Add features incrementally
+4. Commit working versions regularly
+
+## 7. Use checkpoints for safety
+
+Workshop automatically saves checkpoints of your project at key moments during each conversation. This gives you a "time machine":
+
+- **Experiment freely** — if something does not work out, restore to a previous state
+- **Track changes** — see exactly when file modifications occurred
+- **Go back in time** — revert your project to any earlier point in the conversation
+
+Checkpoints work alongside your existing Git repository without interference — they do not create `.git` files, they respect `.gitignore`, and your own commits remain unaffected.
+
+## 8. Share your work
+
+Workshop lets you share conversations privately via unique links or publicly through Workshop Universe. Share your process, showcase ideas, and let others learn from your approach.
+
+<Warning>
+Ensure publicly shared conversations do not contain sensitive information, API keys, or proprietary code.
+</Warning>
+
+## Real-world application patterns
+
+<AccordionGroup>
+  <Accordion title="Rapid Prototyping">
+    Describe your product vision in plain language. Let Workshop build a basic prototype. Gather feedback from stakeholders. Iterate quickly through natural language — dramatically reducing time from idea to testable prototype.
+  </Accordion>
+  <Accordion title="Data Analysis and Visualization">
+    Set up a data analysis environment, describe your goals, request specific visualizations, and create reproducible notebooks — combining your domain expertise with Workshop's technical capabilities.
+  </Accordion>
+  <Accordion title="Internal Tool Development">
+    Describe the business problem, specify integrations with existing systems, start with core functionality, and deploy internally. Create tailored solutions without diverting engineering resources.
+  </Accordion>
+  <Accordion title="Custom Integrations">
+    Identify systems that need to communicate, provide credentials securely via secrets management, describe the desired workflow, and test with sample data. Workshop builds APIs, webhooks, and data transformations to connect disparate systems.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+Mastering agentic coding is about finding the right balance between clear direction and creative freedom. The most successful Workshop users view the process as a collaboration between human creativity and AI implementation, with each iteration bringing the project closer to their vision.
+
+Keep exploring, experimenting, and sharing your experiences with the [Workshop community](https://discord.gg/ggqJkUN3vx).

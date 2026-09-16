@@ -1,0 +1,29 @@
+---
+title: "Open source"
+description: "Built with vLLM Semantic Router. Explore the source we build on."
+icon: "code-branch"
+---
+We use **vLLM Semantic Router** as part of ARC's routing stack. We maintain [our public fork](https://github.com/atlasfutures/semantic-router), built on the work of the [upstream vLLM Semantic Router project](https://github.com/vllm-project/semantic-router).
+
+<CardGroup cols={2}>
+<Card title="Explore our fork" icon="github" href="https://github.com/atlasfutures/semantic-router">Source code for the Semantic Router fork we use. Available now.</Card>
+<Card title="Upstream documentation" icon="book-open" href="https://vllm-sr.ai/docs/intro/">Learn about the routing foundation and its configuration.</Card>
+</CardGroup>
+
+## The routing foundation
+
+vLLM Semantic Router provides a programmable layer for selecting model paths across inference infrastructure. Our fork is where you can inspect the source we build on. It is not a claim that every upstream feature is available through Rayline's hosted APIs.
+
+The fork currently uses `rayline_main` as its default branch. Use a pinned commit or release when reproducing a deployment; a moving branch is not a stable deployment contract.
+
+## ARC model releases
+
+<Note>
+ARC model artifacts and model-specific self-hosting instructions are coming soon. The public router repository does not mean ARC checkpoints or a supported end-to-end self-hosted release are already available.
+</Note>
+
+Follow [Rayline on Hugging Face](https://huggingface.co/rayline-ai) for model releases. Each release should provide its model card, license, hardware requirements, inference instructions, and evaluation notes.
+
+## Licensing and attribution
+
+Check the fork's license and notices before redistributing it, and check each model's license separately. A routing runtime's license does not grant rights to every model it can call. We credit the upstream vLLM Semantic Router contributors; Rayline did not originate that project.
