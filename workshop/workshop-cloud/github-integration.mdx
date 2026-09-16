@@ -1,5 +1,5 @@
 ---
-title: "GitHub Integration"
+title: "GitHub integration"
 icon: "code-branch"
 description: "Connect Workshop Cloud projects to GitHub for version control, backup, and collaboration."
 ---
@@ -32,7 +32,7 @@ Before linking projects, you need to connect your GitHub account to Workshop.
   If you belong to multiple GitHub organizations, you can install the GitHub App on each one. Use the installation selector in the Connectors panel to switch between them.
 </Note>
 
-## Linking a Project to a Repository
+## Linking a project to a repository
 
 Once GitHub is connected, you can link any Workshop Cloud project to a GitHub repository.
 
@@ -44,7 +44,7 @@ Once GitHub is connected, you can link any Workshop Cloud project to a GitHub re
 
 After linking, the GitHub section shows the repository name, branch, sync status, and timestamps for the last push and pull.
 
-## Push and Pull Workflow
+## Push and pull workflow
 
 Once linked, you can sync changes between your Workshop Cloud project and GitHub:
 
@@ -56,7 +56,7 @@ Click the **push** button (up arrow) to send your local project changes to the l
 
 Click the **pull** button (down arrow) to fetch the latest changes from GitHub into your Workshop Cloud project. This is useful when collaborators push changes directly to the repository.
 
-## Sync Status Indicators
+## Sync status indicators
 
 The GitHub section displays a real-time sync status icon:
 
@@ -67,7 +67,7 @@ The GitHub section displays a real-time sync status icon:
 | **Remote ahead** | Yellow down arrow | The remote has changes you haven't pulled yet (shows count, e.g., "2 behind") |
 | **Diverged** | Red warning | Both local and remote have independent changes that conflict |
 
-## Handling Diverged Histories
+## Handling diverged histories
 
 When the sync status shows **Diverged**, it means both your Workshop Cloud project and the GitHub repository have changes that the other doesn't. You have two options:
 
@@ -78,7 +78,7 @@ When the sync status shows **Diverged**, it means both your Workshop Cloud proje
   Force push and force pull are destructive operations. The overwritten changes cannot be recovered. Make sure you know which version you want to keep before confirming.
 </Warning>
 
-## Importing a Repository as a New Project
+## Importing a repository as a new project
 
 To start a Workshop Cloud project from an existing GitHub repository:
 
@@ -88,7 +88,7 @@ To start a Workshop Cloud project from an existing GitHub repository:
 
 Alternatively, create any new project, [link it to an existing repository](#linking-a-project-to-a-repository), and pull the code.
 
-## Unlinking a Repository
+## Unlinking a repository
 
 To disconnect a project from its GitHub repository:
 
@@ -99,11 +99,11 @@ To disconnect a project from its GitHub repository:
 
 Unlinking does not delete any code — your Workshop Cloud project and the GitHub repository both remain intact. You can re-link the same or a different repository at any time.
 
-## Refreshing Status
+## Refreshing status
 
 If you suspect the sync status is stale (for example, after someone else pushes to the repository), click the **three dots** menu and select **Refresh** to fetch the latest status from GitHub.
 
-## Use Cases
+## Use cases
 
 <AccordionGroup>
   <Accordion title="Version control and history">

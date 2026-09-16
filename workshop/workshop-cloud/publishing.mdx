@@ -1,16 +1,16 @@
 ---
-title: "One-Click Publishing"
+title: "One-click publishing"
 icon: "share-from-square"
 description: "Deploy your Workshop Cloud app to a shareable URL with a single click."
 ---
 
 Workshop Cloud includes built-in publishing. Click **Publish**, and your app is deployed to serverless infrastructure with a unique URL that anyone can access.
 
-## Preview Pane
+## Preview pane
 
 The preview pane shows your running application as Workshop builds it. It appears in the right sidebar and updates live as Workshop writes code.
 
-### Start App
+### Start app
 
 For templates that include a dev server (React App, Web App, Data App), Workshop automatically starts your application and displays it in the preview pane. You can also control the dev server manually:
 
@@ -24,7 +24,7 @@ The preview URL is a proxied localhost address unique to your cloud environment.
 If the preview pane shows a blank screen or error, try clicking **Start App** to restart the dev server. Workshop creates a startup script tailored to your project's tech stack.
 </Tip>
 
-## How Publishing Works
+## How publishing works
 
 <Steps>
   <Step title="Click Publish">
@@ -46,7 +46,7 @@ If the preview pane shows a blank screen or error, try clicking **Start App** to
   </Step>
 </Steps>
 
-## Custom Project URLs
+## Custom project URLs
 
 Every published app gets a unique URL based on your project's **slug** — an auto-generated identifier like `gentle-elephant-alice`. The resulting URL follows the pattern:
 
@@ -60,7 +60,7 @@ On a paid plan (Build, Scale, or Max), you can **rename the slug** to something 
   Slug names must be 3-50 characters, lowercase letters, numbers, and hyphens only. No leading, trailing, or consecutive hyphens. Each slug must be globally unique.
 </Note>
 
-## Custom Domains
+## Custom domains
 
 On any paid plan — **Build**, **Scale**, or **Max** — you can serve your published app from your own domain (e.g. `app.yourcompany.com`) instead of the default `workshop.build` URL. Workshop issues and renews the SSL certificate for your domain automatically once DNS is pointed at the Workshop origin.
 
@@ -100,7 +100,7 @@ On any paid plan — **Build**, **Scale**, or **Max** — you can serve your pub
 - Apex domains (`yourcompany.com` with no subdomain) are supported via A/AAAA records to Workshop's anycast IPs after a one-time TXT ownership check. Workshop classifies apex vs subdomain automatically from the hostname you enter; see [Apex domains](#apex-domains) below for the steps.
 - The default `{slug}.workshop.build` URL continues to work alongside your custom domain.
 
-## Apex Domains
+## Apex domains
 
 To serve your app from an apex (root) domain like `yourcompany.com` instead of `www.yourcompany.com`, Workshop uses A/AAAA records pointed at our global anycast IPs. Because the DNS standard forbids a CNAME at the apex, Workshop cannot infer ownership from your DNS the way it does for subdomains, so you add a one-time TXT record first, then the A/AAAA records.
 
@@ -138,15 +138,15 @@ To serve your app from an apex (root) domain like `yourcompany.com` instead of `
 
 If your registrar locks the apex `@` row or charges to add A records there, use `www.yourcompany.com` as your Workshop hostname instead and configure a URL redirect from the apex to `www` at your registrar. The CNAME at `www` works on every registrar.
 
-## Public vs Private Apps
+## Public vs private apps
 
-### Public Apps
+### Public apps
 
 - Select **"Anyone on the internet"** in the Visibility dropdown
 - No sign-in required for visitors
 - Available on all plans including the free Discover tier
 
-### Private Apps
+### Private apps
 
 - Select **"Only people invited"** in the Visibility dropdown
 - Invite specific people by email in the **"Who can access"** section
@@ -163,7 +163,7 @@ If your registrar locks the apex `@` row or charges to add A records there, use 
   Private apps require a paid plan. On the **Build** plan, you can invite up to **5 viewers** and publish **1 private app**. The **Scale** and **Max** plans offer **unlimited** viewers and private apps.
 </Info>
 
-## What Happens During Deployment
+## What happens during deployment
 
 When you click Publish, Workshop performs these steps:
 
@@ -174,7 +174,7 @@ When you click Publish, Workshop performs these steps:
 5. **App startup** — Your app's start command is auto-detected and executed (Streamlit run command or FastAPI server)
 6. **URL routing** — Traffic is routed to your app through the project slug URL
 
-## Resource Validation
+## Resource validation
 
 Before deploying, Workshop scans your code for references to secrets and connectors that aren't included in the project context. If any are found, deployment pauses and shows you which resources are missing so you can fix the issue before your app goes live with broken credentials.
 
@@ -184,7 +184,7 @@ You can add the missing resources to your project context directly from the prom
 Secrets defined in a `.env` file in your project root are automatically included in your deployment. You don't need to add them separately — Workshop picks them up during the publish process. To leave a specific env file out, see [Choosing Which Configuration Files Ship](#choosing-which-configuration-files-ship).
 </Tip>
 
-## Choosing Which Configuration Files Ship
+## Choosing which configuration files ship
 
 Your project root's `.env` file is treated specially: its values are applied to the published app as environment variables, and the file itself is not uploaded. This is how your configured secrets reach the deployment.
 
@@ -205,11 +205,11 @@ Selection is available for cloud apps. It isn't offered on the desktop app, wher
 For apps with a frontend build (React and other Vite-based frontends), a build reads values your code references from `.env` and compiles them into the built assets. If you uncheck that file, those values are left out of the build; if you keep it checked, they are baked into the published frontend, so treat any `VITE_`-prefixed value as publicly visible.
 </Note>
 
-## Updating a Published App
+## Updating a published app
 
 After making changes to your project, click **Update** in the Publish popover to push the latest version. The deployment URL stays the same — visitors see the new version once the update completes.
 
-## Stopping a Published App
+## Stopping a published app
 
 To take your app offline:
 
@@ -219,15 +219,15 @@ To take your app offline:
 
 Stopped apps show a friendly "App Temporarily Unavailable" page to visitors instead of a technical error. You can republish at any time.
 
-## Viewing Published Apps
+## Viewing published apps
 
 On the Projects page, published apps display a green **Live** indicator with the deployment URL. You can filter your projects by the **Live** tag to see only published apps. Clicking the URL opens the app in a new tab.
 
-## Hide Workshop Branding
+## Hide Workshop branding
 
 On paid plans, you can remove the Workshop badge from your published apps. Toggle the **Hide branding** option in the Publish popover's advanced settings. Private apps can always hide branding regardless of plan.
 
-## Plan Limits
+## Plan limits
 
 | Feature | Discover (Free) | Build | Scale | Max |
 |---------|-----------------|-------|-------|-----|

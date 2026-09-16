@@ -1,5 +1,5 @@
 ---
-title: "Working with the Agent"
+title: "Working with the agent"
 icon: "messages"
 description: "How to communicate with Workshop, scope your work, and get the best results — from first prompt to iterative refinement."
 ---
@@ -22,7 +22,7 @@ Workshop is multi-model and multi-provider — you choose which model powers you
 
 If you're using Workshop Desktop, local models are also available in the selector — see [Local Models](/workshop/workshop-desktop/local-models) to set them up.
 
-To keep credit use down without picking a model yourself, choose **ARC** at the top of the selector — Workshop routes your work to a suitable model, using a cheaper one for routine tasks and a stronger one for harder ones. See [ARC in Settings](/workshop/core-concepts/settings#arc).
+To let Workshop pick a model for your task, choose **ARC** in the selector. This is Workshop's in-app router, not access to the separate ARC APIs. The [Responses and Decisions APIs](/arc/availability) remain in private preview and require Rayline approval; your Workshop account does not enable them. See [ARC in Settings](/workshop/core-concepts/settings#arc).
 
 <Tip>
 Open the model selector and click **"What's this?"** at the top for a detailed breakdown of what each model is best at.
@@ -178,11 +178,11 @@ On the product detail page: 1) Move description above specifications,
 together" section at the bottom.
 ```
 
-## Plan Mode
+## Plan mode
 
 Plan Mode is an optional scoping tool for when you want structured requirements gathering before building. It's especially useful when starting a new project from scratch or when you're not sure exactly what you need.
 
-### What Plan Mode does
+### What plan mode does
 
 - **Asks probing questions** to understand your true needs — typically 2–3 structured questions per turn
 - **Scopes down to an MVP** before expanding — build something valuable first

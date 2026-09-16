@@ -1,10 +1,10 @@
 ---
-title: "Managed Database"
+title: "Managed database"
 icon: "database"
 description: "Add a serverless Postgres database with built-in authentication to your Workshop project — one click, no setup required."
 ---
 
-## How It Works
+## How it works
 
 Workshop can provision a managed **Neon** serverless Postgres database for your project. Enable it via the **Add-Ons** panel in project settings, or during project creation — some templates (Web App, React App, Static React App) auto-enable Neon by default. No accounts to create, no credentials to manage, no setup steps.
 
@@ -18,7 +18,7 @@ When you enable the database, Workshop provisions:
 The managed database is available to the apps you build and publish. Workshop's agent can query it, create tables, and write data on your behalf during development.
 </Info>
 
-## What You Get
+## What you get
 
 ### Serverless Postgres
 
@@ -31,7 +31,7 @@ Your app receives these environment variables automatically:
 | `DATABASE_URL` | Pooled connection string (recommended for most use cases) |
 | `DIRECT_URL` | Direct connection string (for migrations and schema changes) |
 
-### Neon Auth
+### Neon auth
 
 Every managed database comes with **Neon Auth** enabled — a hosted authentication service that gives your app user sign-up, sign-in, and session management out of the box.
 
@@ -43,7 +43,7 @@ Your app receives:
 
 Workshop automatically keeps your app's **trusted domains** in sync — when you publish your app, rename its slug, or add a custom domain, Workshop updates the Neon Auth configuration so authentication works seamlessly across all your app's URLs.
 
-## Using the Database in Your Apps
+## Using the database in your apps
 
 Reference the database in your conversation and Workshop handles the rest:
 
@@ -59,7 +59,7 @@ Query the database and show a chart of signups by month.
 
 Workshop writes the integration code, manages the connection, and injects credentials automatically — including when you publish the app.
 
-## Disabling the Database
+## Disabling the database
 
 If you want to remove the database from a project:
 
@@ -71,7 +71,7 @@ If you want to remove the database from a project:
 Removing the database **permanently destroys** the Neon database instance and all its data. This action cannot be undone. Make sure to export any data you need before disabling.
 </Warning>
 
-## Bring Your Own Database
+## Bring your own database
 
 If you already have a Neon database — or prefer to use another database provider — you can connect it manually instead:
 

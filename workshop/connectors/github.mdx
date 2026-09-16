@@ -12,13 +12,13 @@ The GitHub connector lets you link your GitHub account to Workshop using a Perso
 **This is different from GitHub Integration.** The GitHub *connector* gives the Workshop agent API access to your repositories and issues via a Personal Access Token. [GitHub Integration](/workshop/workshop-cloud/github-integration) is the app-level feature for push/pull syncing between your Workshop project and a GitHub repo — it uses a GitHub App OAuth flow, not a PAT.
 </Info>
 
-## What You'll Need
+## What you'll need
 
 | Credential | Description | Format |
 |------------|-------------|--------|
 | **Personal Access Token** | Fine-grained or classic GitHub token | `ghp_...` (classic) or `github_pat_...` (fine-grained) |
 
-## Creating a Personal Access Token
+## Creating a personal access token
 
 <Steps>
   <Step title="Open GitHub settings">
@@ -69,7 +69,7 @@ The GitHub connector lets you link your GitHub account to Workshop using a Perso
   </Step>
 </Steps>
 
-## Using Your Connection
+## Using your connection
 
 Once connected, you can ask Workshop to work with your GitHub data:
 
@@ -86,7 +86,7 @@ What are the open issues in my app repository?
 Using my GitHub connection, clone my website repo and help me understand its structure
 ```
 
-## Security Best Practices
+## Security best practices
 
 - Use **fine-grained tokens** with the minimum permissions needed
 - Set an **expiration date** on all tokens
@@ -105,7 +105,7 @@ GitHub automatically scans for leaked tokens and may revoke them. Never commit t
 | "Not Found" for repos | Ensure the token has access to the target repository. |
 | Rate limiting | GitHub limits API requests to 5,000/hour for authenticated users. Wait for the limit to reset. |
 
-## Learn More
+## Learn more
 
 - [GitHub Personal Access Tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 - [Fine-grained Token Permissions](https://docs.github.com/en/rest/overview/permissions-required-for-fine-grained-personal-access-tokens)

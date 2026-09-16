@@ -22,7 +22,10 @@
       "rl-auth-token",
       "example-1",
       "options-2",
-      "credential-storage"
+      "credential-storage",
+      "rayline-auth-login",
+      "rayline-auth-logout",
+      "rayline-auth-token"
     ]
   },
   {
@@ -41,7 +44,15 @@
       "rl-claude-login",
       "rl-claude-key",
       "rl-claude-logout",
-      "telemetry"
+      "telemetry",
+      "rayline-claude",
+      "rayline-claude-setup",
+      "rayline-claude-hooks-install",
+      "rayline-claude-hooks-status",
+      "rayline-claude-hooks-uninstall",
+      "rayline-claude-login",
+      "rayline-claude-key",
+      "rayline-claude-logout"
     ]
   },
   {
@@ -66,7 +77,11 @@
       "rl-menubar-start",
       "rl-menubar-stop",
       "rl-menubar-status",
-      "opting-out-of-auto-install"
+      "opting-out-of-auto-install",
+      "rayline-menubar-install",
+      "rayline-menubar-start",
+      "rayline-menubar-stop",
+      "rayline-menubar-status"
     ]
   },
   {
@@ -81,7 +96,11 @@
       "rl-router-status",
       "example-output",
       "rl-router-logs",
-      "health-checks"
+      "health-checks",
+      "rayline-router-start",
+      "rayline-router-stop",
+      "rayline-router-status",
+      "rayline-router-logs"
     ]
   },
   {
@@ -134,7 +153,10 @@
       "model-download-is-slow",
       "out-of-memory",
       "port-conflicts",
-      "llama-server-wont-start"
+      "llama-server-wont-start",
+      "choosing-a-local-model",
+      "option-1--rayline-runs-the-model",
+      "option-2--you-run-the-model"
     ]
   },
   {
@@ -278,7 +300,8 @@
       "verify-its-working",
       "advanced-manual-environment-variables",
       "disabling-rayline-temporarily",
-      "next-steps"
+      "next-steps",
+      "the-easy-way-rayline-claude"
     ]
   },
   {
@@ -337,6 +360,18 @@
       "common-issues",
       "specific-areas",
       "getting-help"
+    ]
+  },
+  {
+    "source": "/quickstart/agents",
+    "destination": "/rules-router/quickstart/agents",
+    "fragments": [
+      "cloud",
+      "local",
+      "set-the-local-model",
+      "trust-the-proxy-ca",
+      "make-the-call",
+      "next-steps"
     ]
   }
 ]

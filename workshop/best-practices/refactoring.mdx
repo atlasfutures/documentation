@@ -1,12 +1,12 @@
 ---
-title: "Refactoring AI-Generated Projects"
+title: "Refactoring AI-generated projects"
 icon: "arrows-rotate"
 description: "A practical guide to cleaning up, organizing, and improving code quality in projects built with Workshop."
 ---
 
 One of the most powerful aspects of building with AI is the ability to rapidly create functional software through natural language. But as your projects grow, you may encounter a common challenge: managing accumulated files, potential duplicates, and maintaining a clean codebase. This guide walks you through the process of refactoring your projects to keep them organized and maintainable.
 
-## What Is Refactoring?
+## What is refactoring?
 
 Refactoring means improving your code's structure and organization without changing what it does. Think of it like reorganizing your kitchen — you are not adding new ingredients, just making everything easier to find and use.
 
@@ -17,23 +17,23 @@ Refactoring is essential for:
 - Preparing for future enhancements
 - Fixing potential issues before they cause problems
 
-## Common Challenges with AI-Generated Code
+## Common challenges with AI-generated code
 
-### File Duplication
+### File duplication
 
 AI assistants sometimes create new files instead of modifying existing ones, especially when fixing errors. You might find both `database.py` and `database_fixed.py` in your project, with small differences between them.
 
-### Inconsistent Naming Conventions
+### Inconsistent naming conventions
 
 AI-generated code may use various naming styles across different files, making your codebase less consistent and harder to navigate.
 
-### Unused Code and Dependencies
+### Unused code and dependencies
 
 As your project evolves through multiple iterations, you may accumulate code that is no longer needed or dependencies that are not being used.
 
-## Step-by-Step Refactoring Guide
+## Step-by-step refactoring guide
 
-### Step 1: Set Up Version Control
+### Step 1: set up version control
 
 Before making any changes, set up version control as a safety net:
 
@@ -56,7 +56,7 @@ Commit my changes to git with a descriptive message
 Create a new git branch where I can try removing files safely
 ```
 
-### Step 2: Perform a Code Audit
+### Step 2: perform a code audit
 
 Review your entire project to understand the purpose of each file:
 
@@ -67,7 +67,7 @@ Identify any duplicate or unused files.
 
 Workshop analyzes your codebase and provides a comprehensive overview of each file's purpose, potential duplicates, obsolete files, and style inconsistencies.
 
-### Step 3: Create a Refactoring Checklist
+### Step 3: create a refactoring checklist
 
 For anything beyond a small project, create a checklist to track progress:
 
@@ -83,7 +83,7 @@ Based on the code audit, create a markdown file called
 Refactoring larger projects may require multiple conversations. When starting a new conversation, reference your checklist: _"Let's continue refactoring. Here's my current checklist: refactor_checklist.md"_
 </Note>
 
-### Step 4: Implement Testing
+### Step 4: implement testing
 
 Before removing files or making significant changes, ensure you can verify your application still works:
 
@@ -95,7 +95,7 @@ Choose a lightweight testing framework that ensures coverage.
 
 Run tests to establish a baseline. Throughout refactoring, use these tests to ensure changes do not break functionality. If a test fails, you know exactly what stopped working and can fix it or revert to your previous git commit.
 
-### Step 5: Clean Up Duplicate Files
+### Step 5: clean up duplicate files
 
 With version control and tests in place, start cleaning up:
 
@@ -107,7 +107,7 @@ and update any references to the removed file.
 
 Workshop compares duplicates, identifies the most complete version, updates imports and references, commits changes, and runs tests to verify everything works.
 
-### Step 6: Final Verification and Documentation
+### Step 6: final verification and documentation
 
 Once refactoring is complete, verify everything and document your project:
 
@@ -117,9 +117,9 @@ Update .workshop/rules.md to document the project structure,
 tests, and how to run them.
 ```
 
-## Preventing Issues in New Projects
+## Preventing issues in new projects
 
-### Establish Clear Rules
+### Establish clear rules
 
 Create a `.workshop/rules.md` file with explicit instructions before starting development:
 
@@ -132,7 +132,7 @@ Create a `.workshop/rules.md` file with explicit instructions before starting de
 4. Keep file organization according to feature/functionality
 ```
 
-### Regular Housekeeping
+### Regular housekeeping
 
 Incorporate periodic cleanup sessions into your workflow. After every few development sessions, ask:
 
@@ -142,11 +142,11 @@ outdated, obsolete, or unnecessary files. Get my authorization
 before removing anything.
 ```
 
-### Commit Early and Often
+### Commit early and often
 
 Make git commits a regular part of your workflow. After each significant milestone, commit with a descriptive message. This creates checkpoints and makes it easy to track how your project evolves.
 
-## Using Workshop to Refactor Its Own Code
+## Using Workshop to refactor its own code
 
 One of Workshop's strengths is its ability to improve code it previously generated. You can ask Workshop to:
 
@@ -155,7 +155,7 @@ One of Workshop's strengths is its ability to improve code it previously generat
 - **Improve architecture**: _"This project has grown organically. Can you suggest a better file organization and help me restructure?"_
 - **Remove dead code**: _"Find and remove any functions, imports, or files that are no longer used."_
 
-## When to Refactor
+## When to refactor
 
 Refactoring is not a one-time task — it is an ongoing process. Consider refactoring when:
 
@@ -165,7 +165,7 @@ Refactoring is not a one-time task — it is an ongoing process. Consider refact
 - **When you notice patterns**: Repeated code or inconsistent structure signals a need for cleanup
 - **Before deployment**: Production code should be clean and well-organized
 
-## Strategies for Improving Code Quality Over Time
+## Strategies for improving code quality over time
 
 1. **Set standards early** with `.workshop/rules.md` and stick to them
 2. **Refactor incrementally** rather than attempting massive rewrites

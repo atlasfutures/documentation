@@ -1,5 +1,5 @@
 ---
-title: "Running Local AI Models"
+title: "Running local AI models"
 icon: "microchip"
 description: "Power the Workshop agent with local AI models on your own hardware — lower cost, more private, and offline-capable."
 ---
@@ -11,7 +11,7 @@ If you're new to local models, think of this as running inference on-device inst
 Workshop supports two paths:
 
 1. **Managed mode (recommended):** Download and run models directly inside Workshop Desktop from **Agent Settings → Local Models**.
-2. **Manual mode (advanced):** Connect your own Anthropic Messages API-compatible server (like llama.cpp, LM Studio, or Ollama + adapter).
+2. **Manual mode (advanced):** Connect an external server after verifying the request, streaming, and tool-use behavior described [below](#compatible-servers).
 
 **Why use local models:**
 
@@ -25,7 +25,7 @@ If you prefer cloud models, those work too — just pick from the model selector
   Local models power the **Workshop agent** — the assistant you talk to while building. This is separate from [AI Providers](/workshop/connectors/managed-ai-connectors), which add AI features to the apps you build.
 </Info>
 
-## Quick Start (Managed Local Models)
+## Quick start (managed local models)
 
 <Steps>
   <Step title="Open Local Models settings">
@@ -56,11 +56,11 @@ The tab also includes:
 ![All Models catalog in Local Models settings](https://static.workshop.ai/docs-site/local-models/local-models-all-models.webp)
 *All Models view for browsing the full supported catalog and selecting a specific model family.*
 
-## Advanced: Connect Your Own Local Server
+## Advanced: connect your own local server
 
-If you prefer to run your own inference server, Workshop can connect to any server that implements the **Anthropic Messages API** (`/v1/messages`).
+Workshop's managed path uses `llama-server` from [llama.cpp](https://github.com/ggml-org/llama.cpp), with runtime build **b8648** selected by the current Desktop settings. Prefer that managed path when you do not need to maintain a server yourself.
 
-The most common option is `llama-server` from [llama.cpp](https://github.com/ggml-org/llama.cpp). Other compatible servers include [LM Studio](https://lmstudio.ai/) and [Ollama](https://ollama.com/) (with an Anthropic adapter).
+For a manual server, confirm the [compatibility requirements](#compatible-servers) for your exact server version, model, and configuration. Merely exposing `/v1/messages` is not sufficient, and an OpenAI-compatible endpoint is not interchangeable with the Anthropic Messages request format.
 
 In **Agent Settings → Local Models**, expand **Advanced: Connect your own server**, enter your base URL, and click **Test Connection**.
 
@@ -87,7 +87,7 @@ If you prefer to set it up manually, here's the typical workflow:
 
 ```bash
 # Build llama.cpp (macOS/Linux with Metal/CUDA support)
-git clone https://github.com/ggml-org/llama.cpp
+git clone --branch b8648 --depth 1 https://github.com/ggml-org/llama.cpp
 cd llama.cpp
 cmake -B build
 cmake --build build --config Release
@@ -110,7 +110,7 @@ The server is ready when you see output indicating it's listening on port 8080. 
 
 ---
 
-## Recommended Models
+## Recommended models
 
 The following three models are well-suited for agentic coding tasks with Workshop Desktop. All are available in GGUF format for local deployment.
 
@@ -193,9 +193,9 @@ A strong general-purpose model with excellent coding ability and a massive 1M to
 
 ---
 
-## Hardware Guide
+## Hardware guide
 
-### Apple Silicon (Unified Memory)
+### Apple silicon (unified memory)
 
 Apple Silicon Macs share memory between the CPU and GPU, making them efficient for running local models. The entire model must fit in unified memory.
 
@@ -221,13 +221,13 @@ NVIDIA GPUs with CUDA are the fastest option for local inference. The model must
 
 AMD GPUs are supported through ROCm. Support has improved significantly but remains less mature than CUDA. If you have an AMD GPU with 24+ GB VRAM, build llama.cpp with ROCm support and follow the same sizing guidelines as NVIDIA GPUs.
 
-### CPU-Only
+### CPU-only
 
 Running models on CPU alone (system RAM) is possible but slow — expect 1–5 tokens/second depending on the model and quantization. Useful for testing and experimentation but not practical for interactive agentic coding sessions. Apple Silicon is the exception, since its unified memory architecture means "CPU-only" still benefits from the GPU's memory bandwidth.
 
 ---
 
-## Approval Mode Recommendation
+## Approval mode recommendation
 
 <Warning>
   **Strongly recommended:** Enable **Approval Mode** (Code Execution set to Manual) in Agent Settings when using local models. This requires you to approve each code execution before it runs.
@@ -247,20 +247,22 @@ For the three recommended models (Qwen3-Coder-Next, Step 3.5 Flash, MiniMax M2.5
 
 ---
 
-## Compatible Servers
+## Compatible servers
 
-Workshop Desktop connects to any server that exposes an Anthropic Messages API-compatible endpoint at `/v1/messages`. The following servers are known to work:
+The managed runtime is llama.cpp **b8648**. These docs do not certify arbitrary LM Studio, Ollama, vLLM, or adapter versions for Workshop.
 
-| Server | Notes |
-|---|---|
-| **[llama-server](https://github.com/ggml-org/llama.cpp)** (llama.cpp) | Native Anthropic Messages API support. Recommended. Supports streaming, tool use, and vision. |
-| **[LM Studio](https://lmstudio.ai/)** | GUI application for running local models. Check documentation for Anthropic API compatibility settings. |
-| **[Ollama](https://ollama.com/)** | Requires an Anthropic adapter (e.g., [local-openai2anthropic](https://pypi.org/project/local-openai2anthropic/)) since Ollama natively serves an OpenAI-compatible API. |
-| **[vLLM](https://docs.vllm.ai/)** | High-throughput inference engine with Anthropic endpoint support. Better suited for server-class hardware. |
+Before using an external server, verify all capabilities your task requires:
+
+- Anthropic Messages request and response bodies, including system instructions and conversation history.
+- Streaming events consumed by the agent, not just a non-streaming text reply.
+- Tool definitions, tool-use responses, and subsequent tool-result messages across multiple turns.
+- Image input only when the selected model and runtime configuration support it.
+
+**Test Connection** sends a small, non-streaming text request. A successful check establishes basic connectivity, not tool-use, streaming, vision, or complete agent compatibility. Follow it with a small representative task using manual approval before relying on that server for project work.
 
 ---
 
-## Ecosystem and Resources
+## Ecosystem and resources
 
 The local model ecosystem is evolving rapidly. New models with better quality at smaller sizes are released frequently. If the recommended models above don't fit your hardware, check back — options for 16 GB and 32 GB machines improve with each new model release.
 
@@ -282,7 +284,7 @@ The local model ecosystem is evolving rapidly. New models with better quality at
   </Accordion>
 
   <Accordion title="Test Connection fails with 'Endpoint not found'">
-    The server is running but doesn't have an Anthropic Messages API endpoint at `/v1/messages`. This usually means the server uses an OpenAI-compatible API instead. Use an adapter like `local-openai2anthropic`, or switch to llama-server which has native support.
+    Check that the server exposes Anthropic Messages requests at `/v1/messages`, rather than only an OpenAI-compatible API. Prefer Workshop's managed runtime, or validate your exact external server and adapter against the compatibility requirements above.
   </Accordion>
 
   <Accordion title="Model is very slow (< 5 tokens/second)">

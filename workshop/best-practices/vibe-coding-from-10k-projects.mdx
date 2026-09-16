@@ -1,5 +1,5 @@
 ---
-title: "Patterns from 10,000+ Projects"
+title: "Patterns from 10,000+ projects"
 icon: "trophy"
 description: "Proven strategies for effective agentic coding, distilled from thousands of real-world Workshop projects."
 ---
@@ -10,9 +10,9 @@ Workshop is intentionally flexible and unopinionated, providing a natural langua
 
 Nothing in this guide is set in stone nor universally applicable. Consider these suggestions as starting points, and experiment to find what works best for you.
 
-## 1. Customize Your Environment
+## 1. Customize your environment
 
-### Create `.workshop/rules.md` Files
+### Create `.workshop/rules.md` files
 
 `.workshop/rules.md` is a special file that Workshop automatically pulls into context when working with your project. This is the single most impactful thing you can do to improve Workshop's output. Document:
 
@@ -30,7 +30,7 @@ Please create a rules.md file for this project that documents our
 code style, architecture, and main files.
 ```
 
-### Optimize Your Rules Files
+### Optimize your rules files
 
 Your `.workshop/rules.md` files become part of Workshop's understanding of your project. Treat them as living documents:
 
@@ -39,7 +39,7 @@ Your `.workshop/rules.md` files become part of Workshop's understanding of your 
 - Add emphasis like "IMPORTANT:" or "NOTE:" for critical constraints
 - Update the file as your project evolves
 
-### Configure Secrets Management
+### Configure secrets management
 
 Workshop includes built-in secrets management for sensitive information like API keys. Configure secrets in Settings, then reference them by name:
 
@@ -49,7 +49,7 @@ Connect to the OpenAI API using the OPENAI_API_KEY secret.
 
 Workshop stores secrets in your system's keychain, keeping them protected while making them available for your projects.
 
-### Control Workshop's Autonomy
+### Control Workshop's autonomy
 
 Three controls let you tune how independently Workshop works:
 
@@ -61,9 +61,9 @@ Three controls let you tune how independently Workshop works:
 **Thinking Mode tends to reduce overall credit consumption.** Although it may increase credit usage per message, the structured reasoning produces more focused, accurate results — reducing wasted iterations.
 </Note>
 
-## 2. Give Workshop More Context
+## 2. Give Workshop more context
 
-### Start with Clear High-Level Vision
+### Start with clear high-level vision
 
 Begin by describing the overall picture, not technical details:
 
@@ -77,11 +77,11 @@ categorize my spending and visualize trends over time. It should:
 - Work offline without requiring cloud services
 ```
 
-### Use Multimodal Input
+### Use multimodal input
 
 Workshop supports text, wireframes, screenshots, diagrams, and reference images. For visual elements like UIs, providing visual references dramatically improves output. Drag and drop images directly into the conversation.
 
-### Reference External Documentation
+### Reference external documentation
 
 Provide links to relevant docs when working with specific libraries or APIs:
 
@@ -92,13 +92,13 @@ Search for the relevant docs.
 
 Workshop fetches and incorporates external documentation into its understanding of your project.
 
-### Use Project Templates
+### Use project templates
 
 Browse available templates when starting a new project. Templates provide pre-configured projects with appropriate structure, dependencies, and starter code. They save time and ensure your project follows established patterns from the start.
 
-## 3. Effective Workflows
+## 3. Effective workflows
 
-### Separate Design from Execution
+### Separate design from execution
 
 Clearly separate planning from building:
 
@@ -106,7 +106,7 @@ Clearly separate planning from building:
 2. **Refine together**: Use Workshop as a collaborative partner to explore options
 3. **Signal when to build**: Once satisfied with the plan, explicitly tell Workshop to start
 
-### Take Incremental Steps
+### Take incremental steps
 
 1. **Start with the simplest version** that demonstrates core functionality
 2. **Verify each step works** before moving to the next
@@ -114,7 +114,7 @@ Clearly separate planning from building:
 
 This incremental approach significantly increases success rates by avoiding complexity too early.
 
-### Iterate Through Conversation
+### Iterate through conversation
 
 1. Describe your initial idea in simple terms
 2. Let Workshop build a minimal implementation
@@ -123,15 +123,15 @@ This incremental approach significantly increases success rates by avoiding comp
 
 This conversational approach yields far better results than specifying everything in a single prompt.
 
-### Switch Modes as Needed
+### Switch modes as needed
 
 - **Higher autonomy** for rapid development when you want quick results
 - **Manual approval** when you need precise control over specific features
 - **Extended execution**: _"Keep working until you really need my input"_
 
-## 4. Optimize Your Prompting
+## 4. Optimize your prompting
 
-### Be Specific and Prioritize
+### Be specific and prioritize
 
 | Less Effective | More Effective |
 |---|---|
@@ -139,7 +139,7 @@ This conversational approach yields far better results than specifying everythin
 | Fix the authentication bugs | Debug the authentication flow in auth.js. Users are logged out after 10 minutes even though JWT expiration is set to 24 hours. Check for token refresh issues. |
 | Make this code better | Refactor for performance. The database query loads all records instead of paginating. Implement pagination with 20 items per page using indexed fields for sorting. |
 
-### Use the Right Level of Guidance
+### Use the right level of guidance
 
 - **High-level**: _"Build a shopping cart component for an e-commerce site"_ — good for standard patterns
 - **Directed**: _"Build a shopping cart with these specific requirements: [list]"_ — when you have specific needs
@@ -147,7 +147,7 @@ This conversational approach yields far better results than specifying everythin
 
 Start with high-level guidance and become more specific if results do not match expectations.
 
-### Show Examples
+### Show examples
 
 When you have a specific style in mind, reference existing code:
 
@@ -157,23 +157,23 @@ products.js, but focused on user information. Use the same styling
 approach but adapt the layout for user data.
 ```
 
-## 5. Leverage Workshop's Tools
+## 5. Leverage Workshop's tools
 
-### File System Tools
+### File system tools
 
 Workshop can create, read, edit, and search files in your project. Explicitly tell it which files to focus on for best results. Its file editing is especially powerful for targeted changes to large codebases.
 
-### CLI / Shell Tools
+### CLI / shell tools
 
 Workshop runs shell commands, package managers, build tools, version control, and deployment scripts. It can determine the right commands for a task or execute specific commands you provide.
 
-### Search Tools
+### Search tools
 
 Workshop searches both your local codebase and the web for relevant patterns, documentation, error solutions, and reference materials.
 
-## 6. Guide Workshop's Learning
+## 6. Guide Workshop's learning
 
-### Understand Before Modifying
+### Understand before modifying
 
 Before asking Workshop to change existing code:
 
@@ -183,14 +183,14 @@ Before asking Workshop to change existing code:
 
 This dramatically improves success rates with established codebases.
 
-### Embrace Iteration Over Perfection
+### Embrace iteration over perfection
 
 1. Start small with minimal functionality
 2. Get feedback early
 3. Add features incrementally
 4. Commit working versions regularly
 
-## 7. Use Checkpoints for Safety
+## 7. Use checkpoints for safety
 
 Workshop automatically saves checkpoints of your project at key moments during each conversation. This gives you a "time machine":
 
@@ -200,7 +200,7 @@ Workshop automatically saves checkpoints of your project at key moments during e
 
 Checkpoints work alongside your existing Git repository without interference — they do not create `.git` files, they respect `.gitignore`, and your own commits remain unaffected.
 
-## 8. Share Your Work
+## 8. Share your work
 
 Workshop lets you share conversations privately via unique links or publicly through Workshop Universe. Share your process, showcase ideas, and let others learn from your approach.
 
@@ -208,7 +208,7 @@ Workshop lets you share conversations privately via unique links or publicly thr
 Ensure publicly shared conversations do not contain sensitive information, API keys, or proprietary code.
 </Warning>
 
-## Real-World Application Patterns
+## Real-world application patterns
 
 <AccordionGroup>
   <Accordion title="Rapid Prototyping">

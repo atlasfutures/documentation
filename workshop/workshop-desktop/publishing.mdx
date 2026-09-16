@@ -6,7 +6,7 @@ description: "Deploy Workshop Desktop apps to a shareable URL with one click, or
 
 Workshop Desktop supports the same one-click publishing as Workshop Cloud. When you're ready to share your app, Workshop handles hosting and compute — nothing to provision, no server to manage.
 
-## One-Click Publish to Workshop
+## One-click publish to Workshop
 
 Click **Publish** in the top-right corner of the interface. Workshop packages your project, injects secrets and connector credentials, and deploys to Workshop's hosting infrastructure. Your app gets a public URL you can share immediately.
 
@@ -38,7 +38,7 @@ https://{your-project-slug}.workshop.build
 
 On a paid plan (Build, Scale, or Max), you can rename the slug to something more meaningful. Rename while the app is stopped — stop it first, rename, then republish.
 
-## Custom Domains
+## Custom domains
 
 On any paid plan — **Build**, **Scale**, or **Max** — you can serve your published app from your own domain (e.g. `app.yourcompany.com`) instead of the default `workshop.build` URL. You'll need a domain you already own and access to its DNS settings — Workshop doesn't register domains on your behalf.
 
@@ -52,7 +52,7 @@ Once the CNAME propagates, Workshop verifies it and provisions the SSL certifica
 
 For the full walkthrough, troubleshooting, and limits, see [Custom Domains in Workshop Cloud publishing](/workshop/workshop-cloud/publishing#custom-domains) — the flow is identical for desktop-published apps.
 
-## Redirects and Custom Status Codes
+## Redirects and custom status codes
 
 By default, published apps answer every URL with your app shell and a `200` "success" status — great for client-side routing, but a problem for search engines: when a page moves or is removed, crawlers keep seeing "this page exists," so a moved page never passes its search ranking to its new address and a deleted page stays in search results. Getting this right is a core part of SEO (search engine optimization) — see [Google's guidance on redirects](https://developers.google.com/search/docs/crawling-indexing/301-redirects).
 
@@ -78,12 +78,12 @@ Plain HTML projects published as-is (no build step) should place `_redirects` at
 
 If the file contains something unsupported, publishing fails with an error naming the line, so a typo can never silently change your live routing. Removing the file (and republishing) restores the default behavior. On apps with a Python backend, note that `/api/*` always goes to your backend — rules apply to everything else.
 
-## Public vs Private Apps
+## Public vs private apps
 
-### Public Apps
+### Public apps
 Anyone with the URL can access the app. No sign-in required. Available on all plans.
 
-### Private Apps
+### Private apps
 Only people you invite by email can access it. Visitors who aren't invited see an "Access Restricted" page. Private apps require a paid plan.
 
 | Feature | Discover (Free) | Build | Scale | Max |
@@ -95,15 +95,15 @@ Only people you invite by email can access it. Visitors who aren't invited see a
 | Custom domains | No | Yes | Yes | Yes |
 | Hide branding | No | Yes | Yes | Yes |
 
-## Updating a Published App
+## Updating a published app
 
 After making changes to your project, click **Update** in the Publish popover to push the latest version. The URL stays the same — visitors see the new version once the update completes.
 
-## Stopping a Published App
+## Stopping a published app
 
 Open the Publish popover and click **Stop**. Stopped apps show a friendly "App Temporarily Unavailable" page instead of a technical error. You can republish at any time.
 
-## Deploying to External Platforms
+## Deploying to external platforms
 
 Because Workshop Desktop projects are standard files on your local machine, you can also deploy to any external platform — Vercel, AWS, Railway, Fly.io, your own server, or anywhere else.
 
@@ -126,6 +126,6 @@ Set up a GitHub Actions pipeline that deploys to AWS on push to main.
 Dockerize this app and write a docker-compose file for self-hosting.
 ```
 
-## Sharing and Access Control
+## Sharing and access control
 
 Published apps support granular access control — share publicly or limit to specific people. For team-level sharing and managing access across your organization, see [Sharing and Teams](/workshop/workshop-desktop/sharing-and-teams).

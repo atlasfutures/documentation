@@ -4,11 +4,11 @@ icon: "plug"
 description: "Connect AI providers, databases, and external services to Workshop."
 ---
 
-## What Are Connectors?
+## What are connectors?
 
 Connectors link external services to Workshop. Once connected, Workshop can use AI models, query your databases, and access your files across all your conversations — no need to manually copy data or explain your setup each time.
 
-## AI Providers
+## AI providers
 
 Workshop includes three built-in AI providers — **Anthropic** (Claude), **OpenAI** (GPT), and **Google Gemini**. Enable them per project via **Add-Ons** in project settings or during project creation. When enabled, Workshop provisions a managed connector that handles API keys, authentication, and billing through your Workshop credits — no setup required.
 
@@ -18,7 +18,7 @@ If you prefer to manage billing directly with a provider, BYOK (Bring Your Own K
   How managed connectors work, what each provider offers, and when to use BYOK instead.
 </Card>
 
-### BYOK Setup Guides
+### BYOK setup guides
 
 <CardGroup cols={3}>
   <Card title="Anthropic" href="/workshop/connectors/anthropic">Use your own Claude API key</Card>
@@ -26,7 +26,7 @@ If you prefer to manage billing directly with a provider, BYOK (Bring Your Own K
   <Card title="Gemini" href="/workshop/connectors/gemini">Use your own Gemini API key</Card>
 </CardGroup>
 
-## Database Providers
+## Database providers
 
 Workshop can provision a managed **Neon** serverless Postgres database for your project. Enable it via **Add-Ons** in project settings or during project creation. Workshop handles provisioning, credentials, and cleanup automatically — including **Neon Auth**, a built-in authentication service that keeps your app's auth domains in sync as you publish and add custom domains.
 
@@ -40,7 +40,7 @@ If you already have your own Neon database (or another database), connect it man
   Connect PostgreSQL, MySQL, SQL Server, MongoDB, Supabase, Neon, TiDB, or TigerGraph with your own credentials.
 </Card>
 
-## Data Connectors
+## Data connectors
 
 Connect Workshop to your databases, cloud storage, and productivity tools. You provide credentials once, and Workshop can access and query your data in any conversation.
 
@@ -53,7 +53,7 @@ Connect Workshop to your databases, cloud storage, and productivity tools. You p
 | [AWS S3](/workshop/connectors/aws-s3) | Cloud storage | Access Key + Secret |
 | [GitHub](/workshop/connectors/github) | Source control API | Personal Access Token |
 
-## How Connectors Work
+## How connectors work
 
 When you add a data connector:
 
@@ -63,7 +63,7 @@ When you add a data connector:
 
 You maintain full control over your data while giving Workshop the ability to help you work with it.
 
-## Adding a Data Connector
+## Adding a data connector
 
 <Steps>
   <Step title="Open the Hub">
@@ -88,7 +88,7 @@ Once connected, reference your connection by name or type in any conversation:
 - *"Using my **Production Database** connection, show me all users who signed up last week"*
 - *"Query my **Supabase** data for the top 10 products by revenue"*
 
-## Managing Connections
+## Managing connections
 
 Your active connections appear in the **Active Connections** table in the Connectors tab. From there you can:
 

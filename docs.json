@@ -111,7 +111,8 @@
               "rules-router/index",
               "rules-router/quickstart/index",
               "rules-router/quickstart/claude-code",
-              "rules-router/quickstart/codex"
+              "rules-router/quickstart/codex",
+              "rules-router/quickstart/agents"
             ]
           },
           {
@@ -497,6 +498,11 @@
     {
       "source": "/rules-router/cli/menubar",
       "destination": "/rules-router/guides/menubar",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart/agents",
+      "destination": "/rules-router/quickstart/agents",
       "permanent": true
     }
   ]

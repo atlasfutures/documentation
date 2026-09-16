@@ -1,18 +1,18 @@
 ---
-title: "File System and Terminals"
+title: "File system and terminals"
 icon: "folder-tree"
 description: "How Workshop Desktop interacts with your local files and manages terminal sessions."
 ---
 
 Workshop Desktop runs directly on your machine, giving the agent full access to your local file system. There are no restrictions on which files the agent can read, write, or execute — your project is a real directory you can open in any editor or terminal.
 
-## Real-Time File Watching
+## Real-time file watching
 
 Workshop Desktop monitors your project directory for changes. When you edit a file in an external editor, create new files, or delete something — Workshop detects it immediately and updates the file tree in the sidebar.
 
 The file watcher is `.gitignore`-aware — files and directories listed in your `.gitignore` are excluded from the file tree by default, keeping the view focused on the files that matter.
 
-## File Tree
+## File tree
 
 The sidebar displays your project's file structure as an expandable tree. It mirrors your actual directory layout on disk.
 
@@ -36,7 +36,7 @@ You can also navigate to the folder directly — see [where projects live on dis
   Treat a folder copy as a backup of your work, not of your whole Workshop project. For keeping two machines in sync as you work, [GitHub integration](/workshop/workshop-desktop/github-integration) is the better route.
 </Warning>
 
-## Terminal Sessions
+## Terminal sessions
 
 Workshop manages its own **headless terminal sessions** — full PTY-backed shells that the agent can create, use, and destroy as needed. These aren't embedded terminal UIs; they're real shell processes that the agent drives programmatically, reading output and sending input (including key presses) just like a human would.
 

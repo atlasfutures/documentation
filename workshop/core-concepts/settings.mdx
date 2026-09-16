@@ -6,7 +6,7 @@ description: "Configure how Workshop's agent behaves and how the platform operat
 
 Workshop has two categories of settings: **Agent Settings** control how the AI behaves during conversations, and **App Settings** configure platform-level capabilities and integrations.
 
-## Agent Settings
+## Agent settings
 
 Access Agent Settings in either of two ways: click the **gear icon** in the left sidebar to open Settings, then select the **Agent** tab; or click the **+ button** in the message input box and choose **Agent Settings**. These affect how Workshop operates during conversations.
 
@@ -81,6 +81,10 @@ Open Source models are significantly cheaper than premium models — 4–8× low
 
 ARC is powered by [Rayline](https://rayline.ai), which handles the model routing behind the scenes. You can switch between ARC and a specific model at any time during a conversation — a common pattern is a fast, cheaper model for exploration, a balanced model for building, and a top-tier model for hard problems.
 
+<Note>
+The ARC option in Workshop is its in-app model router. It does not grant access to the separate [ARC Responses and Decisions APIs](/arc/availability), which are in private preview and require approval from Rayline. A Workshop account or subscription does not enable those APIs.
+</Note>
+
 ### Code execution control
 
 Control when Workshop executes code on your system.
@@ -123,7 +127,7 @@ For complex problems, pairing **Genius** model with **Thinking Level 3–4** pro
 
 ### Local model setup (Desktop only)
 
-Connect Workshop Desktop to a local Anthropic Messages API-compatible server, such as llama.cpp or Ollama with an adapter.
+Use Workshop Desktop's managed local runtime, or validate an external server against the [local model compatibility requirements](/workshop/workshop-desktop/local-models#compatible-servers). An endpoint name alone does not establish compatibility.
 
 <Steps>
   <Step title="Enter base URL">
@@ -151,7 +155,7 @@ In Desktop, use the **Skills** tab in Settings to install, enable, disable, and 
 For the complete skills guide (concept + Desktop workflows), see [Core Concepts → Skills](/workshop/core-concepts/skills).
 </Info>
 
-### Sub Agents
+### Sub agents
 
 The **Sub Agents** tab lets you set a persistent default model for each built-in sub-agent. This is the durable alternative to overriding a model [mid-conversation](/workshop/core-concepts/sub-agents#choosing-models-for-sub-agents) — set it once and it applies to **every new conversation**, instead of just the current delegation.
 
@@ -167,7 +171,7 @@ Click **Save Settings** to apply your overrides, or **Reset All to Defaults** to
 For the full list of built-in agents and the models you can route them to, see [Core Concepts → Sub-agents](/workshop/core-concepts/sub-agents).
 </Info>
 
-### Task Management
+### Task management
 
 When enabled, Workshop creates and maintains structured task lists when implementing project plans. Workshop automatically breaks down plans into discrete, trackable tasks, updating their status as work progresses.
 
@@ -198,7 +202,7 @@ Task lists and plans are stored as files in your project directory (for example 
 
 ---
 
-## App Settings
+## App settings
 
 Access App Settings through the main **Settings** menu (gear icon). These apply across all projects and conversations.
 
@@ -272,7 +276,7 @@ Workshop can build MCP servers from natural language descriptions, test them, an
 - Use Secrets for server authentication credentials
 - Disable unused tools within servers to keep context focused
 
-### Control Center
+### Control center
 
 The Control Center provides quick-action buttons for common development tasks, accessible from within your project.
 
@@ -284,7 +288,7 @@ The Control Center provides quick-action buttons for common development tasks, a
 
 **Interactive Terminal** — Workshop handles command-line tools that require interactive input — scaffolding wizards, interactive installers, deployment setup. Terminal sessions are visible in the Control Center.
 
-### Privacy Mode
+### Privacy mode
 
 Your code is never stored anywhere other than your machine.
 

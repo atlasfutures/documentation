@@ -33,6 +33,28 @@ rayline router logs --lines 120
 <span id="what-routes-locally" />
 <span id="combining-cloud-and-local" />
 
+## Choosing a local model
+
+Use `rayline local models` to list managed models and `rayline local use <model-id>` to select one. Rayline downloads the selected model on first use and serves it through its bundled runtime.
+
+### Option 1 — Rayline runs the model
+
+```bash
+rayline local models
+rayline local use <model-id>
+```
+
+### Option 2 — you run the model
+
+For a server you manage, configure the endpoint and model explicitly:
+
+```bash
+rayline local custom --url http://127.0.0.1:11434 --model <model-id>
+rayline router start
+```
+
+Check the server's protocol and model capabilities against the current Rayline configuration. See [Rayline for agents](/rules-router/quickstart/agents) for SDK examples.
+
 ## Hybrid by default
 
 The default Claude Code local session keeps the main agent on cloud Claude and routes eligible subagent work locally. “Local router” does not mean all prompts remain on-device. Use `--route all` for an intentionally fully local route, subject to model support.

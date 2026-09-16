@@ -1,16 +1,16 @@
 ---
-title: "Trusted Dashboards"
+title: "Trusted dashboards"
 icon: "shield-check"
 description: "Build dashboards grounded in your semantic layer. The dbt-skillz compiler turns your dbt project into agent context — so dashboards are accurate from day one and stay accurate as your data evolves."
 ---
 
-## The Problem: Dashboards That Drift
+## The problem: dashboards that drift
 
 AI coding agents can build stunning dashboards in minutes. But without access to your semantic layer, they guess at metric definitions, aggregation grain, and join logic. The result looks right, runs fine, and is quietly wrong.
 
 As your dbt models evolve — new product lines, updated attribution models, renamed columns — agent-built dashboards don't update themselves. They were correct at the time of creation and begin drifting immediately.
 
-## The Solution: dbt-skillz + Workshop
+## The solution: dbt-skillz + Workshop
 
 [dbt-skillz](https://github.com/atlasfutures/dbt-skillz) is an open-source compiler (Apache 2.0) that converts your dbt project into a structured skill — a context document any coding agent can consume. Workshop is the runtime that ties it all together.
 
@@ -22,7 +22,7 @@ flowchart LR
     D --> E[Grounded dashboard]
 ```
 
-## Getting Started
+## Getting started
 
 <Steps>
   <Step title="Install dbt-skillz">
@@ -56,7 +56,7 @@ flowchart LR
   </Step>
 </Steps>
 
-## The Trusted Dashboards Lifecycle
+## The trusted dashboards lifecycle
 
 <Steps>
   <Step title="Grounded creation">
@@ -85,7 +85,7 @@ flowchart TD
     F --> G[Owners notified]
 ```
 
-## CI/CD Integration
+## CI/CD integration
 
 Use dbt-skillz in your CI pipeline to review changes to your dbt project automatically:
 
@@ -108,13 +108,13 @@ jobs:
 
 The review agent uses the compiled skill as context to understand the full impact of changes and flag potential issues.
 
-## Not Just dbt
+## Not just dbt
 
 The skill compiler pattern generalizes beyond dbt. Any system that defines "what this data means" — Looker semantic models, Cube.js schemas, well-documented SQL views — can be compiled into an agent skill. dbt is where we started because it's the most structured semantic layer in the ecosystem.
 
 Workshop also supports [SQLMesh and Dagster](/workshop/connectors/data-warehouses) natively.
 
-## Beyond Dashboards
+## Beyond dashboards
 
 With the compiled skill as context, product managers can describe events they want to track, have the agent instrument them in the codebase, update dbt models, and submit pull requests to the analytics team. The skill bridges domain expertise and implementation.
 

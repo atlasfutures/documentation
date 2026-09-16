@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const redirects = JSON.parse(readFileSync(resolve(root, 'docs.json'))).redirects;
-// Snapshot of headings from the previously published Rayline docs (c09bb73).
+// Heading snapshots from the previously published Rayline docs (c09bb73 and 7068df9).
 const legacy = JSON.parse(readFileSync(new URL('./legacy-fragments.json', import.meta.url)));
 const slug = (heading) => heading.toLowerCase().replace(/<[^>]*>/g, '')
   .replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');

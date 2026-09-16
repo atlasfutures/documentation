@@ -8,7 +8,7 @@ description: "Connect your Amazon S3 buckets to Workshop for cloud storage acces
 
 Amazon Simple Storage Service (S3) is a cloud object storage service for storing and retrieving any amount of data. Once connected, Workshop can help you explore buckets, list objects, and work with your S3 data through natural conversation.
 
-## What You'll Need
+## What you'll need
 
 | Credential | Description | Example |
 |------------|-------------|---------|
@@ -16,7 +16,7 @@ Amazon Simple Storage Service (S3) is a cloud object storage service for storing
 | **Secret Access Key** | AWS secret access key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
 | **Default Region** | AWS region for your buckets | `us-east-1` |
 
-## Creating AWS Credentials
+## Creating AWS credentials
 
 <Steps>
   <Step title="Open the IAM Console">
@@ -60,7 +60,7 @@ For security, create a dedicated IAM user for Workshop with only the permissions
   </Step>
 </Steps>
 
-## Verifying Your Connection
+## Verifying your connection
 
 Ask Workshop:
 
@@ -70,7 +70,7 @@ List all buckets in my S3 connection
 
 If Workshop returns your bucket list, the connection is working.
 
-## Using Your Connection
+## Using your connection
 
 ```
 Show me all objects in my "data-exports" bucket
@@ -85,7 +85,7 @@ List all CSV files in the "reports" folder of my analytics bucket
 What's the total size of objects in my backup bucket?
 ```
 
-## Security Best Practices
+## Security best practices
 
 - **Least privilege:** Use `AmazonS3ReadOnlyAccess` for read-only operations. For specific buckets, create a custom policy.
 - **Dedicated users:** Create a dedicated IAM user for Workshop. Never use root credentials.
@@ -104,7 +104,7 @@ If you suspect your access key has been compromised, immediately deactivate it i
 | Access denied | Verify the IAM user has S3 permissions. Check bucket policies. Ensure the correct region is specified. |
 | Bucket not found | Verify the bucket name (case-sensitive). Ensure it exists in the specified region. |
 
-## Learn More
+## Learn more
 
 - [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
 - [IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)

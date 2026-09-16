@@ -1,18 +1,18 @@
 ---
-title: "Agent Engineering Essentials"
+title: "Agent engineering essentials"
 icon: "star"
 description: "Master the art of agent engineering — the skill of getting the most out of your AI development partner."
 ---
 
-## Understanding Agent Engineering
+## Understanding agent engineering
 
 Just like "prompt engineering" helps you get better results from language models, "agent engineering" is a set of best practices to maximize your success with Workshop. While Workshop is powerful and intuitive, following these practices will significantly improve your outcomes, especially for complex projects.
 
 Agent engineering is about designing thoughtful interactions with AI systems to ensure they operate reliably, efficiently, and successfully. Even as AI models become more sophisticated, these practices help guide them toward the results you want.
 
-## The Five Pillars of Successful Building
+## The five pillars of successful building
 
-### 1. Separate Planning from Execution
+### 1. Separate planning from execution
 
 Before diving into code, make sure you have clear requirements. If your project needs are still forming, start with collaborative planning:
 
@@ -28,7 +28,7 @@ Use **Plan Mode** to work through requirements systematically. This mode acts li
 Plan Mode is especially valuable at the start of a project. It helps you avoid the most common mistake: jumping into code before requirements are clear.
 </Tip>
 
-### 2. Build Incrementally
+### 2. Build incrementally
 
 The most common mistake is asking for too much at once. Break your project into small, achievable steps:
 
@@ -63,7 +63,7 @@ This incremental approach has multiple benefits:
 - Natural checkpoints to save progress
 - Flexibility to change direction based on results
 
-### 3. Verify Understanding Before Making Changes
+### 3. Verify understanding before making changes
 
 When working with existing code, always ensure Workshop understands the current system before asking for modifications.
 
@@ -88,7 +88,7 @@ theme with blue accents.
 
 This pattern is crucial for success with existing codebases. Just like human developers study code before modifying it, Workshop needs guided exploration to understand how things work.
 
-### 4. Manage Task Execution
+### 4. Manage task execution
 
 Some tasks require multiple iterations. Instead of micromanaging every step, you can give Workshop more autonomy:
 
@@ -112,7 +112,7 @@ Take your time with this. Make sure each step works before moving
 to the next one, and commit your progress after each successful change.
 ```
 
-### 5. Handle Errors Effectively
+### 5. Handle errors effectively
 
 When Workshop gets stuck or makes mistakes, use these recovery strategies:
 
@@ -137,7 +137,7 @@ Let's break this down. First, create a minimal test case that
 reproduces the issue, then we can fix it step by step.
 ```
 
-## Using `.workshop/rules.md` for Project-Specific Instructions
+## Using `.workshop/rules.md` for project-specific instructions
 
 Workshop automatically reads a `.workshop/rules.md` file in your project root, making it the ideal place to document project-specific context:
 
@@ -176,7 +176,7 @@ our code style, architecture, and main files.
 Treat `.workshop/rules.md` as a living document. Update it as your project evolves. Focus on what is unique or non-obvious about your project — Workshop already understands common frameworks and patterns.
 </Tip>
 
-## Context Management Best Practices
+## Context management best practices
 
 As projects grow, help Workshop maintain context effectively:
 
@@ -188,9 +188,9 @@ As projects grow, help Workshop maintain context effectively:
 
 **Keep `.workshop/rules.md` focused.** Add emphasis like "IMPORTANT:" or "NOTE:" for critical information. Avoid dumping massive amounts of context — prioritize what is most unique about your project.
 
-## Common Success Patterns
+## Common success patterns
 
-### The MVP-First Pattern
+### The MVP-first pattern
 
 Always start with the minimum viable version:
 
@@ -198,7 +198,7 @@ Always start with the minimum viable version:
 2. **Add one feature at a time** — Build on a solid foundation
 3. **Enhance the user experience** — Polish after functionality is proven
 
-### The Version Control Pattern
+### The version control pattern
 
 Establish good practices early:
 
@@ -213,7 +213,7 @@ the next feature.
 
 Regular commits create safety nets and clear progress markers. Workshop's built-in checkpointing provides an additional layer of safety for within-session changes.
 
-### The Testing Pattern
+### The testing pattern
 
 Build confidence in your code:
 
@@ -226,7 +226,7 @@ Before we deploy this, let's test it thoroughly to make sure everything
 works as expected.
 ```
 
-## Common Anti-Patterns to Avoid
+## Common anti-patterns to avoid
 
 | Anti-Pattern | What Happens | What to Do Instead |
 |---|---|---|
@@ -236,7 +236,7 @@ works as expected.
 | **"No Progress Saves"** | Forgetting to commit working versions | Use git checkpoints at logical milestones |
 | **"Too Specific"** | Over-prescribing implementation details | Give Workshop room to make good decisions |
 
-## Measuring Success
+## Measuring success
 
 Good agent engineering leads to:
 
