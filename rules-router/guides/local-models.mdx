@@ -3,7 +3,21 @@ title: "Local models"
 description: "Keep selected work on your machine without confusing hybrid routing with offline execution."
 ---
 
+<span id="requirements" />
+<span id="default-model" />
+<span id="custom-models" />
+<span id="requirements-for-custom-models" />
+
+
 Rayline Local runs an open-source router and a local inference path. Start with the [current installation and hardware guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md); model memory and runtime requirements depend on your configuration.
+
+<span id="quick-start" />
+<span id="managing-the-daemon" />
+<span id="setup" />
+<span id="what-starts" />
+<span id="check-status" />
+<span id="view-logs" />
+<span id="stop" />
 
 ```bash
 rayline claude --local
@@ -11,11 +25,26 @@ rayline router status
 rayline router logs --lines 120
 ```
 
+<span id="architecture" />
+<span id="injector-port-20809" />
+<span id="adapter-port-20808" />
+<span id="llama-server-port-8081" />
+<span id="how-it-works" />
+<span id="what-routes-locally" />
+<span id="combining-cloud-and-local" />
+
 ## Hybrid by default
 
 The default Claude Code local session keeps the main agent on cloud Claude and routes eligible subagent work locally. “Local router” does not mean all prompts remain on-device. Use `--route all` for an intentionally fully local route, subject to model support.
 
 Local routing itself needs no Rayline account. Your main-agent cloud provider may still need credentials and charge for inference.
+
+<span id="troubleshooting" />
+<span id="model-download-is-slow" />
+<span id="out-of-memory" />
+<span id="port-conflicts" />
+<span id="llama-server-wont-start" />
+<span id="next-steps" />
 
 ## Operational checks
 

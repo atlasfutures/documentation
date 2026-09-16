@@ -3,6 +3,9 @@ title: "Troubleshooting"
 description: "Find the failing step: authentication, client wiring, policy, or inference."
 ---
 
+<span id="quick-diagnostics" />
+
+
 Start with a small request and inspect the actual route.
 
 ```bash
@@ -11,11 +14,16 @@ rayline router status
 rayline router logs --lines 120
 ```
 
+<span id="common-issues" />
+<span id="specific-areas" />
+
 <CardGroup cols={2}>
   <Card title="Connection problems" icon="plug" href="/rules-router/troubleshooting/connectivity">Check the client, runtime, and environment.</Card>
   <Card title="Unexpected charges" icon="receipt" href="/rules-router/troubleshooting/billing-issues">Separate provider usage from routing and estimates.</Card>
   <Card title="Unexpected model" icon="route" href="/rules-router/policies">Check policy precedence and compatibility guards.</Card>
   <Card title="Local models" icon="laptop" href="/rules-router/guides/local-models">Check the local provider and routing scope.</Card>
 </CardGroup>
+
+<span id="getting-help" />
 
 For support, include the CLI version, client version, environment, time of failure, and sanitized error text. Do not include API keys, account tokens, complete prompts, or unredacted logs. Contact [Rayline support](mailto:help@rayline.ai).

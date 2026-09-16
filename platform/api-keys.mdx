@@ -3,6 +3,9 @@ title: "API keys"
 description: "Use a key for the right Rayline workspace and environment."
 ---
 
+<span id="option-1-platform-dashboard-web" />
+
+
 Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys). Keep it on the server or in your secrets manager, not in browser-delivered code.
 
 1. Sign in and select the workspace you intend to use.
@@ -10,11 +13,18 @@ Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.
 3. Supply it as an environment variable to your integration.
 4. Revoke it in the platform if it is exposed; create a replacement and update your callers.
 
+<span id="environment-setup" />
+
 Rayline keys use the `rlk-` prefix. A workspace key's access is tied to its workspace; use a separate key for each integration where practical.
+
+<span id="option-2-cli" />
+<span id="adding-funds" />
 
 ## Private preview
 
 ARC preview access requires a key and base URL from the development environment. Production Agent Gateway access does not establish that ARC preview access is enabled. Copy the ARC example from your development platform instead of substituting the Agent Gateway endpoint.
+
+<span id="key-security" />
 
 ## Security
 

@@ -3,9 +3,26 @@ title: "Routing policies"
 description: "Model assignments, main-agent pinning, and compatibility checks."
 ---
 
+<span id="routing-strategies" />
+<span id="ml-routing-default" />
+<span id="rules-based-routing" />
+<span id="resetting-to-defaults" />
+<span id="the-problem" />
+<span id="the-solution" />
+<span id="what-rayline-routes" />
+<span id="architecture-at-a-glance" />
+<span id="key-concepts" />
+
+
 Open **Agent Gateway** settings in the [platform](https://platform.rayline.ai/settings). Choose the Rules strategy for Claude Code traffic when you want explicit slot assignments. Codex Responses traffic remains on rules routing regardless of the Claude Code strategy selector.
 
 These policies can apply to main-agent requests and delegated subagent work. The controls below describe the hosted coding-agent integrations; other clients must supply compatible requests, and local routing uses its own configuration.
+
+<span id="overriding-a-slot" />
+<span id="how-classification-maps-to-slots" />
+<span id="step-1-classify-the-task" />
+<span id="subagent-detection" />
+<span id="step-2-select-the-model" />
 
 ## Slots
 
@@ -20,15 +37,27 @@ These policies can apply to main-agent requests and delegated subagent work. The
 
 Choose from the model catalog shown in the platform. Default assignments can change; a model family's name is not a substitute for its actual supported model ID.
 
+<span id="main-model-pin" />
+<span id="model-pinning" />
+
 ## Main-agent pinning
 
 A main-agent pin applies to non-subagent requests. It does not pin all delegated work. Subagents continue through the selected policy.
 
 For the balanced hosted policy, the main-agent pin is checked before local eligibility and task-based selection. Context and vision compatibility checks can subsequently promote a request to a suitable fallback. A configured preference is not a promise to send an incompatible request to that model.
 
+<span id="tips" />
+
 ## A practical configuration
 
 Keep your preferred main model pinned. Assign an efficient model to Cheap and a stronger model to Frontier. Run a representative task that delegates exploration, then inspect the actual selected models and task outcome. Change one assignment at a time.
+
+<span id="local-model-port" />
+<span id="step-3-dispatch" />
+<span id="what-about-vision" />
+<span id="stickiness" />
+<span id="fallback-behavior" />
+<span id="latency-impact" />
 
 ## Failures and scope
 

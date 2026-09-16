@@ -3,6 +3,12 @@ title: "rayline router"
 description: "Inspect and control the local routing runtime."
 ---
 
+<span id="rl-router-status" />
+<span id="example-output" />
+<span id="rl-router-logs" />
+<span id="health-checks" />
+
+
 Client launch commands normally start the runtime for you. To inspect an existing session:
 
 ```bash
@@ -13,6 +19,11 @@ rayline top --json
 
 Logs can include sensitive request information. Review and redact them before sharing.
 
+<span id="rl-router-start" />
+<span id="options" />
+<span id="examples" />
+<span id="what-starts" />
+
 ## Start a runtime separately
 
 ```bash
@@ -22,6 +33,8 @@ rayline router start --help
 Choose `--mode anthropic` or `--mode codex` for the inbound protocol. Use `--config <path>` for explicit endpoints and routes. Configure on-device providers through `rayline local`; the old model-repository and adapter-port flags are not the current setup interface.
 
 Use the [current source guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for complete client wiring. Starting a daemon alone does not reconfigure an already running client.
+
+<span id="rl-router-stop" />
 
 ## Stop
 

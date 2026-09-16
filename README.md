@@ -10,6 +10,7 @@ Use Bun to install the pinned CLI if needed:
 bun add --global mint@4.2.387
 mint validate
 mint broken-links
+node tests/legacy-fragments.mjs
 mint dev --port 3014 --no-open
 ```
 

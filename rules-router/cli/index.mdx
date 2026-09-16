@@ -3,6 +3,10 @@ title: "Rayline CLI"
 description: "Install and inspect the supported CLI commands."
 ---
 
+<span id="install" />
+<span id="update" />
+
+
 The current binaries are `rayline` and the `rld` daemon. Install from [Rayline releases](https://github.com/rayline-ai/rayline/releases) using the [OS-specific installer](https://github.com/rayline-ai/rayline#install).
 
 ```bash
@@ -10,6 +14,8 @@ rayline --version
 rayline --help
 rayline update --check
 ```
+
+<span id="command-overview" />
 
 | Command | Purpose |
 | --- | --- |
@@ -21,5 +27,11 @@ rayline update --check
 | `rayline router status` | Inspect the local router |
 | `rayline router logs --lines 120` | Read recent local logs |
 | `rayline router stop` | Stop the local router |
+
+<span id="global-options" />
+<span id="--env" />
+<span id="configuration" />
+<span id="environment-variables" />
+<span id="next-steps" />
 
 For the complete version-specific flags and configuration schema, use `--help` and the [source CLI guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md). Examples here are aligned to the repository's pinned Rayline source; check your installed version before using advanced options.

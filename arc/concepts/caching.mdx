@@ -7,7 +7,7 @@ ARC's decision context and a provider's generation context are different things.
 
 ## Responses
 
-The launch rate card separates uncached input, cache reads, and output. Routing and generation are included in the Responses price. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
+The proposed launch rate card separates uncached input, cache reads, and output. The routing fee is waived for Responses. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
 
 ## Decisions
 
@@ -16,7 +16,7 @@ The launch rate card has input and cache-read categories only. Your inference pr
 Generated output may become input on a later turn. Count each actual metered event once; do not add an extra copy merely because the same text has appeared before.
 
 <Note>
-The preview estimates input/output token counts and does not expose a real encoder cache or separate cache-read billing counters. Cache retention, cache keys, tokenizer behavior, and invalidation rules are not yet a published ARC contract.
+ARC is in private preview. Confirm the cache behavior and usage fields available to your integration with the Rayline team before relying on cache retention, cache keys, or invalidation rules.
 </Note>
 
 Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the launch token categories.

@@ -3,11 +3,20 @@ title: "Connection problems"
 description: "Diagnose authentication, proxy, and local-provider failures."
 ---
 
+<span id="cant-reach-apiraylineai" />
+<span id="test-connectivity" />
+<span id="rayline-app-wont-connect" />
+
 ## Check the client path
 
 Confirm whether the client uses hosted routing, a subscription passthrough, or a local provider. Follow its [quickstart](/rules-router/quickstart) again if the wiring is unclear.
 
 For hosted routing, check `rayline auth status`. For a manually configured client, verify its base URL and workspace API key are from the same environment. Do not print the key.
+
+<span id="router-daemon-wont-start" />
+<span id="check-if-its-already-running" />
+<span id="check-the-logs" />
+<span id="health-check-timeout" />
 
 ## Check the runtime
 
@@ -18,9 +27,17 @@ rayline router logs --lines 120
 
 If a client points to a stopped local runtime, relaunch through `rayline claude` or `rayline codex` with the intended configuration. Do not stop shared runtime processes while another session needs them.
 
+<span id="ssltls-errors" />
+<span id="https-proxy-issues" />
+<span id="ca-certificate-location" />
+<span id="nodejs-trust" />
+<span id="common-proxy-errors" />
+
 ## Certificate errors
 
 Transparent proxy mode configures a local certificate authority for intercepted traffic. Do not fix TLS failures by disabling certificate verification. Check the launcher diagnostics and your organization's proxy policy. Cloud-only Claude sessions can use `--via env` when appropriate.
+
+<span id="still-stuck" />
 
 ## Provider errors
 
