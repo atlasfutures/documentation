@@ -1,0 +1,103 @@
+---
+title: "Managed Database"
+icon: "database"
+description: "Add a serverless Postgres database with built-in authentication to your Workshop project — one click, no setup required."
+---
+
+## How It Works
+
+Workshop can provision a managed **Neon** serverless Postgres database for your project. Enable it via the **Add-Ons** panel in project settings, or during project creation — some templates (Web App, React App, Static React App) auto-enable Neon by default. No accounts to create, no credentials to manage, no setup steps.
+
+When you enable the database, Workshop provisions:
+
+- A **Neon serverless Postgres** instance with a dedicated project and branch
+- **Neon Auth** — a built-in authentication service powered by Better Auth
+- **Connection credentials** injected automatically into your app's environment
+
+<Info>
+The managed database is available to the apps you build and publish. Workshop's agent can query it, create tables, and write data on your behalf during development.
+</Info>
+
+## What You Get
+
+### Serverless Postgres
+
+A full PostgreSQL database that scales to zero when idle and wakes on demand. No capacity planning, no cold start management — Workshop handles it.
+
+Your app receives these environment variables automatically:
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Pooled connection string (recommended for most use cases) |
+| `DIRECT_URL` | Direct connection string (for migrations and schema changes) |
+
+### Neon Auth
+
+Every managed database comes with **Neon Auth** enabled — a hosted authentication service that gives your app user sign-up, sign-in, and session management out of the box.
+
+Your app receives:
+
+| Variable | Description |
+|----------|-------------|
+| `NEON_AUTH_URL` | Base URL for the authentication service |
+
+Workshop automatically keeps your app's **trusted domains** in sync — when you publish your app, rename its slug, or add a custom domain, Workshop updates the Neon Auth configuration so authentication works seamlessly across all your app's URLs.
+
+## Using the Database in Your Apps
+
+Reference the database in your conversation and Workshop handles the rest:
+
+```
+Create a users table and add a registration form that saves to the database.
+```
+```
+Add authentication to my app using Neon Auth.
+```
+```
+Query the database and show a chart of signups by month.
+```
+
+Workshop writes the integration code, manages the connection, and injects credentials automatically — including when you publish the app.
+
+## Disabling the Database
+
+If you want to remove the database from a project:
+
+1. Open your project and go to **Settings** → **Resources**
+2. Under **Add-Ons** → **Database Providers**, toggle off **Neon**
+3. Confirm the removal in the dialog
+
+<Warning>
+Removing the database **permanently destroys** the Neon database instance and all its data. This action cannot be undone. Make sure to export any data you need before disabling.
+</Warning>
+
+## Bring Your Own Database
+
+If you already have a Neon database — or prefer to use another database provider — you can connect it manually instead:
+
+- [Neon, PostgreSQL, MySQL, and more](/workshop/connectors/databases) — Connect using your own credentials
+
+You can have both a managed database and manually connected databases in the same project.
+
+## Security
+
+Workshop handles database credentials for managed databases automatically:
+
+- Credentials are generated securely on your behalf
+- Credentials are stored encrypted and never exposed to the AI agent directly
+- Credentials are automatically cleaned up when you remove the database
+- Neon Auth trusted domains are kept in sync with your app's published URLs
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Database provisioning failed">
+    Try toggling the database off and back on in Add-Ons. If the issue persists, check your internet connection and try again.
+  </Accordion>
+  <Accordion title="Authentication not working on published app">
+    Workshop syncs trusted domains automatically when you publish or update your app's URL. If auth isn't working, try re-publishing your app to trigger a domain sync.
+  </Accordion>
+  <Accordion title="Slow initial queries">
+    Normal if the database has scaled to zero. The first query triggers a cold start — subsequent queries are fast.
+  </Accordion>
+</AccordionGroup>

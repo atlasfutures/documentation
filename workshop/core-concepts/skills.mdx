@@ -1,0 +1,194 @@
+---
+title: "Skills"
+icon: "puzzle-piece"
+description: "Skills are reusable instruction sets that give the Workshop agent domain expertise. Import skills from GitHub, compile them from your data layer, or write them by hand."
+---
+
+## What are skills?
+
+Skills are structured context documents that give the Workshop agent specialized knowledge about a domain, codebase, or dataset. When a skill is loaded, the agent reads it at the start of each conversation — giving it persistent expertise that goes beyond general knowledge.
+
+Think of skills as "expert briefings" — they tell the agent what your data means, how your APIs work, what your design system looks like, or how your deployment pipeline runs.
+
+## Managing skills in Settings
+
+Skills work the same way in Workshop Cloud and Workshop Desktop. In both products, open **Settings → Skills** to manage what capabilities are installed and enabled.
+
+![Skills tab in Settings](https://static.workshop.ai/docs-site/skills/skills-tab-overview.webp)
+*Skills are managed from Settings with search, filtering, and quick install actions.*
+
+**What you can do in Skills settings:**
+
+- **Browse installed skills** and read each skill's description
+- **Search** by name or description
+- **Filter to Official** skills only
+- **Enable/disable** skills with the toggle on each card
+- **Install official skills** to your user space
+- **Remove custom skills** (user or project/plugin, depending on source)
+- **Add custom skills** from ZIP, official catalog, or GitHub
+
+<Info>
+Workshop shows a warning before disabling an official skill because it can reduce your agent's baseline capabilities.
+</Info>
+
+### Adding skills
+
+Use **+ Add** in the Skills tab to choose how you want to install a skill.
+
+![Add skill menu](https://static.workshop.ai/docs-site/skills/skills-add-menu.webp)
+*Add from ZIP, from official skills, or by importing from GitHub.*
+
+**Option 1: Upload `.zip`** — Choose this when you already have a packaged skill archive. Click **+ Add → Upload .zip**, select your file, and Workshop installs it.
+
+**Option 2: Add from official** — Choose this for curated, Workshop-maintained skills. Click **+ Add → Add from official**, pick from the modal list, and click **Install**.
+
+**Option 3: Import from GitHub** — Choose this when your skill lives in a GitHub repository. Click **+ Add → Import from GitHub**, then paste a public repo URL or connect GitHub to browse your repos (including private ones).
+
+![Import skill from GitHub modal](https://static.workshop.ai/docs-site/skills/skills-import-github-modal.webp)
+*The GitHub import flow supports both direct public URLs and connected-account repository browsing.*
+
+### Skill sources
+
+In practice, you'll encounter these source types:
+
+- **Official/system**: Workshop-maintained defaults
+- **User**: installed into your personal skill space
+- **Project/plugin**: tied to project/plugin context
+
+If you're not sure where to install a skill, start with **user-level** so it's available across your work.
+
+## The `.workshop/skills/` directory
+
+Skills live in your project's `.workshop/skills/` directory:
+
+```
+your-project/
+├── .workshop/
+│   ├── context.md
+│   ├── rules.md
+│   └── skills/
+│       ├── data/
+│       │   ├── SKILL.md        # Entry point
+│       │   └── ref/
+│       │       ├── sources.md
+│       │       ├── staging.md
+│       │       └── marts.md
+│       └── design-system/
+│           └── SKILL.md
+├── src/
+└── ...
+```
+
+Each skill is a directory containing a `SKILL.md` entry point and optional reference files. The agent reads `SKILL.md` first and follows references as needed.
+
+## Importing skills from GitHub
+
+Workshop supports importing skills directly from GitHub repositories — both public and private.
+
+<Steps>
+  <Step title="Prepare the skill repository">
+    Push your skill files to a GitHub repository. The repository should contain the skill directory structure with a `SKILL.md` entry point.
+  </Step>
+  <Step title="Connect GitHub">
+    If the repository is private, connect your GitHub account in Workshop via **Hub** → **Connectors** → **GitHub**.
+  </Step>
+  <Step title="Import the skill">
+    In your Workshop project, import the skill from the repository. Workshop downloads the skill files and makes them available to the agent.
+  </Step>
+</Steps>
+
+<Tip>
+  Skills imported from GitHub can be updated when the source repository changes. In the future, Workshop will support automatic pulling of the latest version.
+</Tip>
+
+## dbt-skillz: compiling data skills
+
+The most common use of skills today is grounding agents in your data warehouse schema. [dbt-skillz](https://github.com/atlasfutures/dbt-skillz) is an open-source compiler that turns your dbt project into a structured agent skill.
+
+```bash
+# Install
+pip install dbt-skillz
+
+# Compile your dbt project into a skill
+dbt-skillz compile --project-dir ./analytics --output ./skills/data
+```
+
+The compiled skill includes:
+
+- **Model descriptions** — what each table represents
+- **Column types and documentation** — field-level context
+- **Metric definitions** — governed calculations
+- **Test constraints** — data quality rules
+- **Lineage graph** — how models depend on each other
+
+When the agent builds a dashboard or writes a query, it reads these definitions instead of guessing. See [Trusted Dashboards](/workshop/solutions/trusted-dashboards) for the full lifecycle.
+
+<Info>
+  dbt-skillz works with any coding agent — Claude, Cursor, Windsurf, and more. It's not Workshop-specific, but Workshop provides the deepest integration.
+</Info>
+
+## Other skill use cases
+
+Skills aren't limited to data. Common examples include:
+
+<AccordionGroup>
+  <Accordion title="API schemas">
+    Provide your API documentation as a skill so the agent writes correct integrations, uses the right endpoints, and handles authentication properly.
+  </Accordion>
+  <Accordion title="Design systems">
+    Give the agent your component library documentation, color tokens, and layout conventions so it generates UI that matches your brand.
+  </Accordion>
+  <Accordion title="Coding standards">
+    Document your team's conventions — naming patterns, testing requirements, architectural decisions — so the agent follows them from the first line of code.
+  </Accordion>
+  <Accordion title="Domain knowledge">
+    Describe business logic, regulatory requirements, or industry-specific terminology so the agent understands your domain context.
+  </Accordion>
+</AccordionGroup>
+
+## Skills vs. context vs. rules
+
+| Feature | `context.md` | `rules.md` | Skills |
+| --- | --- | --- | --- |
+| **Purpose** | What the project is | How to behave | Domain expertise |
+| **Scope** | Entire project | Entire project | Specific domain |
+| **Updated by** | `/context` command or manual | Manual | Compiler or manual |
+| **Example** | "This is a Next.js e-commerce app" | "Use TypeScript strict mode" | "Here are all dbt metric definitions" |
+
+## Writing skills by hand
+
+You can create skills manually for any domain:
+
+1. Create a directory under `.workshop/skills/` (e.g., `.workshop/skills/my-skill/`)
+2. Add a `SKILL.md` file as the entry point
+3. Optionally add reference files in subdirectories
+
+```markdown
+# My Skill
+
+## Overview
+This skill provides context about [domain].
+
+## Key Concepts
+- Concept A: explanation
+- Concept B: explanation
+
+## Reference
+See [detailed reference](ref/details.md) for more.
+```
+
+Keep skills focused — one domain per skill. The agent can load multiple skills simultaneously.
+
+---
+
+<CardGroup cols={3}>
+  <Card title="dbt-skillz on GitHub" icon="github" href="https://github.com/atlasfutures/dbt-skillz">
+    Open-source data skill compiler. Apache 2.0.
+  </Card>
+  <Card title="Trusted Dashboards" icon="shield-check" href="/workshop/solutions/trusted-dashboards">
+    The full lifecycle for data-grounded dashboards.
+  </Card>
+  <Card title="Build Dashboards" icon="chart-mixed" href="/workshop/build-guides/dashboards">
+    Step-by-step guide to building dashboards with Workshop.
+  </Card>
+</CardGroup>

@@ -1,0 +1,24 @@
+---
+title: "Agent Gateway pricing"
+description: "0% routing commission. Hosted inference is separate."
+---
+
+**Agent Gateway's launch policy is 0% Rayline commission.** You pay for hosted model inference, with no additional Agent Gateway commission.
+
+<Note>The zero-commission policy is the confirmed launch direction. The billing cutover has not been performed by this documentation change. Before launch, inspect the rate actually charged in your account; these docs do not retroactively change existing charges.</Note>
+
+## What you pay for
+
+Input, cached input, output, and any other applicable provider token categories depend on the executed model and serving path. Use the model catalog and your actual usage records rather than an evergreen list of hardcoded model prices.
+
+A local route uses your hardware. A hybrid session can still incur cloud inference costs. A Codex subscription-backed route follows the selected provider's terms; it is not the same bill as hosted Rayline routing.
+
+## Not ARC Decisions
+
+Agent Gateway's 0% commission is not a discount on ARC Decisions. [ARC Decisions](/arc/pricing) has fixed input/cache-read token prices. [ARC Responses](/arc/pricing) includes routing and generation in its own token rate card.
+
+## Check an example
+
+At the zero-commission launch rate, a hosted inference charge of $0.10 remains $0.10 before any applicable taxes or separately disclosed charges. No percentage routing markup is added.
+
+Read [usage and billing](/platform/usage) for the distinction between actual cost and savings estimates.

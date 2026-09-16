@@ -1,46 +1,304 @@
-/* Rayline docs — custom styles
-   Palette: forest-black #0A1412, deep-earth #0E2A22, moss #7FA68A,
-   olive #4F6F5B, celadon #CDE7D6, bone #F6F4EF */
-
-/* Wider sidebar to prevent text wrapping on nav items */
-#sidebar {
-  width: 320px;
+/* Rayline reading system. Tokens and artwork match turbo/apps/rayline.
+   Keep Mintlify's responsive shell and native search, code and theme controls.
+   Target public styling hooks, verified against the local renderer. */
+:root {
+  --rl-paper: #f0eee6;
+  --rl-surface: #fafaf8;
+  --rl-panel: #e6e3d9;
+  --rl-ink: #0a0d10;
+  --rl-muted: #4a525b;
+  --rl-line: #d9d5c8;
+  --rl-accent: #b33100;
+  --rl-tint: #f9e2d3;
+  --rl-scrollbar: #b5ae9c;
+  --rl-header-art: url("https://static.workshop.ai/rayline/site/v2026-08-11/illustrations/theme/orrery--light-480w.9c8599c820df.webp");
+  color-scheme: light;
 }
 
-/* Thin, modern scrollbars for Firefox */
+html.dark {
+  --rl-paper: #0a0d10;
+  --rl-surface: #111418;
+  --rl-panel: #181c21;
+  --rl-ink: #f0eee6;
+  --rl-muted: #b5ae9c;
+  --rl-line: #2c3137;
+  --rl-accent: #fb923c;
+  --rl-tint: #2c1c15;
+  --rl-scrollbar: #4a525b;
+  --rl-header-art: url("https://static.workshop.ai/rayline/site/v2026-08-11/illustrations/theme/orrery--dark-480w.f932038e3806.webp");
+  color-scheme: dark;
+}
+
+html {
+  scroll-padding-top: 6rem;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  color: var(--rl-ink);
+  background: var(--rl-paper);
+}
+::selection {
+  background: var(--rl-tint);
+  color: var(--rl-accent);
+}
+
+/* Opaque navigation stays readable over engravings. */
+#navbar {
+  background: var(--rl-paper);
+  border-bottom: 1px solid var(--rl-line);
+}
+img.nav-logo {
+  height: 1.7rem !important;
+  width: auto !important;
+}
+#search-bar-entry,
+#search-bar-entry-mobile {
+  background: var(--rl-surface);
+  color: var(--rl-muted);
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 1px var(--rl-line);
+}
+#topbar-cta-button a {
+  min-height: 2.4rem;
+  align-items: center;
+}
+
+/* Do not widen #sidebar independently: Mintlify's content offsets must match. */
+#sidebar-content {
+  border-right: 1px solid var(--rl-line);
+}
+.sidebar-group-header {
+  color: var(--rl-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+#sidebar a {
+  border-radius: 0.625rem;
+  line-height: 1.5;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+#sidebar a:hover {
+  background-color: var(--rl-panel);
+}
+
+#header {
+  isolation: isolate;
+  overflow: hidden;
+  padding: 1.75rem 1.75rem 2rem;
+  border: 1px solid var(--rl-line);
+  border-radius: 1.25rem;
+  background: var(--rl-surface);
+}
+#header::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--rl-header-art) right center / auto 100% no-repeat;
+  opacity: 0.38;
+  -webkit-mask-image: linear-gradient(90deg, transparent 28%, #000);
+  mask-image: linear-gradient(90deg, transparent 28%, #000);
+  pointer-events: none;
+}
+#header .eyebrow {
+  color: var(--rl-accent);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+#page-title {
+  color: var(--rl-ink);
+  font-size: clamp(1.9rem, 2.8vw, 2.65rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  word-break: normal;
+}
+#header .prose {
+  color: var(--rl-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 38rem;
+}
+#content.prose {
+  color: var(--rl-muted);
+  --tw-prose-body: var(--rl-muted);
+  --tw-prose-headings: var(--rl-ink);
+  --tw-prose-bold: var(--rl-ink);
+  --tw-prose-links: var(--rl-accent);
+  --tw-prose-code: var(--rl-ink);
+  --tw-prose-bullets: var(--rl-accent);
+  --tw-prose-counters: var(--rl-muted);
+  --tw-prose-quotes: var(--rl-ink);
+  --tw-prose-quote-borders: var(--rl-accent);
+  --tw-prose-th-borders: var(--rl-line);
+  --tw-prose-td-borders: var(--rl-line);
+  line-height: 1.8;
+}
+#content :is(h2, h3, h4) {
+  color: var(--rl-ink);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+#content > h2 {
+  border-top: 1px solid var(--rl-line);
+  padding-top: 1.7rem;
+  margin-top: 2.8rem;
+}
+#content .link {
+  color: var(--rl-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+#content .card,
+#pagination a {
+  background: var(--rl-surface);
+  border: 1px solid var(--rl-line);
+  border-radius: 1rem;
+  box-shadow: none;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+#content a.card:hover,
+#pagination a:hover {
+  background: var(--rl-panel);
+  border-color: var(--rl-accent);
+}
+#pagination {
+  gap: 1rem;
+  align-items: stretch;
+}
+#pagination a {
+  min-height: 3rem;
+  min-width: 0;
+  max-width: calc(50% - 0.5rem);
+  padding: 0.875rem 1.125rem;
+  line-height: 1.5;
+}
+#pagination a span {
+  overflow-wrap: anywhere;
+}
+#pagination a svg {
+  flex-shrink: 0;
+}
+#content .card :is(h2, h3) {
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+#content .card p {
+  color: var(--rl-muted);
+  line-height: 1.65;
+}
+#content :is(.code-block, .code-group, .accordion, .frame) {
+  border-color: var(--rl-line);
+  border-radius: 1rem;
+}
+#content .code-block {
+  background: var(--rl-surface);
+}
+#content pre {
+  font-size: 0.8125rem;
+  line-height: 1.8;
+}
+#content :not(pre) > code {
+  color: var(--rl-ink);
+  background: var(--rl-panel);
+  border-radius: 0.35rem;
+}
+#content table {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+#content th {
+  color: var(--rl-ink);
+  background: var(--rl-panel);
+}
+#content :is(th, td) {
+  padding: 0.8rem 1rem;
+  border-color: var(--rl-line);
+}
+#content tbody tr:nth-child(even) {
+  background: var(--rl-surface);
+}
+/* Preserve semantic warning/tip colors; only align the panel geometry. */
+#content .callout {
+  border-radius: 0.875rem;
+}
+#table-of-contents {
+  font-size: 0.8125rem;
+}
+#footer {
+  border-top: 1px solid var(--rl-line);
+  padding-top: 2rem;
+}
+:is(a, button, input, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--rl-accent);
+  outline-offset: 3px;
+}
 * {
   scrollbar-width: thin;
-  scrollbar-color: #4F6F5B transparent;
+  scrollbar-color: var(--rl-scrollbar) transparent;
 }
-
-/* WebKit scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background-color: #4F6F5B;
-  border-radius: 3px;
+  background: var(--rl-scrollbar);
+  border-radius: 6px;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #7FA68A;
+@media (max-width: 640px) {
+  #header {
+    padding: 1.5rem 1.25rem;
+    border-radius: 1rem;
+  }
+  #header::before {
+    opacity: 0.24;
+  }
+  #content {
+    line-height: 1.75;
+  }
 }
-
-/* Dark mode overrides */
-html.dark * {
-  scrollbar-color: #0E2A22 transparent;
+/* The overview's mascot replaces the engraving, without covering the copy. */
+#content-area:has(#arc-overview) #header {
+  padding-right: 12rem;
 }
-
-html.dark ::-webkit-scrollbar-thumb {
-  background-color: #0E2A22;
+#content-area:has(#arc-overview) #header::before {
+  background-image: url("https://static.workshop.ai/rayline/site/v2026-08-11/illustrations/theme/arc-mascot-440w.69e4093f59b7.webp");
+  background-position: right 1.25rem center;
+  background-size: 9.5rem auto;
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
-
-html.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: #4F6F5B;
+@media (max-width: 640px) {
+  #content-area:has(#arc-overview) #header {
+    padding-right: 1.25rem;
+  }
+  #content-area:has(#arc-overview) #header::before {
+    background-position: right 1.25rem top 1.25rem;
+    background-size: 5rem auto;
+  }
+  #content-area:has(#arc-overview) #header :is(.eyebrow, #page-title) {
+    max-width: calc(100% - 6rem);
+  }
+}
+.rl-workshop-wordmark {
+  width: 200px;
+  height: auto;
+  margin: 0 0 1.5rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  #content .card,
+  #pagination a {
+    transition: none;
+  }
 }

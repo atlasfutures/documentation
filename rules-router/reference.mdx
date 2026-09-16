@@ -1,0 +1,23 @@
+---
+title: "Client compatibility"
+description: "Messages and Responses describe protocols, not the routing product."
+---
+
+The guides focus on coding agents, but compatibility is determined by the request protocol and routing configuration—not whether a client is a coding agent or subagent.
+
+| Client/path | Integration |
+| --- | --- |
+| Hosted Claude Code | Anthropic Messages-compatible routing through `api.rayline.ai` |
+| Claude Code local | Rayline's local static router through proxy mode |
+| Codex CLI/desktop | Rayline's OpenAI Responses-compatible local router |
+| Explicit hosted Codex route | Agent Gateway's Responses path |
+
+Start with [Claude Code](/rules-router/quickstart/claude-code) or [Codex](/rules-router/quickstart/codex). Local Codex defaults can reuse subscription login; explicit configurations choose a different inference path.
+
+Do not infer full provider compatibility solely from an endpoint's name. Check the [current local-router compatibility documentation](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for supported request forms and configuration.
+
+ARC's private-preview availability is documented [separately](/arc/reference/compatibility). It is not a replacement for the working coding-agent route.
+
+## Connecting another client
+
+Check the client can use the configured endpoint and authentication scheme, and verify its required model IDs, streaming behavior, tool messages, and input types. Test a representative request before routing a full workload. Client-specific policy controls, including subagent classification and slot assignments, are not automatically available to every app using the same protocol.

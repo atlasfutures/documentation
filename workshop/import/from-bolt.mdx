@@ -1,0 +1,115 @@
+---
+title: "Import from Bolt"
+icon: "bolt"
+description: "Export your Bolt project to GitHub and continue building in Workshop with full-stack tools, local development, and more."
+---
+
+You can bring your Bolt project into Workshop and continue building with capabilities that go beyond Bolt -- custom backends, database connectors, multi-model AI support, and full local development.
+
+**Workshop Desktop is recommended** for the best import experience, but Workshop Cloud works too.
+
+## Step 1: Export Your Bolt Project to GitHub
+
+Bolt lets you connect your project to GitHub:
+
+<Steps>
+  <Step title="Open your project in Bolt">
+    Navigate to the project you want to export.
+  </Step>
+  <Step title="Open the GitHub integration">
+    In your Bolt project, look for the **GitHub** option in the project menu or settings. Click to connect your GitHub account if you haven't already.
+  </Step>
+  <Step title="Push to GitHub">
+    Create a new repository or push to an existing one. Bolt will export your project code to the GitHub repository.
+  </Step>
+  <Step title="Verify the export">
+    Check your GitHub repository to confirm all project files are there -- source code, `package.json`, configuration files, etc.
+  </Step>
+</Steps>
+
+<Tip>
+  Copy the GitHub repository URL -- you'll need it in the next step. It looks like `https://github.com/your-username/your-project`.
+</Tip>
+
+## Step 2: Connect GitHub in Workshop
+
+If you haven't already connected your GitHub account to Workshop:
+
+<Tabs>
+  <Tab title="Workshop Desktop">
+    1. Open Workshop Desktop and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App and select which repositories to grant access to
+    4. Confirm the connection
+
+    See [GitHub Integration (Desktop)](/workshop/workshop-desktop/github-integration) for detailed instructions.
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Open Workshop Cloud and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App
+    4. Confirm the connection
+
+    See [GitHub Integration (Cloud)](/workshop/workshop-cloud/github-integration) for detailed instructions.
+  </Tab>
+</Tabs>
+
+## Step 3: Create a Project from Your Bolt Repository
+
+<Tabs>
+  <Tab title="Workshop Desktop (Recommended)">
+    1. Click **New Project** from the Projects page
+    2. Select **Import from Git**
+    3. Choose your Bolt repository from the list, or paste the repository URL
+    4. Workshop clones the repository and creates your project
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Create a new blank project (select **None** as the template)
+    2. Open the project settings and navigate to the **GitHub** section
+    3. Click **Link GitHub Repository** and select your Bolt repository
+    4. Pull the code from GitHub into your project
+  </Tab>
+</Tabs>
+
+## Step 4: Set Up and Run Your Project
+
+Once the project is created, open a conversation and ask the agent to get your project running:
+
+<CodeGroup>
+```text Recommended Prompt
+Please set up and run my Bolt project so I can begin extending it with new features. 
+Detect the framework and install dependencies, then start the development server.
+```
+</CodeGroup>
+
+The agent will detect your project's framework (React, Next.js, Vue, or whatever Bolt generated), install dependencies, and start the development server.
+
+## What You Can Do Next
+
+With your Bolt project now in Workshop, you have access to the full platform:
+
+| Capability | Example Prompt |
+|---|---|
+| **Add AI models** | *"Add a Gemini connector for AI-powered features"* |
+| **Connect databases** | *"Set up a Supabase database for persistent storage"* |
+| **Build a backend** | *"Create API routes with authentication and data validation"* |
+| **Add integrations** | *"Integrate Salesforce to pull customer data into the dashboard"* |
+| **Custom deployment** | *"Help me deploy this to Vercel with environment variables configured"* |
+
+## Deployment
+
+Workshop's one-click publish is designed for projects built natively in Workshop. For your imported Bolt project, ask the agent to set up deployment:
+
+<CodeGroup>
+```text Netlify Deployment
+Help me set up deployment for my project to Netlify with automatic deploys from GitHub.
+```
+
+```text Vercel Deployment
+Help me deploy this project to Vercel and configure production environment variables.
+```
+</CodeGroup>
+
+<Card title="Ready to get started?" icon="rocket" href="https://workshop.ai/download">
+  Download Workshop Desktop to import your Bolt project with the best experience.
+</Card>

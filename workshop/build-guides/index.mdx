@@ -1,0 +1,53 @@
+---
+title: "Build Guides"
+icon: "hammer"
+description: "Step-by-step guides for building real, working software with Workshop."
+---
+
+Workshop builds real, deployed software — not mockups, not prototypes, not chat transcripts. You describe what you want in plain English and Workshop writes the code, sets up the infrastructure, and deploys the result.
+
+These guides walk you through the most common types of projects people build with Workshop — from websites, AI-powered apps, and dashboards to mobile apps and local utilities that run directly on your machine.
+
+## Choose your build type
+
+<CardGroup cols={2}>
+  <Card title="Websites" icon="globe" href="/workshop/build-guides/websites">
+    Build and deploy responsive, accessible websites. Landing pages, portfolios, e-commerce storefronts, and more — from description to live URL.
+  </Card>
+  <Card title="AI-Powered Apps" icon="sparkles" href="/workshop/build-guides/ai-apps">
+    Ship full-stack applications with Anthropic, OpenAI, and Google AI models built in. Real backends, not API wrappers.
+  </Card>
+  <Card title="Dashboards" icon="chart-mixed" href="/workshop/build-guides/dashboards">
+    Connect your databases and build interactive, trusted dashboards. Native dbt integration for governed metrics.
+  </Card>
+  <Card title="Internal Tools" icon="screwdriver-wrench" href="/workshop/build-guides/internal-tools">
+    Admin panels, CRMs, and operational tools connected to your existing databases and APIs. Deploy with built-in authentication.
+  </Card>
+  <Card title="Mobile Apps" icon="mobile" href="/workshop/build-guides/mobile-apps">
+    Build iOS and Android apps with Expo, React Native, Swift, or Kotlin using Workshop Desktop's terminal and filesystem access.
+  </Card>
+  <Card title="Local Apps" icon="laptop" href="/workshop/build-guides/local-apps">
+    Build native utilities that run directly on your machine — keyboard tools, transcription, file organization, data processing, and other ad hoc tasks. Workshop Desktop only.
+  </Card>
+</CardGroup>
+
+## Workshop Cloud vs. Desktop
+
+Not every project type works on every platform. Here's a quick guide:
+
+| Build type | Workshop Cloud | Workshop Desktop |
+|---|---|---|
+| Websites | Yes | Yes |
+| AI-powered apps | Yes | Yes |
+| Dashboards | Yes | Yes |
+| Internal tools | Yes | Yes |
+| Mobile apps | — | Yes |
+| Local apps | — | Yes |
+
+Workshop Cloud runs entirely in your browser. No downloads, no local setup — just describe what you want and Workshop builds it.
+
+Workshop Desktop gives you full filesystem access and terminal control on your local machine. It's required for projects that need native toolchains — mobile development, desktop apps, or anything that must run locally.
+
+<Tip>
+  If you're not sure which platform to use, start with [Workshop Cloud](https://app.workshop.ai). You can always move to Desktop later if your project requires it.
+</Tip>

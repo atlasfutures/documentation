@@ -1,0 +1,297 @@
+---
+title: "Settings"
+icon: "sliders"
+description: "Configure how Workshop's agent behaves and how the platform operates — from model selection to secrets management."
+---
+
+Workshop has two categories of settings: **Agent Settings** control how the AI behaves during conversations, and **App Settings** configure platform-level capabilities and integrations.
+
+## Agent Settings
+
+Access Agent Settings in either of two ways: click the **gear icon** in the left sidebar to open Settings, then select the **Agent** tab; or click the **+ button** in the message input box and choose **Agent Settings**. These affect how Workshop operates during conversations.
+
+### Custom instructions
+
+Custom Instructions set consistent guidelines that Workshop follows across **all** your conversations. They act as extensions to Workshop's system prompt, reflecting your personal preferences.
+
+```
+Every visualization should have a transparent background and white labels.
+```
+```
+When building web applications, prioritize clean, accessible design and responsive layouts.
+Use TypeScript for all JavaScript projects.
+```
+```
+Always commit working code after each major milestone.
+```
+
+**Best practices:**
+
+- **Be specific but not restrictive.** `"Include proper error handling in APIs"` is good. `"Only use Express 4.18.2 with these exact middleware packages"` is too rigid.
+- **Focus on consistent preferences.** Instructions that apply across conversations work best — project-specific rules belong in `.workshop/rules.md`.
+- **Match your skill level.** Beginners: `"Explain technical concepts in simple terms."` Advanced: `"Focus on efficiency and assume familiarity with development tools."`
+
+### Model selector
+
+Choose which AI model powers your conversations. The model selector appears as a chip in the message input toolbar.
+
+Models are grouped by provider. Each model shows interactive ratings for speed, intelligence, reliability, and cost so you can pick the right tradeoff for your task.
+
+**Anthropic (Claude)**
+
+| Model | Best for | Relative cost |
+| ----- | -------- | ------------- |
+| **Claude Haiku 4.5** | Fast tasks, rapid iteration | $ |
+| **Claude Sonnet 4.6** | Everyday development — the default | $$$$ |
+| **Claude Opus 4.7** | Complex problems requiring deep reasoning | $$$$$ |
+| **Claude Opus 4.6** | Deep reasoning with high reliability | $$$$$ |
+
+**OpenAI (GPT)**
+
+| Model | Best for | Relative cost |
+| ----- | -------- | ------------- |
+| **GPT-5.4 Nano** | Lightweight, low-cost text tasks | $ |
+| **GPT-5.4 Mini** | Balanced speed and capability | $$ |
+| **GPT-5.4** | Complex tasks requiring high intelligence | $$$$ |
+
+**Google (Gemini)**
+
+| Model | Best for | Relative cost |
+| ----- | -------- | ------------- |
+| **Gemini 3.1 Flash-Lite** | Fastest option, great for simple tasks | $ |
+| **Gemini 3.1 Pro** | Capable reasoning with strong intelligence | $$$$ |
+
+**Open Source**
+
+| Model | Best for | Relative cost |
+| ----- | -------- | ------------- |
+| **GLM-5.1** | High-intelligence open-source (text only) | $ |
+| **GLM-5** | Capable open-source alternative (text only) | $ |
+| **GLM-5 Turbo** | Fast open-source option (text only) | $ |
+| **GLM-5V Turbo** | Open-source with image understanding | $ |
+| **Kimi K2.6** | Multimodal open-source — attach screenshots | $$ |
+
+<Tip>
+Open Source models are significantly cheaper than premium models — 4–8× lower cost per turn. They're a good choice for straightforward tasks where you want to conserve credits.
+</Tip>
+
+#### ARC
+
+**ARC** — at the top of the model selector — is the simplest way to keep your credit use down. Instead of committing to one fixed model, it matches your work to a model suited to it: a lighter, cheaper model for routine tasks, and a more capable one for harder ones. Because it avoids running the most expensive model on work that doesn't need it, ARC stretches your credits further — and it means you don't have to pick a model for every task.
+
+ARC is powered by [Rayline](https://rayline.ai), which handles the model routing behind the scenes. You can switch between ARC and a specific model at any time during a conversation — a common pattern is a fast, cheaper model for exploration, a balanced model for building, and a top-tier model for hard problems.
+
+### Code execution control
+
+Control when Workshop executes code on your system.
+
+<Tabs>
+  <Tab title="Automatic (default)">
+    Workshop executes code blocks automatically without asking. Recommended once you're comfortable with Workshop's behavior.
+  </Tab>
+  <Tab title="Manual approval">
+    Workshop shows you each code block before execution. You choose to **Run** or **Skip**. Useful for sensitive systems, learning, or reviewing implementation steps.
+  </Tab>
+</Tabs>
+
+### Max turns
+
+Limit how many autonomous actions Workshop takes before stopping for your input. By default, Workshop continues working until it completes your request. When enabled, use the slider to set a limit from 1 to 25 turns.
+
+| Use case | Turns | Why |
+| -------- | ----- | --- |
+| Learning / reviewing | 1–3 | See each step of the implementation |
+| Moderate oversight | 5–10 | Regular check-ins without micromanagement |
+| Full automation (default) | Off | Let Workshop complete tasks without interruption |
+
+### Thinking mode
+
+When enabled, Workshop works through problems step-by-step before jumping to solutions, showing its reasoning process.
+
+| Level | Label | Description |
+| ----- | ----- | ----------- |
+| 1 | **Light** | Simple problem breakdown, quick decision explanations |
+| 2 | **Balanced** | Thorough analysis, multiple approaches considered |
+| 3 | **Deep** | Comprehensive exploration, detailed trade-off analysis |
+| 4 | **Max** | Extensive reasoning, multiple solution paths explored |
+
+Despite using more tokens per message, Thinking Mode often reduces overall credit consumption by producing more accurate solutions on the first attempt.
+
+<Info>
+For complex problems, pairing **Genius** model with **Thinking Level 3–4** produces exceptional results, though at higher credit cost.
+</Info>
+
+### Local model setup (Desktop only)
+
+Connect Workshop Desktop to a local Anthropic Messages API-compatible server, such as llama.cpp or Ollama with an adapter.
+
+<Steps>
+  <Step title="Enter base URL">
+    Provide the URL of your local model server (e.g., `http://127.0.0.1:8080`).
+  </Step>
+  <Step title="Set model name (optional)">
+    Enter a display name for the model (e.g., `qwen3-coder-30b`). This is for your reference only.
+  </Step>
+  <Step title="Test connection">
+    Click **Test Connection** to verify Workshop can reach your local server. On success, the local model is automatically enabled.
+  </Step>
+</Steps>
+
+<Info>
+For a full guide on setting up and using local models, see [Local Models](/workshop/workshop-desktop/local-models).
+</Info>
+
+### Skills
+
+Skills are a cross-platform core concept in Workshop.
+
+In Desktop, use the **Skills** tab in Settings to install, enable, disable, and import skills that extend the agent's capabilities.
+
+<Info>
+For the complete skills guide (concept + Desktop workflows), see [Core Concepts → Skills](/workshop/core-concepts/skills).
+</Info>
+
+### Sub Agents
+
+The **Sub Agents** tab lets you set a persistent default model for each built-in sub-agent. This is the durable alternative to overriding a model [mid-conversation](/workshop/core-concepts/sub-agents#choosing-models-for-sub-agents) — set it once and it applies to **every new conversation**, instead of just the current delegation.
+
+Each built-in sub-agent (`explore`, `plan`, `verification`, `reviewer`, `web-search`, `frontend`, and `visual-qa`) has a dropdown:
+
+- Leave it on **Default** to use the agent's recommended model.
+- Pick any available model to override it. Overridden agents are highlighted so you can see your customizations at a glance.
+- Agents that require vision (such as **visual-qa**) only list vision-capable models.
+
+Click **Save Settings** to apply your overrides, or **Reset All to Defaults** to clear them. Changes take effect on new conversations.
+
+<Info>
+For the full list of built-in agents and the models you can route them to, see [Core Concepts → Sub-agents](/workshop/core-concepts/sub-agents).
+</Info>
+
+### Task Management
+
+When enabled, Workshop creates and maintains structured task lists when implementing project plans. Workshop automatically breaks down plans into discrete, trackable tasks, updating their status as work progresses.
+
+Task lists and plans are stored as files in your project directory (for example `tasks.json` and `plan.md`, sometimes grouped under subfolders like `tasks/` or `plans/`), so you can review progress at any time — even outside of Workshop.
+
+### Quick reference by experience level
+
+<Accordion title="Beginners">
+  - **Custom Instructions:** `"Explain technical concepts clearly and provide step-by-step guidance"`
+  - **Code Execution:** Manual approval for learning
+  - **Max Turns:** 3–5 for oversight
+  - **Thinking Mode:** Level 2 for educational benefit
+</Accordion>
+
+<Accordion title="Experienced developers">
+  - **Custom Instructions:** Focus on tech stack preferences and coding standards
+  - **Code Execution:** Automatic for speed
+  - **Max Turns:** 10+ or off
+  - **Thinking Mode:** Level 3–4 for complex problems only
+</Accordion>
+
+<Accordion title="Team projects">
+  - **Custom Instructions:** Include team coding standards and review practices
+  - **Code Execution:** Manual for shared environments
+  - **Max Turns:** 5–7 for reviewable progress
+  - **Context management:** Workshop [automatically compacts](/workshop/core-concepts/working-with-the-agent#auto-compaction) when your context window fills up, but you can also `/compact` proactively at milestones
+</Accordion>
+
+---
+
+## App Settings
+
+Access App Settings through the main **Settings** menu (gear icon). These apply across all projects and conversations.
+
+### Secrets management
+
+Secrets are sensitive values like API keys, database passwords, or access tokens that your applications need. Workshop provides a built-in system to store and use them securely.
+
+**How secrets work:**
+
+- **Secure storage:** Workshop uses your operating system's native keychain (macOS Keychain, Windows Credential Manager, Linux Secret Service) to store values. Raw values are never stored in Workshop's own files.
+- **Local access:** Secrets remain on your machine and are only accessed when needed by processes Workshop initiates on your behalf.
+- **Key tracking:** Workshop maintains a list of secret _names_ you've stored, but actual values are encrypted and managed by your system's secure storage.
+
+**Managing secrets:**
+
+<Steps>
+  <Step title="Open Settings">
+    Go to **Settings** (gear icon) and select the **Secrets** tab.
+  </Step>
+  <Step title="Add a secret">
+    Enter a descriptive key name (e.g., `OPENAI_API_KEY`, `DATABASE_PASSWORD`), enter the value, and click **Add Secret**.
+  </Step>
+  <Step title="Use in conversations">
+    Reference secrets by their key name in your prompts:
+
+    ```
+    Use the API key stored as 'STRIPE_API_KEY' to configure the payment gateway.
+    ```
+  </Step>
+</Steps>
+
+**Security details:**
+
+- **Case insensitive:** Workshop finds secrets regardless of case — `OPENAI_API_KEY`, `openai_api_key`, and `OpenAI_API_Key` all work.
+- **Permission prompts:** The first time Workshop accesses a secret, your OS may ask for permission. You can approve permanently or per-session.
+- **Scope:** Secrets are available to all projects within Workshop on that machine.
+
+### MCP servers (Desktop only)
+
+The [Model Context Protocol](https://modelcontextprotocol.io/introduction) is a standard for connecting AI models to tools, data sources, and services. Workshop supports both **using** and **building** MCP servers.
+
+**Managing MCP servers:**
+
+Go to **Settings** (gear icon) > **MCP** tab to browse three sections:
+
+| Section | Description |
+| ------- | ----------- |
+| **Configured Servers** | View, enable/disable, and manage your installed MCP servers |
+| **Server Directory** | Browse and install curated, Workshop-tested servers (Neon, Netlify, GitHub, Context7, and more) |
+| **Add Custom Server** | Install any MCP server from the broader ecosystem via GitHub URL or local path |
+
+**Using MCP in conversations:**
+
+Workshop integrates with enabled MCP servers naturally — often requiring no special instructions:
+
+```
+Use playwright to check if this website loads correctly and take a screenshot.
+```
+```
+Use the Neon MCP to create a new table for user profiles in our database.
+```
+
+**Building MCP servers:**
+
+Workshop can build MCP servers from natural language descriptions, test them, and add them to your available tools — all in a single conversation.
+
+**Best practices:**
+
+- Only enable servers you're actively using to reduce context overhead
+- Test new servers in non-critical projects first
+- Use Secrets for server authentication credentials
+- Disable unused tools within servers to keep context focused
+
+### Control Center
+
+The Control Center provides quick-action buttons for common development tasks, accessible from within your project.
+
+**Version control** — Initialize Git, make commits, and manage your repository with single clicks. Workshop often handles this automatically during development; the Control Center lets you trigger it at specific moments.
+
+**Application management** — Start, stop, and monitor your applications. Workshop analyzes your project structure and creates custom startup scripts, handling environment activation, dependency loading, and complex startup sequences.
+
+**Documentation generation** — Generate or improve your project's `README.md` from the current project structure with one click.
+
+**Interactive Terminal** — Workshop handles command-line tools that require interactive input — scaffolding wizards, interactive installers, deployment setup. Terminal sessions are visible in the Control Center.
+
+### Privacy Mode
+
+Your code is never stored anywhere other than your machine.
+
+With **Privacy Mode** enabled, your conversations are also never stored externally. When disabled, Workshop may collect usage and telemetry data to improve the product.
+
+Privacy Mode is available to Build, Scale, and Max plan users. Manage it from **Settings** > **Other**.
+
+### Sound settings
+
+Toggle whether Workshop plays a sound notification when the agent finishes a task. Useful for knowing when a long-running operation completes while you're doing other work.

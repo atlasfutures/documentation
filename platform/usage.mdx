@@ -1,0 +1,31 @@
+---
+title: "Usage and billing"
+description: "Separate actual charges, estimates, and routing decisions."
+---
+
+Rayline's platform is where you inspect requests, selected models, and usage. Read each value according to its source.
+
+| Value | How to interpret it |
+| --- | --- |
+| Actual inference cost | The charge recorded for executed hosted model requests |
+| Counterfactual cost | An estimate of what another model or route might have cost |
+| ARC access | Private preview; confirm available usage reporting with the Rayline team |
+| Local inference | Your hardware/compute usage, not a hosted token charge |
+
+## ARC token categories
+
+Responses launch pricing has input, cache-read, and output rates. Decisions has input and cache-read rates only; inference executed by your application is separate. See [ARC pricing](/arc/pricing).
+
+Do not add a Decisions charge to a Responses call. Do not infer cache-read counts from repeated text when the API or platform has not reported those counters.
+
+## Agent Gateway
+
+The launch policy is **0% routing commission**. Hosted model inference is still chargeable. See [Agent Gateway pricing](/rules-router/pricing) for rollout status.
+
+## Workshop
+
+Workshop's AI credits, Cloud credits, subscriptions, and credit packs are documented in [Workshop plans and credits](/workshop/pricing/plans). They are not interchangeable with Rayline API tokens or balances.
+
+## When a charge looks wrong
+
+Record the workspace, request ID, timestamp, selected model, and token categories that are visible. Compare actual charges rather than a savings estimate. Contact [Rayline support](mailto:help@rayline.ai) with sanitized details. Do not send API keys or private prompts.

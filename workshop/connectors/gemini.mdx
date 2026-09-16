@@ -1,0 +1,94 @@
+---
+title: "Google Gemini (BYOK)"
+icon: "g"
+description: "Connect your own Google API key to Workshop for direct Gemini model access."
+---
+
+## Overview
+
+The Gemini BYOK connector lets you use your own Google API key with Workshop. Usage is billed directly by Google.
+
+<Warning>
+**Published apps use your API key.** If you publish a Workshop app that uses this connector, visitors make requests using your key. You will be billed by Google for all usage.
+</Warning>
+
+<Info>
+**Don't have an API key?** The [managed Gemini connector](/workshop/connectors/managed-ai-connectors) is enabled by default — no API key needed, usage billed to your Workshop credits.
+</Info>
+
+## What You'll Need
+
+| Credential | Description | Format |
+|------------|-------------|--------|
+| **Google API Key** | API key for Google Gemini access | `AIza...` |
+
+## Getting an API Key
+
+<Steps>
+  <Step title="Open Google AI Studio">
+    Go to [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) and sign in with your Google account.
+  </Step>
+  <Step title="Create a key">
+    Click **Create API key**. Select an existing Google Cloud project or create a new one.
+  </Step>
+  <Step title="Copy the key">
+    Copy your API key immediately. It starts with `AIza` followed by a string of characters. While you can view keys again in Google AI Studio, store it securely right away.
+  </Step>
+</Steps>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select Gemini">
+    Click the **Gemini (your API key)** card.
+  </Step>
+  <Step title="Enter details">
+    Enter a **Connection Name** (e.g., "My Gemini API") and paste your **Google API Key**.
+  </Step>
+  <Step title="Save">
+    Click **Add Connection**.
+  </Step>
+</Steps>
+
+Your Gemini connection is now active and available across all conversations.
+
+## Verifying Your Connection
+
+Ask Workshop:
+
+```
+Use Gemini to explain the concept of machine learning in simple terms
+```
+
+If Workshop returns a Gemini-generated response, your connection is working.
+
+## Security Best Practices
+
+- Your API key is stored in Workshop's encrypted storage — never shared with the AI agent directly
+- Restrict your key in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials): limit it to only the Generative Language API and add IP or referrer restrictions if needed
+- If you suspect a key is compromised, delete it in [Google AI Studio](https://aistudio.google.com/app/apikey) and create a new one
+
+<Warning>
+**Free tier data usage:** Content processed through the free tier may be used by Google to improve their products. If you're working with sensitive data, consider using a paid tier.
+</Warning>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "API key not valid" | Verify the full key was copied and starts with `AIza`. Check it hasn't been deleted. |
+| "Permission denied" | Check API restrictions in Google Cloud Console. Ensure the Generative Language API is enabled. |
+| "Quota exceeded" | Wait for limits to reset or upgrade your tier. Monitor usage in the Cloud Console. |
+
+## Learn More
+
+- [Google AI Studio](https://aistudio.google.com/)
+- [Gemini API Documentation](https://ai.google.dev/docs)
+- [API Key Best Practices](https://ai.google.dev/gemini-api/docs/api-key)
+- [Pricing and Rate Limits](https://ai.google.dev/pricing)

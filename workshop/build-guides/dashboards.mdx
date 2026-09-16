@@ -1,0 +1,129 @@
+---
+title: "Build Trusted Dashboards"
+icon: "chart-mixed"
+description: "Connect your databases and build interactive, governed dashboards with natural language. Native dbt integration keeps your metrics trustworthy."
+---
+
+## What you'll build
+
+An interactive, data-connected dashboard — with charts, KPI cards, filters, and drill-downs — deployed as a shareable web app with built-in authentication.
+
+## Before you start
+
+<Steps>
+  <Step title="Create a Workshop account">
+    Sign up at [app.workshop.ai](https://app.workshop.ai). Workshop Cloud is the recommended platform for dashboards.
+  </Step>
+  <Step title="Connect your data">
+    Dashboards need data. Workshop supports a wide range of data connectors — connect at least one before you start building.
+
+    <Tabs>
+      <Tab title="Databases">
+        Connect directly to your production or analytics database:
+        - **PostgreSQL**, **MySQL**, **Microsoft SQL Server**, **MongoDB**
+        - **Supabase**, **Neon** (managed Postgres)
+        - **TiDB**, **TigerGraph**
+
+        Go to **Hub** → **Connectors**, select your database type, and enter the connection credentials.
+      </Tab>
+      <Tab title="Data warehouses">
+        Connect to your warehouse for analytics-scale queries:
+        - **BigQuery** (GCP service account)
+        - **Snowflake** (account, user, password, optional warehouse/schema)
+
+        These are ideal for large datasets and complex analytical queries.
+      </Tab>
+      <Tab title="Spreadsheets and files">
+        For lighter data needs:
+        - **Google Sheets** (public or private with service account)
+        - **CSV / Excel uploads** — paste data or upload files directly into the conversation
+
+        Great for quick dashboards or when your data isn't in a database yet.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Step-by-step flow
+
+<Steps>
+  <Step title="Connect your data source">
+    Open the **Hub** → **Connectors** and set up a connection to your database, warehouse, or spreadsheet. Workshop stores credentials securely and makes the data available to your projects.
+
+    <Tip>
+      You can also mention connectors inline: type `@` in the chat and select a connector to reference it directly in your prompt.
+    </Tip>
+  </Step>
+  <Step title="Describe the dashboard you want">
+    Tell Workshop what metrics and visualizations you need. Reference the connected data source.
+
+    **Example prompts:**
+    - *"Build a sales analytics dashboard from my Postgres database showing revenue trends over time, top customers, regional performance on a heatmap, and key KPI cards with quarter-over-quarter comparisons."*
+    - *"Create a financial reporting dashboard with P&L statement, cash flow analysis, budget vs. actuals, and drill-down by department."*
+    - *"Build a product analytics dashboard with user cohort retention heatmap, feature adoption funnel, and daily/weekly active users with date range filtering."*
+  </Step>
+  <Step title="Iterate on the visualizations">
+    Refine specific charts, add filters, or change the layout:
+
+    - *"Change the revenue chart to a stacked area chart broken down by product line."*
+    - *"Add a date range picker that filters all charts on the page."*
+    - *"Replace the table with a bar chart for the regional breakdown."*
+    - *"Add a row of KPI cards at the top: total revenue, new customers, average deal size, and churn rate."*
+  </Step>
+  <Step title="Share the dashboard">
+    Click **Publish** and Workshop handles hosting and compute. Anyone you share it with gets a live, interactive view — not a static screenshot. Make it public or limit access to specific people or teams. Built-in authentication controls who can see the data.
+  </Step>
+</Steps>
+
+## Tips and best practices
+
+<AccordionGroup>
+  <Accordion title="Describe the metrics, not the SQL">
+    You don't need to know SQL. Say *"Show me monthly recurring revenue by customer segment"* and Workshop will write the queries for you. If you do know SQL, you can paste queries directly for more precise control.
+  </Accordion>
+  <Accordion title="Use dbt for governed metrics">
+    If your organization uses dbt, Workshop can read your dbt models, metrics, and documentation natively. This means your dashboards are built on governed, version-controlled metric definitions — not ad-hoc queries that drift over time.
+  </Accordion>
+  <Accordion title="Import a data skill with dbt-skillz">
+    For even deeper governance, compile your dbt project into a structured agent skill using [dbt-skillz](https://github.com/atlasfutures/dbt-skillz) — an open-source compiler available on [PyPI](https://pypi.org/project/dbt-skillz/):
+
+    ```bash
+    pip install dbt-skillz
+    dbt-skillz compile --project-dir ./analytics --output ./skills/data
+    ```
+
+    Push the compiled skill to a GitHub repo and import it into Workshop. The agent will use your metric definitions, column documentation, and lineage graph to write correct queries from the start. See [Skills](/workshop/core-concepts/skills) for import instructions.
+  </Accordion>
+  <Accordion title="Start with KPIs, then add detail">
+    Begin with the 3-5 key numbers your audience cares about. Once those are right, add supporting charts and drill-downs. This keeps the dashboard focused.
+  </Accordion>
+  <Accordion title="Add interactive filters">
+    Ask for date range pickers, dropdown filters, and search bars: *"Add filters for date range, region, and product category that affect all charts."* Interactive dashboards are far more useful than static reports.
+  </Accordion>
+  <Accordion title="Test with real data volumes">
+    If your production database has millions of rows, tell Workshop: *"This table has 10M+ rows — make sure the queries are performant and use appropriate aggregations."* Workshop will optimize accordingly.
+  </Accordion>
+</AccordionGroup>
+
+## Trusted dashboards lifecycle
+
+Building the dashboard is step one. Keeping it accurate as your data model evolves is the real challenge. Workshop supports a full trusted dashboards lifecycle — from grounded creation through automated review and maintenance.
+
+<Card title="Learn about the Trusted Dashboards lifecycle" icon="shield-check" href="/workshop/solutions/trusted-dashboards">
+  Automated review on deploy, downstream impact analysis, and dashboard maintenance when your dbt models change.
+</Card>
+
+## Next steps
+
+- [Connectors](/workshop/connectors) — Full list of supported data sources and setup guides
+- [Publishing](/workshop/workshop-cloud/publishing) — Deploy and share your dashboard
+- [Sharing and teams](/workshop/workshop-cloud/sharing-and-teams) — Control access to your dashboards
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent) — Prompting tips and communicating with Workshop
+- [Skills](/workshop/core-concepts/skills) — Import data skills from GitHub to ground your dashboards
+- [Trusted Dashboards](/workshop/solutions/trusted-dashboards) — The full lifecycle for keeping dashboards accurate
+
+---
+
+<Card title="Start Building Free" icon="arrow-right" href="https://app.workshop.ai">
+  Connect your data and build a dashboard you can trust.
+</Card>

@@ -1,0 +1,82 @@
+---
+title: "File System and Terminals"
+icon: "folder-tree"
+description: "How Workshop Desktop interacts with your local files and manages terminal sessions."
+---
+
+Workshop Desktop runs directly on your machine, giving the agent full access to your local file system. There are no restrictions on which files the agent can read, write, or execute — your project is a real directory you can open in any editor or terminal.
+
+## Real-Time File Watching
+
+Workshop Desktop monitors your project directory for changes. When you edit a file in an external editor, create new files, or delete something — Workshop detects it immediately and updates the file tree in the sidebar.
+
+The file watcher is `.gitignore`-aware — files and directories listed in your `.gitignore` are excluded from the file tree by default, keeping the view focused on the files that matter.
+
+## File Tree
+
+The sidebar displays your project's file structure as an expandable tree. It mirrors your actual directory layout on disk.
+
+Key behaviors:
+
+- **Expand on demand** — Click a folder to load and display its contents. Subdirectories are fetched lazily to keep the interface responsive.
+- **Automatic updates** — When the file watcher detects changes (new files, deletions, renames), the affected directories refresh automatically.
+- **Drag and drop** — Drag files from your system into the chat to add their path to your message, giving the agent context about specific files.
+
+### Opening the project folder
+
+The **Files** tab toolbar has a terminal button, **Open project directory in terminal**, which opens your own shell already positioned in the project directory. This is a Workshop Desktop feature — it is not available in Workshop Cloud.
+
+You can also navigate to the folder directly — see [where projects live on disk](/workshop/core-concepts/conversations-and-projects#working-across-environments) for the Workspace location on each platform.
+
+<Warning>
+  **Copying the folder copies your project files, not your conversation history.** Workshop Desktop keeps project records and conversations in its own application data directory, separate from the project folder, so they do not travel with a copy.
+
+  You can copy a project directory to external storage or onto a second computer, and open it there with **New Project → Select existing folder** — Workshop only lists projects it knows about locally. That gives you your code and files, in a new project with no past conversations.
+
+  Treat a folder copy as a backup of your work, not of your whole Workshop project. For keeping two machines in sync as you work, [GitHub integration](/workshop/workshop-desktop/github-integration) is the better route.
+</Warning>
+
+## Terminal Sessions
+
+Workshop manages its own **headless terminal sessions** — full PTY-backed shells that the agent can create, use, and destroy as needed. These aren't embedded terminal UIs; they're real shell processes that the agent drives programmatically, reading output and sending input (including key presses) just like a human would.
+
+These are the agent's sessions, separate from [Open project directory in terminal](#opening-the-project-folder), which opens your own terminal application for you to use.
+
+Terminal sessions work on both **Workshop Desktop** (running on your local machine) and **Workshop Cloud** (running in the cloud backend). On Desktop, the session uses your default shell. On Cloud, sessions run in the cloud environment.
+
+### How the agent uses terminals
+
+The agent has three core terminal operations:
+
+- **Create / close sessions** — Spin up or tear down independent shell sessions on demand.
+- **Execute commands** — Run a command and wait for output, with optional timeouts.
+- **Send keystrokes** — Type text or press keys (`Enter`, `Ctrl+C`, arrow keys, etc.) into a running session, enabling interaction with prompts, TUIs, and long-running processes.
+
+The agent can run **multiple sessions concurrently**. For example, you can tell it:
+
+> "Run my app in one terminal, and use a different terminal for dependency management and git."
+
+Each session is independent — stopping one doesn't affect the others.
+
+### Supported shells
+
+Sessions use your system's default shell. Commonly used shells include:
+
+| Shell | Platform |
+|-------|----------|
+| **zsh** | macOS (default), Linux |
+| **bash** | Linux (default), macOS |
+| **fish** | macOS, Linux |
+| **PowerShell** | Windows |
+
+### Viewing terminal activity
+
+You can view active terminal sessions in the **Terminals** tab of the side panel. When the agent is running a long command, a "View activity in terminal →" link appears in the status bar to jump directly there.
+
+### Built on ht
+
+Workshop's terminal sessions are powered by [ht](https://github.com/andyk/ht) (headless terminal), an open-source library that wraps any shell process with a VT100 terminal interface for programmatic access. We also maintain [ht-mcp](https://github.com/memextech/ht-mcp), an open-source MCP server that lets other AI agents embed the same headless terminal capability.
+
+<Tip>
+  Because Workshop Desktop has full file system access, treat it like any other development tool — keep important files under version control and use [Checkpoints](/workshop/workshop-desktop/checkpoints) to snapshot your project state before major changes.
+</Tip>

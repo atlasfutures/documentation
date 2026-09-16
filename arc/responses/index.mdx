@@ -1,0 +1,26 @@
+---
+title: "ARC Responses"
+description: "One interface for model selection and generation."
+icon: "message"
+---
+ARC Responses is the hosted execution path: ARC chooses a model and reasoning effort, and Rayline returns the answer. You integrate one interface instead of maintaining provider dispatch yourself.
+
+<Note>ARC Responses is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
+
+## How it fits your application
+
+1. Send the user's request and the context needed for the task.
+2. ARC selects the model and reasoning effort.
+3. In the intended hosted service, Rayline runs inference and returns the answer.
+
+Start with the [quickstart](/arc/quickstart), then confirm [API availability](/arc/reference/responses) before integrating.
+
+## Responses versus Decisions
+
+Choose [Decisions](/arc/decisions) if you want to retain your own provider connections and execution loop. A Responses call includes routing and generation in its [token pricing](/arc/pricing); it does not add a second Decisions fee.
+
+## Protocols are not products
+
+A client using an OpenAI-style Responses protocol is not necessarily using ARC Responses. For example, Codex can use that protocol through [Agent Gateway](/rules-router/quickstart/codex), where explicit rules select the model.
+
+See the [compatibility matrix](/arc/reference/compatibility) for preview limitations.

@@ -1,0 +1,92 @@
+---
+title: "Migrating from Bubble"
+icon: "circle-nodes"
+description: "Bubble projects can't be exported as code, but Workshop can help you rebuild with more flexibility, real backends, and full ownership."
+---
+
+Bubble is a no-code platform where projects are built visually and stored in Bubble's proprietary format -- there's no way to export Bubble projects as source code. This means you can't directly import a Bubble project into Workshop the way you can with tools like [Lovable](/workshop/import/from-lovable) or [Bolt](/workshop/import/from-bolt).
+
+However, Workshop is an excellent platform for **rebuilding** your Bubble application with full code ownership, real backends, and capabilities that Bubble doesn't offer.
+
+## Why Rebuild in Workshop?
+
+If you've hit limitations in Bubble, Workshop gives you:
+
+- **Full code ownership** -- your code lives in your GitHub repository, not locked in a proprietary platform
+- **Real backends** -- Python/FastAPI, Node.js, or any backend framework instead of Bubble's workflow engine
+- **Database flexibility** -- PostgreSQL, MySQL, MongoDB, Supabase, or any database instead of Bubble's built-in data store
+- **AI capabilities** -- built-in support for Claude, GPT, Gemini, and local models
+- **Local development** -- work offline with Workshop Desktop and local LLMs
+- **Custom deployment** -- deploy anywhere instead of being locked to Bubble's hosting
+
+## How to Approach the Rebuild
+
+Rather than trying to recreate your Bubble app exactly, focus on the core value and user flows. Workshop's AI agent can help you build faster than starting from scratch.
+
+<Steps>
+  <Step title="Document your current app">
+    Before starting in Workshop, take screenshots and notes about your Bubble app's key pages, workflows, and data structure. This gives the agent context to work with.
+  </Step>
+  <Step title="Start with the data model">
+    Ask the agent to help design and set up your database schema based on your Bubble app's data types and relationships.
+  </Step>
+  <Step title="Build the core UI">
+    Describe your key pages and user flows to the agent. It will generate a modern React frontend that matches your requirements.
+  </Step>
+  <Step title="Recreate workflows as backend logic">
+    Bubble workflows become proper backend API routes. The agent can build authentication, data processing, and business logic as code.
+  </Step>
+  <Step title="Add capabilities Bubble couldn't">
+    This is where Workshop shines -- add AI features, complex integrations, custom deployment, and more.
+  </Step>
+</Steps>
+
+## Getting Started
+
+<Tabs>
+  <Tab title="Workshop Desktop (Recommended)">
+    1. [Download Workshop Desktop](https://workshop.ai/download)
+    2. Create a new blank project
+    3. Start a conversation describing your Bubble app and what you want to build
+
+    **Example prompt:**
+
+    ```text
+    I'm rebuilding my Bubble application in Workshop. It's a [describe your app -- 
+    e.g., "customer portal with user authentication, a dashboard showing order 
+    history, and an admin panel for managing products"]. 
+    
+    Let's start by setting up the project structure with a React frontend and 
+    FastAPI backend. First, help me design the database schema based on these 
+    data types: [list your Bubble data types].
+    ```
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Go to [app.workshop.ai](https://app.workshop.ai)
+    2. Create a new project (select the template that best fits your needs)
+    3. Start a conversation describing your Bubble app
+
+    The same approach works in Workshop Cloud, though Workshop Desktop gives you more flexibility for complex applications.
+  </Tab>
+</Tabs>
+
+## Tips for a Successful Migration
+
+<AccordionGroup>
+  <Accordion title="Start with one feature, not the whole app">
+    Don't try to rebuild everything at once. Pick the most important user flow and get it working first. You can iterate from there.
+  </Accordion>
+  <Accordion title="Use screenshots as context">
+    Upload screenshots of your Bubble app when talking to the agent. Visual context helps it understand what you're building.
+  </Accordion>
+  <Accordion title="Leverage Workshop's strengths">
+    Your rebuilt app doesn't need to be a 1:1 clone. Take advantage of capabilities Bubble doesn't offer -- like AI features, custom backends, and multi-database support.
+  </Accordion>
+  <Accordion title="Set up GitHub early">
+    Connect GitHub and link your project from the start. This gives you version control and a backup of your work as you build. See [GitHub Integration](/workshop/workshop-desktop/github-integration).
+  </Accordion>
+</AccordionGroup>
+
+<Card title="Ready to start rebuilding?" icon="rocket" href="https://workshop.ai/download">
+  Download Workshop Desktop and start building your next-generation app.
+</Card>

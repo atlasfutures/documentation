@@ -1,0 +1,27 @@
+---
+title: "rayline auth"
+description: "Sign in to hosted Rayline and inspect your CLI session."
+---
+
+Run these commands from your terminal:
+
+```bash
+rayline auth login
+rayline auth status
+```
+
+For a machine without a browser, use `rayline auth login --no-browser` for device-code login. Use `--paste` when you need to paste a browser callback URL manually.
+
+## Sign out
+
+```bash
+rayline auth logout
+```
+
+This command requests revocation of the stored Rayline session and removes its stored router key. If it reports that remote revocation failed, follow up in the platform. It does not revoke every independently created workspace API key. Manage those in [API keys](/platform/api-keys).
+
+## Scripting
+
+`rayline auth token` prints an account bearer token. Treat it as a secret; do not paste it into logs or support tickets. An account token is not a substitute for the routing API key in the manual client setup.
+
+Use `rayline auth --help` and the [CLI source](https://github.com/rayline-ai/rayline) for the commands supported by your installed release.

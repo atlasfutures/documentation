@@ -1,0 +1,294 @@
+---
+title: "One-Click Publishing"
+icon: "share-from-square"
+description: "Deploy your Workshop Cloud app to a shareable URL with a single click."
+---
+
+Workshop Cloud includes built-in publishing. Click **Publish**, and your app is deployed to serverless infrastructure with a unique URL that anyone can access.
+
+## Preview Pane
+
+The preview pane shows your running application as Workshop builds it. It appears in the right sidebar and updates live as Workshop writes code.
+
+### Start App
+
+For templates that include a dev server (React App, Web App, Data App), Workshop automatically starts your application and displays it in the preview pane. You can also control the dev server manually:
+
+- **Start App** — Click the play button in the preview pane header to start or restart the dev server
+- **Stop** — Click the stop button to shut down the running server
+- **Restart** — If your app gets into a bad state, stop and restart to get a fresh server process
+
+The preview URL is a proxied localhost address unique to your cloud environment. You can open it in a new tab for a full-screen view.
+
+<Tip>
+If the preview pane shows a blank screen or error, try clicking **Start App** to restart the dev server. Workshop creates a startup script tailored to your project's tech stack.
+</Tip>
+
+## How Publishing Works
+
+<Steps>
+  <Step title="Click Publish">
+    Click the **Publish** button in the top-right corner of the Workshop Cloud interface. A popover opens showing your deployment settings and the URL your app will be available at.
+  </Step>
+  <Step title="Configure visibility">
+    Choose who can access your published app:
+
+    - **Public** — Anyone with the URL can use your app. No sign-in required.
+    - **Private** — Only people you explicitly invite by email can access it. Requires a paid plan.
+  </Step>
+  <Step title="Deploy">
+    Click **Publish** in the popover. Workshop packages your project files, injects any required secrets and connector credentials, and deploys everything to serverless infrastructure.
+
+    Deployment typically takes 30 seconds to 2 minutes depending on project size and dependencies. The maximum timeout is **5 minutes**.
+  </Step>
+  <Step title="Share the URL">
+    Once deployed, copy the shareable URL and send it to anyone. They can start using your app immediately.
+  </Step>
+</Steps>
+
+## Custom Project URLs
+
+Every published app gets a unique URL based on your project's **slug** — an auto-generated identifier like `gentle-elephant-alice`. The resulting URL follows the pattern:
+
+```
+https://{your-project-slug}.workshop.build
+```
+
+On a paid plan (Build, Scale, or Max), you can **rename the slug** to something more meaningful. Renaming is only available when the app is stopped — stop the app first, rename, then republish.
+
+<Note>
+  Slug names must be 3-50 characters, lowercase letters, numbers, and hyphens only. No leading, trailing, or consecutive hyphens. Each slug must be globally unique.
+</Note>
+
+## Custom Domains
+
+On any paid plan — **Build**, **Scale**, or **Max** — you can serve your published app from your own domain (e.g. `app.yourcompany.com`) instead of the default `workshop.build` URL. Workshop issues and renews the SSL certificate for your domain automatically once DNS is pointed at the Workshop origin.
+
+**Prerequisite:** you must already own the domain (or subdomain) you want to use, and have access to edit DNS records at your registrar or DNS provider (Namecheap, GoDaddy, Route 53, etc.). Workshop does not sell or register domains on your behalf.
+
+<Steps>
+  <Step title="Open the Publish popover">
+    Click **Publish** on a project you've already deployed, and locate the **Custom Domain** section.
+  </Step>
+  <Step title="Tell Workshop your hostname">
+    Click **Add custom domain**, enter the hostname you own (for example `app.yourcompany.com`), and click **Add**. Workshop enables routing for that hostname and shows you the CNAME target to add at your DNS provider.
+
+    ![Publish popover with the Custom Domain field expanded, showing an input for myapp.com and an Add button](https://static.workshop.ai/docs-site/custom-domain/publish-popover-custom-domain.webp)
+  </Step>
+  <Step title="Add the CNAME record at your DNS provider">
+    In your registrar or DNS provider's control panel, add a CNAME record for your hostname pointing to `origin.workshop.build`:
+
+    ```
+    CNAME  app.yourcompany.com  →  origin.workshop.build
+    ```
+
+    This is the step that actually connects your domain to your Workshop app — until this record is in place and propagates, your domain won't serve the app.
+  </Step>
+  <Step title="Wait for Active status">
+    The Custom Domain section shows **Pending** until Workshop sees the CNAME and finishes issuing the SSL certificate. Once verified, the status turns **Active** and visitors of your hostname start receiving the app over HTTPS. Click **Check status** to refresh manually — propagation and SSL provisioning typically complete within a few minutes.
+  </Step>
+</Steps>
+
+<Info>
+  Custom domains require a paid plan — **Build**, **Scale**, or **Max**. Free (Discover) subscribers see an upgrade prompt instead of the domain input field.
+</Info>
+
+**Notes and limits:**
+
+- One custom domain per app. To switch domains, remove the existing one first, then add the new hostname.
+- Subdomains (`app.yourcompany.com`, `www.yourcompany.com`) are the recommended choice — they point to Workshop via a standard CNAME record.
+- Apex domains (`yourcompany.com` with no subdomain) are supported via A/AAAA records to Workshop's anycast IPs after a one-time TXT ownership check. Workshop classifies apex vs subdomain automatically from the hostname you enter; see [Apex domains](#apex-domains) below for the steps.
+- The default `{slug}.workshop.build` URL continues to work alongside your custom domain.
+
+## Apex Domains
+
+To serve your app from an apex (root) domain like `yourcompany.com` instead of `www.yourcompany.com`, Workshop uses A/AAAA records pointed at our global anycast IPs. Because the DNS standard forbids a CNAME at the apex, Workshop cannot infer ownership from your DNS the way it does for subdomains, so you add a one-time TXT record first, then the A/AAAA records.
+
+<Steps>
+  <Step title="Add the apex domain in Workshop">
+    Open the Publish popover, click **Add custom domain**, enter your apex (e.g. `yourcompany.com`), and click **Add**. Workshop returns a one-time verification token along with DNS instructions.
+  </Step>
+  <Step title="Add the TXT record at your DNS provider">
+    Add a TXT record at the host `_workshop-verify` with the token from the popover as its value:
+
+    ```
+    TXT  _workshop-verify  →  <token from popover>
+    ```
+
+    Most registrars want the host as the relative label `_workshop-verify` (not the full `_workshop-verify.yourcompany.com.`). The popover shows the exact label and token, with copy buttons for both.
+  </Step>
+  <Step title="Click Verify domain">
+    Once the TXT record is in place (typically under five minutes), click **Verify domain** in the popover. Workshop confirms the TXT and reveals two records to add next:
+
+    ```
+    A     @  →  34.8.221.48
+    AAAA  @  →  2600:1901:0:be48::
+    ```
+
+    These are Workshop's stable anycast addresses. The popover shows them with copy buttons, so you don't need to memorize them.
+  </Step>
+  <Step title="Add the A/AAAA records and wait for Active">
+    Add both records at the apex (`@` host) at your DNS provider. Once they propagate, the popover flips from **Pending** to **Active** and Workshop's edge issues a Let's Encrypt SSL certificate on the first request. Click **Check status** to refresh manually.
+  </Step>
+</Steps>
+
+<Info>
+  Workshop classifies apex vs subdomain automatically from the hostname you enter; there's no separate setting. Subdomains (`www.yourcompany.com`, `app.yourcompany.com`) continue to use the simpler CNAME flow above.
+</Info>
+
+If your registrar locks the apex `@` row or charges to add A records there, use `www.yourcompany.com` as your Workshop hostname instead and configure a URL redirect from the apex to `www` at your registrar. The CNAME at `www` works on every registrar.
+
+## Public vs Private Apps
+
+### Public Apps
+
+- Select **"Anyone on the internet"** in the Visibility dropdown
+- No sign-in required for visitors
+- Available on all plans including the free Discover tier
+
+### Private Apps
+
+- Select **"Only people invited"** in the Visibility dropdown
+- Invite specific people by email in the **"Who can access"** section
+- Visitors who aren't invited see an "Access Restricted" page
+
+**How private app authentication works:**
+
+1. A visitor opens your private app URL
+2. If they're not signed in, they're redirected to a sign-in page showing your app name and your identity as the owner
+3. They sign in with Google or request an email magic link
+4. After signing in, they're redirected back to your app automatically
+
+<Info>
+  Private apps require a paid plan. On the **Build** plan, you can invite up to **5 viewers** and publish **1 private app**. The **Scale** and **Max** plans offer **unlimited** viewers and private apps.
+</Info>
+
+## What Happens During Deployment
+
+When you click Publish, Workshop performs these steps:
+
+1. **File packaging** — Your project files are collected and uploaded to the deployment infrastructure
+2. **Resource validation** — Workshop scans your code for references to secrets and connectors that aren't included in the project context. If any are found, deployment pauses and shows you which resources are missing (see [Resource Validation](#resource-validation) below)
+3. **Secret injection** — Any secrets you've configured (API keys, database credentials) are securely injected into the deployment environment
+4. **Connector credentials** — If your project uses managed connectors (Workshop-provided AI connectors), fresh API keys are auto-generated for the deployment
+5. **App startup** — Your app's start command is auto-detected and executed (Streamlit run command or FastAPI server)
+6. **URL routing** — Traffic is routed to your app through the project slug URL
+
+## Resource Validation
+
+Before deploying, Workshop scans your code for references to secrets and connectors that aren't included in the project context. If any are found, deployment pauses and shows you which resources are missing so you can fix the issue before your app goes live with broken credentials.
+
+You can add the missing resources to your project context directly from the prompt, skip validation and publish anyway, or dismiss and fix the code first.
+
+<Tip>
+Secrets defined in a `.env` file in your project root are automatically included in your deployment. You don't need to add them separately — Workshop picks them up during the publish process. To leave a specific env file out, see [Choosing Which Configuration Files Ship](#choosing-which-configuration-files-ship).
+</Tip>
+
+## Choosing Which Configuration Files Ship
+
+Your project root's `.env` file is treated specially: its values are applied to the published app as environment variables, and the file itself is not uploaded. This is how your configured secrets reach the deployment.
+
+Other environment files in your project root (`prod.env`, `.env.local`, and similar) are included in the deployment. For apps whose deployment packages the source, they ship as files; for apps with a frontend build (static/React), they are build inputs rather than shipped assets — only the built output is served. Either way, if you keep a local-only env file in the project (for example, one holding development database credentials you don't want in production), you can choose to leave it out.
+
+When your project has one or more root-level configuration files, the Publish dialog shows a **Configuration files included in deployment** section (under **Advanced**). It lists each file with a checkbox:
+
+- **Checked** — the file is included in the deployment, as described above.
+- **Unchecked** — the file is excluded from the deployment. It is not uploaded, and for `.env` its values are not picked up as deployment secrets.
+
+Unchecking a file affects only that publish; your local project files are never modified.
+
+<Note>
+Selection is available for cloud apps. It isn't offered on the desktop app, where all root-level configuration files are included — keep local-only secret files outside the project directory if you don't want them published.
+</Note>
+
+<Note>
+For apps with a frontend build (React and other Vite-based frontends), a build reads values your code references from `.env` and compiles them into the built assets. If you uncheck that file, those values are left out of the build; if you keep it checked, they are baked into the published frontend, so treat any `VITE_`-prefixed value as publicly visible.
+</Note>
+
+## Updating a Published App
+
+After making changes to your project, click **Update** in the Publish popover to push the latest version. The deployment URL stays the same — visitors see the new version once the update completes.
+
+## Stopping a Published App
+
+To take your app offline:
+
+1. Open the Publish popover
+2. Click **Stop**
+3. Confirm the action
+
+Stopped apps show a friendly "App Temporarily Unavailable" page to visitors instead of a technical error. You can republish at any time.
+
+## Viewing Published Apps
+
+On the Projects page, published apps display a green **Live** indicator with the deployment URL. You can filter your projects by the **Live** tag to see only published apps. Clicking the URL opens the app in a new tab.
+
+## Hide Workshop Branding
+
+On paid plans, you can remove the Workshop badge from your published apps. Toggle the **Hide branding** option in the Publish popover's advanced settings. Private apps can always hide branding regardless of plan.
+
+## Plan Limits
+
+| Feature | Discover (Free) | Build | Scale | Max |
+|---------|-----------------|-------|-------|-----|
+| Public apps | Unlimited\* | Unlimited | Unlimited | Unlimited |
+| Private apps | Not available | 1 | Unlimited | Unlimited |
+| Invited viewers (per private app) | N/A | 5 | Unlimited | Unlimited |
+| Custom slug rename | No | Yes | Yes | Yes |
+| Custom domains | No | Yes | Yes | Yes |
+| Hide branding | No | Yes | Yes | Yes |
+
+\* To optimize cloud resources, we automatically unpublish Discover-tier apps after 24h.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Deployment blocked by missing resources">
+    Workshop detected that your code references secrets or connectors not included in the project context. Click **Add to Context** to include them and retry, or **Publish Anyway** if you're certain the references are safe to ignore. You can also add connectors and secrets manually from the project's Context tab before publishing.
+  </Accordion>
+
+  <Accordion title="Deployment timed out">
+    Deployments have a 5-minute timeout. If your app has many large dependencies, it may take longer to install them. Try simplifying your requirements or breaking the project into smaller pieces.
+  </Accordion>
+
+  <Accordion title="App shows 'Temporarily Unavailable'">
+    This means the deployment has stopped. Open your project in Workshop Cloud and click **Publish** again to redeploy. If the app keeps stopping, check your app's startup logic for errors.
+  </Accordion>
+
+  <Accordion title="My app was unpublished automatically">
+    To optimize cloud resources, we automatically unpublish Discover-tier apps after 24h. If you need apps that stay live for longer than 24 hours, you can upgrade to one of our paid plans.
+  </Accordion>
+
+  <Accordion title="Can't set visibility to Private">
+    Private visibility requires a paid plan. On the Build plan, you're limited to 1 private app — if you already have one, you'll need to upgrade to Scale or Max, or make the existing private app public first.
+  </Accordion>
+
+  <Accordion title="Slug rename is disabled">
+    You can only rename a slug when the app is stopped. Stop the app first, rename the slug, then republish.
+  </Accordion>
+
+  <Accordion title="Custom domain stuck on Pending">
+    Workshop verifies your CNAME record before issuing the SSL certificate. Confirm the CNAME at your DNS provider points to `origin.workshop.build` exactly, and allow a few minutes for DNS propagation. Click **Check status** to re-check. If the status stays pending for more than ~15 minutes, use `dig` or `nslookup` to verify the CNAME resolves correctly, and that no conflicting A/AAAA records exist for the same hostname.
+  </Accordion>
+
+  <Accordion title="Add custom domain option is missing">
+    Custom domains are available on the Build, Scale, and Max plans. On the Free (Discover) plan the section shows an upgrade prompt. Upgrade to a paid plan from the [Plans page](/workshop/pricing/plans) to enable it.
+  </Accordion>
+
+  <Accordion title="Apex domain stuck on TXT verification">
+    Workshop polls public DNS resolvers for the `_workshop-verify` TXT record. Propagation typically takes under five minutes but can occasionally run longer. Click **Verify domain** again, or run `dig _workshop-verify.yourcompany.com TXT` from your terminal to confirm the record is visible. If the value is correct but verification still fails, double-check that the host label is the relative `_workshop-verify` rather than the FQDN form (`_workshop-verify.yourcompany.com.`); some registrars accept both, others reject the FQDN form.
+  </Accordion>
+
+  <Accordion title="Apex domain stuck on Pending after adding A/AAAA records">
+    The status flips to Active once Workshop sees your apex resolving to its anycast IPs. Verify with `dig yourcompany.com A` (expect `34.8.221.48`) and `dig yourcompany.com AAAA` (expect `2600:1901:0:be48::`). Two common gotchas:
+
+    - **Registrar URL forwarding overrides A records.** If your registrar has a "domain forwarding" or "URL redirect" rule pointing the apex elsewhere, that takes precedence; disable it before adding the A/AAAA records.
+    - **Stale records at `@`.** Some registrars keep parking-page A records at the apex; remove them so only Workshop's anycast IPs are returned.
+
+    SSL provisioning then takes another 30–60 seconds on the first request after the records resolve correctly.
+  </Accordion>
+
+  <Accordion title="Registrar won't let me add an A record at the apex" id="apex-domain-workaround">
+    A few registrars (and some entry-level shared-hosting bundles) lock the apex `@` row or charge extra to edit it. If you can't unlock it, use `www.yourcompany.com` as your Workshop hostname instead, and set up a URL redirect from the apex to `www` at your registrar. The subdomain CNAME flow described above works on every registrar.
+  </Accordion>
+</AccordionGroup>

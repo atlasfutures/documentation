@@ -1,0 +1,188 @@
+---
+title: "Google Sheets"
+icon: "table"
+description: "Connect public or private Google Sheets to Workshop for spreadsheet data access."
+---
+
+## Overview
+
+Workshop supports two modes for connecting Google Sheets:
+
+| Mode | Authentication | Best For |
+|------|---------------|----------|
+| **Public Sheet** | Sheet URL only | Non-sensitive data shared via "Anyone with the link" |
+| **Private Sheet** | GCP Service Account JSON | Confidential data restricted to specific accounts |
+
+Choose the tab below that matches your use case.
+
+<Tabs>
+  <Tab title="Public Sheet">
+    ## Public Google Sheet
+
+    Use this mode when your sheet is shared with **"Anyone with the link"** and contains non-sensitive data. No API keys or service accounts required — just the URL.
+
+    ### What You'll Need
+
+    | Credential | Description |
+    |------------|-------------|
+    | **Spreadsheet URL** | The sharing link to your public Google Sheet |
+
+    ### Making Your Sheet Public
+
+    <Steps>
+      <Step title="Open your Google Sheet">
+        Navigate to your Google Sheet in the browser.
+      </Step>
+      <Step title="Open sharing settings">
+        Click the **Share** button in the top-right corner.
+      </Step>
+      <Step title="Set to public">
+        Under **General access**, change from "Restricted" to **"Anyone with the link"**. Set permission to **Viewer**. Click **Done**.
+      </Step>
+      <Step title="Copy the URL">
+        Copy the URL from your browser's address bar. It looks like:
+
+        ```
+        https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit#gid=0
+        ```
+      </Step>
+    </Steps>
+
+    ### Connecting to Workshop
+
+    <Steps>
+      <Step title="Open Hub > Connectors">
+        Open the **Workshop Hub** and click **Connectors**.
+      </Step>
+      <Step title="Select Public Google Sheet">
+        Click the **Public Google Sheet** card.
+      </Step>
+      <Step title="Enter details">
+        Enter a **Connection Name** (e.g., "Product Catalog") and paste your **Spreadsheet URL**.
+      </Step>
+      <Step title="Save">
+        Click **Add Connection**.
+      </Step>
+    </Steps>
+
+    Workshop accepts URLs in any standard Google Sheets format (`/edit`, `/view`, or just the sheet ID path).
+
+    ### Security Considerations
+
+    <Warning>
+    When you make a sheet public, anyone with the URL can view all data in it. Treat the URL as a credential.
+    </Warning>
+
+    Public sheets are appropriate for sample datasets, publicly available information, and shared reference materials. Avoid making sheets public if they contain personal information, financial data, or business-sensitive content.
+
+    To revoke public access, change the sheet back to **Restricted** in sharing settings.
+  </Tab>
+
+  <Tab title="Private Sheet">
+    ## Private Google Sheet
+
+    Use this mode when your sheet is restricted to specific users and contains sensitive or confidential data. Requires a Google Cloud Platform (GCP) service account.
+
+    <Warning>
+    **Requires a Google Cloud project.** Accessing private sheets requires a GCP service account, which involves creating a project and sharing your sheet with the service account email. If you prefer simpler setup, consider making your sheet public and using the Public mode instead.
+    </Warning>
+
+    ### What You'll Need
+
+    | Credential | Description |
+    |------------|-------------|
+    | **Spreadsheet URL** | The full URL of your Google Sheet |
+    | **Service Account JSON** | A JSON key file from Google Cloud Platform |
+
+    ### Setting Up Access
+
+    <Steps>
+      <Step title="Create a GCP project">
+        Go to the [Google Cloud Console](https://console.cloud.google.com). Click **Select a project > New Project**, enter a name (e.g., "Workshop Sheets Access"), and click **Create**.
+      </Step>
+      <Step title="Enable the Google Sheets API">
+        Go to **APIs & Services > Library**, search for **"Google Sheets API"**, and click **Enable**.
+      </Step>
+      <Step title="Create a service account">
+        Go to **IAM & Admin > Service Accounts**, click **Create Service Account**, enter a name (e.g., "Workshop Sheets Reader"), and click **Create and Continue**. Select the **Viewer** role, then click **Done**.
+      </Step>
+      <Step title="Download the JSON key">
+        Click on the service account, go to the **Keys** tab, click **Add Key > Create new key**, select **JSON**, and click **Create**. The file downloads automatically. Note the `client_email` field inside it.
+      </Step>
+      <Step title="Share your sheet with the service account">
+        Open your Google Sheet, click **Share**, paste the service account's `client_email` (looks like `name@project.iam.gserviceaccount.com`), set permission to **Viewer**, uncheck "Notify people", and click **Share**.
+      </Step>
+    </Steps>
+
+    <Info>
+    The `client_email` in your JSON file looks like: `your-service-account@your-project.iam.gserviceaccount.com`. You must share your sheet with this email for the connection to work.
+    </Info>
+
+    ### Connecting to Workshop
+
+    <Steps>
+      <Step title="Open Hub > Connectors">
+        Open the **Workshop Hub** and click **Connectors**.
+      </Step>
+      <Step title="Select Private Google Sheet">
+        Click the **Private Google Sheet** card.
+      </Step>
+      <Step title="Enter details">
+        Enter a **Connection Name**, paste the **Spreadsheet URL**, and paste the full contents of your **Service Account JSON** key file.
+      </Step>
+      <Step title="Save">
+        Click **Add Connection**.
+      </Step>
+    </Steps>
+
+    ### Security Considerations
+
+    - The service account only has access to sheets explicitly shared with it
+    - Share with **Viewer** permission unless Workshop needs to write data
+    - Once connected, you can delete the JSON key file from your downloads — Workshop stores credentials securely
+    - To revoke access, remove the service account email from the sheet's sharing settings
+  </Tab>
+</Tabs>
+
+## Using Your Connection
+
+Once connected (either mode), ask Workshop to work with your spreadsheet data:
+
+```
+Show me the first few rows from my spreadsheet
+```
+```
+Using my Google Sheet connection, create a summary of all entries in column A
+```
+```
+Create a chart from my Google Sheet data showing sales by month
+```
+
+### Working with Multiple Tabs
+
+If your spreadsheet has multiple tabs, specify which one:
+
+```
+Show me data from the "Sales Q4" tab in my spreadsheet
+```
+
+By default, Workshop reads from the first sheet if no tab name is specified.
+
+<Info>
+Workshop works best with spreadsheets under 10,000 rows. For very large datasets, consider using a [database connector](/workshop/connectors/databases) or [BigQuery](/workshop/connectors/data-warehouses) instead.
+</Info>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Unable to access spreadsheet" (public) | Verify the sheet is set to "Anyone with the link". Try opening the URL in an incognito window. |
+| "Permission denied" (private) | Ensure the sheet is shared with the service account `client_email`. |
+| "Invalid JSON" (private) | Verify you copied the entire JSON file contents without extra characters. |
+| "Google Sheets API not enabled" (private) | Enable the Google Sheets API in your GCP project and wait a few minutes. |
+
+## Learn More
+
+- [Google Sheets API Documentation](https://developers.google.com/sheets/api)
+- [Creating Service Accounts](https://cloud.google.com/iam/docs/service-accounts-create)
+- [Sharing Google Sheets](https://support.google.com/docs/answer/2494822)

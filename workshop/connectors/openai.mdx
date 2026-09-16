@@ -1,0 +1,98 @@
+---
+title: "OpenAI (BYOK)"
+icon: "o"
+description: "Connect your own OpenAI API key to Workshop for direct GPT model access."
+---
+
+## Overview
+
+The OpenAI BYOK connector lets you use your own OpenAI API key with Workshop. Usage is billed directly to your OpenAI account.
+
+<Warning>
+**Published apps use your API key.** If you publish a Workshop app that uses this connector, visitors make requests using your key. You will be billed by OpenAI for all usage.
+</Warning>
+
+<Info>
+**Don't have an API key?** The [managed OpenAI connector](/workshop/connectors/managed-ai-connectors) is enabled by default — no API key needed, usage billed to your Workshop credits.
+</Info>
+
+## What You'll Need
+
+| Credential | Description | Format |
+|------------|-------------|--------|
+| **API Key** | OpenAI API authentication key | `sk-proj-...` |
+
+## Getting an API Key
+
+<Steps>
+  <Step title="Access the OpenAI platform">
+    Go to [platform.openai.com](https://platform.openai.com) and sign in or create an account.
+  </Step>
+  <Step title="Set up billing">
+    Click **Settings > Billing**, add a payment method, and add credits (minimum $5). Billing is required before the API key will work.
+  </Step>
+  <Step title="Navigate to API Keys">
+    Click **API keys** in the sidebar, or go directly to [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+  </Step>
+  <Step title="Create a key">
+    Click **Create new secret key**, enter a name (e.g., "Workshop Access"), and optionally select a project.
+  </Step>
+  <Step title="Copy the key">
+    Copy your key immediately. OpenAI only shows it once — if you lose it, you'll need to generate a new one.
+  </Step>
+</Steps>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select OpenAI">
+    Click the **OpenAI (your API key)** card.
+  </Step>
+  <Step title="Enter details">
+    Enter a **Connection Name** (e.g., "My OpenAI Account") and paste your **API Key**.
+  </Step>
+  <Step title="Save">
+    Click **Add Connection**.
+  </Step>
+</Steps>
+
+Your OpenAI account is now connected and available across all conversations.
+
+## Verifying Your Connection
+
+Ask Workshop:
+
+```
+List the available OpenAI models
+```
+
+If Workshop returns a list of models, your connection is working.
+
+## Security Best Practices
+
+- Your API key is stored in Workshop's encrypted storage — never shared with the AI agent directly
+- Rotate keys periodically at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- Use OpenAI projects to organize keys by application
+- If you suspect a key is compromised, delete it immediately in your OpenAI settings and create a new one
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Invalid API key" | Verify the full key was copied. Ensure format is `sk-proj-...`. |
+| "Insufficient quota" | Check billing at [platform.openai.com](https://platform.openai.com/settings/organization/billing). Add credits if needed. |
+| "Rate limit exceeded" | Wait and retry. Check rate limits in your OpenAI dashboard. |
+| "Model not found" | Verify model access. Some models require special access or are in limited beta. |
+
+## Learn More
+
+- [OpenAI API Documentation](https://platform.openai.com/docs)
+- [API Key Best Practices](https://platform.openai.com/docs/guides/production-best-practices)
+- [Rate Limits Guide](https://platform.openai.com/docs/guides/rate-limits)
+- [OpenAI Pricing](https://openai.com/pricing)

@@ -1,0 +1,151 @@
+---
+title: "Using Credits Effectively"
+icon: "coins"
+description: "How to manage conversations, project context, caching, and model choice without wasting credits."
+---
+
+The simplest way to avoid unnecessary credit use is to start a new conversation when
+the goal changes or you return after a long break.
+
+<Info>
+  **When should you leave a long conversation behind?** When you begin a different task,
+  or return after more than an hour of inactivity—even if you are continuing the same
+  work. The usual cache window is about one hour, so reopening an older conversation can
+  mean paying for the model to process its full history again. Start a new conversation,
+  or switch to a lower-cost model, use `/compact`, then return to the capable model if
+  you need to continue the same task.
+</Info>
+
+## What should I do?
+
+### While actively working
+
+| Situation | Best action |
+| --- | --- |
+| Continuing the same focused task while the cache is warm | Keep the same conversation and model |
+| Starting a different feature, bug, or topic | Start a new conversation; before leaving the current one, run `/context` if it contains lasting knowledge |
+| Continuing the same task without a long break, but with a long history | Run `/compact` to shorten the history carried into later turns; if needed, say what the summary should preserve |
+| Changing the main model | If needed, first run `/context` to save lasting knowledge or `/compact` to continue the same task; then select the new model in the fresh or compacted conversation |
+| The agent is repeating unsuccessful attempts | Interrupt it, narrow the goal, or return to planning |
+
+### Before taking a long break
+
+Prepare the handoff while the cache is still warm.
+
+| What you need later | Best action |
+| --- | --- |
+| Knowledge that future conversations should know | Run `/context`; if needed, say what project knowledge it should preserve |
+| The ability to continue the same task | Run `/compact` to create a shorter continuation |
+
+You can view or edit the saved project context in `.workshop/context.md`.
+
+If both apply, run `/context` first, then `/compact`.
+
+### When you come back
+
+| Situation | Best action |
+| --- | --- |
+| You saved the important knowledge with `/context` before leaving | Start a new conversation and state the next goal |
+| You shortened the history with `/compact` before leaving | Continue from that shortened conversation |
+| The old conversation is cold but contains unsaved knowledge | **Start fresh:** switch to a lower-cost model, run `/context`, then use the capable model in a new conversation.<br /><br />**Continue the task:** switch to a lower-cost model, run `/compact`, then use the capable model in the shortened conversation |
+| You do not need anything from the old conversation | Start a new conversation instead of continuing it |
+
+## Three things that affect credit use
+
+| | What it is | How to manage it |
+| --- | --- | --- |
+| **Project context** | Stable knowledge shared across conversations | Use `/context` to save important project knowledge in `.workshop/context.md` for future conversations |
+| **Conversation context** | Messages, file reads, commands, and agent responses in one conversation | Keep it focused; use `/compact` to shorten the history carried into later turns, or start fresh |
+| **Prompt cache** | A temporary copy of input the model has already processed | Keep the same model while the cache is warm; assume it is cold after a long break |
+
+## Why long conversations cost more
+
+Each new turn includes the context needed to continue the conversation. As messages, file
+reads, and tool results accumulate, there is more history to process on every turn.
+
+A warm prompt cache makes repeated history cheaper, but it does not make the conversation
+smaller. Output, new input, agent turns, and delegated work still consume credits.
+
+<Info>
+  **Why a fresh conversation saves credits.** It leaves the old chat history behind while
+  keeping the project's files, sources, and saved project context. The agent starts with
+  the durable information it needs, without carrying every earlier message and tool result.
+</Info>
+
+Use one conversation for one clear purpose. When the purpose changes, start a new one.
+
+## Use `/context` to save knowledge for future conversations
+
+`/context` saves important project knowledge from the current conversation in
+`.workshop/context.md` so future conversations can use it.
+
+```text
+/context focus on architecture decisions, the current migration status,
+and the commands used to verify the project
+```
+
+Run it after a milestone or lasting decision. Keep the saved context concise, and never
+include secrets. You can view or edit it in `.workshop/context.md`. See
+[Context and Memory](/workshop/core-concepts/context-and-memory).
+
+## Use `/compact` to shorten history for the same task
+
+`/compact` replaces a long working history with a shorter summary. Use it when you want to
+continue the same task but no longer need every intermediate step.
+
+```text
+/compact focus on the authentication bug, attempted fixes, and remaining verification
+```
+
+Compaction requires a summarization turn and usually starts a new cache. The saving comes
+from carrying the shorter summary on later turns.
+
+Workshop also compacts automatically near the context limit. See
+[Working with the Agent](/workshop/core-concepts/working-with-the-agent#auto-compaction).
+
+## Why caching and model switching matter
+
+A prompt cache lets a model reuse conversation history at a discounted rate. The usual
+TTL is **one hour**. Think of this as an idle timer: using the cache can refresh it, but
+the exact behavior varies by model and provider.
+
+| What happens | Result |
+| --- | --- |
+| Continue with the same model while the cache is warm | Matching history can use the lower cache rate |
+| Return after the cache expires | The model must process the history again |
+| Switch the main model or provider | The new model cannot use the old model's cache |
+
+<Info>
+  **Why a cold premium turn can be surprisingly expensive.** Think of two prices
+  multiplying. A premium model can cost around **10× more** than a lower-cost model. If
+  the cache is cold, rereading the same long conversation can cost around **10× more**
+  than reading it from a warm cache. Together, the conversation-history part of the first
+  cold turn on a premium model can cost around **100× more** than a warm turn on a
+  lower-cost model.
+
+  The exact difference varies, and the 100× comparison does not apply to the entire turn.
+  The practical rule is simple: do not make a premium model process a long, cold history.
+  Use a lower-cost model for `/context` or `/compact`, then use the capable model in the
+  fresh or shortened conversation.
+</Info>
+
+## Choose the model for the task
+
+The cheapest turn is not always the cheapest completed task. Repeated corrections can
+cost more than using a stronger model once.
+
+| Work | Model strategy |
+| --- | --- |
+| Routine edits, searches, and straightforward tasks | Use ARC or a lower-cost model |
+| Everyday implementation | Use a balanced model |
+| Difficult debugging, migrations, or architecture work | Choose a premium model deliberately |
+
+[ARC](/workshop/core-concepts/settings#arc) is the simplest default when you do not want to pick
+a model yourself.
+
+## Related reading
+
+- [Context and Memory](/workshop/core-concepts/context-and-memory)
+- [When to Start Fresh vs. Persist](/workshop/troubleshooting/when-to-start-fresh)
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent)
+- [Plans and credits](/workshop/pricing/plans)

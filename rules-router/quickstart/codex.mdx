@@ -1,0 +1,37 @@
+---
+title: "Codex"
+description: "Use the Rayline CLI with Codex CLI or desktop."
+---
+
+Codex is supported through the Rayline local OpenAI Responses-compatible router. Install Codex and [Rayline](https://github.com/rayline-ai/rayline#install) first.
+
+## Codex CLI
+
+```bash
+rayline codex --subscription -- exec "summarize this repo"
+```
+
+This example explicitly selects Codex's existing ChatGPT/Codex subscription login and forwards through the Codex backend. It is not automatically billed as hosted Rayline inference. Specify the auth mode rather than relying on defaults that can differ between releases.
+
+## Codex desktop
+
+```bash
+rayline codex app --subscription
+```
+
+You can pass a workspace path after `app`. The launcher uses an isolated Codex home. If the single-instance desktop app is already running with different routing configuration, the launcher prompts before restarting it.
+
+## Explicit routes
+
+Custom configurations can select local/API endpoints or hosted Agent Gateway routes. Use the [current CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the supported configuration schema.
+
+Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Responses protocol does **not** mean it uses the ARC Responses product.
+
+## Verify
+
+```bash
+rayline router status
+rayline router logs --lines 120
+```
+
+Check the configured endpoint and actual selected route before assuming a session is local, using a subscription, or charged through Rayline.

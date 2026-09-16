@@ -1,0 +1,134 @@
+---
+title: "Workshop Cloud in 5 Minutes"
+icon: "cloud"
+---
+
+Workshop Cloud runs entirely in your browser. No downloads, no local setup — just describe what you want and Workshop builds it.
+
+## Step-by-Step
+
+<Steps>
+  <Step title="Sign up and create a project">
+    Go to [app.workshop.ai](https://app.workshop.ai) and create an account.
+
+    Click **New Project** and give it a name. You'll be asked to choose a starting template:
+
+    - **Web App / Website** — A fullstack app with a Python backend and modern web frontend. Best for anything that runs as a website or web app. Supports one-click publish.
+    - **Streamlit** — Python-native data apps with charts, tables, and interactivity built in. Supports one-click publish.
+    - **Anything** — The most flexible option. Use any framework or package that runs in the cloud — not limited to web apps. Requires manual deployment.
+    - **Import from GitHub** — Start from an existing repository.
+
+    The project creation dialog also includes an **Add-Ons** section where you can enable AI Providers (Anthropic, OpenAI, Gemini) and a Database Provider (Neon). Some templates pre-select defaults — see [Project Templates](/workshop/workshop-cloud/templates#add-ons) for details.
+
+    <Tip>
+      Not sure which template to pick? **Web App / Website** is the best default for websites and web apps.
+    </Tip>
+  </Step>
+
+  <Step title="Describe what you want to build">
+    This is where the magic starts. Describe your idea in plain language:
+
+    ```
+    I want to build a dashboard that shows sales trends by region,
+    with filters for date range and product category.
+    ```
+
+    If you want to scope and clarify your project before writing any code, use **Plan Mode** — open the **+** menu next to the chat input and pick **Plan**, or just type "Use Plan mode." Workshop will ask clarifying questions and create a structured plan. When the plan looks right, follow the prompt to switch to **Build Mode**.
+
+    If you already know what you want, you can skip straight to **Build Mode** and Workshop will start writing code immediately.
+  </Step>
+
+  <Step title="Add data, connect your systems, or add AI">
+    You can bring data and functionality into your project in several ways:
+
+    - **File upload** — Drag a CSV, Excel, or JSON file directly into the chat
+    - **Google Sheets** — Share a link and Workshop will read it
+    - **Data connectors** — Connect to PostgreSQL, MySQL, BigQuery, Snowflake, Supabase, Google Drive, and more through the [Connectors](/workshop/connectors) panel
+    - **AI Providers** — Add AI features to your app using Workshop's [managed AI connectors](/workshop/connectors/managed-ai-connectors) for Anthropic, OpenAI, and Google Gemini. Enable them via Add-Ons in project settings, or bring your own API keys instead.
+    - **Database Providers** — Add a [managed Neon Postgres database](/workshop/connectors/managed-database) with built-in authentication to your project via Add-Ons. Or connect your own database through [Connectors](/workshop/connectors).
+
+    Tell Workshop what you'd like it to do with the data:
+
+    ```
+    Load this CSV and create some initial visualizations so I can
+    understand the data before we build the dashboard.
+    ```
+  </Step>
+
+  <Step title="Iterate on the result">
+    As Workshop builds, the **preview pane** on the right shows your app updating in real time. Interact with it — click buttons, test filters, hover over charts.
+
+    When you want changes, describe them naturally:
+
+    ```
+    Change the bar chart to a pie chart and add percentage labels.
+    The date filter should default to the last 30 days.
+    ```
+
+    Workshop updates the code and the preview refreshes automatically.
+  </Step>
+
+  <Step title="Publish and share">
+    When your app is ready, click the **Publish** button. Workshop handles hosting and compute — there's nothing to provision or maintain on your end. You get a shareable URL your users can open immediately.
+
+    You choose who can access it: make your app public, or limit it to specific people or teams for things you want to keep private. Workshop handles the access control as part of the same flow.
+
+    To update a published app, make your changes and click **Update**.
+  </Step>
+</Steps>
+
+## Tips for Better Results
+
+<AccordionGroup>
+  <Accordion title="Be specific about what you want">
+    ```
+    ❌ "Make a dashboard"
+    ✅ "Create a dashboard showing monthly revenue trends with a
+        dropdown to filter by product category and a date range picker"
+    ```
+  </Accordion>
+
+  <Accordion title="Build incrementally">
+    Start with the core functionality, then layer on features:
+
+    1. "Load the data and show it in a table"
+    2. "Add a chart of sales by month"
+    3. "Add filters for product category and date range"
+    4. "Style it to match our brand colors"
+  </Accordion>
+
+  <Accordion title="Reference what you see in the preview">
+    ```
+    The chart in the preview looks crowded — only show the top 10 products.
+    The filter dropdown is cut off on mobile. Can you fix the layout?
+    ```
+  </Accordion>
+
+  <Accordion title="Connect a GitHub repository">
+    Use Workshop's native [GitHub integration](/workshop/workshop-cloud/github-integration) to keep your code backed up and collaborate with others. You can also ask Workshop to commit at logical milestones:
+
+    ```
+    Commit our current progress with a descriptive message.
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## What You Can Build
+
+Workshop Cloud excels at:
+
+- **Dashboards** — Sales, marketing, operations, KPI tracking
+- **Data explorers** — Let teams filter and explore datasets interactively
+- **Internal tools** — Admin panels, data entry forms, approval workflows
+- **Interactive reports** — Reports with drill-down, charts, and export
+- **Prototypes** — Test ideas with real data before committing to a full build
+
+## Next Steps
+
+- **Connect your data sources** with [Connectors](/workshop/connectors)
+- **Add AI features** with [AI Providers](/workshop/connectors/managed-ai-connectors)
+- **Add a managed database** with [Database Providers](/workshop/connectors/managed-database)
+- **Publish and share your app** with [Publishing](/workshop/workshop-cloud/publishing)
+- **Learn how to work with the agent** in [Working with the Agent](/workshop/core-concepts/working-with-the-agent)
+- **Read prompting tips** in [Working with the Agent](/workshop/core-concepts/working-with-the-agent)
+- **Join the community** on [Discord](https://discord.gg/ggqJkUN3vx)

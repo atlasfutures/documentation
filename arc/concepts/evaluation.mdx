@@ -1,0 +1,18 @@
+---
+title: "Evaluate ARC"
+description: "Measure quality, cost, and latency on your own tasks."
+---
+
+<Note>ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to discuss access for your evaluation.</Note>
+
+When live inference becomes available, compare the same representative tasks under a fixed baseline and an ARC checkpoint:
+
+1. Define success before running the task: passing tests, correct answers, or a reviewed rubric.
+2. Keep inputs, tools, timeouts, and retry limits comparable.
+3. Record the checkpoint, selected model, input/cache/output tokens, end-to-end latency, and final task outcome.
+4. Include failed attempts and retries in the cost per successful task.
+5. Report the workload, sample size, and distribution of results alongside any aggregate savings.
+
+For Decisions, add ARC usage to independently executed provider inference. For Responses, the endpoint's token rates include selection and generation; do not add a second Decisions fee.
+
+A decision score is not a calibrated probability. Neither the pricing reference basket nor an estimated baseline saving is an evaluation of your workload.

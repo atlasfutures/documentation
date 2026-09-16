@@ -1,0 +1,247 @@
+---
+title: "Data Warehouse Connectors"
+icon: "warehouse"
+description: "Connect BigQuery, Snowflake, and Tableau to Workshop for enterprise analytics."
+---
+
+## Overview
+
+Workshop supports three data warehouse and business intelligence connectors for enterprise-scale analytics:
+
+| Platform | Authentication | Best For |
+|----------|---------------|----------|
+| [BigQuery](#bigquery) | GCP Service Account JSON | Petabyte-scale analytics on Google Cloud |
+| [Snowflake](#snowflake) | Account + User/Password | Cloud data warehousing with separated storage and compute |
+| [Tableau](#tableau) | Personal Access Token | Business intelligence dashboards and data visualization |
+
+## General Setup
+
+All data warehouse connectors follow the same workflow:
+
+<Steps>
+  <Step title="Open Hub > Connectors">
+    Open the **Workshop Hub** from the sidebar and click the **Connectors** tab.
+  </Step>
+  <Step title="Select your platform">
+    Find and click the card for your data warehouse.
+  </Step>
+  <Step title="Enter credentials">
+    Fill in the connection fields described for your platform below.
+  </Step>
+  <Step title="Name and save">
+    Give your connection a memorable name and click **Add Connection**.
+  </Step>
+</Steps>
+
+---
+
+<Tabs>
+  <Tab title="BigQuery">
+    ## BigQuery
+
+    BigQuery is Google Cloud's serverless data warehouse. Workshop connects via a GCP service account with read-only access.
+
+    ### What You'll Need
+
+    | Credential | Description |
+    |------------|-------------|
+    | **Service Account JSON** | A JSON key file from Google Cloud Platform |
+
+    ### Setting Up Access
+
+    <Steps>
+      <Step title="Create or select a GCP project">
+        Go to the [Google Cloud Console](https://console.cloud.google.com) and create or select a project with BigQuery data.
+      </Step>
+      <Step title="Enable the BigQuery API">
+        Go to **APIs & Services > Library**, search for **"BigQuery API"**, and enable it (most projects have it enabled by default).
+      </Step>
+      <Step title="Create a service account">
+        Go to **IAM & Admin > Service Accounts**, click **Create Service Account**, and enter a name (e.g., "Workshop BigQuery Access").
+      </Step>
+      <Step title="Grant permissions">
+        Add two roles:
+        - **BigQuery Data Viewer** — read access to tables and views
+        - **BigQuery Job User** — permission to run queries
+
+        Click **Continue**, then **Done**.
+      </Step>
+      <Step title="Download the JSON key">
+        Click on the service account, go to the **Keys** tab, click **Add Key > Create new key**, select **JSON**, and click **Create**. The file downloads automatically.
+      </Step>
+    </Steps>
+
+    ### Connecting to Workshop
+
+    1. Click the **BigQuery** card in the Connectors tab
+    2. Enter a **Connection Name** (e.g., "Analytics Warehouse")
+    3. Open the JSON key file in a text editor, copy the entire contents, and paste into the **Service Account JSON** field
+    4. Click **Add Connection**
+
+    ### Limiting Access to Specific Datasets
+
+    For finer control, grant permissions at the dataset level instead of the project level:
+
+    1. Go to **BigQuery** in the Cloud Console
+    2. Click on a dataset, then **Sharing > Permissions**
+    3. Add the service account email with the **BigQuery Data Viewer** role
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | "Permission denied" | Verify both **BigQuery Data Viewer** and **BigQuery Job User** roles are assigned. |
+    | "Invalid JSON" | Ensure you copied the entire JSON file contents without extra characters. |
+    | "Project not found" | Confirm the project ID in the JSON matches an existing project with BigQuery API enabled. |
+    | Can't see datasets | Grant BigQuery Data Viewer on specific datasets if using dataset-level permissions. |
+
+    <Warning>
+    Keep your service account key file secure. Don't share it or commit it to version control. If compromised, delete the key in the Cloud Console and create a new one.
+    </Warning>
+
+    **Learn more:** [BigQuery Documentation](https://cloud.google.com/bigquery/docs) | [BigQuery IAM Roles](https://cloud.google.com/bigquery/docs/access-control)
+  </Tab>
+
+  <Tab title="Snowflake">
+    ## Snowflake
+
+    Snowflake is a cloud data warehouse with separated storage and compute. Workshop connects using your account identifier and user credentials.
+
+    ### What You'll Need
+
+    | Field | Required | Description | Example |
+    |-------|----------|-------------|---------|
+    | Account | Yes | Account identifier | `xy12345.us-east-1` |
+    | User | Yes | Snowflake username | `WORKSHOP_USER` |
+    | Password | Yes | Snowflake password | — |
+    | Role | No | Snowflake role | `ANALYST` |
+    | Warehouse | No | Compute warehouse | `COMPUTE_WH` |
+    | Database | No | Default database | `ANALYTICS` |
+    | Schema | No | Default schema | `PUBLIC` |
+
+    <Info>
+    Role, warehouse, database, and schema are optional. If omitted, Snowflake uses the defaults configured for your user.
+    </Info>
+
+    ### Finding Your Account Identifier
+
+    Your account identifier comes from your Snowflake URL:
+
+    - If your URL is `https://xy12345.us-east-1.snowflakecomputing.com`, the identifier is `xy12345.us-east-1`
+    - For `app.snowflakecomputing.com` URLs, go to **Settings > Accounts**, click `...` next to your account, and select **Manage URLs** to find the full URL
+
+    ### Read-Only Role Setup
+
+    ```sql
+    CREATE ROLE WORKSHOP_READER;
+    GRANT USAGE ON DATABASE ANALYTICS TO ROLE WORKSHOP_READER;
+    GRANT USAGE ON SCHEMA ANALYTICS.PUBLIC TO ROLE WORKSHOP_READER;
+    GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS.PUBLIC TO ROLE WORKSHOP_READER;
+    ```
+
+    ### Warehouse Cost Considerations
+
+    Warehouses incur costs when running. For Workshop:
+
+    - Use a smaller warehouse (X-SMALL) for most queries
+    - Enable auto-suspend to pause the warehouse after inactivity
+    - Monitor query costs through Snowflake's usage dashboard
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Invalid account identifier | Verify the format matches your Snowflake URL. Include the region identifier. |
+    | Authentication failed | Check username/password. Verify user is not locked. Check if MFA is blocking access. |
+    | Warehouse not found | Verify warehouse name. Check the role has USAGE permission on the warehouse. |
+    | Access denied | Ensure the role has USAGE on the database/schema and SELECT on tables. |
+
+    <Warning>
+    Create a dedicated service account for Workshop rather than using personal credentials. If MFA is required, you may need a service account without MFA for programmatic access.
+    </Warning>
+
+    **Learn more:** [Snowflake Documentation](https://docs.snowflake.com/) | [Access Control](https://docs.snowflake.com/en/user-guide/security-access-control-overview)
+  </Tab>
+
+  <Tab title="Tableau">
+    ## Tableau
+
+    Tableau is a business intelligence platform for interactive dashboards and reports. Workshop connects using a Personal Access Token.
+
+    ### What You'll Need
+
+    | Field | Description | Example |
+    |-------|-------------|---------|
+    | Token Name | Name of your Personal Access Token | `workshop-integration` |
+    | Token Secret | Secret value of the token | `dGhpcyBpcyBhIHNlY3JldA==...` |
+    | Server URL | Tableau Server or Online URL | `https://10ax.online.tableau.com/` |
+    | Site ID | Your Tableau site identifier | `mycompanysite` |
+
+    <Info>
+    The **Site ID** is found in your Tableau URL. For example, in `https://10ax.online.tableau.com/#/site/mycompanysite/home`, the Site ID is `mycompanysite`.
+    </Info>
+
+    ### Creating a Personal Access Token
+
+    <Steps>
+      <Step title="Open Tableau settings">
+        Log in to Tableau Server or Online. Click your profile icon and select **My Account Settings**.
+      </Step>
+      <Step title="Generate a token">
+        Scroll to **Personal Access Tokens**, enter a descriptive name (e.g., `workshop-integration`), and click **Create new token**.
+      </Step>
+      <Step title="Copy credentials">
+        Copy both the **Token Name** and **Token Secret** immediately. The secret is only shown once.
+      </Step>
+    </Steps>
+
+    ### Token Expiration
+
+    <Warning>
+    Personal Access Tokens expire if not used for **15 consecutive days**. You must use the token at least once every 15 days to keep it active. If it expires, create a new token and update your Workshop connection.
+    </Warning>
+
+    ### Token Permissions
+
+    Tokens inherit the permissions of your Tableau user account. For limited access, consider creating a dedicated Tableau user with restricted permissions.
+
+    ### Example Queries
+
+    ```
+    List all workbooks in my Tableau connection
+    ```
+    ```
+    What data sources are available in my Tableau site?
+    ```
+    ```
+    Show me the views in the "Sales Dashboard" workbook
+    ```
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|----------|
+    | Invalid token | Verify Token Name and Token Secret were copied correctly. |
+    | Token expired | Create a new token if unused for 15+ days. |
+    | Site not found | Verify Site ID matches the URL path. For the Default site, try empty or `default`. |
+    | Server connection failed | Verify the Server URL includes `https://` and is accessible externally. |
+
+    **Learn more:** [Tableau Personal Access Tokens](https://help.tableau.com/current/server/en-us/security_personal_access_tokens.htm) | [Tableau REST API](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api.htm)
+  </Tab>
+</Tabs>
+
+## Verifying Any Data Warehouse Connection
+
+After connecting, ask Workshop:
+
+```
+What datasets are available in my data warehouse?
+```
+```
+Show me the schema of my analytics database
+```
+```
+List all tables I have access to
+```
+
+If Workshop returns your data, the connection is working.

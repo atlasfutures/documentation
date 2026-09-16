@@ -1,0 +1,119 @@
+---
+title: "GitHub Integration"
+icon: "code-branch"
+description: "Connect Workshop Desktop projects to GitHub for version control, collaboration, and syncing codebases."
+---
+
+Workshop Desktop integrates with GitHub so you can import existing repositories, link projects to repos, and push/pull changes — all from within the Workshop interface.
+
+<Info>
+  Workshop Cloud has the same push/pull mechanics. See [GitHub Integration](/workshop/workshop-cloud/github-integration) in the Cloud section. The key Desktop difference is the ability to import directly from a repository URL when creating a new project.
+</Info>
+
+## Connecting Your GitHub Account
+
+Before linking projects, connect your GitHub account through the GitHub App OAuth flow.
+
+<Steps>
+  <Step title="Open Hub Connectors">
+    Navigate to **Hub** and select the **Connectors** tab.
+  </Step>
+  <Step title="Install the Workshop GitHub App">
+    Click **Connect** on the GitHub connector. This starts a GitHub App OAuth flow where you authorize Workshop to access your repositories.
+
+    During installation, you choose which repositories Workshop can access — either **all repositories** or **selected repositories** in your account or organization.
+  </Step>
+  <Step title="Confirm the connection">
+    After authorizing, you're redirected back to Workshop. Your GitHub username and avatar appear in the Connectors panel, confirming the connection is active.
+  </Step>
+</Steps>
+
+<Note>
+  If you belong to multiple GitHub organizations, you can install the GitHub App on each one. Use the installation selector in the Connectors panel to switch between them.
+</Note>
+
+## Importing a Repository as a New Project
+
+You can create a new Workshop Desktop project from an existing GitHub repository:
+
+1. Click **New Project** from the Projects page
+2. Select **Import from Git** and choose a repository from your connected GitHub account
+3. Workshop clones the repository and creates a project with the repo contents
+
+This is useful for pulling in an external codebase for prototyping — make changes in Workshop, then push them back when ready.
+
+## Linking an Existing Project to a Repository
+
+If you already have a Workshop project and want to connect it to a GitHub repo:
+
+1. Open your project and navigate to the **GitHub** section in the project settings panel
+2. Click **Link GitHub Repository**
+3. Search for or select the repository you want to link
+4. Choose the branch (defaults to the repository's default branch)
+5. Confirm the link
+
+After linking, the GitHub section shows the repository name, branch, sync status, and timestamps for the last push and pull.
+
+## Push and Pull Workflow
+
+Once a project is linked to a GitHub repository, you can sync changes in either direction.
+
+### Pushing to GitHub
+
+Click the **push** button (up arrow) to send your local project changes to the linked GitHub repository. This creates a commit on the linked branch with your latest changes.
+
+### Pulling from GitHub
+
+Click the **pull** button (down arrow) to fetch the latest changes from GitHub into your Workshop Desktop project. This is useful when collaborators push changes directly to the repository, or when you've made edits in another environment.
+
+## Sync Status Indicators
+
+The GitHub section displays a real-time sync status:
+
+| Status | Meaning |
+|--------|---------|
+| **In sync** | Your local project matches the remote repository |
+| **Local ahead** | You have unpushed local changes (shows count, e.g., "3 ahead") |
+| **Remote ahead** | The remote has changes you haven't pulled (shows count, e.g., "2 behind") |
+| **Diverged** | Both local and remote have independent changes that conflict |
+
+## Handling Diverged Histories
+
+When the sync status shows **Diverged**, both your Workshop Desktop project and the GitHub repository have changes the other doesn't. You have two options:
+
+- **Force push** — Overwrites the remote repository with your local state. Workshop prompts for confirmation before proceeding.
+- **Force pull** — Overwrites your local project with the remote state. Workshop prompts for confirmation before proceeding.
+
+<Warning>
+  Force push and force pull are destructive operations. The overwritten changes cannot be recovered. Make sure you know which version you want to keep before confirming.
+</Warning>
+
+## Unlinking a Repository
+
+To disconnect a project from its GitHub repository:
+
+1. Click the **three dots** menu in the GitHub section
+2. Select **Unlink**
+3. Confirm the action
+
+Unlinking does not delete any code — your Workshop Desktop project and the GitHub repository both remain intact. You can re-link the same or a different repository at any time.
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Pull in an existing codebase for prototyping">
+    Import a production repository into Workshop Desktop, use the agent to prototype changes or new features, then push back when ready. Great for exploring ideas without switching to a different IDE.
+  </Accordion>
+
+  <Accordion title="Version control and backup">
+    Push regularly to maintain a commit history of your project's evolution. Your Workshop Desktop projects are backed up on GitHub alongside everything else.
+  </Accordion>
+
+  <Accordion title="Collaboration across environments">
+    One person builds in Workshop Desktop and pushes. Others can pull the latest changes from GitHub into their own Workshop instance, or work directly in their preferred editor and push back.
+  </Accordion>
+
+  <Accordion title="CI/CD integration">
+    Since your code lives in GitHub, you can set up GitHub Actions or other CI/CD pipelines to run tests, linting, or deploy to additional environments when changes are pushed.
+  </Accordion>
+</AccordionGroup>

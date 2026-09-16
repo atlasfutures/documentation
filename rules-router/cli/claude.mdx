@@ -1,0 +1,30 @@
+---
+title: "rayline claude"
+description: "Launch Claude Code with hosted or local routing."
+---
+
+Follow the [Claude Code quickstart](/rules-router/quickstart/claude-code) for your first routed session.
+
+```bash
+rayline claude
+rayline claude --isolated
+rayline claude --local
+```
+
+| Option | Purpose |
+| --- | --- |
+| `--isolated` | Use a separate Claude configuration directory. |
+| `--local` | Use the local static router; the default routes eligible subagents locally, not every request. |
+| `--route all\|subagents` | Choose the routing scope. Explicit config can override this. |
+| `--via proxy\|env` | Choose transparent proxy or cloud-only environment wiring. |
+| `--model <model>` | Request a specific model. Check the current catalog first. |
+| `--config <path>` | Supply endpoint and route configuration for main-agent and subagent traffic. |
+| `--diagnose` | Print routing diagnostics before launch. |
+
+Pass client arguments after `--`. Run `rayline claude --help` for the full version-specific options.
+
+## Verify the route
+
+Inspect [usage](/rules-router/guides/dashboard) or local router logs. Proxy mode does not depend on an `ANTHROPIC_BASE_URL` environment variable. It configures a local proxy and certificate trust; see [local routing](/rules-router/guides/local-models) for the security boundary.
+
+Do not assume a local subagent route makes the main agent, tools, or connectors offline.

@@ -1,0 +1,126 @@
+---
+title: "Import from Replit"
+icon: "code"
+description: "Connect your Replit project to GitHub and import it into Workshop for local development, custom backends, and more."
+---
+
+You can bring your Replit project into Workshop and continue building with full local development, custom backends, database connectors, and multi-model AI support.
+
+**Workshop Desktop is recommended** for the best import experience, but Workshop Cloud works too.
+
+## Step 1: Push Your Replit Project to GitHub
+
+Replit has built-in Git and GitHub integration:
+
+<Steps>
+  <Step title="Open your project in Replit">
+    Navigate to the Repl you want to export.
+  </Step>
+  <Step title="Open the Version Control panel">
+    Click the **Git** icon in the left sidebar (or go to **Tools** > **Git**) to open the version control panel.
+  </Step>
+  <Step title="Connect to GitHub">
+    Click **Connect to GitHub**. If prompted, authorize Replit to access your GitHub account. Create a new repository or connect to an existing one.
+  </Step>
+  <Step title="Push your code">
+    Commit any uncommitted changes and push to GitHub. Verify that all your project files appear in the GitHub repository.
+  </Step>
+</Steps>
+
+<Tip>
+  Copy the GitHub repository URL -- you'll need it in the next step. It looks like `https://github.com/your-username/your-project`.
+</Tip>
+
+<Note>
+  Replit projects may include Replit-specific configuration files (`.replit`, `replit.nix`). These won't cause problems in Workshop -- the agent will focus on the standard project files and package manager configuration.
+</Note>
+
+## Step 2: Connect GitHub in Workshop
+
+If you haven't already connected your GitHub account to Workshop:
+
+<Tabs>
+  <Tab title="Workshop Desktop">
+    1. Open Workshop Desktop and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App and select which repositories to grant access to
+    4. Confirm the connection
+
+    See [GitHub Integration (Desktop)](/workshop/workshop-desktop/github-integration) for detailed instructions.
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Open Workshop Cloud and navigate to **Hub** > **Connectors**
+    2. Click **Connect** on the GitHub connector
+    3. Authorize the Workshop GitHub App
+    4. Confirm the connection
+
+    See [GitHub Integration (Cloud)](/workshop/workshop-cloud/github-integration) for detailed instructions.
+  </Tab>
+</Tabs>
+
+## Step 3: Create a Project from Your Replit Repository
+
+<Tabs>
+  <Tab title="Workshop Desktop (Recommended)">
+    1. Click **New Project** from the Projects page
+    2. Select **Import from Git**
+    3. Choose your Replit repository from the list, or paste the repository URL
+    4. Workshop clones the repository and creates your project
+  </Tab>
+  <Tab title="Workshop Cloud">
+    1. Create a new blank project (select **None** as the template)
+    2. Open the project settings and navigate to the **GitHub** section
+    3. Click **Link GitHub Repository** and select your Replit repository
+    4. Pull the code from GitHub into your project
+  </Tab>
+</Tabs>
+
+## Step 4: Set Up and Run Your Project
+
+Once the project is created, open a conversation and ask the agent to get your project running:
+
+<CodeGroup>
+```text Recommended Prompt
+Please set up and run my Replit project so I can begin extending it with new features. 
+This project was built in Replit -- detect the language and framework, install 
+dependencies, and start the development server. You can ignore any .replit or 
+replit.nix configuration files.
+```
+</CodeGroup>
+
+The agent will:
+- Detect the language and framework (Node.js, Python, or whatever your Repl uses)
+- Install dependencies using the appropriate package manager
+- Start the development server
+- Ignore Replit-specific config files that aren't needed locally
+
+## What You Can Do Next
+
+With your Replit project now in Workshop, you can extend it beyond Replit's capabilities:
+
+| Capability | Example Prompt |
+|---|---|
+| **Add AI models** | *"Add Claude and Gemini support for multi-model AI features"* |
+| **Connect databases** | *"Set up a PostgreSQL database to replace the SQLite file"* |
+| **Build a backend** | *"Add a FastAPI backend with proper authentication"* |
+| **Local models** | *"Configure a local LLM so I can develop with AI features offline"* |
+| **Custom deployment** | *"Help me deploy this to Railway with a PostgreSQL database"* |
+
+## Deployment
+
+Workshop's one-click publish is designed for projects built natively in Workshop. For your imported Replit project, ask the agent to set up deployment:
+
+<CodeGroup>
+```text Railway Deployment
+Help me set up deployment to Railway for this project. Include a PostgreSQL 
+database and configure environment variables.
+```
+
+```text Netlify/Vercel Deployment
+Help me deploy the frontend to Netlify and the backend to Railway.
+```
+</CodeGroup>
+
+<Card title="Ready to get started?" icon="rocket" href="https://workshop.ai/download">
+  Download Workshop Desktop to import your Replit project with the best experience.
+</Card>

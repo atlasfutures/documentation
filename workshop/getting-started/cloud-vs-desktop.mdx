@@ -1,0 +1,112 @@
+---
+title: "Workshop Cloud vs Desktop"
+icon: "arrows-left-right"
+description: "A detailed comparison of Workshop Cloud and Workshop Desktop to help you choose the right tool for your project."
+---
+
+Workshop comes in two products that share the same AI agent but differ in where your code runs and what you can do with it.
+
+## Feature Comparison
+
+| Feature | Workshop Cloud | Workshop Desktop |
+|---|---|---|
+| **Runs in** | Browser (any device) | Native app (macOS, Windows, Linux) |
+| **Setup required** | None — sign up and go | Download and install |
+| **Tech stack** | Web App / Website, Streamlit, Anything, Import from GitHub | Any language, any framework |
+| **File system** | Cloud (persistent across sessions) | Full local file system access |
+| **Live preview** | Built-in preview pane | Run dev servers locally |
+| **Publishing** | One-click publish with shareable URL | Deploy anywhere (Vercel, AWS, Docker, etc.) |
+| **Local AI models** | Not available | Ollama, llama.cpp, or any compatible server |
+| **Local apps** | Not available | Yes |
+| **Offline support** | No | Yes (with local models) |
+| **MCP servers** | Not available | Built-in directory + custom servers |
+| **GitHub integration** | Link and sync projects | Import repos, push/pull sync |
+| **Terminal** | Cloud terminal | Local terminal on your machine |
+| **Connectors** | Full connector library | Full connector library |
+| **AI connectors** | Anthropic, OpenAI, Gemini | Anthropic, OpenAI, Gemini |
+| **Checkpoints** | Yes | Yes |
+| **Thinking mode** | Yes | Yes |
+
+## Workshop Cloud
+
+Workshop Cloud is designed for speed and simplicity. Everything runs in your browser — no local environment to configure, no dependencies to install, no ports to manage.
+
+**How it works:** Workshop writes and executes code in the cloud, and you see results in a live preview pane. When you're done, publish with one click to get a shareable URL — Workshop handles hosting and compute.
+
+**Templates available:**
+
+- **Web App / Website** — Fullstack app with a Python backend and modern web frontend. Best for anything that runs as a website or web app. Supports one-click publish.
+- **Streamlit** — Python-native data apps with built-in charts, tables, and UI components. Supports one-click publish.
+- **Anything** — The most flexible option. Any framework or package that runs in the cloud. Requires manual deployment.
+- **Import from GitHub** — Start from an existing repository.
+
+**Connectors:** Connect to PostgreSQL, MySQL, MongoDB, Supabase, Neon, BigQuery, Snowflake, MSSQL, TiDB, TigerGraph, Tableau, Google Sheets, Google Drive, and AWS S3 — plus AI model connectors for Anthropic, OpenAI, and Gemini.
+
+## Workshop Desktop
+
+Workshop Desktop is a native application that runs on your local machine. There are no sandbox restrictions — you have full access to your file system, any installed tools, and your local network.
+
+**How it works:** Workshop creates a project directory on your machine and works with your files directly. It runs commands in local terminals, installs packages with your system's package managers, and starts dev servers on your ports. You own everything.
+
+**Key capabilities beyond Cloud:**
+
+- **Any tech stack** — React, Vue, Next.js, Django, Flutter, Swift, Rust, Go — if it runs on your machine, Workshop can build with it.
+- **Local apps** — Build native utilities and tools that run directly on your machine. From keyboard tools and transcription to file organization and ad hoc data tasks.
+- **Local AI models** — Power the Workshop agent with a local model via Ollama or llama.cpp. Zero API costs, fully private, available offline.
+- **MCP servers** — Extend Workshop with Model Context Protocol servers for specialized tools and integrations.
+- **No session limits** — Work as long as you need. No timeouts, no restarts.
+
+## Which Should I Choose?
+
+<Tabs>
+  <Tab title="Choose Cloud if...">
+    - You want to start building **immediately** without any setup
+    - You're building **dashboards, data apps, or internal tools** with Python
+    - You want **one-click publishing** with a shareable URL
+    - You're working from a **tablet, Chromebook, or shared computer**
+    - You don't need a specific framework or tech stack
+    - You want a **managed environment** so you don't have to think about infrastructure
+  </Tab>
+  <Tab title="Choose Desktop if...">
+    - You need a **specific framework** (React, Next.js, Flutter, etc.)
+    - You want to work with your **existing codebase** or local files
+    - You want to build **local apps** — native utilities that run on your machine
+    - You want to use **local AI models** for privacy, offline use, or zero API costs
+    - You need **MCP server** integrations for specialized tools
+    - Your project needs to be **deployed to a specific platform** (AWS, Vercel, Docker, etc.)
+  </Tab>
+</Tabs>
+
+<Tip>
+  **Not sure?** Start with Workshop Cloud. It's the fastest path from idea to working app. If you hit a limitation — need a different framework, want local models, local apps, or need to deploy somewhere specific — switch to Desktop.
+</Tip>
+
+## What They Share
+
+**A system-aware agent that works end-to-end**
+
+Workshop's agent understands the full workflow — what to build, which connectors to use, and how to get things ready to ship. It works across Cloud and Desktop, powered by frontier models or local models.
+
+**A real runtime environment**
+
+The agent works inside a real execution environment. In Workshop Cloud, that environment runs in the cloud. In Workshop Desktop, it runs on your machine, with access to local files, runtimes, and your existing tools. The stack isn't preset — Workshop builds across whatever tech fits the project.
+
+**Managed connections to AI and your systems**
+
+For the apps you build, Workshop offers managed AI connectors and provider-key connectors for Anthropic, OpenAI, and Gemini. These app connectors are separate from the coding agent's model selection and billing. Beyond AI, Workshop connects to databases, warehouses, GitHub, and the tools your workflows depend on.
+
+**Built-in publishing and sharing**
+
+When you're ready to ship, Workshop handles hosting — no separate deployment project needed. Publishing includes access control: share publicly or with specific people, as part of the same flow.
+
+## Moving Between Cloud and Desktop
+
+Your Workshop account works across both products. You can sync projects directly between Cloud and Desktop using [Web ↔ Desktop Sync](/workshop/core-concepts/web-desktop-sync) — no GitHub repository required.
+
+1. **Start in Cloud, continue on Desktop** — Prototype quickly in Cloud, then download the project to Desktop when you need more flexibility, and push and pull to keep both sides in sync.
+2. **Sync directly** — Push from one environment and pull in the other. Files move through a private intermediary managed by Workshop, no GitHub repository required.
+3. **Use GitHub to sync between machines** — Store and back up your project in a private or public GitHub repository, then work on it from any machine. Push it up with [GitHub Integration](/workshop/workshop-desktop/github-integration) and bring it into Workshop Cloud or another Desktop machine with [Import from GitHub](/workshop/workshop-cloud/github-integration#importing-a-repository-as-a-new-project).
+
+<Tip>
+  You can also use [GitHub Integration](/workshop/workshop-desktop/github-integration) alongside Web ↔ Desktop Sync. GitHub gives you version control and collaboration; Web ↔ Desktop Sync gives you a fast path between environments.
+</Tip>

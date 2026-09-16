@@ -1,0 +1,173 @@
+---
+title: "Debugging Strategies"
+icon: "bug"
+description: "Systematic approaches to debugging with Workshop when things go wrong."
+---
+
+When something is not working as expected, a systematic approach to debugging saves time and frustration. Here are three proven strategies, along with practical guidance on when to investigate yourself versus when to ask Workshop for help.
+
+## Three Debugging Approaches
+
+### 1. The Scientific Method
+
+A structured, hypothesis-driven approach:
+
+1. **Observe** — What exactly is happening? What did you expect to happen?
+2. **Hypothesize** — What might be causing the issue?
+3. **Test** — Make a small change to test your hypothesis
+4. **Analyze** — Did the change fix it? If not, what did you learn?
+5. **Repeat** — Form a new hypothesis based on what you learned
+
+```
+When I click the "Save" button, nothing happens. I expected the form
+data to be saved and a confirmation message to appear. Let's check
+if the button click event is being triggered at all.
+```
+
+### 2. Divide and Conquer
+
+Isolate the problem by narrowing the search space:
+
+1. **Isolate components** — Test parts of the system separately
+2. **Binary search** — If you have a large codebase, test the middle to narrow down where the problem is
+3. **Eliminate variables** — Simplify until you find the minimal case that reproduces the issue
+
+```
+Let's create a simple test page with just the form component to see
+if it works in isolation. If it does, we know the issue is in how
+it interacts with other components.
+```
+
+### 3. Logging and Monitoring
+
+Add visibility into what the code is doing:
+
+1. **Strategic console logs** — Add logs at key points in the code flow
+2. **State tracking** — Log the state of important variables
+3. **Input/output validation** — Verify data at entry and exit points
+
+```
+Can we add logs to track the form data at three points: when the
+user inputs it, when the save button is clicked, and when we try
+to send it to the server?
+```
+
+## When to Ask Workshop vs. Investigate Yourself
+
+### Ask Workshop When:
+
+- You have a clear error message and want an explanation
+- The problem involves code Workshop generated and it has full context
+- You need to search the codebase for related patterns
+- You want help creating a minimal reproduction
+- You need to try multiple potential fixes quickly
+
+### Investigate Yourself When:
+
+- The issue is environmental (wrong Node version, missing system dependency)
+- You need to check browser DevTools, network requests, or server logs
+- The issue involves external services you need to verify manually (API keys, database access)
+- You want to understand the problem deeply before asking for a fix
+
+## Common Debugging Scenarios
+
+### Workshop Misunderstands Your Requirements
+
+**Symptoms**: Generated code does not match what you described, features are missing, or the structure does not align with your vision.
+
+**Strategies**:
+
+- Be more specific with concrete examples
+- Break down complex requests into smaller pieces
+- Use the correction pattern: acknowledge what works, identify what needs to change, explain the desired outcome
+
+```
+The layout of the dashboard looks good, but the chart isn't showing
+the data correctly. The x-axis should show months, not days, and we
+need to display the cumulative total rather than daily values.
+```
+
+### Technical Errors in Generated Code
+
+**Symptoms**: Error messages when running the application, features that do not work, console warnings.
+
+**Strategies**:
+
+- Copy and paste the exact error message to Workshop
+- Ask for both an explanation and a step-by-step fix
+- Use version control to revert if changes make things worse
+- Test small pieces in isolation
+
+```
+When I click the submit button, I get this error in the console:
+TypeError: Cannot read property 'value' of undefined
+```
+
+### Performance Issues
+
+**Symptoms**: Application runs slowly, high memory usage, long loading times.
+
+**Strategies**:
+
+- Ask Workshop to identify the bottleneck
+- Request specific optimizations for your use case
+- Consider whether architecture changes are needed
+
+```
+The dashboard takes over 5 seconds to load. Can you help me identify
+what's causing the delay?
+```
+
+### Integration Difficulties
+
+**Symptoms**: Problems connecting to external services or APIs, authentication failures, data not flowing between systems.
+
+**Strategies**:
+
+- Verify API keys and permissions first
+- Ask Workshop to log the request/response cycle
+- Create a minimal test case before implementing full functionality
+
+```
+Let's create a simple test that just verifies we can connect to
+the service before trying to implement the full functionality.
+```
+
+### Deployment Issues
+
+**Symptoms**: Application works locally but fails when deployed.
+
+**Strategies**:
+
+- Identify differences between local and production environments
+- Verify all environment variables are set
+- Deploy a simplified version first
+
+```
+The app works on my computer but fails when deployed. What could
+be different between these environments?
+```
+
+## Using Checkpoints as Safety Nets
+
+Workshop's checkpointing system creates automatic snapshots of your project as you work. Use this to your advantage during debugging:
+
+- **Before risky changes**: Know that you can restore to the current state if something goes wrong
+- **After finding a working state**: If you have achieved partial progress, note the checkpoint so you can return to it
+- **When trying multiple approaches**: Restore to the pre-attempt state between different debugging strategies
+
+You can also use git branches for more permanent safety:
+
+```
+Let's create a new branch called "fix-login-bug" to try solving
+this without affecting the main codebase.
+```
+
+## When Nothing Works
+
+If you have tried multiple approaches without progress:
+
+1. **Step back**: _"Stop. Let's reconsider our fundamental approach."_
+2. **Simplify**: _"What's the absolute simplest version of this that could work?"_
+3. **Get external input**: Search the web, check documentation, or ask in the [Discord community](https://discord.gg/ggqJkUN3vx)
+4. **Start a fresh conversation**: Sometimes a clean context helps Workshop approach the problem differently (see [When to Start Fresh](/workshop/troubleshooting/when-to-start-fresh))

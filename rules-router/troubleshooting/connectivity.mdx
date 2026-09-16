@@ -1,0 +1,29 @@
+---
+title: "Connection problems"
+description: "Diagnose authentication, proxy, and local-provider failures."
+---
+
+## Check the client path
+
+Confirm whether the client uses hosted routing, a subscription passthrough, or a local provider. Follow its [quickstart](/rules-router/quickstart) again if the wiring is unclear.
+
+For hosted routing, check `rayline auth status`. For a manually configured client, verify its base URL and workspace API key are from the same environment. Do not print the key.
+
+## Check the runtime
+
+```bash
+rayline router status
+rayline router logs --lines 120
+```
+
+If a client points to a stopped local runtime, relaunch through `rayline claude` or `rayline codex` with the intended configuration. Do not stop shared runtime processes while another session needs them.
+
+## Certificate errors
+
+Transparent proxy mode configures a local certificate authority for intercepted traffic. Do not fix TLS failures by disabling certificate verification. Check the launcher diagnostics and your organization's proxy policy. Cloud-only Claude sessions can use `--via env` when appropriate.
+
+## Provider errors
+
+A reachable router does not guarantee that a provider is healthy, your model assignment is available, or your local model fits in memory. Inspect the selected endpoint, model, and sanitized provider error.
+
+Retries and fallbacks depend on the route and failure. There is no guarantee that every failure can be recovered automatically.

@@ -1,0 +1,92 @@
+---
+title: "Checkpoints"
+icon: "clock-rotate-left"
+description: "Automatic project snapshots that let you experiment freely and revert changes with confidence."
+---
+
+<span id="checkpoints" />
+
+## What are checkpoints?
+
+Checkpoints are automatic snapshots of your project files, captured at key moments during your conversation with Workshop. Think of them as a "time machine" for your project — they let you experiment freely, knowing you can always go back.
+
+Whenever you send a message, or whenever Workshop modifies files or runs code, a checkpoint is automatically created. This captures the exact state of all your project files at that moment, without you needing to do anything.
+
+## Why checkpoints matter
+
+<CardGroup cols={2}>
+  <Card title="Experiment freely">
+    Try new approaches without fear. If a change doesn't work out, revert to the previous state in seconds.
+  </Card>
+  <Card title="Automatic versioning">
+    No need to manually save or commit after every AI interaction. Checkpoints handle it seamlessly in the background.
+  </Card>
+  <Card title="Track changes">
+    See exactly when file changes occurred in the context of your conversation history.
+  </Card>
+  <Card title="Go back in time">
+    Revert your entire project to any earlier state in your conversation — both files and chat history stay in sync.
+  </Card>
+</CardGroup>
+
+## How checkpoints appear
+
+Small icons appear next to certain messages in your conversation thread, indicating that a checkpoint was saved at that point:
+
+- **Next to your messages:** A checkpoint was saved _before_ Workshop started working on your request.
+
+Hover over these icons to see quick details about the saved checkpoint.
+
+## Restoring a checkpoint
+
+<Steps>
+  <Step title="Find the checkpoint">
+    Locate the message in your chat history that corresponds to the state you want to restore. Look for the checkpoint icon.
+  </Step>
+  <Step title="Open the action menu">
+    Click the action menu on that message (where you find options like "Copy").
+  </Step>
+  <Step title="Click Restore">
+    Select the **Restore** button. A confirmation dialog appears.
+  </Step>
+  <Step title="Confirm the restore">
+    Restoring will:
+    - Revert all project files to their state at that checkpoint
+    - Remove messages that came _after_ the restored checkpoint from the chat view
+
+    This keeps your chat and project files in sync — like rewinding both simultaneously.
+  </Step>
+</Steps>
+
+## When to use checkpoints
+
+Checkpoints are designed for rolling back small or recent changes, typically within a few turns of your conversation.
+
+**Checkpoints are great for:**
+
+- Undoing a change that broke something
+- Reverting an approach that didn't work out
+- Recovering from an unintended file deletion
+- Exploring multiple solutions and picking the best one
+
+**For larger-scale version control, use Git:**
+
+- Long-term project history
+- Collaboration with others
+- Branching workflows
+- Projects with many files where snapshot size matters
+
+<Info>
+Each checkpoint captures the full state of your project files. For large projects, checkpoints can grow in size and become slower to restore. Git is the better choice for structured, long-term version control.
+</Info>
+
+## Checkpoints and Git
+
+If you already use Git for your project, checkpoints work alongside it without interference:
+
+- Checkpoints **do not** create `.git` files or folders in your project directory
+- Checkpoints **respect** your `.gitignore` file automatically
+- Your commits and Git history remain completely separate and unaffected
+- Checkpoints are a complementary safety layer specifically for changes within your Workshop session
+
+You can set up Git for your project through the Control Center or by asking Workshop directly. See [Settings](/workshop/core-concepts/settings) for more on version control setup.

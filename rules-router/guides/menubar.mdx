@@ -1,0 +1,18 @@
+---
+title: "Rayline app"
+description: "Inspect routing activity from your Mac menu bar."
+---
+
+If you have the Rayline menu bar app installed, open it from **Applications** and click its menu bar icon to inspect activity. Use the platform dashboard for workspace-wide [usage](/rules-router/guides/dashboard).
+
+The menu bar app and the `rayline` CLI are separate surfaces. The current OSS CLI does not expose the old `menubar install`, `menubar start`, or `menubar stop` commands.
+
+## Check a routed session
+
+1. Launch a session using the [Claude Code](/rules-router/quickstart/claude-code) or [Codex](/rules-router/quickstart/codex) instructions.
+2. Confirm the environment and account match the activity view.
+3. Inspect the selected model and token usage, not only a projected savings total.
+
+Local runtime state is available from `rayline router status`. A running menu bar app does not prove that a particular request used the local model.
+
+See [local routing](/rules-router/guides/local-models) before interpreting local activity as an offline or privacy guarantee.

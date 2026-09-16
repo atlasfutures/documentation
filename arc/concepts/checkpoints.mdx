@@ -1,0 +1,18 @@
+---
+title: "Checkpoints"
+description: "Understand latest and pinned routing checkpoints."
+icon: "code-commit"
+---
+A checkpoint identifies the routing model configuration behind an ARC decision. Keep track of the resolved checkpoint when comparing behavior over time.
+
+In the development platform, a workspace can choose **Latest** or **Pinned**. Latest uses the current alias; pinned keeps the workspace on the configured checkpoint. Only workspace owners can change this setting.
+
+The preview returns the resolved checkpoint in its response. Its checkpoint choices and fixed example model basket demonstrate the interface; they do not establish production upgrade guarantees or quality measurements.
+
+## Before changing a checkpoint
+
+Compare task completion, quality, latency, and total cost on representative tasks. Keep the same input set and record the checkpoint for each run. Do not interpret a different selected model as an improvement by itself.
+
+## What is not yet a contract
+
+The current preview does not let a request override the workspace checkpoint by supplying a model field. Release cadence, deprecation windows, rollback policy, and production model-ID mappings will be documented with the live service.

@@ -1,0 +1,120 @@
+---
+title: "Google Drive"
+icon: "hard-drive"
+description: "Browse and access your Google Drive files directly within Workshop conversations."
+---
+
+## Overview
+
+The Google Drive connector uses OAuth to link your Google account to Workshop. Once connected, you can browse your Drive files from within conversations using the **@** mention popup — no API keys or service accounts required.
+
+This connector is ideal for:
+
+- Accessing documents stored in Drive without downloading them first
+- Referencing Google Docs, Sheets, and Slides in conversations
+- Working with files across personal and shared drives
+
+## What You'll Need
+
+| Credential | Description |
+|------------|-------------|
+| **Google Account** | Your Google account with access to the Drive files you want to use |
+
+<Info>
+**No API keys or service accounts required.** Google Drive uses OAuth — you sign in with your Google account and authorize Workshop to access your files.
+</Info>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select Google Drive">
+    Click the **Google Drive** card.
+  </Step>
+  <Step title="Authenticate">
+    Click **Connect with Google**, sign in to your Google account, review the permissions, and click **Allow**.
+  </Step>
+  <Step title="Name your connection">
+    Give your connection a memorable name (e.g., "My Drive" or "Work Drive") and click **Add Connection**.
+  </Step>
+</Steps>
+
+<Warning>
+**Published apps use your credentials.** When you publish an app that uses your Google Drive connection, it accesses files using your authorization. Be mindful of what files you reference in publicly shared apps.
+</Warning>
+
+## Using Your Connection
+
+### Browsing Files with @ Mentions
+
+The primary way to use Google Drive is through the **@** popup:
+
+1. Type **@** in the message input
+2. Select your Google Drive connection
+3. Browse folders or search for files
+4. Click a file to attach it to your message
+
+Workshop reads the file contents and includes them in the conversation context.
+
+### Supported File Types
+
+| File Type | How Workshop Reads It |
+|-----------|----------------------|
+| **Google Docs** | Extracted as plain text |
+| **Google Sheets** | Exported as CSV data |
+| **Google Slides** | Extracted as plain text |
+| **Regular files** (PDF, TXT, etc.) | Downloaded directly |
+
+<Info>
+Workshop requests access only to files you explicitly select or reference. Your entire Drive is not automatically indexed or accessed.
+</Info>
+
+### Example Prompts
+
+```
+Summarize the key points from this document
+```
+```
+Extract all the action items from this meeting notes document
+```
+```
+Convert this spreadsheet data into a chart showing monthly trends
+```
+
+## Security
+
+### OAuth Permissions
+
+Workshop **can**:
+- View files you select or reference in conversations
+- Read file contents for files you explicitly attach
+
+Workshop **cannot**:
+- Modify or delete your files
+- Access files you don't explicitly select
+- Browse your Drive in the background
+
+### Revoking Access
+
+**From Workshop:** Delete the connection in the Connectors tab.
+
+**From Google:** Go to [Google Account Security](https://myaccount.google.com/security), click **Third-party apps with account access**, find Workshop, and click **Remove Access**.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Authorization failed" | Try reconnecting. Ensure popups aren't blocked. |
+| Can't see files in @ popup | Verify the connection is listed in the Connectors tab. Try refreshing the page. |
+| "Access token expired" | Delete and reconnect your Google Drive. |
+| File content not loading | Very large files may take longer. Binary files (videos, executables) can't be read as text. |
+
+## Learn More
+
+- [Google Drive Help Center](https://support.google.com/drive)
+- [Managing Third-Party App Access](https://support.google.com/accounts/answer/3466521)

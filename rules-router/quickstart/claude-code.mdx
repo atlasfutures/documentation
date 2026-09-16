@@ -1,0 +1,45 @@
+---
+title: "Claude Code"
+description: "Start a routed session with the current Rayline CLI."
+---
+
+Install Claude Code first. Rayline configures the route; it does not bundle your coding agent.
+
+## Install Rayline
+
+Use the [Rayline release instructions](https://github.com/rayline-ai/rayline#install) for your OS. After installation:
+
+```bash
+rayline --version
+rayline auth login
+rayline claude
+```
+
+Without `--local`, the CLI uses hosted Rayline routing. Choose **Rules** and your model assignments in the [platform settings](https://platform.rayline.ai/settings).
+
+## Try local routing
+
+```bash
+rayline claude --local
+```
+
+This runs the on-device router without a Rayline account. By default it is hybrid: the main agent remains on cloud Claude and eligible subagent traffic routes locally. Your cloud provider credentials and any cloud inference charges still apply.
+
+Use `--route all` only when you intend a fully local route and have a suitable local model. See [local routing](/rules-router/guides/local-models) for hardware and privacy boundaries.
+
+## Advanced: manual environment variables
+
+```bash
+export ANTHROPIC_BASE_URL=https://api.rayline.ai
+export ANTHROPIC_API_KEY=rlk-your-key-here
+export ANTHROPIC_MODEL=rayline-router
+claude
+```
+
+Do not append `/v1` to this base URL; the client adds its Messages path. Keep the actual key out of source control.
+
+## Verify the route
+
+Give the agent a small task, then inspect request activity in the platform for hosted sessions or `rayline router logs --lines 120` for local routing. Check the actual model, errors, and task outcome—not just whether the agent produced text.
+
+[Configure routing policies](/rules-router/policies) · [Usage and costs](/rules-router/pricing)

@@ -1,0 +1,112 @@
+---
+title: "Connectors"
+icon: "plug"
+description: "Connect AI providers, databases, and external services to Workshop."
+---
+
+## What Are Connectors?
+
+Connectors link external services to Workshop. Once connected, Workshop can use AI models, query your databases, and access your files across all your conversations — no need to manually copy data or explain your setup each time.
+
+## AI Providers
+
+Workshop includes three built-in AI providers — **Anthropic** (Claude), **OpenAI** (GPT), and **Google Gemini**. Enable them per project via **Add-Ons** in project settings or during project creation. When enabled, Workshop provisions a managed connector that handles API keys, authentication, and billing through your Workshop credits — no setup required.
+
+If you prefer to manage billing directly with a provider, BYOK (Bring Your Own Key) connectors are available for each.
+
+<Card title="Managed AI Connectors" icon="robot" href="/workshop/connectors/managed-ai-connectors">
+  How managed connectors work, what each provider offers, and when to use BYOK instead.
+</Card>
+
+### BYOK Setup Guides
+
+<CardGroup cols={3}>
+  <Card title="Anthropic" href="/workshop/connectors/anthropic">Use your own Claude API key</Card>
+  <Card title="OpenAI" href="/workshop/connectors/openai">Use your own GPT API key</Card>
+  <Card title="Gemini" href="/workshop/connectors/gemini">Use your own Gemini API key</Card>
+</CardGroup>
+
+## Database Providers
+
+Workshop can provision a managed **Neon** serverless Postgres database for your project. Enable it via **Add-Ons** in project settings or during project creation. Workshop handles provisioning, credentials, and cleanup automatically — including **Neon Auth**, a built-in authentication service that keeps your app's auth domains in sync as you publish and add custom domains.
+
+<Card title="Managed Database" icon="database" href="/workshop/connectors/managed-database">
+  How managed databases work, what gets provisioned, and Neon Auth.
+</Card>
+
+If you already have your own Neon database (or another database), connect it manually:
+
+<Card title="Databases (BYOK)" icon="server" href="/workshop/connectors/databases">
+  Connect PostgreSQL, MySQL, SQL Server, MongoDB, Supabase, Neon, TiDB, or TigerGraph with your own credentials.
+</Card>
+
+## Data Connectors
+
+Connect Workshop to your databases, cloud storage, and productivity tools. You provide credentials once, and Workshop can access and query your data in any conversation.
+
+| Connector | Type | Authentication |
+|-----------|------|----------------|
+| [PostgreSQL, MySQL, SQL Server, MongoDB, Supabase, Neon, TiDB, TigerGraph](/workshop/connectors/databases) | Databases | Host + credentials or connection URL |
+| [BigQuery, Snowflake, Tableau](/workshop/connectors/data-warehouses) | Data warehouses | Service account or credentials |
+| [Google Sheets](/workshop/connectors/google-sheets) | Spreadsheets | URL (public) or Service Account (private) |
+| [Google Drive](/workshop/connectors/google-drive) | Cloud storage | OAuth |
+| [AWS S3](/workshop/connectors/aws-s3) | Cloud storage | Access Key + Secret |
+| [GitHub](/workshop/connectors/github) | Source control API | Personal Access Token |
+
+## How Connectors Work
+
+When you add a data connector:
+
+1. **Your credentials are stored securely** in Workshop's encrypted storage
+2. **Workshop's agent receives a reference** to your connection, not the raw credentials
+3. **Data stays in your source** — Workshop queries it on-demand rather than copying it
+
+You maintain full control over your data while giving Workshop the ability to help you work with it.
+
+## Adding a Data Connector
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Choose a connector">
+    Select the connector type you want to add from the card list, or search by name.
+  </Step>
+  <Step title="Enter credentials">
+    Fill in the required connection details for that connector.
+  </Step>
+  <Step title="Add connection">
+    Click **Add Connection**. Workshop tests the connection and saves it.
+  </Step>
+</Steps>
+
+Once connected, reference your connection by name or type in any conversation:
+
+- *"Using my **Production Database** connection, show me all users who signed up last week"*
+- *"Query my **Supabase** data for the top 10 products by revenue"*
+
+## Managing Connections
+
+Your active connections appear in the **Active Connections** table in the Connectors tab. From there you can:
+
+- View connection details and status
+- Edit connection credentials
+- Delete connections you no longer need
+
+<Info>
+Deleting a connection removes both the connector configuration and its stored credentials from Workshop.
+</Info>
+
+## Security
+
+- **Credentials are encrypted** at rest and in transit
+- **Connections use SSL/TLS** for all data transmission
+- **Data is queried on demand** — Workshop queries your sources directly and does not store your data separately
+- **You control access** — delete connections anytime to revoke access
+
+<Warning>
+Published apps use the same connector credentials you configure in development. Be mindful of which connectors you attach to apps you plan to publish.
+</Warning>

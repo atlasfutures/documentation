@@ -1,0 +1,187 @@
+---
+title: "Sharing and Teams"
+icon: "users"
+description: "Share conversations with links and collaborate with your team through shared credits and centralized billing."
+---
+
+Workshop makes it easy to share your work — from individual conversations to full team collaboration with shared resources.
+
+## Sharing Conversations
+
+You can share any conversation via a private link, whether to show someone an insight, demonstrate a concept, or get support.
+
+### How to Share
+
+Sharing always applies to the conversation you currently have open, so open it first.
+
+<Steps>
+  <Step title="Open the project">
+    Open the project that contains the conversation you want to share.
+  </Step>
+  <Step title="Open the conversation">
+    In the **Conversations** panel, click the conversation. It becomes the current conversation.
+  </Step>
+  <Step title="Open the menu">
+    Click the project name with the caret (⌄) in the top-left of the window to expand the menu. The menu shows the current conversation name at the top.
+  </Step>
+  <Step title="Select Share">
+    Under the **CONVERSATION** section, click **Share**.
+  </Step>
+  <Step title="Confirm">
+    In the **Share Conversation Privately** dialog, click **Share**. Workshop creates a private link — anyone with the link can view the conversation, but it won't appear in search or public indexes.
+  </Step>
+  <Step title="Copy the link">
+    Click **Copy link and close** (or the copy icon next to the URL) and send the link to your audience.
+  </Step>
+</Steps>
+
+The link looks like `https://threads.workshop.ai/c/<conversation-id>` and renders your conversation in a clean, readable format so recipients experience it just as you did.
+
+<Note>
+  **Share** is disabled until the conversation has at least one message.
+</Note>
+
+### Best Practices Before Sharing
+
+<AccordionGroup>
+  <Accordion title="Review for sensitive information">
+    Before sharing, check your conversation for:
+
+    - Accidentally included secrets, credentials, or API keys
+    - Internal data that shouldn't be visible externally
+    - File contents or code that may be confidential
+
+    Remove or redact anything sensitive before generating the link.
+  </Accordion>
+
+  <Accordion title="Consider your audience">
+    - Will the technical level match the intended readers?
+    - Are there assumptions that need additional context?
+    - Would someone unfamiliar with your project understand the goals?
+  </Accordion>
+
+  <Accordion title="Test the link">
+    Open the shared link in a private/incognito browser window to verify:
+
+    - The conversation displays correctly
+    - All important context is included
+    - Code examples and media render properly
+  </Accordion>
+</AccordionGroup>
+
+## Sharing Published Apps with Teams
+
+If your project is linked to a **team subscription** (Scale or Max plan), you can share published apps with your entire team at once using the **Team sharing** toggle in the Publish popover. When enabled, all team members automatically get access to the app without individual invitations.
+
+## Team Management
+
+Teams let you collaborate with shared credit pools, centralized billing, and organization-wide settings.
+
+<Info>
+  Team management features require a **Scale** or **Max** plan subscription.
+</Info>
+
+### What Teams Include
+
+- **Shared credit pool** — All team members draw from a common credit allocation
+- **Centralized billing** — A single subscription covers all team members
+- **Privacy controls** — Enforce privacy mode across all team members
+- **Credit Pack bonuses** — 10% more credits on Scale; the largest discount on Max
+- **Dedicated support** — Priority support through shared team channels
+
+### Setting Up a Team
+
+<Steps>
+  <Step title="Upgrade to Scale or Max">
+    Team features are available on the Scale and Max plans. Upgrade from your account settings.
+  </Step>
+  <Step title="Configure team settings">
+    Set your team name, default member credit limits, and privacy enforcement preferences.
+  </Step>
+  <Step title="Invite team members">
+    Go to your team management dashboard, click **Invite Team Member**, and enter their email. You can optionally set individual credit limits.
+  </Step>
+</Steps>
+
+Invited users receive an email with a link to join. Once they accept, they inherit team privacy settings and their credit limits take effect immediately.
+
+### Member Roles
+
+| Role | Capabilities |
+|------|-------------|
+| **Team Owner** | Full admin control: billing, invitations, member management, privacy enforcement, credit limit adjustments |
+| **Team Member** | Access to shared credits, subject to team policies and individual credit limits |
+
+### Seat Management
+
+Both active team members and pending invitations count toward your seat limit.
+
+**Occupied seats** = Active members + Pending invitations
+
+If all seats are occupied, you can free up capacity by:
+
+- Removing an existing team member
+- Revoking a pending invitation
+- Upgrading your subscription to add more seats
+
+<Note>
+  Pending invitations reserve a seat until accepted, revoked, or expired (after 30 days).
+</Note>
+
+### Revoking Invitations
+
+To cancel a pending invitation and free up the seat:
+
+1. Open the **Invite Team Members** modal
+2. Find the invitation in the **Pending Invitations** section
+3. Click **Revoke**
+
+The invitation link is immediately invalidated and the seat becomes available. The recipient is not notified.
+
+<Warning>
+  Only team owners can revoke invitations. Once revoked, you'll need to send a new invitation to re-invite the same person.
+</Warning>
+
+## Team Credit Management
+
+### How Credits Work
+
+- All team members draw from a **shared credit pool** set by the team owner's subscription
+- Team owners can set **individual credit limits** per member (default: 1,000 credits)
+- Members cannot exceed their individual limit even if team credits remain
+- Credit Pack purchases receive a **10% bonus** for team accounts
+
+### Usage Monitoring
+
+Team owners have real-time visibility into:
+
+- Team-wide credit consumption
+- Individual member usage
+- Usage patterns and trends
+
+## Privacy and Security
+
+### Team Privacy Controls
+
+- Team owners can **enforce privacy mode** for all members — individual members cannot disable it
+- Team members' individual work remains private within the team structure
+- Shared resources are accessible based on permissions
+- Teams can optionally sync projects to the team's GitHub organization
+
+## Plan Comparison for Sharing
+
+| Feature | Discover (Free) | Build | Scale | Max |
+|---------|-----------------|-------|-------|-----|
+| Share conversations via link | Yes | Yes | Yes | Yes |
+| Published app viewers | Public only | 5 per private app | Unlimited | Unlimited |
+| Team management | No | No | Yes | Yes |
+| Shared credit pool | No | No | Yes | Yes |
+| Privacy enforcement | No | No | Yes | Yes |
+| Credit Pack bonus | No | No | 10% | Max discount |
+| Remove Workshop badge | No | Yes | Yes | Yes |
+
+## Getting Help
+
+- **Email:** help@workshop.ai
+- **Community:** [Discord](https://discord.gg/ggqJkUN3vx)
+- Scale and Max plan teams have access to **priority support** channels

@@ -1,0 +1,105 @@
+---
+title: "When to Start Fresh vs. Persist"
+icon: "rotate"
+description: "A decision framework for knowing when to continue a conversation versus starting a new one."
+---
+
+One of the most important judgment calls in agentic coding is knowing when to keep working in the current conversation versus starting fresh. Both choices have trade-offs, and the right answer depends on your situation.
+
+## Consider Starting Fresh When:
+
+- You have made multiple major changes without progress
+- The codebase has become overly complex due to accumulated fixes and workarounds
+- You have gained insights that suggest a fundamentally different approach
+- The conversation has grown very long and credit cost per message is increasing
+- Workshop seems confused by conflicting instructions from earlier in the conversation
+
+```
+We've tried patching this approach several times, but I think we
+need to reconsider our basic architecture. Let's start fresh with
+what we've learned.
+```
+
+**When starting a new conversation for an existing project**, bring key context forward:
+
+```
+This is an existing [type of project] that does [main functionality].
+Look around the project directory to understand the current
+implementation, then help me add [new feature].
+```
+
+## Persist When:
+
+- You are making incremental progress, even if it is slow
+- The issues are specific and isolated rather than systemic
+- You have a clear debugging path to follow
+- Workshop has built up useful context about your project that would be expensive to recreate
+- You are close to a solution and just need a few more iterations
+
+```
+We're getting closer. The authentication flow is almost working,
+and I think we just need to fix the token refresh logic.
+```
+
+## The `/compact` Command: A Middle Ground
+
+When your conversation is getting long but you are not ready to start fresh, the `/compact` command offers a middle ground. It summarizes the conversation to reduce context size while preserving key information.
+
+Use `/compact` when:
+
+- The conversation is long and you notice credit costs increasing
+- You want to continue the current line of work but shed irrelevant earlier context
+- You have completed one phase of work and are moving to a new phase within the same project
+
+## Decision Framework
+
+Ask yourself these questions:
+
+<AccordionGroup>
+  <Accordion title="Is the problem in the approach or the execution?">
+    **Approach problems** (wrong architecture, wrong library, wrong pattern) are better solved by starting fresh with a new plan. **Execution problems** (a specific bug, a missing feature, a configuration issue) are better solved by persisting.
+  </Accordion>
+  <Accordion title="How much useful context exists in this conversation?">
+    If Workshop has built up significant understanding of your codebase, starting fresh means it has to re-learn that context. If the conversation is mostly failed attempts, starting fresh costs you very little.
+  </Accordion>
+  <Accordion title="Is the conversation getting expensive?">
+    Credit cost per message increases with conversation length. If you are spending more credits on context than on useful work, it is time to start fresh or use `/compact`.
+  </Accordion>
+  <Accordion title="Has Workshop lost track of the current state?">
+    If Workshop is making suggestions that contradict earlier decisions or referencing files that no longer exist in their current form, the conversation context may be doing more harm than good.
+  </Accordion>
+</AccordionGroup>
+
+## Signs You Should Start Fresh
+
+- Workshop keeps suggesting the same fix you have already tried
+- The conversation has accumulated contradictory instructions
+- You realize the initial approach was wrong and need to go in a different direction
+- You are spending more time explaining the conversation history than making progress
+- Error messages are piling up and Workshop seems to be going in circles
+
+## How to Start Fresh Effectively
+
+1. **Save your progress** — Commit any working code before starting a new conversation
+2. **Note what you learned** — Write down the key insights and failed approaches
+3. **Update `.workshop/rules.md`** — Add any new constraints or decisions to your project rules
+4. **Start with context** — Give the new conversation a concise summary of the project and what you want to accomplish
+5. **Reference specific files** — Point Workshop to the relevant parts of your codebase rather than expecting it to discover everything
+
+```
+I'm building a task management app with React and Supabase.
+The authentication is working but I'm having trouble with
+real-time subscriptions. Check src/hooks/useRealtimeSync.ts
+for the current implementation. The issue is that updates
+from other users aren't appearing without a page refresh.
+```
+
+## Best Practices for Multi-Conversation Projects
+
+For projects that span many conversations:
+
+- **Keep `.workshop/rules.md` up to date** — This is the persistent memory across conversations
+- **Commit at milestones** — Every working state should be a git commit
+- **Use descriptive commit messages** — They help Workshop (and you) understand project history
+- **Document decisions** — Add notes about why you chose certain approaches, not just what you built
+- **Start each conversation with orientation** — Give Workshop a brief tour of the current state before diving in

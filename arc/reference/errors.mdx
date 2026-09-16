@@ -1,0 +1,24 @@
+---
+title: "Errors and limits"
+description: "Check authentication and private-preview access."
+icon: "triangle-exclamation"
+---
+
+<Note>ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
+
+| HTTP status | Meaning |
+| --- | --- |
+| 401 | Missing or invalid authentication |
+| 403 | Access denied, including private-preview access restrictions |
+| 404 | Unsupported method or path |
+
+A private-preview access denial includes the error code `arc_private_preview`. A valid API key does not by itself enable ARC access.
+
+## Troubleshooting
+
+- Confirm your workspace's preview access with the Rayline team.
+- Use the base URL and key for the same environment and workspace.
+- Inspect the status and error message without logging your API key.
+- Do not retry authentication or access-denied errors indefinitely.
+
+Confirm rate limits, supported input sizes, retry behavior, and retention details during preview onboarding before integrating.

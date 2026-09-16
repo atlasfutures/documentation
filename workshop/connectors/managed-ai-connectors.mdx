@@ -1,0 +1,118 @@
+---
+title: "Managed AI Connectors"
+icon: "robot"
+description: "Add AI capabilities to your Workshop apps — enabled by default, no API keys or setup required."
+---
+
+## How It Works
+
+Workshop includes managed connectors for **Anthropic** (Claude), **OpenAI** (GPT), and **Google Gemini**. Enable them per project via the **Add-Ons** panel in project settings, or during project creation — some templates (Web App, React App, Static React App) auto-enable Gemini by default. No accounts to create, no API keys to manage, no setup steps.
+
+Usage is billed to your Workshop credits. You reference a connector via the **@** mention selector or the **Add Functionality** button in your conversation, and Workshop handles authentication, rate limits, and billing behind the scenes.
+
+<Info>
+Managed AI connectors add AI features **to the apps you build**. They are separate from the model that powers the Workshop agent (which you select in [Settings](/workshop/core-concepts/settings)).
+</Info>
+
+## What Each Provider Offers
+
+All three providers are available simultaneously. You can use multiple providers in the same app.
+
+<Tabs>
+  <Tab title="Anthropic (Claude)">
+    Strong at careful reasoning, long-form writing, and nuanced instruction following.
+
+    **Capabilities:** Extended thinking, PDF and image analysis, structured JSON output, tool use.
+
+    Workshop provides access to the latest Claude models, from fast and cost-effective to most capable.
+
+    [Anthropic Models Documentation →](https://docs.anthropic.com/en/docs/about-claude/models)
+  </Tab>
+  <Tab title="OpenAI (GPT)">
+    Broad general-purpose capabilities including image generation and function calling.
+
+    **Capabilities:** Image generation (DALL-E), JSON mode, function calling, embeddings.
+
+    Workshop provides access to the latest GPT models across the efficiency-to-capability spectrum.
+
+    [OpenAI API Documentation →](https://platform.openai.com/docs)
+  </Tab>
+  <Tab title="Google Gemini">
+    Excellent at multimodal tasks, very long context windows, and grounded responses.
+
+    **Capabilities:** Image generation, video understanding, very long context, grounding.
+
+    Workshop provides access to the latest Gemini models, including Flash (fast) and Pro (capable) variants.
+
+    [Google Gemini API Documentation →](https://ai.google.dev/docs)
+  </Tab>
+</Tabs>
+
+## Using AI Connectors in Your Apps
+
+Reference a connector in your conversation and Workshop handles the rest:
+
+```
+Add an AI summary feature to the dashboard using Claude.
+```
+```
+Use OpenAI to generate product descriptions from the database fields.
+```
+```
+Add Gemini image generation — let users describe what they want and generate it.
+```
+
+Workshop writes the integration code, manages the API calls, and injects credentials automatically — including when you publish the app.
+
+## Disabling a Managed Connector
+
+If you want to disable an AI provider for a project:
+
+1. Open your project and go to **Settings** → **Resources**
+2. Under **Add-Ons** → **AI Providers**, toggle off the provider you want to disable
+
+The connector is removed from the project and your app will no longer be able to call that provider. You can re-enable it at any time by toggling it back on.
+
+## Bring Your Own Key (BYOK)
+
+If you prefer to use your own API keys — to manage billing directly with a provider, access models not available through managed connectors, or meet compliance requirements — BYOK connectors are available for each provider:
+
+- [Anthropic (BYOK)](/workshop/connectors/anthropic) — Use your own Claude API key
+- [OpenAI (BYOK)](/workshop/connectors/openai) — Use your own GPT API key
+- [Google Gemini (BYOK)](/workshop/connectors/gemini) — Use your own Gemini API key
+
+You can have both managed and BYOK connectors enabled for the same provider simultaneously.
+
+<AccordionGroup>
+  <Accordion title="Use managed connectors when...">
+    - You want zero setup — just start building
+    - You don't have accounts with each provider
+    - You're publishing apps where you want Workshop to handle the API key lifecycle
+  </Accordion>
+  <Accordion title="Use BYOK when...">
+    - You already have a provider account with credits or a billing agreement
+    - You need access to specific models not available through managed connectors
+    - You want usage billed directly to your provider account
+    - Your organization requires direct provider relationships for compliance
+  </Accordion>
+</AccordionGroup>
+
+## Security
+
+Workshop handles API key management for managed connectors automatically:
+
+- Keys are generated securely on your behalf
+- Keys are stored encrypted and never exposed to the AI agent directly
+- Keys are automatically revoked when you delete a connector
+- You never need to manage or rotate keys manually
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Connection Failed error">
+    Verify your internet connection. Try deleting and re-enabling the connector.
+  </Accordion>
+  <Accordion title="Insufficient Credits error">
+    Check your Workshop credit balance in **Settings > Usage and Billing**.
+  </Accordion>
+</AccordionGroup>

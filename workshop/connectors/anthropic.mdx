@@ -1,0 +1,93 @@
+---
+title: "Anthropic (BYOK)"
+icon: "a"
+description: "Connect your own Anthropic API key to Workshop for direct Claude model access."
+---
+
+## Overview
+
+The Anthropic BYOK connector lets you use your own Anthropic API key with Workshop. Usage is billed directly to your Anthropic account.
+
+<Warning>
+**Published apps use your API key.** If you publish a Workshop app that uses this connector, visitors make requests using your key. You will be billed by Anthropic for all usage.
+</Warning>
+
+<Info>
+**Don't have an API key?** The [managed Anthropic connector](/workshop/connectors/managed-ai-connectors) is enabled by default — no API key needed, usage billed to your Workshop credits.
+</Info>
+
+## What You'll Need
+
+| Credential | Description | Format |
+|------------|-------------|--------|
+| **API Key** | Anthropic API authentication key | `sk-ant-...` |
+
+## Getting an API Key
+
+<Steps>
+  <Step title="Create an Anthropic account">
+    Go to [console.anthropic.com](https://console.anthropic.com) and sign up or sign in.
+  </Step>
+  <Step title="Set up billing">
+    Navigate to **Settings > Billing**, add a payment method, and purchase credits. The minimum purchase is $5, which places you in Tier 1.
+  </Step>
+  <Step title="Generate a key">
+    Go to **Settings > API Keys** and click **Create Key**. Give it a descriptive name (e.g., "Workshop Access"). Optionally assign it to a workspace.
+  </Step>
+  <Step title="Copy the key">
+    Copy your API key immediately. Anthropic only shows the key once — if you lose it, you'll need to generate a new one.
+  </Step>
+</Steps>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select Anthropic">
+    Click the **Anthropic (your API key)** card.
+  </Step>
+  <Step title="Enter details">
+    Enter a **Connection Name** (e.g., "My Anthropic API") and paste your **API Key**.
+  </Step>
+  <Step title="Save">
+    Click **Add Connection**.
+  </Step>
+</Steps>
+
+Your Anthropic API is now connected and available across all conversations.
+
+## Verifying Your Connection
+
+Ask Workshop:
+
+```
+Use my Anthropic connection to summarize the key points of this text: [paste any text]
+```
+
+If Workshop returns a Claude-generated summary, your connection is working.
+
+## Security Best Practices
+
+- Your API key is stored in Workshop's encrypted storage — never shared with the AI agent directly
+- Rotate keys periodically in the [Anthropic console](https://console.anthropic.com)
+- Use Anthropic workspaces to organize keys by project or environment
+- If you suspect a key is compromised, delete it immediately in the Anthropic console and create a new one, then update your Workshop connection
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Invalid API Key" | Re-enter the key from your Anthropic console. Ensure no extra spaces. |
+| "Insufficient credits" | Add more credits in Anthropic billing settings. |
+| "Rate limit exceeded" | Wait and retry. Check your usage tier in the Anthropic console. |
+
+## Learn More
+
+- [Anthropic Console](https://console.anthropic.com)
+- [Anthropic API Documentation](https://docs.anthropic.com)
+- [Rate Limits and Pricing](https://docs.anthropic.com/en/api/rate-limits)

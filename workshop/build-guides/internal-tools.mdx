@@ -1,0 +1,89 @@
+---
+title: "Build Internal Tools"
+icon: "screwdriver-wrench"
+description: "Build admin panels, CRMs, and operational tools connected to your databases and APIs. Deploy securely with built-in authentication."
+---
+
+## What you'll build
+
+A custom internal tool — an admin panel, CRM, operations dashboard, or workflow tracker — connected to your real data and deployed with authentication so only your team can access it.
+
+## Before you start
+
+<Steps>
+  <Step title="Create a Workshop account">
+    Sign up at [app.workshop.ai](https://app.workshop.ai). Workshop Cloud is recommended for internal tools — it handles hosting, auth, and deployment.
+  </Step>
+  <Step title="Connect your data sources">
+    Internal tools are most useful when connected to your existing systems. Set up the connectors you need:
+
+    - **Databases**: PostgreSQL, MySQL, MongoDB, Supabase, Neon, Microsoft SQL Server, TiDB
+    - **Data warehouses**: BigQuery, Snowflake
+    - **Cloud storage**: AWS S3, Google Drive
+    - **APIs**: Use the custom connector to store API keys and secrets for any third-party service
+    - **Spreadsheets**: Google Sheets (public or private)
+
+    Go to **Hub** → **Connectors** to set them up.
+  </Step>
+</Steps>
+
+## Step-by-step flow
+
+<Steps>
+  <Step title="Connect your databases and APIs">
+    Open the **Hub** → **Connectors** and add connections to the systems your tool needs to read from or write to. For custom APIs, use the **Custom Connector** to securely store API keys and endpoints.
+  </Step>
+  <Step title="Describe the tool you need">
+    Tell Workshop what the tool should do, who will use it, and what data it needs.
+
+    **Example prompts:**
+    - *"Build a customer support admin panel with ticket management, customer lookup, response templates, and performance metrics. Connect to my Postgres database for ticket and customer data."*
+    - *"Create an inventory management tool with product catalog, stock level tracking, low-stock alerts, and purchase order generation. Include search, filtering, and CSV export."*
+    - *"Build a sales CRM with a Kanban pipeline view, contact management, activity logging, and deal forecasting."*
+    - *"Create an employee onboarding tracker with task checklists, progress visualization, and an admin view."*
+  </Step>
+  <Step title="Add CRUD operations and workflows">
+    Internal tools typically need to read and write data. Ask Workshop to add the operations your team needs:
+
+    - *"Add a form to create new customers with validation on the email field."*
+    - *"Let users change the ticket status by clicking a dropdown in the table row."*
+    - *"Add a bulk action to mark selected orders as shipped."*
+    - *"Add CSV export for the filtered table view."*
+  </Step>
+  <Step title="Deploy with authentication">
+    Click **Publish** and Workshop handles hosting and compute. Built-in authentication means your team members sign in to access the tool — no one else can see the data. You can restrict access to specific people or teams without building a login system yourself.
+  </Step>
+</Steps>
+
+## Tips and best practices
+
+<AccordionGroup>
+  <Accordion title="Describe the user, not just the tool">
+    Tell Workshop who will use this: *"This is for our customer success team — they need to quickly look up a customer by email, see their subscription status, recent tickets, and usage metrics."* Context about the user produces better UX decisions.
+  </Accordion>
+  <Accordion title="Start with the most critical workflow">
+    Don't try to build the entire tool at once. Start with the single most important workflow — e.g., *"I need to be able to search for a customer and see all their orders"* — and expand from there.
+  </Accordion>
+  <Accordion title="Use real data during development">
+    Connect to your actual database (or a staging copy) so you can validate that queries return correct results. Dummy data hides schema mismatches and edge cases.
+  </Accordion>
+  <Accordion title="Ask for validation and error handling">
+    Internal tools handle real business data. Ask Workshop for safeguards: *"Add a confirmation dialog before deleting a record. Validate that the email format is correct before saving. Show an error message if the database update fails."*
+  </Accordion>
+  <Accordion title="Think about permissions">
+    If different team members need different access levels, describe it: *"Managers can edit and delete records. Regular users can only view and create."* Workshop can build role-based access into the tool.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Connectors](/workshop/connectors) — Set up database and API connections
+- [Publishing](/workshop/workshop-cloud/publishing) — Deploy your tool with authentication
+- [Sharing and teams](/workshop/workshop-cloud/sharing-and-teams) — Control who can access the tool
+- [Working with the Agent](/workshop/core-concepts/working-with-the-agent) — Prompting tips and communicating with Workshop
+
+---
+
+<Card title="Start Building Free" icon="arrow-right" href="https://app.workshop.ai">
+  No more waiting on engineering backlogs. Describe the tool and deploy it today.
+</Card>
