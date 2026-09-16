@@ -36,12 +36,9 @@ You no longer need one model to do everything. Different parts of a workflow can
 
 ### Privacy and control
 
-Workshop can combine cloud models with local models. That means you can keep your main workflow powered by a frontier cloud model, but route a sensitive task to a local model running on your device.
+Workshop can combine a cloud-hosted main agent with a local sub-agent. In this setup, only the sub-agent's inference runs on your device. The cloud-hosted main agent creates the delegation prompt and receives the sub-agent's summary, so sensitive context or results can still reach the main agent's provider.
 
-This is especially useful when a task involves:
-- Private data or sensitive internal files
-- Content you don't want sent to an external inference provider
-- Compliance requirements around data residency
+Choosing a local sub-agent does not make the whole workflow local or establish a data-residency guarantee. Do not use this hybrid setup for information that must never reach a cloud provider. Check the models, tools, and data transfers of the entire workflow before sharing sensitive information.
 
 <Info>
 Local model routing requires [Workshop Desktop](/workshop/workshop-desktop/local-models). Workshop Cloud uses cloud-hosted models only.
@@ -77,16 +74,20 @@ Sub-agents solve this by working outside your main conversation — each one get
 
 ### Built-in agents
 
-Workshop includes six specialized agents, each with a focused toolset:
+Workshop's **Sub Agents** settings list ten specialized agents, including the bundled `visual-qa` agent:
 
 | Agent | What it does | Default model | Why | Best for |
 | ----- | ------------ | ------------- | --- | -------- |
-| **explore** | Searches code, reads files, traces call chains. Read-only. | Haiku 4.5 | Fast read-only searches don't need a heavy model | "Where is this defined?", "How does auth work?", pattern searches |
+| **explore** | Searches code, reads files, traces call chains. Read-only. | GLM 5.3 Flash | Fast codebase investigation | "Where is this defined?", "How does auth work?", pattern searches |
 | **plan** | Analyzes codebase, produces structured implementation plans with steps, critical files, and risks. | Inherits yours | Benefits from the same model you're reasoning with | Planning before coding — especially multi-step features |
-| **verification** | Adversarial checker that reviews your changes for regressions, missing tests, and edge cases. Returns PASS/FAIL verdict. | Inherits yours | Should match the reasoning depth of your main workflow | Sanity check after implementation, before you move on |
-| **reviewer** | Code review specialist. Hunts for bugs, security issues, correctness problems. Can run linters and tests. | GPT-5.4 | Strong at code review and reasoning about diffs | PR-style review of a diff or changed files |
-| **web-search** | Searches the web for docs, best practices, API references, error solutions. | Haiku 4.5 | Speed matters more than depth for lookups | Looking up documentation, debugging error messages |
-| **frontend** | Full-stack frontend dev. Can read, write, edit files and run dev servers/build tools. | GLM-5.1 | Optimized for frontend and long-horizon UI tasks | Building or fixing UI components, CSS, frontend code |
+| **verification** | Adversarial checker that reviews your changes for regressions, missing tests, and edge cases. Returns PASS/FAIL verdict. | GPT 5.6 Terra | Focused correctness checks | Sanity check after implementation, before you move on |
+| **reviewer** | Code review specialist. Hunts for bugs, security issues, correctness problems. Can run linters and tests. | GPT 5.6 Terra | Code review and reasoning about diffs | PR-style review of a diff or changed files |
+| **web-search** | Searches the web for docs, best practices, API references, error solutions. | Gemini 3.1 Flash-Lite | Fast information gathering | Looking up documentation, debugging error messages |
+| **frontend** | Builds and fixes interfaces; can edit files and run development tools. | GLM 5.3 Flash | UI implementation | Components, CSS, frontend code |
+| **backend** | Implements backend functionality. | Kimi K2.6 | Backend implementation | Services and backend features |
+| **eng-ops** | Works on builds, CI, dependencies, and infrastructure. | GLM 5.3 Flash | Engineering operations | Build failures and infrastructure tasks |
+| **debug** | Investigates bugs systematically. | GPT 5.6 Terra | Troubleshooting | Reproductions and root-cause analysis |
+| **visual-qa** | Exercises a running app in the browser and checks its behavior and layout. | Claude Sonnet 5 | Vision-capable browser QA | Testing user flows and responsive layouts |
 
 <Info>
 You can override the default model for any built-in agent mid-conversation — see [Choosing models](#choosing-models-for-sub-agents) below.
@@ -110,6 +111,11 @@ Have the reviewer agent check the changes we just made.
 
 ```
 Use the explore agent to trace how the payment flow works.
+```
+
+```
+Use visual-qa to test the checkout flow at http://localhost:3000.
+Check that it works on desktop and mobile-sized screens.
 ```
 
 Workshop may also delegate on its own when it judges a task benefits from specialization — but being explicit gives you more control over what gets delegated and how.
@@ -172,12 +178,12 @@ Workshop passes the model assignment through to the sub-agent when it delegates.
 ## Create your own agents
 
 <Info>
-Workshop's six built-in agents handle most workflows out of the box — you don't need to create custom agents to use sub-agents. This section is for teams who want to define their own reusable agents for specialized or repeated tasks.
+Workshop's included agents handle most workflows out of the box — you don't need to create custom agents to use sub-agents. This section is for teams who want to define their own reusable agents for specialized or repeated tasks.
 </Info>
 
 Beyond the built-in agents, you can define **custom agents** — reusable markdown files that give Workshop specialized personas, toolsets, and instructions for tasks you run repeatedly.
 
-Workshop implements the [Agent Skills](https://agentskills.io) open standard — the same format used by Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenAI Codex, and [many other tools](https://agentskills.io/home). Agents you create for Workshop work in any compatible client, and vice versa.
+Custom agent definitions are separate from [skills](/workshop/core-concepts/skills). Support for the Agent Skills standard does not imply support for these agent files or their configuration fields in another client.
 
 ### Quick start
 
@@ -186,11 +192,11 @@ Create an `agents/` directory in one of the supported paths and add a markdown f
 ```
 your-project/
 ├── .workshop/agents/    # Workshop-native (recommended)
-├── .agents/agents/      # Cross-client standard path (works in all compatible tools)
-└── .claude/agents/      # Claude Code compatible
+├── .agents/agents/      # Alternate path read by Workshop
+└── .claude/agents/      # Alternate path read by Workshop
 ```
 
-Pick whichever path fits your team. If you want your agents to work across Workshop, Claude Code, Cursor, and other tools, use `.agents/agents/`. If you only use Workshop, `.workshop/agents/` is the simplest choice.
+Use `.workshop/agents/` for Workshop projects. Workshop also reads the two alternate paths shown above; verify each other client's discovery paths and supported fields before sharing definitions with it.
 
 Each file is one agent. The filename (minus `.md`) becomes the agent name.
 
@@ -289,20 +295,20 @@ Project agents take precedence over personal agents when names conflict.
 
 ### Cross-client compatibility
 
-Workshop implements the [Agent Skills](https://agentskills.io) open standard, which means your custom agents are portable across a growing ecosystem of AI development tools — including Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenAI Codex, Roo Code, and more.
+Workshop can read agent definitions from several directory conventions. This does not guarantee that another client reads the same files or interprets their fields the same way.
 
 Workshop discovers agents from three directory paths in priority order:
 
 | Path | Purpose |
 | ---- | ------- |
 | `.workshop/agents/` | Workshop-native (recommended) |
-| `.agents/agents/` | Cross-client standard path — works in any [compatible tool](https://agentskills.io/clients) |
-| `.claude/agents/` | Claude Code compatibility |
+| `.agents/agents/` | Alternate discovery path supported by Workshop |
+| `.claude/agents/` | Alternate discovery path supported by Workshop |
 
 If the same agent name exists in multiple directories, the first match wins.
 
 <Tip>
-If your team uses multiple AI tools, put your agents in `.agents/agents/` — they'll be discovered by Workshop, Claude Code, Cursor, and every other tool that supports the [Agent Skills standard](https://agentskills.io). One set of agents, every tool.
+If your team uses multiple AI tools, check each client's documentation and test the definition there. In particular, do not assume that `model`, `tools`, or `maxTurns` has identical support across clients.
 </Tip>
 
 ### Writing effective agents
