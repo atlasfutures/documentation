@@ -13,7 +13,7 @@ Workshop Desktop is the locally installed version of Workshop. It runs on your m
     Python, JavaScript, Rust, Go, Swift, C++ — whatever your project needs. Workshop Desktop doesn't limit you to a preset list of languages or frameworks.
   </Card>
   <Card title="Local AI models" icon="microchip">
-    Run open-weight models on your own hardware to power the Workshop agent — free, private, and offline. No API costs while building and iterating.
+    Run open-weight models on your own hardware to power the Workshop agent without hosted-model inference charges. See local model setup and privacy limits below.
   </Card>
   <Card title="MCP servers" icon="plug">
     Extend the agent with Model Context Protocol servers — connect to databases, APIs, and custom tools through a standardized interface.
@@ -35,9 +35,9 @@ Workshop Desktop includes a live preview pane that shows your running app as it'
 
 ## Privacy and security
 
-Your code never leaves your machine. All file operations, code execution, and project management happen locally. When you use cloud AI models (Claude, GPT, Gemini), your prompts go to those providers — but your project files stay local.
+Desktop stores your project files and runs development tools on your computer. Hosted AI requests send the context needed for those requests, which can include code. Publishing, syncing, and sharing can upload files or conversation content.
 
-With local AI models, even your prompts stay on your machine. Nothing is transmitted anywhere.
+Local models keep inference on-device, but do not disable network tools, publishing, syncing, sharing, or diagnostics. [Privacy Mode](/workshop/core-concepts/settings#privacy-mode) limits conversation-content collection for telemetry; it is not a guarantee that no data leaves your computer. See [what information Workshop stores](/workshop/pricing/billing-faqs#what-information-do-you-store).
 
 ## What makes Desktop different from Cloud
 
