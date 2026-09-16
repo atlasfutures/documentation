@@ -86,12 +86,29 @@ You can ask Workshop itself to help you set it up:
 If you prefer to set it up manually, here's the typical workflow:
 
 ```bash
-# Build llama.cpp (macOS/Linux with Metal/CUDA support)
+# Get the runtime version used by Workshop Desktop
 git clone --branch b8648 --depth 1 https://github.com/ggml-org/llama.cpp
 cd llama.cpp
+```
+
+Choose the build for your hardware. The NVIDIA build requires the CUDA toolkit; see the [pinned llama.cpp build instructions](https://github.com/ggml-org/llama.cpp/blob/b8648/docs/build.md#cuda) for prerequisites.
+
+<CodeGroup>
+```bash macOS (Metal)
+# Metal is enabled by default on macOS
 cmake -B build
 cmake --build build --config Release
+```
 
+```bash Linux (NVIDIA CUDA)
+cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release
+```
+</CodeGroup>
+
+Then download a model that fits your available memory and start the server:
+
+```bash
 # Download a GGUF model (example: Qwen3-Coder-Next Q4_K_M)
 # Get the URL from https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF
 
@@ -201,7 +218,7 @@ Apple Silicon Macs share memory between the CPU and GPU, making them efficient f
 
 | Unified Memory | What You Can Run |
 |---|---|
-| **32 GB** | Qwen3-Coder-Next Q3_K only (tight fit, short context). Marginal for agentic coding. |
+| **32 GB** | Choose a smaller model from the hardware-aware **Guided** recommendations. Qwen3-Coder-Next Q3_K exceeds this tier's memory budget; allow headroom for macOS, Workshop, and the context cache. |
 | **64 GB** | Qwen3-Coder-Next Q4_K_M comfortably with 32K context. The recommended entry point for local model coding. |
 | **96 GB** | Qwen3-Coder-Next Q8_0, or Step 3.5 Flash/MiniMax M2.5 at aggressive 2-bit quantization (experimental). |
 | **128 GB** | Step 3.5 Flash Q4_K_M, MiniMax M2.5 Q3_K_L, or Qwen3-Coder-Next Q8_0 with full 256K context. |
