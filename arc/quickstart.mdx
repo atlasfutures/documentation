@@ -7,14 +7,14 @@ icon: "bolt"
 ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.
 </Note>
 
-The examples below illustrate the proposed interfaces, not currently available public endpoints. Creating an API key or funding a workspace does not enable ARC. Wait for the Rayline team to confirm access and provide an enabled endpoint before sending requests.
+Creating an API key or funding a workspace does not enable ARC. Wait for the Rayline team to confirm access before sending requests. The Responses example illustrates the proposed interface; the Decisions example uses the documented [Decisions API](/arc/reference/decisions).
 
 <Steps>
 <Step title="Get access and a key">
 Request early access from the Rayline team. Once your access is confirmed, follow the team's instructions to create a key for the assigned environment and workspace. See [API keys](/platform/api-keys). A gateway key is not a substitute for ARC access.
 </Step>
 <Step title="Copy the preview base URL">
-Use the ARC API base URL provided by the Rayline team. Do not substitute the Agent Gateway host. Keep the URL and key in environment variables, outside your source code.
+For Responses, use the ARC API base URL provided by the Rayline team. Decisions uses `https://api.rayline.ai`. Keep the URL and key in environment variables, outside your source code.
 </Step>
 <Step title="Send a Responses request">
 
@@ -31,13 +31,14 @@ API access is limited during private preview. Confirm your access and the suppor
 <Step title="Try a decision">
 
 ```bash
-curl --fail-with-body "$ARC_BASE_URL/v1/decisions" \
+curl --fail-with-body https://api.rayline.ai/v1/routes \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"input":"Review a database migration for data-loss risks."}'
+  -H "x-conversation-id: quickstart-1" \
+  -d '{"messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
 ```
 
-Decisions is designed to return a model and reasoning choice for execution in your own stack. Confirm the available response fields as part of your private-preview onboarding.
+The response names the `model` and `thinking` configuration to run in your own stack. Send the next turn with the same `x-conversation-id` so ARC decides it in context. See the [Decisions reference](/arc/reference/decisions).
 </Step>
 <Step title="Inspect the request">
 Once access is enabled, follow the Rayline team's guidance for inspecting requests in your workspace. See the [Responses reference](/arc/reference/responses) or [Decisions reference](/arc/reference/decisions) for availability.

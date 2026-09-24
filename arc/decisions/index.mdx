@@ -3,24 +3,64 @@ title: "ARC Decisions"
 description: "The routing decision. Your inference stack."
 icon: "route"
 ---
-ARC Decisions chooses a model and reasoning effort without generating the answer. Use it when you want adaptive selection while retaining control of inference, provider access, and your application's agent loop.
-
-## The handoff
-
-1. Send the context for the task to ARC.
-2. Read the returned model and reasoning effort.
-3. Map that choice to a provider model and execute the request in your own stack.
-4. Handle the provider response, tools, retries, and next turn in your application.
+ARC Decisions chooses a model and reasoning configuration for each turn without generating the answer. Use it when you want adaptive selection while keeping control of inference, provider access, and your application's agent loop.
 
 <Note>
 ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.
 </Note>
 
-Start with the [decision example](/arc/quickstart) and [field reference](/arc/reference/decisions).
+## The loop
+
+For every turn of a conversation:
+
+1. Send the conversation to `POST /v1/routes` with the same `x-conversation-id` as the previous turns.
+2. Read `model` and `thinking` from the response.
+3. Run the turn on that model, with that reasoning configuration, in your own stack.
+4. Append the result to the conversation, handle tools and retries, and repeat.
+
+```python
+import os
+import requests
+
+ROUTES_URL = "https://api.rayline.ai/v1/routes"
+HEADERS = {
+    "Authorization": f"Bearer {os.environ['RAYLINE_API_KEY']}",
+    "Content-Type": "application/json",
+}
+
+def decide(conversation_id: str, system: str, messages: list) -> dict:
+    response = requests.post(
+        ROUTES_URL,
+        headers={**HEADERS, "x-conversation-id": conversation_id},
+        json={"system": system, "messages": messages},
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()
+
+decision = decide("task-1842", system_prompt, messages)
+# decision["model"]    -> "deepseek/deepseek-v4-pro"
+# decision["thinking"] -> {"mode": "off", "budget_tokens": None}
+reply = run_on_your_stack(decision["model"], decision["thinking"], system_prompt, messages)
+messages.append({"role": "assistant", "content": reply})
+```
+
+`run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. See the [Decisions reference](/arc/reference/decisions) for every request and response field.
+
+## Multi-turn conversations
+
+ARC decides each turn in the context of the conversation so far. Send a stable `x-conversation-id` on every turn and ARC:
+
+- Accounts for the models already used, including the cost of leaving a model whose prompt cache is warm. Often the right decision is to stay, and `episode.stayed` tells you when it did.
+- Re-uses the context it has already read, so later turns are mostly metered as cache reads.
+
+Use one ID per conversation and one per parallel subagent. Send `x-rayline-episode-close: true` on the last turn, or let the conversation expire when it goes idle. See [conversations](/arc/reference/decisions#conversations).
 
 ## What you own
 
-Your application owns provider credentials, execution, provider compatibility, retries, and fallback behavior. A successful decision is not a successful generation. If a selected model is unavailable, handle that explicitly in your integration rather than assuming ARC executed a fallback.
+Your application owns provider credentials, execution, provider compatibility, retries, and fallback behavior. A successful decision is not a successful generation. If the chosen model is unavailable, handle that explicitly in your integration. `alternatives` lists other models ARC scored, but it is not a fallback order.
+
+Apply `thinking` as returned. ARC scored the model under that reasoning configuration, and the same model with a different configuration is a different choice.
 
 ## How billing differs
 
