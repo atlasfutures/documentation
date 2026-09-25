@@ -8,9 +8,17 @@ icon: "triangle-exclamation"
 
 | HTTP status | Meaning |
 | --- | --- |
+| 400 | The request body is missing or malformed |
 | 401 | Missing or invalid authentication |
 | 403 | Access denied, including private-preview access restrictions |
 | 404 | Unsupported method or path |
+| 409 | The request conflicts with how the interface routes it, such as a Decisions request that pins a provider model |
+| 413 | The request body is too large |
+| 429 | Rate limit reached, or a conversation already has a request in progress; wait for `Retry-After` |
+| 503 | Temporarily unavailable; retry with backoff |
+| 504 | The request did not complete in time; retry with backoff |
+
+Decisions error bodies use the Anthropic format, `{"type": "error", "error": {"type": "...", "message": "..."}}`. See the [Decisions reference](/arc/reference/decisions#errors-and-limits) for Decisions-specific causes and limits.
 
 A private-preview access denial includes the error code `arc_private_preview`. A valid API key does not by itself enable ARC access.
 
@@ -19,6 +27,7 @@ A private-preview access denial includes the error code `arc_private_preview`. A
 - Confirm your workspace's preview access with the Rayline team.
 - Use the base URL and key for the same environment and workspace.
 - Inspect the status and error message without logging your API key.
-- Do not retry authentication or access-denied errors indefinitely.
+- Do not retry `400`, `401`, `403`, `409`, or `413`; fix the request or access first.
+- Retry `429` after the `Retry-After` interval, and `503` or `504` with exponential backoff.
 
-Confirm rate limits, supported input sizes, retry behavior, and retention details during preview onboarding before integrating.
+Decisions limits are in the [Decisions reference](/arc/reference/decisions#errors-and-limits). For Responses, confirm rate limits, supported input sizes, and retention details during preview onboarding before integrating.

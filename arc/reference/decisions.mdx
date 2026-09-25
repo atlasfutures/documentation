@@ -1,13 +1,139 @@
 ---
 title: "Decisions reference"
-description: "API availability for ARC Decisions."
+description: "Request, response, and conversation fields for ARC Decisions."
 icon: "brackets-curly"
 ---
 
-<Note>ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
+<Note>ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access. A platform key alone does not enable it.</Note>
 
-ARC Decisions selects a model and reasoning effort for execution in your own stack. Confirm endpoint details, supported request fields, and response schemas with the Rayline team during private-preview onboarding.
+```
+POST https://api.rayline.ai/v1/routes
+```
 
-Confirm model-ID mappings and supported routing options before dispatching provider requests. Your application remains responsible for inference, provider compatibility, retries, and fallback behavior.
+Returns ARC's choice of model and reasoning configuration for a request, without running it. Execute the choice in your own stack.
 
-See [ARC Decisions](/arc/decisions), [availability and compatibility](/arc/reference/compatibility), and [errors and limits](/arc/reference/errors).
+## Authentication
+
+Send your Rayline API key (`rlk-...`) in either header:
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer $RAYLINE_API_KEY` |
+| `x-api-key` | `$RAYLINE_API_KEY` |
+
+See [API keys](/platform/api-keys).
+
+## Request
+
+Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request body: the same body you would send to generate the turn.
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
+| `system` | No | Your system prompt. |
+| `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
+| `model` | No | Omit it. A request that names a specific provider model is pinned to that model, and ARC returns `409`. |
+| `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
+
+OpenAI Responses request bodies are not accepted and return `409`.
+
+### Conversation headers
+
+| Header | Purpose |
+| --- | --- |
+| `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
+| `x-rayline-episode-close` | Set to `true` on the final turn to end the conversation's state immediately instead of waiting for it to expire. |
+
+## Response
+
+```json
+{
+  "route_id": "rt_5f0c9a2e8b1d4c7fa6e3b2d19c8a7f60",
+  "object": "route",
+  "model": "deepseek/deepseek-v4-pro",
+  "worker": "deepseek/deepseek-v4-pro@thinking-off",
+  "provider": "openrouter",
+  "thinking": { "mode": "off", "budget_tokens": null },
+  "checkpoint": "arc-c82-dev.c82a1f3e",
+  "alternatives": [
+    {
+      "model": "xiaomi/mimo-v2.5-pro",
+      "worker": "xiaomi/mimo-v2.5-pro@thinking-on",
+      "provider": "openrouter",
+      "score": 0.62
+    }
+  ],
+  "selected_pricing": {
+    "input_per_mtok": 0.435,
+    "output_per_mtok": 0.87,
+    "cache_read_per_mtok": 0.003625,
+    "cache_write_per_mtok": 0.435
+  },
+  "warnings": [],
+  "episode": { "turn_index": 4, "stayed": true },
+  "usage": { "encoded_input_tokens": 1840, "cache_read_tokens": 1200 },
+  "latency_ms": 212
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `route_id` | string | Identifies this decision. Include it when you contact support. |
+| `object` | string | Always `route`. |
+| `model` | string | The model to run. |
+| `worker` | string | The model and configuration ARC scored, for example `xiaomi/mimo-v2.5-pro@thinking-on`. Two workers can share one model with different reasoning settings. |
+| `provider` | string | The provider the worker is configured for. Omitted when the worker names none. |
+| `thinking` | object | The reasoning configuration the choice was scored under. `mode` is `on` or `off`. `budget_tokens` is the reasoning budget, or `null` when thinking is off. Apply it as given: the choice was scored for this configuration, not for the model alone. |
+| `checkpoint` | string | The ARC checkpoint that made the decision. |
+| `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
+| `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
+| `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
+| `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
+| `episode` | object | Present when the request carried `x-conversation-id`. `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
+| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision. These are the metered quantities; see [ARC pricing](/arc/pricing). |
+| `latency_ms` | integer | Time ARC spent deciding. |
+
+ARC does not return a confidence score or an explanation.
+
+## Conversations
+
+Send the same `x-conversation-id` on every turn of a conversation. ARC then:
+
+- Decides each turn in light of the turns before it, including whether to stay on the current model. Switching models mid-conversation can discard a provider's prompt cache, and ARC accounts for that cost.
+- Re-uses the context it already encoded, so a later turn is mostly reported as `cache_read_tokens` rather than `encoded_input_tokens`.
+
+Without `x-conversation-id`, each request is decided on its own and the response has no `episode`.
+
+Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
+
+A conversation's state expires after a period of inactivity. Send `x-rayline-episode-close: true` on the final turn to end it immediately.
+
+## Warnings
+
+Each warning is a string of the form `code: explanation`. Treat the code as stable and the explanation as display text.
+
+| Code | Meaning |
+| --- | --- |
+| `format_inferred` | The body had no field that identifies it as Anthropic Messages, so ARC inferred the format. |
+| `tools_not_encoded` | The request's tools did not influence this decision. |
+| `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
+| `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
+
+## Errors and limits
+
+Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...", "message": "..."}}`.
+
+| Status | Meaning | Retry? |
+| --- | --- | --- |
+| `400` | The body is missing, has no `messages`, or cannot be read as messages | No; fix the request |
+| `401` | Missing or invalid API key | No |
+| `403` | Your account does not have ARC access (`arc_private_preview`) | No |
+| `409` | The request pins a provider model, or uses an unsupported request format | No; remove `model` or send a Messages body |
+| `413` | The request body is too large | No |
+| `429` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
+| `503` | Decisions is temporarily unavailable | Yes, with backoff |
+| `504` | The decision did not complete in time | Yes, with backoff |
+
+Each account can make 30 decision requests per minute across all of its keys. A decision normally completes within about 1.5 seconds.
+
+See [ARC Decisions](/arc/decisions) for the integration loop and [errors and limits](/arc/reference/errors) for troubleshooting.

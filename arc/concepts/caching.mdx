@@ -13,10 +13,14 @@ The proposed launch rate card separates uncached input, cache reads, and output.
 
 The launch rate card has input and cache-read categories only. Your inference provider meters its own input, caches, and output separately.
 
+When you send the same `x-conversation-id` on every turn, ARC keeps the context it has already read and encodes only what is new. Each response reports the split in `usage.encoded_input_tokens` and `usage.cache_read_tokens`. Without a conversation ID, every request is read in full.
+
+ARC also weighs your provider's cache when it decides. Moving a conversation to a different model can discard that provider's cached prefix, so staying on the current model is often the cheaper choice. See [conversations](/arc/reference/decisions#conversations).
+
 Generated output may become input on a later turn. Count each actual metered event once; do not add an extra copy merely because the same text has appeared before.
 
 <Note>
-ARC is in private preview. Confirm the cache behavior and usage fields available to your integration with the Rayline team before relying on cache retention, cache keys, or invalidation rules.
+ARC is in private preview. A conversation's cached context expires after a period of inactivity; do not rely on a specific retention time.
 </Note>
 
 Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the launch token categories.
