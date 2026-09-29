@@ -10,4 +10,14 @@ ARC Responses combines model selection and generation in one interface. Confirm 
 
 Do not assume that streaming, tools, or other provider-specific features are available based on a protocol name.
 
+## Conversation identity
+
+A Responses turn keys its conversation the same way a Decisions request does, from the first of these that is present:
+
+1. The `x-conversation-id` header.
+2. The `x-claude-code-session-id` header, which Claude Code sends on its own.
+3. The body field `metadata.user_id`.
+
+With none of them, the turn is stateless. A Decisions lookup and the Responses turn that follows it land on the same conversation state when they carry the same identity. `metadata.user_id` is read as the conversation ID, not as a user ID; see [conversation identity](/arc/reference/decisions#conversation-identity).
+
 See [ARC Responses](/arc/responses), [availability and compatibility](/arc/reference/compatibility), and [errors and limits](/arc/reference/errors).

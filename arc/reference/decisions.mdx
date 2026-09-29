@@ -44,6 +44,8 @@ OpenAI Responses request bodies are not accepted and return `409`.
 | `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
 | `x-rayline-episode-close` | Set to `true` on the final turn to end the conversation's state immediately instead of waiting for it to expire. |
 
+Without `x-conversation-id`, ARC reads the body field `metadata.user_id` as the conversation ID. See [Conversation identity](#conversation-identity).
+
 ## Response
 
 ```json
@@ -89,7 +91,7 @@ OpenAI Responses request bodies are not accepted and return `409`.
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
 | `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
-| `episode` | object | Present when the request carried `x-conversation-id`. `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
+| `episode` | object | Present when the request carried a [conversation ID](#conversation-identity). `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
 | `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision. These are the metered quantities; see [ARC pricing](/arc/pricing). |
 | `latency_ms` | integer | Time ARC spent deciding. |
 
@@ -102,11 +104,25 @@ Send the same `x-conversation-id` on every turn of a conversation. ARC then:
 - Decides each turn in light of the turns before it, including whether to stay on the current model. Switching models mid-conversation can discard a provider's prompt cache, and ARC accounts for that cost.
 - Re-uses the context it already encoded, so a later turn is mostly reported as `cache_read_tokens` rather than `encoded_input_tokens`.
 
-Without `x-conversation-id`, each request is decided on its own and the response has no `episode`.
+Without a conversation ID, each request is decided on its own and the response has no `episode`.
 
 Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
 
 A conversation's state expires after a period of inactivity. Send `x-rayline-episode-close: true` on the final turn to end it immediately.
+
+### Conversation identity
+
+ARC takes the conversation ID from the first of these that is present:
+
+1. The `x-conversation-id` header.
+2. The `x-claude-code-session-id` header, which Claude Code sends on its own.
+3. The body field `metadata.user_id`.
+
+With none of them, the request is stateless.
+
+`metadata.user_id` is the Anthropic SDK's slot for a caller-supplied identifier, so an SDK client gets multi-turn decisions without setting a custom header. ARC treats the value as the conversation ID, not as a user ID: a value that is stable per user would put every conversation of that user into one episode, so their turns would be decided in each other's context and concurrent conversations would return `429`. If you use `metadata.user_id` for a per-user value, send `x-conversation-id` as well; the header wins.
+
+The same order applies to a routed turn, so a lookup and the turn it precedes land on the same episode.
 
 ## Warnings
 
