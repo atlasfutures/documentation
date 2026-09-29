@@ -12,12 +12,13 @@ Do not assume that streaming, tools, or other provider-specific features are ava
 
 ## Conversation identity
 
-A Responses turn keys its conversation the same way a Decisions request does, from the first of these that is present:
+A Responses turn takes its conversation ID from the first of these that is present:
 
 1. The `x-conversation-id` header.
-2. The `x-claude-code-session-id` header, which Claude Code sends on its own.
-3. The body field `metadata.user_id`.
+2. The body field `prompt_cache_key`.
 
-With none of them, the turn is stateless. A Decisions lookup and the Responses turn that follows it land on the same conversation state when they carry the same identity. `metadata.user_id` is read as the conversation ID, not as a user ID; see [conversation identity](/arc/reference/decisions#conversation-identity).
+With neither, the turn is stateless.
+
+`prompt_cache_key` is the Responses API's own per-conversation cache key, so a client that already sets it gets multi-turn decisions without a custom header. Codex sends its thread ID there, and each spawned subagent thread sends its own, so parallel subagents are separate conversations without further configuration. The `user` and `safety_identifier` fields are not read: they identify a user, and one ID for every conversation of a user would decide those conversations in each other's context. See [conversation identity](/arc/reference/decisions#conversation-identity) for the Decisions rules.
 
 See [ARC Responses](/arc/responses), [availability and compatibility](/arc/reference/compatibility), and [errors and limits](/arc/reference/errors).
