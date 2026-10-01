@@ -44,7 +44,7 @@ OpenAI Responses request bodies are not accepted and return `409`.
 | `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
 | `x-rayline-episode-close` | Set to `true` on the final turn to end the conversation's state immediately instead of waiting for it to expire. |
 
-Without `x-conversation-id`, ARC reads the body field `metadata.user_id` as the conversation ID. See [Conversation identity](#conversation-identity).
+See [Conversation identity](#conversation-identity) for how the conversation ID is resolved.
 
 ## Response
 
@@ -116,11 +116,10 @@ ARC takes the conversation ID from the first of these that is present:
 
 1. The `x-conversation-id` header.
 2. The `x-claude-code-session-id` header, which Claude Code sends on its own.
-3. The body field `metadata.user_id`.
 
-With none of them, the request is stateless.
+With neither, the request is stateless.
 
-`metadata.user_id` is the Anthropic SDK's slot for a caller-supplied identifier, so an SDK client gets multi-turn decisions without setting a custom header. ARC treats the value as the conversation ID, not as a user ID: a value that is stable per user would put every conversation of that user into one episode, so their turns would be decided in each other's context and concurrent conversations would return `429`. If you use `metadata.user_id` for a per-user value, send `x-conversation-id` as well; the header wins.
+The body field `metadata.user_id` is not read. Anthropic defines it as a per-user identifier, and one ID for every conversation of a user would decide those conversations in each other's context. Send `x-conversation-id` to identify the conversation.
 
 The same order applies to a routed turn, so a lookup and the turn it precedes land on the same episode.
 
