@@ -15,10 +15,10 @@ Do not assume that streaming, tools, or other provider-specific features are ava
 A Responses turn takes its conversation ID from the first of these that is present:
 
 1. The `x-conversation-id` header.
-2. The body field `prompt_cache_key`.
+2. The body field `prompt_cache_key`, on a request from Codex.
 
 With neither, the turn is stateless.
 
-`prompt_cache_key` is the Responses API's own per-conversation cache key, so a client that already sets it gets multi-turn decisions without a custom header. Codex sends its thread ID there, and each spawned subagent thread sends its own, so parallel subagents are separate conversations without further configuration. The `user` and `safety_identifier` fields are not read: they identify a user, and one ID for every conversation of a user would decide those conversations in each other's context. See [conversation identity](/arc/reference/decisions#conversation-identity) for the Decisions rules.
+Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. Codex is recognised by the `originator` header it sends. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is not read; send `x-conversation-id`. The `user` and `safety_identifier` fields are never read: they identify a user, and one ID for every conversation of a user would decide those conversations in each other's context. See [conversation identity](/arc/reference/decisions#conversation-identity) for the Decisions rules.
 
 See [ARC Responses](/arc/responses), [availability and compatibility](/arc/reference/compatibility), and [errors and limits](/arc/reference/errors).
