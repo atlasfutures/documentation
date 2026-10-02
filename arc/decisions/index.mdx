@@ -54,7 +54,7 @@ ARC decides each turn in the context of the conversation so far. Send a stable `
 - Accounts for the models already used, including the cost of leaving a model whose prompt cache is warm. Often the right decision is to stay, and `episode.stayed` tells you when it did.
 - Re-uses the context it has already read, so later turns are mostly metered as cache reads.
 
-Use one ID per conversation and one per parallel subagent. Send `x-rayline-episode-close: true` on the last turn, or let the conversation expire when it goes idle. See [conversations](/arc/reference/decisions#conversations).
+Use one ID per conversation and one per parallel subagent. A conversation's state expires once it goes idle. See [conversations](/arc/reference/decisions#conversations).
 
 ## What you own
 

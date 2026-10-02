@@ -42,7 +42,6 @@ OpenAI Responses request bodies are not accepted and return `409`.
 | Header | Purpose |
 | --- | --- |
 | `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
-| `x-rayline-episode-close` | Set to `true` on the final turn to end the conversation's state immediately instead of waiting for it to expire. |
 
 See [Conversation identity](#conversation-identity) for how the conversation ID is resolved.
 
@@ -108,7 +107,7 @@ Without a conversation ID, each request is decided on its own and the response h
 
 Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
 
-A conversation's state expires after a period of inactivity. Send `x-rayline-episode-close: true` on the final turn to end it immediately.
+A conversation's state expires after a period of inactivity. There is no way to end it earlier.
 
 ### Conversation identity
 
