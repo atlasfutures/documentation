@@ -10,4 +10,15 @@ ARC Responses combines model selection and generation in one interface. Confirm 
 
 Do not assume that streaming, tools, or other provider-specific features are available based on a protocol name.
 
+## Conversation identity
+
+A Responses turn takes its conversation ID from the first of these that is present:
+
+1. The `x-conversation-id` header.
+2. The body field `prompt_cache_key`, on a request from Codex.
+
+With neither, the turn is stateless.
+
+Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is not read; send `x-conversation-id`.
+
 See [ARC Responses](/arc/responses), [availability and compatibility](/arc/reference/compatibility), and [errors and limits](/arc/reference/errors).
