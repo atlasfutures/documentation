@@ -112,6 +112,7 @@
               "rules-router/quickstart/index",
               "rules-router/quickstart/claude-code",
               "rules-router/quickstart/codex",
+              "rules-router/quickstart/other-agents",
               "rules-router/quickstart/agents"
             ]
           },

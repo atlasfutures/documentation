@@ -1,0 +1,52 @@
+---
+title: "Other coding agents"
+description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Agent Gateway."
+---
+
+<Note>These launchers need a Rayline release newer than 0.2.7. Run `rayline update`, then check that `rayline --help` lists them.</Note>
+
+Rayline can launch five more coding agents against hosted Agent Gateway, the same way `rayline claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
+
+| Command | Agent | Install |
+| --- | --- | --- |
+| `rayline opencode` | [opencode](https://opencode.ai/docs/) | See the opencode docs |
+| `rayline pi` | pi | `npm install -g @earendil-works/pi-coding-agent` |
+| `rayline omp` | [oh-my-pi](https://github.com/can1357/oh-my-pi) | See the oh-my-pi README |
+| `rayline hermes` | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | See the Hermes Agent README |
+| `rayline openclaw` | OpenClaw | `npm install -g openclaw` |
+
+```bash
+rayline auth login
+rayline pi
+rayline opencode run "summarize this repo"
+```
+
+Everything after the agent's name goes to the agent unchanged, including `--help`. The only Rayline options are `--env <name>` and `--auth-token <token>`, and they must come directly after the agent's name, before any of its own arguments.
+
+## What the launcher does
+
+1. Signs you in and creates a router key if you have none, as `rayline claude` does.
+2. Writes a Rayline config for the agent to `~/.config/rayline/harness/<agent>/<env>/` and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
+3. Starts the agent with model `rayline-router`, so Agent Gateway chooses the model for each request.
+
+Each launch prints the router it uses and the config directory.
+
+## How your key is handled
+
+The router key is never written to the agent's config. Every config refers to the `RAYLINE_KEY` environment variable, which Rayline sets only for the agent's process. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
+
+## Agent notes
+
+- **oh-my-pi.** Use version 18.1.10 or later. Older versions work, but Agent Gateway sees each turn as a new conversation, and Rayline prints a warning.
+- **Hermes Agent.** Releases before v2026.9.21 also treat each turn as a new conversation. To use the Responses API instead of Messages, pass `--provider rayline-resp`.
+- **OpenClaw.** Rayline turns off OpenClaw's memory search and heartbeat, so no background requests reach the router. For `openclaw agent` it adds `--local`, so the turn uses the Rayline config instead of a running OpenClaw Gateway's. Container mode runs inside the container, which cannot see the Rayline config or key.
+
+## Configure OpenClaw yourself
+
+If you write an OpenClaw config by hand, give it the key as an environment SecretRef, not the `${RAYLINE_KEY}` shorthand:
+
+```json
+"apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_KEY" }
+```
+
+OpenClaw resolves a `${RAYLINE_KEY}` string when it loads the config and then writes the resolved key in plain text to its agent model cache, `~/.openclaw/agents/<agent>/agent/models.json`. For a SecretRef it writes only the variable's name.
