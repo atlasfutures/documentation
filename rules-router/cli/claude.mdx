@@ -64,9 +64,9 @@ Pass Claude Code's own arguments after `--`, for example `rayline claude -- --re
 | `rayline claude --via env` | Hosted | Environment | Everything |
 | `rayline claude --route subagents` | Hosted | Proxy | Subagents only |
 | `rayline claude --local` | Local | Proxy | Subagents only |
-| `rayline claude --local --route all` | Local | Proxy | Everything |
+| `rayline claude --local --route all` | Local | Proxy | Everything; the main agent still reaches cloud Claude by default |
 
-`--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Rayline rejects it with `--local` or `--route subagents`. With `--route all` under `--local`, the default local config still sends the main agent to cloud Claude; see [local models](/rules-router/guides/local-models).
+`--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Rayline rejects it with `--local` or `--route subagents`. `rayline claude --local --route all` sends every subagent to your local model, but the main agent still goes to cloud Claude, because the local router's built-in config routes the main agent to Anthropic. A fully local session also needs a router config; see [fully local sessions](/rules-router/guides/local-models#fully-local-sessions).
 
 ## How your key is handled
 

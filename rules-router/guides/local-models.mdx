@@ -83,9 +83,31 @@ Check the server's protocol and model capabilities against the current Rayline c
 
 ## Hybrid by default
 
-The default Claude Code local session keeps the main agent on cloud Claude and routes eligible subagent work locally. “Local router” does not mean all prompts remain on-device. Use `--route all` for an intentionally fully local route, subject to model support.
+By default, `rayline claude --local` sends read-only subagents such as Explore to your local model and keeps the main agent and every other subagent on cloud Claude. To choose which subagents run locally, use `rayline local subagents`. “Local router” does not mean all prompts remain on-device.
+
+`--route all` sends every subagent to the local model. It does **not** move the main agent: the local router's built-in config still sends main-agent requests to cloud Claude.
+
+If the local model is unavailable, a subagent request that would have gone to it falls back to the main agent's route, which is cloud Claude unless you change it.
 
 Local routing itself needs no Rayline account. Your main-agent cloud provider may still need credentials and charge for inference.
+
+### Fully local sessions
+
+To keep the main agent on your machine as well, give the router a config that sends the main route to the local model. Save this as `~/.config/rayline/fully-local.json`:
+
+```json
+{ "routes": { "main": { "endpoint": "local" } } }
+```
+
+Then launch with it:
+
+```bash
+rayline claude --local --route all --router-config-path ~/.config/rayline/fully-local.json
+```
+
+Your local model then serves the main agent's whole workload, including tool use and long context, so choose one that can. Confirm the route with `rayline top`: main-agent rows should show the local target.
+
+Only model requests go through the router. Claude Code's other network traffic, such as its other Anthropic API calls, MCP servers, and web requests, still goes to its usual destinations.
 
 <span id="troubleshooting" />
 <span id="model-download-is-slow" />
