@@ -3,27 +3,56 @@ title: "Codex"
 description: "Use the Rayline CLI with Codex CLI or desktop."
 ---
 
-Codex is supported through the Rayline local OpenAI Responses-compatible router. Install Codex and [Rayline](https://github.com/rayline-ai/rayline#install) first.
+Codex connects to Rayline's local OpenAI Responses router on `http://127.0.0.1:20811/v1`. This path uses plain HTTP on your machine, with no proxy certificate. Install Codex and the [Rayline CLI](/rules-router/cli) first.
 
 ## Codex CLI
+
+```bash
+rayline codex -- exec "summarize this repo"
+```
+
+Rayline starts the router, points Codex at it for this run, and passes everything after `--` to Codex. Put Rayline options before `--`.
+
+## Choose who serves the requests
+
+`--auth` decides where the main agent's requests go:
+
+| Option | Requests go to | Billed through |
+| --- | --- | --- |
+| `--auth auto` (default) | Hosted Agent Gateway, for the main agent and subagents | Your Rayline workspace |
+| `--auth subscription`, or `--subscription` | Your existing ChatGPT/Codex login for the main agent; subagents go to your local model when one is configured | Your ChatGPT plan |
+| `--auth none` | Local endpoints only, from your local model or `--config` | Nothing hosted |
+
+The default needs a Rayline sign-in. If you have not signed in, run `rayline auth login`. With `--config <path>`, `auto` follows the routes in that file instead. Use `--model <model>` to request a specific model; without it, the router chooses per request.
 
 ```bash
 rayline codex --subscription -- exec "summarize this repo"
 ```
 
-This example explicitly selects Codex's existing ChatGPT/Codex subscription login and forwards through the Codex backend. It is not automatically billed as hosted Rayline inference. Specify the auth mode rather than relying on defaults that can differ between releases.
-
 ## Codex desktop
 
 ```bash
+rayline codex app
+rayline codex app ~/projects/app
 rayline codex app --subscription
 ```
 
-You can pass a workspace path after `app`. The launcher uses an isolated Codex home. If the single-instance desktop app is already running with different routing configuration, the launcher prompts before restarting it.
+`rayline codex app` takes the same options as `rayline codex`, plus an optional workspace path. It runs the app on an isolated Codex home, `~/.rayline/codex-app-home`, so your normal Codex configuration is untouched. The first launch copies your existing Codex settings; later launches update only the Rayline routing. The desktop app is single-instance: if it is already running with different routing, the launcher asks before restarting it.
+
+## Reusable profile
+
+To configure Codex yourself instead of launching it through Rayline, write a profile and start the router separately:
+
+```bash
+rayline codex configure
+rayline router start --mode codex --auth subscription
+```
+
+`rayline codex configure` writes `rayline.config.toml` to `$CODEX_HOME`, or to `~/.codex` when `CODEX_HOME` is not set. It accepts `--model`, `--base-url`, and `--auth subscription|none`.
 
 ## Explicit routes
 
-Custom configurations can select local/API endpoints or hosted Agent Gateway routes. Use the [current CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the supported configuration schema.
+Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.
 
 Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Responses protocol does **not** mean it uses the ARC Responses product.
 
@@ -32,6 +61,7 @@ Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Respons
 ```bash
 rayline router status
 rayline router logs --lines 120
+rayline top
 ```
 
-Check the configured endpoint and actual selected route before assuming a session is local, using a subscription, or charged through Rayline.
+Check the configured endpoint and the selected route before assuming a session is local, using a subscription, or charged through Rayline.

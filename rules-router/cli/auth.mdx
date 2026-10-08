@@ -18,6 +18,8 @@ rayline auth status
 
 For a machine without a browser, use `rayline auth login --no-browser` for device-code login. Use `--paste` when you need to paste a browser callback URL manually.
 
+You can also skip this step: on a terminal, `rayline claude` and `rayline codex` start the sign-in flow when they need it. `rayline status` is the same as `rayline auth status`.
+
 <span id="rl-auth-logout" />
 <span id="rayline-auth-logout" />
 <span id="options-1" />
@@ -39,5 +41,7 @@ This command requests revocation of the stored Rayline session and removes its s
 ## Scripting
 
 `rayline auth token` prints an account bearer token. Treat it as a secret; do not paste it into logs or support tickets. An account token is not a substitute for the routing API key in the manual client setup.
+
+Your sign-in session and the router key that hosted launches create are stored in `~/.config/rayline/credentials.json`, separately for each [hosted environment](/rules-router/cli#hosted-environment). Commands that need an account token also read it from the `RAYLINE_AUTH_TOKEN` environment variable, or from `--auth-token <token>` before the command.
 
 Use `rayline auth --help` and the [CLI source](https://github.com/rayline-ai/rayline) for the commands supported by your installed release.

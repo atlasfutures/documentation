@@ -11,13 +11,16 @@ description: "Inspect and control the local routing runtime."
 <span id="health-checks" />
 
 
-Client launch commands normally start the runtime for you. To inspect an existing session:
+Client launch commands start the runtime for you. To inspect it:
 
 ```bash
 rayline router status
 rayline router logs --lines 120
+rayline top
 rayline top --json
 ```
+
+`rayline top` shows live request metrics. `--json` prints one snapshot, and `--all` includes Claude Code's background traffic that the proxy passes through. `rayline router top` is the same command.
 
 Logs can include sensitive request information. Review and redact them before sharing.
 
@@ -29,13 +32,37 @@ Logs can include sensitive request information. Review and redact them before sh
 
 ## Start a runtime separately
 
+Start the runtime without launching a client when you want to drive it from your own code:
+
 ```bash
-rayline router start --help
+rayline router start
+rayline router start --route subagents
+rayline router start --mode codex --auth subscription
 ```
 
-Choose `--mode anthropic` or `--mode codex` for the inbound protocol. Use `--config <path>` for explicit endpoints and routes. Configure on-device providers through `rayline local`; the old model-repository and adapter-port flags are not the current setup interface.
+| Option | Purpose |
+| --- | --- |
+| `--mode anthropic\|codex` | Choose the inbound API. `anthropic`, the default, serves the transparent proxy on `http://127.0.0.1:20810`. `codex` serves OpenAI Responses on `http://127.0.0.1:20811/v1`. |
+| `--route all\|subagents` | Choose what goes through the router. The default is `all`; request model `rayline-local` to reach the on-device model. |
+| `--config <path>` | Supply endpoints and routes. Overrides `--route`. |
+| `--auth auto\|subscription\|none` | With `--mode codex`, choose the Codex auth source. `--subscription` is short for `--auth subscription`. |
 
-Use the [current source guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for complete client wiring. Starting a daemon alone does not reconfigure an already running client.
+The on-device model comes from your [`rayline local`](/rules-router/guides/local-models) configuration; `rayline router start` fails until you choose one. A client that uses the Anthropic proxy must trust the proxy's certificate. See [Rayline for agents](/rules-router/quickstart/agents) for SDK examples.
+
+Starting a runtime does not reconfigure a client that is already running.
+
+## Logs
+
+Runtime state lives in `~/.rayline/rld`. `rayline router logs` prints the combined log; read the others with `tail -f`.
+
+| Log | Path |
+| --- | --- |
+| Router, adapter, and injector | `~/.rayline/rld/rl-rld.log` |
+| Bundled llama.cpp server | `~/.rayline/rld/llama-server.log` |
+| Transparent proxy | `~/.rayline/rld/rl-rld-proxy.log` |
+| Proxy for `--isolated` sessions | `~/.rayline/rld/cc/rl-rld-proxy.log` |
+
+The llama.cpp log exists only when Rayline runs the local model for you.
 
 <span id="rl-router-stop" />
 <span id="rayline-router-stop" />

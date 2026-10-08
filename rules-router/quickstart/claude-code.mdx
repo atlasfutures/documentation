@@ -29,9 +29,9 @@ Without `--local`, the CLI uses hosted Rayline routing. Choose **Rules** and you
 rayline claude --local
 ```
 
-This runs the on-device router without a Rayline account. By default it is hybrid: the main agent remains on cloud Claude and eligible subagent traffic routes locally. Your cloud provider credentials and any cloud inference charges still apply.
+This runs the on-device router without a Rayline account. By default it is hybrid: the main agent remains on cloud Claude and read-only subagents such as Explore route locally. Your cloud provider credentials and any cloud inference charges still apply.
 
-Use `--route all` only when you intend a fully local route and have a suitable local model. See [local routing](/rules-router/guides/local-models) for hardware and privacy boundaries.
+`--route all` sends every subagent to your local model, but the main agent still goes to cloud Claude. A fully local session also needs a router config that sends the main agent to the local model; see [fully local sessions](/rules-router/guides/local-models#fully-local-sessions) for that and for hardware and privacy boundaries.
 
 ## Advanced: manual environment variables
 

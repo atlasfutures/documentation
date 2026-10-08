@@ -1,37 +1,101 @@
 ---
 title: "Rayline CLI"
-description: "Install and inspect the supported CLI commands."
+description: "Install the CLI and find every supported command, option, and file."
 ---
 
 <span id="install" />
 <span id="update" />
 
 
-The current binaries are `rayline` and the `rld` daemon. Install from [Rayline releases](https://github.com/rayline-ai/rayline/releases) using the [OS-specific installer](https://github.com/rayline-ai/rayline#install).
+Rayline ships two binaries: the `rayline` CLI and the `rld` daemon. The CLI starts `rld` when a session needs it; you do not run `rld` yourself.
+
+Install the latest [release](https://github.com/rayline-ai/rayline/releases) on macOS or Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rayline-ai/rayline/main/scripts/install-rayline.sh | sh
+```
+
+On Windows, in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/rayline-ai/rayline/main/scripts/install-rayline.ps1 | iex
+```
+
+The installers place `rayline` and `rld` in `~/.rayline/bin` and verify each binary against the release checksums. They do not edit your shell profile; if `rayline` is not found, add `~/.rayline/bin` to your `PATH` as the installer suggests. Check the install and keep it current:
 
 ```bash
 rayline --version
-rayline --help
 rayline update --check
+rayline update
 ```
+
+`rayline update` also accepts `--version <version>`, `--force`, and `--dry-run`, which downloads and verifies a release without replacing your binary.
 
 <span id="command-overview" />
 
+## Commands
+
 | Command | Purpose |
 | --- | --- |
-| `rayline auth login` | Sign in for hosted routing |
-| `rayline claude` | Launch Claude Code with hosted routing |
-| `rayline claude --local` | Run the on-device hybrid router |
-| `rayline codex -- exec "summarize this repo"` | Run Codex through Rayline |
-| `rayline codex app` | Launch routed Codex desktop |
-| `rayline router status` | Inspect the local router |
-| `rayline router logs --lines 120` | Read recent local logs |
-| `rayline router stop` | Stop the local router |
+| `rayline auth login` | Sign in for hosted routing. See [rayline auth](/rules-router/cli/auth). |
+| `rayline status` | Show your sign-in state. Same as `rayline auth status`. |
+| `rayline claude` | Launch Claude Code with hosted routing. See [rayline claude](/rules-router/cli/claude). |
+| `rayline claude --local` | Launch Claude Code with the on-device hybrid router. |
+| `rayline codex -- exec "summarize this repo"` | Run Codex CLI through Rayline. See [Codex](/rules-router/quickstart/codex). |
+| `rayline codex app` | Launch the Codex desktop app through Rayline. |
+| `rayline codex configure` | Write a reusable Codex profile that points at the local router. |
+| `rayline local <command>` | Choose and manage the local model. See [local models](/rules-router/guides/local-models). |
+| `rayline router <command>` | Start, inspect, or stop the local runtime. See [rayline router](/rules-router/cli/router). |
+| `rayline top` | Show live request metrics for the local runtime. |
+| `rayline update` | Check for or install a CLI update. |
+
+Every command accepts `--help`. Run `rayline --help` for the list your installed version supports.
 
 <span id="global-options" />
 <span id="--env" />
+
+## Hosted environment
+
+Hosted commands use the production service at `https://api.rayline.ai` by default. `--env <name>` selects another hosted environment, which must be defined under `environments` in `~/.config/rayline/settings.json`. Most users never need it. Put it before the command or directly after it:
+
+```bash
+rayline --env <name> claude
+rayline claude --env <name>
+```
+
+Sign-in sessions and router keys are stored per environment, so signing in to one does not sign you in to another.
+
 <span id="configuration" />
+
+## Files
+
+| Path | Contents |
+| --- | --- |
+| `~/.rayline/bin` | The `rayline` and `rld` binaries. |
+| `~/.rayline/rld` | Local runtime state and logs. |
+| `~/.rayline/cc` | Claude Code configuration for `--isolated` sessions. |
+| `~/.rayline/codex-app-home` | The isolated Codex home used by `rayline codex app`. |
+| `~/.config/rayline/credentials.json` | Your Rayline sign-in session and router key. Treat it as a secret. |
+| `~/.config/rayline/settings.json` | Local model choice, subagent mapping, and environment definitions. |
+
 <span id="environment-variables" />
+
+## Ports
+
+The local runtime listens on `127.0.0.1` only.
+
+| Port | Used by | Override |
+| --- | --- | --- |
+| 20810 | Transparent proxy for Claude Code and Anthropic SDK clients | `RAYLINE_PROXY_PORT` |
+| 20812 | Proxy for `--isolated` Claude Code sessions | `RAYLINE_ISOLATED_PROXY_PORT` |
+| 20811 | Local router, including the OpenAI Responses endpoint for Codex | |
+| 20809 | Request injector | `RAYLINE_INJECTOR_PORT` |
+| 20808 | Adapter in front of the local model server | |
+| 20813 | Request metrics for `rayline top` | `RAYLINE_METRICS_PORT` |
+| 20814 | Request metrics for `--isolated` sessions | `RAYLINE_ISOLATED_METRICS_PORT` |
+
+If another program already uses one of these ports, see [port conflicts](/rules-router/troubleshooting/connectivity#port-conflicts).
+
 <span id="next-steps" />
 
-For the complete version-specific flags and configuration schema, use `--help` and the [source CLI guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md). Examples here are aligned to the repository's pinned Rayline source; check your installed version before using advanced options.
+To remove Rayline, see [Uninstall](/rules-router/cli/uninstall). For the router configuration file format, see the [source guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md).

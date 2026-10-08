@@ -131,6 +131,7 @@
               "rules-router/cli/auth",
               "rules-router/cli/claude",
               "rules-router/cli/router",
+              "rules-router/cli/uninstall",
               "rules-router/reference"
             ]
           },
