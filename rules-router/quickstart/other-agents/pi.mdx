@@ -1,0 +1,54 @@
+---
+title: "pi"
+description: "Run the pi coding agent through hosted Agent Gateway with rayline pi."
+---
+
+<Note>Needs a Rayline release newer than 0.2.7.</Note>
+
+## Install
+
+Install pi (`@earendil-works/pi-coding-agent`) from its [install docs](https://github.com/earendil-works/pi#getting-started), then sign in to Rayline:
+
+```bash
+rayline auth login
+```
+
+## Run
+
+```bash
+rayline pi
+rayline pi -p "summarize this repo"
+rayline --env <name> pi
+```
+
+Everything after `pi` goes to pi unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+## What Rayline writes
+
+Rayline sets `PI_CODING_AGENT_DIR` to `~/.config/rayline/harness/pi/<env>/`:
+
+| File | Contents | Rewritten each launch |
+| --- | --- | --- |
+| `models.json` | A `rayline` provider using the Anthropic Messages API, pointed at Agent Gateway, with model `rayline-router` | Yes |
+| `settings.json` | Makes `rayline` and `rayline-router` the defaults | No; written once, then yours to edit |
+
+pi also keeps its own auth and sessions in that directory, so sessions run through Rayline are separate from your normal pi sessions.
+
+## Key handling
+
+`models.json` refers to the key as `$RAYLINE_KEY`, which pi resolves from its environment. The key is set only in pi's process environment and is never written to disk.
+
+## Conversations
+
+Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Rayline also turns on pi's session-affinity header. Resuming with `-c` or `--resume` in a new launch starts a new conversation.
+
+## Known limitations
+
+- Sessions from your normal pi setup are not visible under `rayline pi`, and the reverse.
+- Edits to `models.json` are lost on the next launch. Change defaults in `settings.json`.
+
+## Troubleshooting
+
+- **`pi` not found on PATH.** Install pi and check `which pi`.
+- **pi does not pick the Rayline model.** Check `settings.json` in the config directory; delete it to have Rayline write the defaults again on the next launch.
+- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

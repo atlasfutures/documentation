@@ -1,0 +1,51 @@
+---
+title: "opencode"
+description: "Run opencode through hosted Agent Gateway with rayline opencode."
+---
+
+<Note>Needs a Rayline release newer than 0.2.7.</Note>
+
+## Install
+
+Install opencode from its [install docs](https://opencode.ai/docs/#install), then sign in to Rayline:
+
+```bash
+rayline auth login
+```
+
+## Run
+
+```bash
+rayline opencode
+rayline opencode run "summarize this repo"
+rayline --env <name> opencode
+```
+
+Everything after `opencode` goes to opencode unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+## What Rayline writes
+
+| File | Contents | Rewritten each launch |
+| --- | --- | --- |
+| `~/.config/rayline/harness/opencode/<env>/opencode.json` | A `rayline` provider using opencode's Anthropic provider, pointed at Agent Gateway, with `rayline/rayline-router` as both `model` and `small_model` | Yes |
+
+Rayline sets `OPENCODE_CONFIG` to this file. opencode merges it over your global config, so your other opencode settings still apply. Project-level opencode configs take precedence over it.
+
+## Key handling
+
+The config refers to the key as `{env:RAYLINE_KEY}`, opencode's environment substitution. The key itself is set only in opencode's process environment and is never written to disk.
+
+## Conversations
+
+Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Continuing a session in a new launch with `opencode -c` or `--session` starts a new conversation.
+
+## Known limitations
+
+- A project-level opencode config that sets its own model or provider overrides Rayline's.
+- Edits to Rayline's `opencode.json` are lost on the next launch. Put your own settings in opencode's global or project config.
+
+## Troubleshooting
+
+- **`opencode` not found on PATH.** Install opencode and check `which opencode`.
+- **Requests go to another provider.** Look for `model` or `provider` settings in the project's opencode config.
+- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

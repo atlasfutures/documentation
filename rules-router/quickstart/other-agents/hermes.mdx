@@ -1,0 +1,56 @@
+---
+title: "Hermes Agent"
+description: "Run Hermes Agent through hosted Agent Gateway with rayline hermes."
+---
+
+<Note>Needs a Rayline release newer than 0.2.7.</Note>
+
+## Install
+
+Install Hermes Agent from its [install docs](https://hermes-agent.nousresearch.com/docs/getting-started/installation). Use v2026.9.21 or later. Then sign in to Rayline:
+
+```bash
+rayline auth login
+```
+
+## Run
+
+```bash
+rayline hermes
+rayline hermes --provider rayline-resp
+rayline --env <name> hermes
+```
+
+Everything after `hermes` goes to Hermes unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+## What Rayline writes
+
+Rayline sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. It defines two providers, both with model `rayline-router`:
+
+| Provider | API | Use |
+| --- | --- | --- |
+| `rayline-anth` | Anthropic Messages | The default |
+| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp` |
+
+Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
+
+## Key handling
+
+Each provider names the key's environment variable with `key_env: RAYLINE_KEY`. The key is set only in Hermes' process environment and is never written to disk.
+
+## Conversations
+
+Each launch is one Agent Gateway conversation: both providers send a per-launch `x-conversation-id` header. Resuming with `--continue` or `--resume` in a new launch starts a new conversation.
+
+Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade, or use `--provider rayline-resp`.
+
+## Known limitations
+
+- Sessions, memories, and skills from your normal Hermes home are not available under `rayline hermes`.
+- Edits to Rayline's `config.yaml` are lost on the next launch.
+
+## Troubleshooting
+
+- **`hermes` not found on PATH.** Install Hermes Agent and check `which hermes`.
+- **Every turn is a separate conversation.** On a Hermes release before v2026.9.21, upgrade to v2026.9.21 or later, or use `--provider rayline-resp`.
+- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

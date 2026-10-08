@@ -1,0 +1,56 @@
+---
+title: "oh-my-pi"
+description: "Run oh-my-pi (omp) through hosted Agent Gateway with rayline omp."
+---
+
+<Note>Needs a Rayline release newer than 0.2.7.</Note>
+
+## Install
+
+Install oh-my-pi from its [install docs](https://github.com/can1357/oh-my-pi#install). Use version 18.1.10 or later. Then sign in to Rayline:
+
+```bash
+rayline auth login
+```
+
+## Run
+
+```bash
+rayline omp
+rayline --env <name> omp
+```
+
+Everything after `omp` goes to omp unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+## What Rayline writes
+
+Rayline sets `PI_CODING_AGENT_DIR` to `~/.config/rayline/harness/omp/<env>/`:
+
+| File | Contents | Rewritten each launch |
+| --- | --- | --- |
+| `models.yml` | A `rayline` provider in API-key mode using the Anthropic Messages API, pointed at Agent Gateway, with model `rayline-router` | Yes |
+| `config.yml` | Assigns `rayline/rayline-router` to the `default`, `smol`, `slow`, and `plan` model roles | No; written once, then yours to edit |
+
+Rayline removes `OMP_PROFILE` and `PI_PROFILE` from omp's environment, because a named profile would make omp ignore this directory. It also removes `CLAUDE_CONFIG_DIR`, so omp does not load another Claude Code configuration, for example when you start it from a `rayline claude` session.
+
+## Key handling
+
+`models.yml` names the `RAYLINE_KEY` environment variable instead of containing the key. The key is set only in omp's process environment and is never written to disk.
+
+## Conversations
+
+Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Resuming in a new launch starts a new conversation.
+
+From version 18.1.10, omp also sends its own session ID in API-key mode. When omp is older, Rayline prints a warning asking you to upgrade. On the production service the per-launch conversation ID still applies, so routing works either way.
+
+## Known limitations
+
+- Named omp profiles are not used under `rayline omp`.
+- Sessions run through Rayline are kept in Rayline's directory, separate from your normal omp sessions.
+- Edits to `models.yml` are lost on the next launch. Change model roles in `config.yml`.
+
+## Troubleshooting
+
+- **`omp` not found on PATH.** Install oh-my-pi and check `which omp`.
+- **Version warning at launch.** Upgrade omp to 18.1.10 or later.
+- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
