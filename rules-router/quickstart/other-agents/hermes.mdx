@@ -17,7 +17,7 @@ rayline auth login
 
 ```bash
 rayline hermes
-rayline hermes --provider rayline-resp
+rayline hermes --provider rayline-resp --model rayline-router
 rayline --env <name> hermes
 ```
 
@@ -30,7 +30,7 @@ Rayline sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writ
 | Provider | API | Use |
 | --- | --- | --- |
 | `rayline-anth` | Anthropic Messages | The default |
-| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp` |
+| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp --model rayline-router` |
 
 Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
 
@@ -42,7 +42,47 @@ Each provider names the key's environment variable with `key_env: RAYLINE_KEY`. 
 
 Each launch is one Agent Gateway conversation: both providers send a per-launch `x-conversation-id` header. Resuming with `--continue` or `--resume` in a new launch starts a new conversation.
 
-Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade, or use `--provider rayline-resp`.
+Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade to v2026.9.21 or later.
+
+## Manual setup (without the launcher)
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
+
+Add these providers to `~/.hermes/config.yaml`, and point `model` at the first one:
+
+```yaml
+model:
+  provider: "custom:rayline-anth"
+  default: "rayline-router"
+  context_length: 200000
+providers:
+  rayline-anth:
+    api_mode: "anthropic_messages"
+    base_url: "https://api.rayline.ai"
+    key_env: "RAYLINE_KEY"
+    extra_headers:
+      x-conversation-id: "${RAYLINE_CONV_ID}"
+    models:
+      rayline-router:
+        context_length: 200000
+  rayline-resp:
+    api_mode: "codex_responses"
+    base_url: "https://api.rayline.ai/v1"
+    key_env: "RAYLINE_KEY"
+    extra_headers:
+      x-conversation-id: "${RAYLINE_CONV_ID}"
+    models:
+      rayline-router:
+        context_length: 200000
+```
+
+- `key_env` names the variable that holds the key; Hermes expands `${NAME}` in other values.
+- `rayline-anth` uses the Messages API at `/v1/messages`, so its `base_url` has no `/v1`. `rayline-resp` uses the Responses API at `/v1/responses`, so its `base_url` ends in `/v1`. Select it with `--provider rayline-resp --model rayline-router`.
+- The launcher also sets `fallback_providers: []`, so a failed request is not retried against another provider. Add it if you want the same behaviour.
+
+To keep this separate from your normal Hermes home, save it as `config.yaml` in another directory and set `HERMES_HOME` to that directory, as the launcher does.
+
+Check it with `hermes -z "Reply with the word ready."`.
 
 ## Known limitations
 
@@ -52,5 +92,5 @@ Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With
 ## Troubleshooting
 
 - **`hermes` not found on PATH.** Install Hermes Agent and check `which hermes`.
-- **Every turn is a separate conversation.** On a Hermes release before v2026.9.21, upgrade to v2026.9.21 or later, or use `--provider rayline-resp`.
+- **Every turn is a separate conversation.** On a Hermes release before v2026.9.21, upgrade to v2026.9.21 or later.
 - See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

@@ -19,7 +19,7 @@ Rayline can launch five more coding agents against hosted Agent Gateway, the sam
 ```bash
 rayline auth login
 rayline pi
-rayline opencode run "summarize this repo"
+rayline opencode run --standalone "summarize this repo"
 ```
 
 ## Launcher options
@@ -48,6 +48,44 @@ The router key is never written to the agent's config. Every config refers to th
 ## Conversations
 
 Agent Gateway groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+
+## Manual setup (without the launcher)
+
+You can connect each agent to Agent Gateway yourself, with the same configuration `rayline <agent>` writes. Each agent's guide has a copy-paste config. They all rely on two environment variables.
+
+### The API key
+
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_KEY` in the shell that starts the agent, for example from your secrets manager:
+
+```bash
+export RAYLINE_KEY="<your Rayline API key>"
+```
+
+Every config below refers to `RAYLINE_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
+
+### The conversation ID
+
+The launcher gives each launch a new conversation ID and sends it as the `x-conversation-id` header on every request. Agent Gateway uses it to treat the session's requests as one conversation. Do the same by setting `RAYLINE_CONV_ID` before each session; the configs below send it as that header:
+
+```bash
+export RAYLINE_CONV_ID="$(uuidgen)"
+```
+
+In PowerShell, use `$env:RAYLINE_CONV_ID = [guid]::NewGuid().ToString()`.
+
+Use a new ID for each session. Reusing one ID across unrelated sessions merges them into one conversation.
+
+Without a conversation ID, Agent Gateway treats every request as its own conversation:
+
+- requests from one session are not grouped for routing;
+- consecutive requests are not pinned to the same provider backend where a provider supports that, so prompt-cache reuse can drop and cached input is billed at the lower cache rate less often;
+- usage is not grouped by session.
+
+The agent still works.
+
+### Check the connection
+
+After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/rules-router/guides/dashboard). An authentication error usually means `RAYLINE_KEY` is missing from the agent's environment or holds the wrong key.
 
 ## Troubleshooting
 
