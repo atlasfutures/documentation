@@ -68,10 +68,10 @@ Every config below refers to `RAYLINE_KEY` by name, using the agent's own enviro
 The launcher gives each launch a new conversation ID and sends it as the `x-conversation-id` header on every request. Agent Gateway uses it to treat the session's requests as one conversation. Do the same by setting `RAYLINE_CONV_ID` before each session; the configs below send it as that header:
 
 ```bash
-export RAYLINE_CONV_ID="$(uuidgen)"
+export RAYLINE_CONV_ID="$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
 ```
 
-In PowerShell, use `$env:RAYLINE_CONV_ID = [guid]::NewGuid().ToString()`.
+This uses `uuidgen` on macOS and the kernel's UUID generator on Linux, where `uuidgen` is often not installed. In PowerShell, use `$env:RAYLINE_CONV_ID = [guid]::NewGuid().ToString()`.
 
 Use a new ID for each session. Reusing one ID across unrelated sessions merges them into one conversation.
 
