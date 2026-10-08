@@ -95,7 +95,21 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 - Give the key as this SecretRef, never as the `${RAYLINE_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Agent Gateway does not serve.
 - For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Then select `rayline-resp/rayline-router`.
-- The launcher also turns off background requests: `"memory": { "search": { "provider": "none" } }`, `"heartbeat": { "every": "0m" }`, and `"compaction": { "memoryFlush": { "enabled": false } }` under `agents.defaults`. Add them if you want the same behaviour. Otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway.
+- The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway:
+
+  ```json
+  {
+    "memory": { "search": { "provider": "none" } },
+    "agents": {
+      "defaults": {
+        "heartbeat": { "every": "0m" },
+        "compaction": { "memoryFlush": { "enabled": false } }
+      }
+    }
+  }
+  ```
+
+  `memory` is a top-level key, OpenClaw's global memory configuration. `heartbeat` and `compaction` go under `agents.defaults`.
 
 To keep a session in one conversation across relaunches, as the launcher does with `--session-id`, derive the ID from the session ID:
 

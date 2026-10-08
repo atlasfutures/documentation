@@ -9,19 +9,33 @@ description: "Install the CLI and find every supported command, option, and file
 
 Rayline ships two binaries: the `rayline` CLI and the `rld` daemon. The CLI starts `rld` when a session needs it; you do not run `rld` yourself.
 
-Install the latest [release](https://github.com/rayline-ai/rayline/releases) on macOS or Linux:
+Install the latest release on macOS or Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rayline-ai/rayline/main/scripts/install-rayline.sh | sh
+curl -fsSL https://get.rayline.ai/install.sh | bash
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/rayline-ai/rayline/main/scripts/install-rayline.ps1 | iex
+irm https://get.rayline.ai/install.ps1 | iex
 ```
 
-The installers place `rayline` and `rld` in `~/.rayline/bin` and verify each binary against the release checksums. They do not edit your shell profile; if `rayline` is not found, add `~/.rayline/bin` to your `PATH` as the installer suggests. Check the install and keep it current:
+The installers download `rayline` and `rld`, verify each binary against the release checksums, and place them in `~/.rayline/bin`. They then add that directory to your `PATH`:
+
+- on macOS and Linux, by appending `export PATH="$HOME/.rayline/bin:$PATH"` to `~/.zshrc`, `~/.bash_profile` on macOS, or `~/.bashrc` on Linux, depending on your shell;
+- on Windows, in your user `PATH`.
+
+Open a new terminal afterwards. With another shell, the installer prints the line to add yourself.
+
+| Variable | Effect |
+| --- | --- |
+| `RAYLINE_INSTALL_DIR` | Install into another directory. On macOS and Linux the installer then leaves your shell profile alone; add the directory to your `PATH` yourself. |
+| `RAYLINE_NO_PATH_UPDATE=1` | Skip the `PATH` change. |
+
+To install a specific version, pass its full version string, as `rayline --version` prints it (for example `0.2.8+108012255153`), to the script with `curl -fsSL https://get.rayline.ai/install.sh | bash -s -- <version>`. On Windows, set `RAYLINE_VERSION` before running the installer.
+
+Check the install and keep it current:
 
 ```bash
 rayline --version

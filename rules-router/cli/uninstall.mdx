@@ -51,4 +51,12 @@ Remove-Item -Recurse -Force "$HOME\.rayline", "$HOME\.config\rayline", "$env:APP
 
 This removes the binaries, runtime state and logs, the bundled llama.cpp server, the isolated Claude Code and Codex homes, your settings and credentials, and the proxy's certificate authority. Rayline never adds that certificate to your system trust store, so there is nothing to remove there.
 
-Finally, remove `~/.rayline/bin` from your `PATH` if you added it to your shell profile.
+Finally, take `~/.rayline/bin` off your `PATH`. On macOS and Linux, delete the lines the installer added to `~/.zshrc`, `~/.bash_profile`, or `~/.bashrc`: the comment `# Added by Rayline CLI installer` and the `export PATH="$HOME/.rayline/bin:$PATH"` line after it. On Windows, remove the directory from your user `PATH` in **Environment Variables**.
+
+If you installed into another directory with `RAYLINE_INSTALL_DIR`, the steps above leave the binaries there. Delete just the two binaries, not the whole directory, which may hold other tools:
+
+```bash
+rm "<install dir>/rayline" "<install dir>/rld"
+```
+
+On Windows, delete `rayline.exe` and `rld.exe` from that directory. Then remove the `PATH` entry you added for it.
