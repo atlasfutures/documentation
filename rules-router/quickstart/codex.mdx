@@ -56,6 +56,39 @@ From Rayline 0.2.8, Codex never receives your router key. Its provider points at
 
 If the Codex desktop app was already running before you updated Rayline, quit and relaunch it once. `rayline codex app` reuses a running app whose routing is current, and a running process keeps the environment it started with.
 
+## Manual setup (without the launcher)
+
+The launcher runs a local router between Codex and Agent Gateway. You can instead point Codex straight at the hosted Responses API. Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then add the provider to `~/.codex/config.toml`:
+
+```toml
+[model_providers.rayline]
+name = "Rayline"
+base_url = "https://api.rayline.ai/v1"
+env_key = "RAYLINE_KEY"
+wire_api = "responses"
+```
+
+Create a profile that selects it, `~/.codex/rayline.config.toml`:
+
+```toml
+model_provider = "rayline"
+model = "rayline-router"
+```
+
+Start Codex with the profile:
+
+```bash
+codex --profile rayline exec "Reply with the word ready."
+```
+
+- `env_key` names the variable that holds the key; Codex sends it as a bearer token and never stores it in the config.
+- `wire_api = "responses"` makes Codex call `/v1/responses`.
+- Current Codex releases read profiles from `<name>.config.toml` in the Codex home and reject a `[profiles.<name>]` table in `config.toml`. If you set `CODEX_HOME`, put both files there.
+- Codex sends its thread ID as `prompt_cache_key`, and Agent Gateway uses that as the conversation ID for Codex requests, so you do not need to add a conversation header.
+- This is hosted routing only. Subscription mode and local models need the launcher's local router.
+
+Then find the request in [Inspect routed requests](/rules-router/guides/dashboard).
+
 ## Explicit routes
 
 Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.

@@ -42,6 +42,51 @@ pi also keeps its own auth and sessions in that directory, so sessions run throu
 
 Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Rayline also turns on pi's session-affinity header. Resuming with `-c` or `--resume` in a new launch starts a new conversation.
 
+## Manual setup (without the launcher)
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+
+Add this provider to `~/.pi/agent/models.json`, merging it into `providers` if the file exists:
+
+```json
+{
+  "providers": {
+    "rayline": {
+      "baseUrl": "https://api.rayline.ai",
+      "api": "anthropic-messages",
+      "apiKey": "$RAYLINE_KEY",
+      "headers": { "x-conversation-id": "$RAYLINE_CONV_ID" },
+      "compat": { "sendSessionAffinityHeaders": true },
+      "models": [
+        {
+          "id": "rayline-router",
+          "name": "Rayline router",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 200000,
+          "maxTokens": 32000
+        }
+      ]
+    }
+  }
+}
+```
+
+To make it the default, add these keys to `~/.pi/agent/settings.json`:
+
+```json
+{ "defaultProvider": "rayline", "defaultModel": "rayline-router" }
+```
+
+- `baseUrl` has no `/v1`; pi adds the Messages path.
+- pi expands `$NAME` in `apiKey` and header values from its environment.
+- `compat.sendSessionAffinityHeaders` makes pi send its own session ID as well. The launcher sets it, but the hosted service currently keys conversations on `x-conversation-id`, so it is optional.
+- The launcher does not set `compat.allowEmptySignature` for the hosted service. Leave it unset.
+
+To keep this separate from your normal pi setup, put both files in another directory and set `PI_CODING_AGENT_DIR` to it, as the launcher does. pi then keeps that setup's sessions and login there too.
+
+Check it with `pi -p "Reply with the word ready."`.
+
 ## Known limitations
 
 - Sessions from your normal pi setup are not visible under `rayline pi`, and the reverse.

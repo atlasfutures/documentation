@@ -55,6 +55,57 @@ The default Messages provider sends a conversation ID on every request:
 
 The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
 
+## Manual setup (without the launcher)
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+
+Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make it the default model:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "model": { "primary": "rayline/rayline-router" }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "rayline": {
+        "baseUrl": "https://api.rayline.ai",
+        "api": "anthropic-messages",
+        "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_KEY" },
+        "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
+        "models": [
+          {
+            "id": "rayline-router",
+            "name": "Rayline router",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+- Give the key as this SecretRef, never as the `${RAYLINE_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
+- Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Agent Gateway does not serve.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Then select `rayline-resp/rayline-router`.
+- The launcher also turns off background requests: `"memory": { "search": { "provider": "none" } }`, `"heartbeat": { "every": "0m" }`, and `"compaction": { "memoryFlush": { "enabled": false } }` under `agents.defaults`. Add them if you want the same behaviour. Otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway.
+
+To keep a session in one conversation across relaunches, as the launcher does with `--session-id`, derive the ID from the session ID:
+
+```bash
+export RAYLINE_CONV_ID="oc-$(printf %s "my-task" | shasum -a 256 | cut -c1-32)"
+openclaw agent --local --session-id my-task --message "Reply with the word ready."
+```
+
+`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
+
 ## Known limitations
 
 - OpenClaw reads Rayline's config file instead of your own `openclaw.json` while it runs under Rayline.

@@ -16,12 +16,12 @@ rayline auth login
 ## Run
 
 ```bash
-rayline opencode
-rayline opencode run "summarize this repo"
-rayline --env <name> opencode
+rayline opencode --standalone
+rayline opencode run --standalone "summarize this repo"
+rayline --env <name> opencode --standalone
 ```
 
-Everything after `opencode` goes to opencode unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+With opencode 2, pass `--standalone`. Without it, opencode sends the work to its shared background service, which does not see the config or key that Rayline sets for this launch. Everything after `opencode` goes to opencode unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
 ## What Rayline writes
 
@@ -39,13 +39,66 @@ The config refers to the key as `{env:RAYLINE_KEY}`, opencode's environment subs
 
 Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Continuing a session in a new launch with `opencode -c` or `--session` starts a new conversation.
 
+## Manual setup (without the launcher)
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+
+Save this as `~/.config/opencode/opencode.json`, or merge its `provider` entry into your existing global or project config:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "rayline/rayline-router",
+  "small_model": "rayline/rayline-router",
+  "provider": {
+    "rayline": {
+      "name": "Rayline",
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "baseURL": "https://api.rayline.ai/v1",
+        "apiKey": "{env:RAYLINE_KEY}",
+        "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
+      },
+      "models": {
+        "rayline-router": {
+          "name": "Rayline router",
+          "limit": { "context": 200000, "output": 32000 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "reasoning": true,
+          "tool_call": true,
+          "attachment": true
+        }
+      }
+    }
+  }
+}
+```
+
+- `baseURL` includes `/v1`, because opencode's Anthropic provider adds only `/messages`.
+- `{env:NAME}` is opencode's environment substitution, so neither the key nor the conversation ID is stored in the file.
+- `small_model` sends opencode's background calls, such as session titles, through Agent Gateway too. Remove it to let opencode choose its own small model.
+- The model `limit` tells opencode when to compact; keep it.
+
+To keep this separate from your normal config, save it anywhere and set `OPENCODE_CONFIG` to its path, as the launcher does.
+
+opencode 2 runs a shared background service, and the `opencode` command sends work to it. That service reads configuration and environment variables from the shell that first started it, so `RAYLINE_KEY`, `RAYLINE_CONV_ID`, and `OPENCODE_CONFIG` in your current shell do not reach it. Pass `--standalone` to run with a private server that uses your current shell:
+
+```bash
+opencode --standalone
+opencode run --standalone "Reply with the word ready."
+```
+
+You should get a reply. Without `--standalone`, if the service was started without these variables, requests go out with no key, or through whatever model the service already uses.
+
 ## Known limitations
 
+- With opencode 2, `rayline opencode` needs `--standalone`; see [Run](#run).
 - A project-level opencode config that sets its own model or provider overrides Rayline's.
 - Edits to Rayline's `opencode.json` are lost on the next launch. Put your own settings in opencode's global or project config.
 
 ## Troubleshooting
 
 - **`opencode` not found on PATH.** Install opencode and check `which opencode`.
+- **Requests never reach Agent Gateway, or use another model.** Add `--standalone`, so opencode does not hand the work to a background service started without Rayline's config.
 - **Requests go to another provider.** Look for `model` or `provider` settings in the project's opencode config.
 - See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

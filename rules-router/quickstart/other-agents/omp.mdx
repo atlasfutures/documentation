@@ -43,6 +43,48 @@ Each launch is one Agent Gateway conversation: the config sends a per-launch `x-
 
 From version 18.1.10, omp also sends its own session ID in API-key mode. When omp is older, Rayline prints a warning asking you to upgrade. On the production service the per-launch conversation ID still applies, so routing works either way.
 
+## Manual setup (without the launcher)
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+
+Add this provider to `~/.omp/agent/models.yml`:
+
+```yaml
+providers:
+  rayline:
+    baseUrl: "https://api.rayline.ai"
+    api: "anthropic-messages"
+    auth: "apiKey"
+    apiKey: "RAYLINE_KEY"
+    headers:
+      x-conversation-id: "RAYLINE_CONV_ID"
+    models:
+      - id: "rayline-router"
+        name: "Rayline router"
+        reasoning: true
+        input: ["text", "image"]
+        contextWindow: 200000
+        maxTokens: 32000
+```
+
+To use it for every model role, add this to `~/.omp/agent/config.yml`:
+
+```yaml
+modelRoles:
+  default: "rayline/rayline-router"
+  smol: "rayline/rayline-router"
+  slow: "rayline/rayline-router"
+  plan: "rayline/rayline-router"
+```
+
+- In omp, `apiKey` and header values name environment variables. Write the variable's name, not `$RAYLINE_KEY`.
+- `auth: "apiKey"` makes omp authenticate with the API key, as the launcher does. From omp 18.1.10 it also sends its own session ID in this mode.
+- `baseUrl` has no `/v1`; omp adds the Messages path.
+
+To keep this separate from your normal omp setup, put both files in another directory and set `PI_CODING_AGENT_DIR` to it, as the launcher does. Unset `OMP_PROFILE` and `PI_PROFILE` when you do, because a named profile makes omp ignore that variable.
+
+Check it with a short prompt such as `Reply with the word ready.`
+
 ## Known limitations
 
 - Named omp profiles are not used under `rayline omp`.

@@ -33,16 +33,30 @@ This runs the on-device router without a Rayline account. By default it is hybri
 
 `--route all` sends every subagent to your local model, but the main agent still goes to cloud Claude. A fully local session also needs a router config that sends the main agent to the local model; see [fully local sessions](/rules-router/guides/local-models#fully-local-sessions) for that and for hardware and privacy boundaries.
 
-## Advanced: manual environment variables
+<span id="advanced-manual-environment-variables" />
+
+## Manual setup (without the launcher)
+
+To use hosted Agent Gateway without `rayline claude`, set the same environment variables that `rayline claude --via env` sets. Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then:
 
 ```bash
 export ANTHROPIC_BASE_URL=https://api.rayline.ai
-export ANTHROPIC_API_KEY=rlk-your-key-here
+export ANTHROPIC_AUTH_TOKEN="$RAYLINE_KEY"
 export ANTHROPIC_MODEL=rayline-router
+export CLAUDE_CODE_AUTO_COMPACT_WINDOW=180000
+unset ANTHROPIC_API_KEY
 claude
 ```
 
-Do not append `/v1` to this base URL; the client adds its Messages path. Keep the actual key out of source control.
+- Do not append `/v1` to the base URL; Claude Code adds its Messages path.
+- `ANTHROPIC_AUTH_TOKEN` sends the key as a bearer token. Unset `ANTHROPIC_API_KEY` so an Anthropic key in your environment is not sent instead.
+- `CLAUDE_CODE_AUTO_COMPACT_WINDOW` makes Claude Code compact the conversation at 180,000 tokens, the threshold the launcher uses for `rayline-router`.
+- Claude Code sends its own session ID with every request, and Agent Gateway uses it as the conversation ID, so you do not need to add a conversation header.
+- Keep the key out of source control and out of files that are checked in.
+
+This routes every request, main agent and subagents, through Agent Gateway. The transparent-proxy features of `rayline claude`, such as `--route subagents` and the local router, need the launcher.
+
+Check it with `claude -p "Reply with the word ready."`, then find the request in [Inspect routed requests](/rules-router/guides/dashboard).
 
 <span id="verify-its-working" />
 
