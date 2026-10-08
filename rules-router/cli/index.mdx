@@ -95,7 +95,7 @@ The local runtime listens on `127.0.0.1` only.
 | 20813 | Request metrics for `rayline top` | `RAYLINE_METRICS_PORT` |
 | 20814 | Request metrics for `--isolated` sessions | `RAYLINE_ISOLATED_METRICS_PORT` |
 
-In releases after 0.2.7, if port 20813 is already taken when `rayline codex` starts its router, Rayline picks a free port instead, and `rayline top` still finds it. If another program already uses one of the other ports, see [port conflicts](/rules-router/troubleshooting/connectivity#port-conflicts).
+From Rayline 0.2.8, if port 20813 is already taken when `rayline codex` starts its router, Rayline picks a free port instead, and `rayline top` still finds it. If another program already uses one of the other ports, see [port conflicts](/rules-router/troubleshooting/connectivity#port-conflicts).
 
 <span id="next-steps" />
 

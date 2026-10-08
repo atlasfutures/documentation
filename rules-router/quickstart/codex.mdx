@@ -52,7 +52,7 @@ rayline router start --mode codex --auth subscription
 
 ## How your key is handled
 
-In Rayline releases after 0.2.7, Codex never receives your router key. Its provider points at the local router, which holds the key and adds it to hosted requests; subscription mode uses your ChatGPT login. Rayline removes `RAYLINE_ROUTER_API_KEY` from Codex's environment, so the key cannot reach the shell snapshots Codex saves to disk.
+From Rayline 0.2.8, Codex never receives your router key. Its provider points at the local router, which holds the key and adds it to hosted requests; subscription mode uses your ChatGPT login. Rayline removes `RAYLINE_ROUTER_API_KEY` from Codex's environment, so the key cannot reach the shell snapshots Codex saves to disk.
 
 If the Codex desktop app was already running before you updated Rayline, quit and relaunch it once. `rayline codex app` reuses a running app whose routing is current, and a running process keeps the environment it started with.
 
