@@ -35,7 +35,26 @@ If a client points to a stopped local runtime, relaunch through `rayline claude`
 
 ## Certificate errors
 
-Transparent proxy mode configures a local certificate authority for intercepted traffic. Do not fix TLS failures by disabling certificate verification. Check the launcher diagnostics and your organization's proxy policy. Cloud-only Claude sessions can use `--via env` when appropriate.
+Transparent proxy mode creates a local certificate authority and passes it to Claude Code through `NODE_EXTRA_CA_CERTS`. The certificate is `proxy-ca.pem` in:
+
+| OS | Directory |
+| --- | --- |
+| macOS | `~/Library/Application Support/rayline` |
+| Linux | `$XDG_CONFIG_HOME/rayline`, or `~/.config/rayline` |
+| Windows | `%APPDATA%\rayline` |
+
+An Anthropic SDK client that you point at the proxy yourself must trust this file; see [Rayline for agents](/rules-router/quickstart/agents). Do not fix TLS failures by disabling certificate verification. If your organization runs its own HTTPS proxy, pass its CA bundle with `rayline claude --upstream-ca-path <path>`. Hosted Claude Code sessions can avoid the proxy with `--via env`.
+
+## Port conflicts
+
+The local runtime uses ports 20808 to 20814 on `127.0.0.1`; the [CLI reference](/rules-router/cli#ports) lists each one. If another program holds a port, check what is listening, then either stop that program or move Rayline:
+
+```bash
+lsof -nP -iTCP:20810 -sTCP:LISTEN
+RAYLINE_PROXY_PORT=20910 rayline claude
+```
+
+`rayline claude --isolated` runs its own proxy on port 20812, so it does not compete with the shared proxy on 20810.
 
 <span id="still-stuck" />
 

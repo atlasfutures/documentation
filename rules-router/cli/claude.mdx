@@ -16,17 +16,26 @@ rayline claude --isolated
 rayline claude --local
 ```
 
+Without `--local`, the session uses hosted routing. If you have not signed in, `rayline claude` starts the sign-in flow on a terminal and then creates a router key for you; in a non-interactive shell, run `rayline auth login` first.
+
 <span id="options" />
 
 | Option | Purpose |
 | --- | --- |
-| `--isolated` | Use a separate Claude configuration directory. |
-| `--local` | Use the local static router; the default routes eligible subagents locally, not every request. |
-| `--route all\|subagents` | Choose the routing scope. Explicit config can override this. |
-| `--via proxy\|env` | Choose transparent proxy or cloud-only environment wiring. |
-| `--model <model>` | Request a specific model. Check the current catalog first. |
-| `--config <path>` | Supply endpoint and route configuration for main-agent and subagent traffic. |
+| `--local` | Use the on-device static router instead of hosted routing. Needs no Rayline account. |
+| `--route all\|subagents` | Choose what goes through the router. The default is `all` for hosted routing and `subagents` for `--local`. |
+| `--via proxy\|env` | Choose how Claude Code reaches the router. The default is `proxy`. `env` is hosted-only. |
+| `--isolated` | Use a separate Claude Code configuration directory, so this session can run beside your other Claude Code sessions. |
+| `-m`, `--model <model>` | Request a specific model. Check the current catalog first. |
+| `--config <path>` | Supply endpoints and routes for both the main agent and subagents. |
+| `--router-config-path <path>` | Refine which subagents `--local` sends to the local model. |
+| `--local-provider ollama\|lmstudio\|llamacpp` | Use a local model server you already run for subagents. |
+| `--local-injector-port <port>` | Change the local injector port. |
+| `--auto-compact-window <tokens>` | Override Claude Code's auto-compact threshold. |
+| `--statusline`, `--no-statusline` | Show or hide the routed model in Claude Code's status line. Shown by default. |
+| `--upstream-ca-path <path>` | Trust an extra CA bundle for an upstream corporate proxy. |
 | `--diagnose` | Print routing diagnostics before launch. |
+| `--env <name>` | Use another [hosted environment](/rules-router/cli#hosted-environment). |
 
 <span id="passing-arguments-to-claude-code" />
 <span id="setup-subcommands" />
@@ -45,12 +54,42 @@ rayline claude --local
 <span id="rl-claude-logout" />
 <span id="rayline-claude-logout" />
 
-Pass client arguments after `--`. Run `rayline claude --help` for the full version-specific options.
+Pass Claude Code's own arguments after `--`, for example `rayline claude -- --resume`. Run `rayline claude --help` for the options your installed version supports.
+
+## Common combinations
+
+| Command | Who decides the route | How Claude Code connects | What goes through the router |
+| --- | --- | --- | --- |
+| `rayline claude` | Hosted | Proxy | Everything |
+| `rayline claude --via env` | Hosted | Environment | Everything |
+| `rayline claude --route subagents` | Hosted | Proxy | Subagents only |
+| `rayline claude --local` | Local | Proxy | Subagents only |
+| `rayline claude --local --route all` | Local | Proxy | Everything |
+
+`--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Rayline rejects it with `--local` or `--route subagents`. With `--route all` under `--local`, the default local config still sends the main agent to cloud Claude; see [local models](/rules-router/guides/local-models).
+
+## How your key is handled
+
+In proxy mode, the local proxy holds your router key and adds it to hosted requests. Rayline removes `RAYLINE_ROUTER_API_KEY`, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, and `ANTHROPIC_BASE_URL` from Claude Code's environment, so Claude Code never sees the key.
+
+With `--via env`, Claude Code calls the hosted router directly, so it receives the router key as `ANTHROPIC_AUTH_TOKEN` for that session.
+
+## Older flags
+
+These flags still work and print a warning that names the replacement.
+
+| Older flag | Use instead |
+| --- | --- |
+| `--local-router` | `--local` |
+| `--no-proxy` | `--via env` |
+| `--routing-mode override` | `--via env` |
+| `--routing-mode proxy` | `--route all` |
+| `--routing-mode proxy-subagents` | `--route subagents` |
 
 <span id="telemetry" />
 
 ## Verify the route
 
-Inspect [usage](/rules-router/guides/dashboard) or local router logs. Proxy mode does not depend on an `ANTHROPIC_BASE_URL` environment variable. It configures a local proxy and certificate trust; see [local routing](/rules-router/guides/local-models) for the security boundary.
+Inspect [usage](/rules-router/guides/dashboard), `rayline top`, or local router logs. Proxy mode does not depend on an `ANTHROPIC_BASE_URL` environment variable. It configures a local proxy and gives Claude Code the proxy's certificate; see [local routing](/rules-router/guides/local-models) for the security boundary.
 
 Do not assume a local subagent route makes the main agent, tools, or connectors offline.
