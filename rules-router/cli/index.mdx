@@ -44,6 +44,7 @@ rayline update
 | `rayline codex -- exec "summarize this repo"` | Run Codex CLI through Rayline. See [Codex](/rules-router/quickstart/codex). |
 | `rayline codex app` | Launch the Codex desktop app through Rayline. |
 | `rayline codex configure` | Write a reusable Codex profile that points at the local router. |
+| `rayline opencode`, `pi`, `omp`, `hermes`, `openclaw` | Launch another coding agent through hosted routing. See [other coding agents](/rules-router/quickstart/other-agents). |
 | `rayline local <command>` | Choose and manage the local model. See [local models](/rules-router/guides/local-models). |
 | `rayline router <command>` | Start, inspect, or stop the local runtime. See [rayline router](/rules-router/cli/router). |
 | `rayline top` | Show live request metrics for the local runtime. |
@@ -94,7 +95,7 @@ The local runtime listens on `127.0.0.1` only.
 | 20813 | Request metrics for `rayline top` | `RAYLINE_METRICS_PORT` |
 | 20814 | Request metrics for `--isolated` sessions | `RAYLINE_ISOLATED_METRICS_PORT` |
 
-If another program already uses one of these ports, see [port conflicts](/rules-router/troubleshooting/connectivity#port-conflicts).
+From Rayline 0.2.8, if port 20813 is already taken when `rayline codex` starts its router, Rayline picks a free port instead, and `rayline top` still finds it. If another program already uses one of the other ports, see [port conflicts](/rules-router/troubleshooting/connectivity#port-conflicts).
 
 <span id="next-steps" />
 

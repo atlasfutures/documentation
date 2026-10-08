@@ -50,6 +50,12 @@ rayline router start --mode codex --auth subscription
 
 `rayline codex configure` writes `rayline.config.toml` to `$CODEX_HOME`, or to `~/.codex` when `CODEX_HOME` is not set. It accepts `--model`, `--base-url`, and `--auth subscription|none`.
 
+## How your key is handled
+
+From Rayline 0.2.8, Codex never receives your router key. Its provider points at the local router, which holds the key and adds it to hosted requests; subscription mode uses your ChatGPT login. Rayline removes `RAYLINE_ROUTER_API_KEY` from Codex's environment, so the key cannot reach the shell snapshots Codex saves to disk.
+
+If the Codex desktop app was already running before you updated Rayline, quit and relaunch it once. `rayline codex app` reuses a running app whose routing is current, and a running process keeps the environment it started with.
+
 ## Explicit routes
 
 Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.

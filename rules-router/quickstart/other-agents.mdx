@@ -1,0 +1,56 @@
+---
+title: "Other coding agents"
+sidebarTitle: "Overview"
+description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Agent Gateway."
+---
+
+<Note>These launchers need Rayline 0.2.8 or later. Check with `rayline --version`. To update, run `rayline update`, or `brew upgrade rayline` if you installed with Homebrew. If a fresh install reports an earlier version, run `rayline update` once.</Note>
+
+Rayline can launch five more coding agents against hosted Agent Gateway, the same way `rayline claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
+
+| Command | Agent | Install | Guide |
+| --- | --- | --- | --- |
+| `rayline opencode` | [opencode](https://opencode.ai) | [opencode install docs](https://opencode.ai/docs/#install) | [opencode](/rules-router/quickstart/other-agents/opencode) |
+| `rayline pi` | [pi](https://pi.dev) | [pi install docs](https://github.com/earendil-works/pi#getting-started) | [pi](/rules-router/quickstart/other-agents/pi) |
+| `rayline omp` | [oh-my-pi](https://omp.sh) | [oh-my-pi install docs](https://github.com/can1357/oh-my-pi#install) | [oh-my-pi](/rules-router/quickstart/other-agents/omp) |
+| `rayline hermes` | [Hermes Agent](https://hermes-agent.nousresearch.com) | [Hermes Agent install docs](https://hermes-agent.nousresearch.com/docs/getting-started/installation) | [Hermes Agent](/rules-router/quickstart/other-agents/hermes) |
+| `rayline openclaw` | [OpenClaw](https://openclaw.ai) | [OpenClaw install docs](https://docs.openclaw.ai/install) | [OpenClaw](/rules-router/quickstart/other-agents/openclaw) |
+
+```bash
+rayline auth login
+rayline pi
+rayline opencode run "summarize this repo"
+```
+
+## Launcher options
+
+Everything after the agent's name goes to the agent unchanged, including `--help`. Rayline reads only two options, and only when they come directly after the agent's name, before any of the agent's own arguments:
+
+| Option | Purpose |
+| --- | --- |
+| `--env <name>` | Use another [hosted environment](/rules-router/cli#hosted-environment). You can also put it before the agent's name. |
+| `--auth-token <token>` | Use this account token instead of your stored sign-in. |
+
+Use `--` to pass an argument that would otherwise be read as a Rayline option.
+
+## What the launcher does
+
+1. Signs you in and creates a router key if you have none, as `rayline claude` does. In a non-interactive shell, run `rayline auth login` first.
+2. Writes a Rayline config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
+3. Starts the agent with model `rayline-router` over the Anthropic Messages API, so Agent Gateway chooses the model for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
+
+Each launch prints the router URL, the conversation ID, and the config directory. Rayline rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Rayline's; each agent's guide lists which files those are.
+
+## How your key is handled
+
+The router key is never written to the agent's config. Every config refers to the `RAYLINE_KEY` environment variable, which Rayline sets only for the agent's process. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
+
+## Conversations
+
+Agent Gateway groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+
+## Troubleshooting
+
+- **`<agent>` not found on PATH.** Install the agent and make sure its binary is on your `PATH`; the error includes an install hint. On Windows, Rayline also finds `.exe`, `.cmd`, `.bat`, and `.com` files.
+- **Sign-in errors in scripts.** Run `rayline auth login` once on a terminal, then check `rayline status`.
+- **The agent uses another model.** Check whether a project-level config for that agent overrides the provider or model.

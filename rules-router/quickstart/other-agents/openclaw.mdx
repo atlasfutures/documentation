@@ -1,0 +1,70 @@
+---
+title: "OpenClaw"
+description: "Run OpenClaw through hosted Agent Gateway with rayline openclaw."
+---
+
+<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+
+## Install
+
+Install OpenClaw from its [install docs](https://docs.openclaw.ai/install), then sign in to Rayline:
+
+```bash
+rayline auth login
+```
+
+## Run
+
+```bash
+rayline openclaw agent --message "summarize this repo"
+rayline openclaw agent --session-id my-task --message "continue"
+rayline --env <name> openclaw
+```
+
+Everything after `openclaw` goes to OpenClaw unchanged, with one addition: for an `openclaw agent` turn, Rayline adds `--local` unless you already passed it or used `openclaw agent exec`. That makes the turn use the Rayline config instead of a running OpenClaw Gateway's. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+## What Rayline writes
+
+Rayline sets `OPENCLAW_CONFIG_PATH` to `~/.config/rayline/harness/openclaw/<env>/openclaw.json` and rewrites that file on every launch. OpenClaw's own state stays in `~/.openclaw`.
+
+The config defines two providers, both with model `rayline-router`:
+
+| Model reference | API | Use |
+| --- | --- | --- |
+| `rayline/rayline-router` | Anthropic Messages | The default |
+| `rayline-resp/rayline-router` | OpenAI Responses | Select it as the model |
+
+It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
+
+## Key handling
+
+Both providers take the key as an environment SecretRef:
+
+```json
+"apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_KEY" }
+```
+
+The key is set only in OpenClaw's process environment. If you write an OpenClaw config by hand, use this form, not the `${RAYLINE_KEY}` shorthand. OpenClaw resolves a `${RAYLINE_KEY}` string when it loads the config and then writes the resolved key in plain text to its agent model cache, `~/.openclaw/agents/<agent>/agent/models.json`. For a SecretRef it writes only the variable's name.
+
+## Conversations
+
+The default Messages provider sends a conversation ID on every request:
+
+- With `--session-id <id>`, the conversation ID is derived from that session ID, so relaunching the same session keeps its conversation.
+- Without it, each launch is a new conversation.
+
+The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
+
+## Known limitations
+
+- OpenClaw reads Rayline's config file instead of your own `openclaw.json` while it runs under Rayline.
+- Container mode, through `--container` or `OPENCLAW_CONTAINER`, runs inside a container that cannot see the Rayline config or key. Rayline prints a warning and does not add `--local`.
+- With an OpenClaw Gateway running, stop it with `openclaw gateway stop`, or use `openclaw agent exec`.
+- Memory search and the heartbeat are off under `rayline openclaw`.
+
+## Troubleshooting
+
+- **`openclaw` not found on PATH.** Install OpenClaw and check `which openclaw`.
+- **The turn uses another model.** A running Gateway may be serving it; stop the Gateway or keep `--local` on the turn.
+- **Your key appears in `models.json`.** An older config used the `${RAYLINE_KEY}` shorthand. Switch to the SecretRef form and delete the cached `models.json`. Treat the key as exposed: revoke it in [API keys](/platform/api-keys), then run `rayline auth logout` and `rayline auth login` so the next launch creates a new one.
+- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

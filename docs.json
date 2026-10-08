@@ -112,6 +112,17 @@
               "rules-router/quickstart/index",
               "rules-router/quickstart/claude-code",
               "rules-router/quickstart/codex",
+              {
+                "group": "Other coding agents",
+                "pages": [
+                  "rules-router/quickstart/other-agents",
+                  "rules-router/quickstart/other-agents/opencode",
+                  "rules-router/quickstart/other-agents/pi",
+                  "rules-router/quickstart/other-agents/omp",
+                  "rules-router/quickstart/other-agents/hermes",
+                  "rules-router/quickstart/other-agents/openclaw"
+                ]
+              },
               "rules-router/quickstart/agents"
             ]
           },
