@@ -10,6 +10,21 @@ ARC Responses combines model selection and generation in one interface. Confirm 
 
 Do not assume that streaming, tools, or other provider-specific features are available based on a protocol name.
 
+## Request fields
+
+ARC Responses accepts an OpenAI Responses request body. Some fields change what a request costs in ways ARC does not meter, so they are rejected or removed before the request runs.
+
+| Field | Handling |
+| --- | --- |
+| `background: true` | Rejected with `400 invalid_request_error`. Nothing is sent to a model and nothing is billed. An asynchronous job returns no final usage, so ARC cannot price it. Send a synchronous request. |
+| `service_tier` | Removed. A premium tier bills at a premium upstream rate, and ARC prices the turn at the standard rate for the model. |
+| Hosted tools other than `web_search` | Removed from `tools`, so the model has no way to call them. `file_search`, `code_interpreter`, `image_generation` and `computer_use_preview` are each billed separately upstream and ARC does not meter them yet. A `tool_choice` naming a removed tool is dropped with it. |
+| `web_search` | Forwarded. Its per-call fee is metered and billed. |
+| Your own tools (`function`, `custom`, `local_shell`, namespace tools) | Forwarded unchanged. Your client executes them, so they cost tokens only. |
+| `store` | Defaults to `false` so prompts are not retained upstream. Set it to `true` to opt in. |
+
+Clients that declare hosted tools they never invoke, such as Codex, are unaffected: the declarations are removed and the request runs.
+
 ## Conversation identity
 
 A Responses turn takes its conversation ID from the first of these that is present:
