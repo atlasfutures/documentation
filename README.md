@@ -50,6 +50,6 @@ This is an implementation preview, not a billing or API launch.
 
 The original Workshop `docs-site/` remains intact during this transition. Do not run the one-time migration over edited consolidated content. Before cutover, reconcile changes made to the still-published old source.
 
-Import provenance: the 64 Workshop articles and three local SVG assets came from `atlasfutures/memex-desktop/docs-site` at parent revision `55382d8d67996f794d5e33e4eb88060bd9b993cc`. Existing Rayline articles came from documentation revision `c09bb732544d9f2a225d3f24dc493cf7f325685a`. Consult those repositories for original author history. Current CLI guidance was checked against `rayline-ai/rayline` revision `7bd2849c99d26ef21be396360d4e4d61c5444c3d`.
+Import provenance: the 64 Workshop articles and three local SVG assets came from `atlasfutures/memex-desktop/docs-site` at parent revision `55382d8d67996f794d5e33e4eb88060bd9b993cc`. Existing Rayline articles came from documentation revision `c09bb732544d9f2a225d3f24dc493cf7f325685a`. Consult those repositories for original author history. Current CLI guidance was checked against `rayline-ai/rayline` revision `941e45901b98` (Rayline 0.2.9). The `rayline claude app` guidance follows the unreleased rayline-ai/rayline#94.
 
 The design and migration rationale is in the parent repository's `docs/rayline-docs-evolution.md`.

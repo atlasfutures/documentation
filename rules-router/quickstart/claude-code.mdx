@@ -50,7 +50,7 @@ claude
 
 - Do not append `/v1` to the base URL; Claude Code adds its Messages path.
 - `ANTHROPIC_AUTH_TOKEN` sends the key as a bearer token. Unset `ANTHROPIC_API_KEY` so an Anthropic key in your environment is not sent instead.
-- `CLAUDE_CODE_AUTO_COMPACT_WINDOW` makes Claude Code compact the conversation at 180,000 tokens, the threshold the launcher uses for `rayline-router`.
+- `CLAUDE_CODE_AUTO_COMPACT_WINDOW` makes Claude Code compact the conversation at 180,000 tokens. From Rayline 0.2.9 the launcher asks the router for this threshold instead: 95% of the context window of the model your rules pin for the main agent.
 - Claude Code sends its own session ID with every request, and Agent Gateway uses it as the conversation ID, so you do not need to add a conversation header.
 - Keep the key out of source control and out of files that are checked in.
 
@@ -66,5 +66,7 @@ Give the agent a small task, then inspect request activity in the platform for h
 
 <span id="disabling-rayline-temporarily" />
 <span id="next-steps" />
+
+To let ARC choose the model instead of your rules, see [ARC in Claude Code](/arc/coding-tools/claude-code) and [Claude Desktop](/arc/coding-tools/claude-desktop).
 
 [Configure routing policies](/rules-router/policies) · [Usage and costs](/rules-router/pricing)

@@ -3,8 +3,9 @@ title: "Availability and compatibility"
 description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<Note>ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
+<ArcPreview />
 
 For Responses, confirm the available endpoints, request and response schemas, and enabled capabilities with the Rayline team during onboarding. Decisions support is listed below. An API key alone does not grant private-preview access.
 
@@ -19,5 +20,16 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | Multi-turn conversations | Yes, with `x-conversation-id` |
 | Streaming | No; each decision is one JSON response |
 | Tools in the request | Accepted; check the response `warnings` for whether they influenced the decision |
+
+## Coding tools
+
+| Client | API it uses | ARC support |
+| --- | --- | --- |
+| Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/arc/coding-tools/claude-code) |
+| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Yes, with `rayline claude app`; see [Claude Desktop](/arc/coding-tools/claude-desktop) |
+| Codex CLI and Codex desktop | OpenAI Responses | Not yet; ARC does not serve Responses requests on `https://api.rayline.ai` |
+| Other agents on Anthropic Messages | Anthropic Messages | Not yet tested; see [other agents](/arc/coding-tools/other-agents) |
+
+A protocol name is not a capability: a client that speaks OpenAI Responses reaches ARC only once ARC serves that API.
 
 See [Responses](/arc/reference/responses), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).

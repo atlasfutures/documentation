@@ -31,7 +31,7 @@ Without `--local`, the session uses hosted routing. If you have not signed in, `
 | `--router-config-path <path>` | Refine which subagents `--local` sends to the local model. |
 | `--local-provider ollama\|lmstudio\|llamacpp` | Use a local model server you already run for subagents. |
 | `--local-injector-port <port>` | Change the local injector port. |
-| `--auto-compact-window <tokens>` | Override Claude Code's auto-compact threshold. |
+| `--auto-compact-window <tokens>` | Override Claude Code's auto-compact threshold. From Rayline 0.2.9, hosted launches ask the router for the launch model's threshold and fail if it has none; pass this option, or set `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, to supply it. |
 | `--statusline`, `--no-statusline` | Show or hide the routed model in Claude Code's status line. Shown by default. |
 | `--upstream-ca-path <path>` | Trust an extra CA bundle for an upstream corporate proxy. |
 | `--diagnose` | Print routing diagnostics before launch. |
@@ -55,6 +55,8 @@ Without `--local`, the session uses hosted routing. If you have not signed in, `
 <span id="rayline-claude-logout" />
 
 Pass Claude Code's own arguments after `--`, for example `rayline claude -- --resume`. Run `rayline claude --help` for the options your installed version supports.
+
+To run Claude Code on ARC, see [ARC in Claude Code](/arc/coding-tools/claude-code). For Code sessions in the Claude desktop app, `rayline claude app` runs a separate router for Desktop; see [Claude Desktop](/arc/coding-tools/claude-desktop).
 
 ## Common combinations
 

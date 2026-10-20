@@ -70,6 +70,16 @@
             ]
           },
           {
+            "group": "Coding tools",
+            "pages": [
+              "arc/coding-tools/index",
+              "arc/coding-tools/claude-code",
+              "arc/coding-tools/claude-desktop",
+              "arc/coding-tools/codex",
+              "arc/coding-tools/other-agents"
+            ]
+          },
+          {
             "group": "Concepts",
             "pages": [
               "arc/concepts/checkpoints",
