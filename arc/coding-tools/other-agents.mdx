@@ -2,13 +2,13 @@
 title: "Other coding agents"
 description: "Use ARC with opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw."
 ---
-import ArcCodingTools from '/snippets/arc-coding-tools.mdx';
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<ArcCodingTools />
+<ArcPreview />
 
 The `rayline opencode`, `rayline pi`, `rayline omp`, `rayline hermes`, and `rayline openclaw` launchers always select `rayline-router`, so they route through [Agent Gateway](/rules-router/quickstart/other-agents). They do not accept a model option.
 
-To use ARC with one of these agents, follow its manual setup in the Agent Gateway guide and change the model from `rayline-router` to `arc-1.0`. Keep the Anthropic Messages API and the base URL `https://api.rayline.ai`:
+To use ARC with one of these agents, follow its manual setup in the Agent Gateway guide and change the model from `rayline-router` to an ARC tier ID, `rayline/arc-swift` or `rayline/arc-sage`. Keep the Anthropic Messages API and the base URL `https://api.rayline.ai`:
 
 | Agent | Manual setup |
 | --- | --- |

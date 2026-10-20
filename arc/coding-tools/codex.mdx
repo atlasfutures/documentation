@@ -3,12 +3,12 @@ title: "Codex CLI and Codex desktop"
 sidebarTitle: "Codex"
 description: "Status of ARC for Codex, and how to run Codex through Rayline today."
 ---
-import ArcCodingTools from '/snippets/arc-coding-tools.mdx';
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<ArcCodingTools />
+<ArcPreview />
 
 <Warning>
-ARC is not yet available for Codex. Codex supports only the OpenAI Responses API, and ARC does not yet serve Responses requests on `https://api.rayline.ai`: a Responses request for `arc-1.0` returns `404`. This page will show the ARC setup when Responses support is released.
+ARC is not yet available for Codex. Codex supports only the OpenAI Responses API, and ARC does not yet serve Responses requests on `https://api.rayline.ai`: a Responses request for an ARC tier returns `404`. This page will show the ARC setup when Responses support is released.
 </Warning>
 
 You can run Codex through Rayline today with [Agent Gateway](/rules-router/quickstart/codex), where your routing rules choose the model. Codex reaches Rayline through a local Responses router, without a proxy certificate.

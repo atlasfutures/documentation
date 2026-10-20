@@ -3,8 +3,10 @@ title: "Decisions reference"
 description: "Request, response, and conversation fields for ARC Decisions."
 icon: "brackets-curly"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<Note>ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access. A platform key alone does not enable it.</Note>
+
+<ArcPreview />
 
 ```
 POST https://api.rayline.ai/v1/routes
@@ -32,7 +34,7 @@ Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
-| `model` | No | Omit it. A request that names a specific provider model is pinned to that model, and ARC returns `409`. |
+| `model` | Yes, unless your workspace routing is set to ARC | An ARC tier ID: `rayline/arc-swift` or `rayline/arc-sage`. A request that names a provider model, or no model while your workspace uses rules routing, returns `409`. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
 OpenAI Responses request bodies are not accepted and return `409`.
@@ -143,7 +145,7 @@ Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...
 | `400` | The body is missing, has no `messages`, or cannot be read as messages | No; fix the request |
 | `401` | Missing or invalid API key | No |
 | `403` | Your account does not have ARC access (`arc_private_preview`) | No |
-| `409` | The request pins a provider model, or uses an unsupported request format | No; remove `model` or send a Messages body |
+| `409` | The request names a provider model, names no ARC tier while your workspace uses rules routing, or uses an unsupported request format | No; set `model` to an ARC tier ID or send a Messages body |
 | `413` | The request body is too large | No |
 | `429` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `503` | Decisions is temporarily unavailable | Yes, with backoff |

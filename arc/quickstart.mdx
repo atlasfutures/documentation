@@ -1,32 +1,39 @@
 ---
 title: "Your first ARC request"
-description: "Request early access and explore the proposed ARC interfaces."
+description: "Send your first ARC request and your first decision."
 icon: "bolt"
 ---
 import ArcPreview from '/snippets/arc-preview.mdx';
 
 <ArcPreview />
 
-Creating an API key or funding a workspace does not enable ARC. Wait for the Rayline team to confirm access before sending requests. The Responses example illustrates the proposed interface; the Decisions example uses the documented [Decisions API](/arc/reference/decisions).
+Any Rayline API key can use ARC. You need no separate access request.
+
+## Choose a tier
+
+| Tier | Model ID | Use it for |
+| --- | --- | --- |
+| ARC Swift | `rayline/arc-swift` | Lower cost and faster turns |
+| ARC Sage | `rayline/arc-sage` | Harder tasks where quality matters more than cost |
+
+Both tiers choose a model and reasoning effort for every request. Tier IDs may change before launch.
 
 <Steps>
-<Step title="Get access and a key">
-Request early access from the Rayline team. Once your access is confirmed, follow the team's instructions to create a key for the assigned environment and workspace. See [API keys](/platform/api-keys). A gateway key is not a substitute for ARC access.
+<Step title="Get a key">
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys), or run `rayline auth login` with the [Rayline CLI](/rules-router/cli#install). See [API keys](/platform/api-keys). Keep the key in an environment variable, outside your source code.
 </Step>
-<Step title="Copy the preview base URL">
-For Responses, use the ARC API base URL provided by the Rayline team. Decisions uses `https://api.rayline.ai`. Keep the URL and key in environment variables, outside your source code.
-</Step>
-<Step title="Send a Responses request">
+<Step title="Send a request">
 
 ```bash
-# Set ARC_BASE_URL and RAYLINE_API_KEY to your preview URL and key first.
-curl --fail-with-body "$ARC_BASE_URL/v1/responses" \
-  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+curl --fail-with-body https://api.rayline.ai/v1/messages \
+  -H "x-api-key: $RAYLINE_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -H "Content-Type: application/json" \
-  -d '{"input":"Summarize the purpose of a regression test."}'
+  -H "x-conversation-id: quickstart-1" \
+  -d '{"model":"rayline/arc-swift","max_tokens":512,"messages":[{"role":"user","content":"Summarize the purpose of a regression test."}]}'
 ```
 
-API access is limited during private preview. Confirm your access and the supported request and response fields with the Rayline team before integrating.
+This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. The OpenAI Responses API (`/v1/responses`) does not serve ARC yet.
 </Step>
 <Step title="Try a decision">
 
@@ -34,13 +41,15 @@ API access is limited during private preview. Confirm your access and the suppor
 curl --fail-with-body https://api.rayline.ai/v1/routes \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "x-conversation-id: quickstart-1" \
-  -d '{"messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
+  -H "x-conversation-id: quickstart-2" \
+  -d '{"model":"rayline/arc-swift","messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
 ```
 
-The response names the `model` and `thinking` configuration to run in your own stack. Send the next turn with the same `x-conversation-id` so ARC decides it in context. See the [Decisions reference](/arc/reference/decisions).
+The response names the `model` and `thinking` configuration to run in your own stack. See [Decisions](/arc/decisions) and the [Decisions reference](/arc/reference/decisions).
 </Step>
 <Step title="Inspect the request">
-Once access is enabled, follow the Rayline team's guidance for inspecting requests in your workspace. See the [Responses reference](/arc/reference/responses) or [Decisions reference](/arc/reference/decisions) for availability.
+Find the request in [usage](/platform/usage), with the model ARC chose and the tokens it used.
 </Step>
 </Steps>
+
+To use ARC from a coding agent, see [coding tools](/arc/coding-tools).

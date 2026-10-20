@@ -3,17 +3,17 @@ title: "ARC Decisions"
 description: "The routing decision. Your inference stack."
 icon: "route"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
 ARC Decisions chooses a model and reasoning configuration for each turn without generating the answer. Use it when you want adaptive selection while keeping control of inference, provider access, and your application's agent loop.
 
-<Note>
-ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.
-</Note>
+<ArcPreview />
 
 ## The loop
 
 For every turn of a conversation:
 
-1. Send the conversation to `POST /v1/routes` with the same `x-conversation-id` as the previous turns.
+1. Send the conversation to `POST /v1/routes` with an ARC tier ID in `model` and the same `x-conversation-id` as the previous turns.
 2. Read `model` and `thinking` from the response.
 3. Run the turn on that model, with that reasoning configuration, in your own stack.
 4. Append the result to the conversation, handle tools and retries, and repeat.
@@ -32,7 +32,7 @@ def decide(conversation_id: str, system: str, messages: list) -> dict:
     response = requests.post(
         ROUTES_URL,
         headers={**HEADERS, "x-conversation-id": conversation_id},
-        json={"system": system, "messages": messages},
+        json={"model": "rayline/arc-swift", "system": system, "messages": messages},
         timeout=10,
     )
     response.raise_for_status()

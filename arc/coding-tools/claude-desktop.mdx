@@ -3,9 +3,9 @@ title: "Claude Code in Claude Desktop"
 sidebarTitle: "Claude Desktop"
 description: "Run Claude Desktop's Code sessions on ARC with rayline claude app."
 ---
-import ArcCodingTools from '/snippets/arc-coding-tools.mdx';
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<ArcCodingTools />
+<ArcPreview />
 
 <Note>
 `rayline claude app` ships in the Rayline release after 0.2.9. Check with `rayline --version`, and update with `rayline update`.
@@ -15,14 +15,16 @@ import ArcCodingTools from '/snippets/arc-coding-tools.mdx';
 **This switches the whole Desktop app away from your Claude subscription.** Claude Desktop reaches a gateway only through its third-party inference mode, which signs the app out of your claude.ai account while it is active. Chat and Cowork are off in that mode; only Code runs, on ARC. [Switch back](#switch-back-to-your-subscription) at any time by signing out and signing in with Anthropic. Your subscription conversations are kept. Claude Code in your terminal keeps its own login and is not affected.
 </Warning>
 
-Claude Desktop ignores `ANTHROPIC_BASE_URL`, and it accepts only model IDs that look like Claude models. `rayline claude app` handles both. It runs a small local router for Desktop on `http://127.0.0.1:20831`, where Desktop's model **ARC** (ID `claude-arc-desktop`) is routed to `arc-1.0`. Your Rayline key stays in that router. Desktop stores only a placeholder key.
+Claude Desktop ignores `ANTHROPIC_BASE_URL`, and it accepts only model IDs that look like Claude models. `rayline claude app` handles both. It runs a small local router for Desktop on `http://127.0.0.1:20831`, where Desktop's model **ARC** (ID `claude-arc-desktop`) is routed to the ARC tier you choose. Your Rayline key stays in that router. Desktop stores only a placeholder key.
 
 ## Start the router
 
 ```bash
 rayline auth login
-rayline claude app
+rayline claude app --model rayline/arc-swift
 ```
+
+Use `--model rayline/arc-sage` for the Sage tier. Run the command again with the other tier to switch; Desktop keeps showing **ARC**.
 
 The command starts the router and prints the path of a configuration file for Desktop, `~/.rayline/claude-desktop/claude-desktop-import.json`. This router is separate from the one `rayline claude` and `rayline codex` use, so both can run at once.
 
