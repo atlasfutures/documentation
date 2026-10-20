@@ -25,7 +25,13 @@ See [API keys](/platform/api-keys).
 
 ## Request
 
-Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request body: the same body you would send to generate the turn.
+Send the request body you would send to generate the turn, in any of these formats:
+
+- [Anthropic Messages](https://docs.anthropic.com/en/api/messages)
+- [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat)
+- [OpenAI Responses](https://platform.openai.com/docs/api-reference/responses)
+
+ARC detects the format from the body. The fields below are the Messages names; Chat Completions and Responses bodies use their own equivalents (`input` and `instructions` for Responses).
 
 | Field | Required | Notes |
 | --- | --- | --- |
@@ -34,8 +40,6 @@ Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request
 | `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
 | `model` | No | Omit it. A request that names a specific provider model is pinned to that model, and ARC returns `409`. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
-
-OpenAI Responses request bodies are not accepted and return `409`.
 
 ### Conversation headers
 
@@ -128,7 +132,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 
 | Code | Meaning |
 | --- | --- |
-| `format_inferred` | The body had no field that identifies it as Anthropic Messages, so ARC inferred the format. |
+| `format_inferred` | The body had no field that identifies it as Anthropic Messages or Chat Completions, so ARC inferred the format. |
 | `tools_not_encoded` | The request's tools did not influence this decision. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
 | `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
@@ -139,10 +143,10 @@ Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...
 
 | Status | Meaning | Retry? |
 | --- | --- | --- |
-| `400` | The body is missing, has no `messages`, or cannot be read as messages | No; fix the request |
+| `400` | The body is missing, has no `messages` or `input`, or cannot be read in its format | No; fix the request |
 | `401` | Missing or invalid API key | No |
 | `403` | Your account does not have ARC access (`arc_private_preview`) | No |
-| `409` | The request pins a provider model, or uses an unsupported request format | No; remove `model` or send a Messages body |
+| `409` | The request pins a provider model, or ARC does not decide requests in this format for your account | No; remove `model`, or send the request in another format |
 | `413` | The request body is too large | No |
 | `429` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `503` | Decisions is temporarily unavailable | Yes, with backoff |

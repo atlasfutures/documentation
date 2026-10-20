@@ -14,8 +14,7 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 
 | Capability | Support |
 | --- | --- |
-| Request format | Anthropic Messages bodies |
-| OpenAI Responses bodies | Not accepted |
+| Request format | Anthropic Messages, OpenAI Chat Completions, and OpenAI Responses bodies, detected from the body |
 | Multi-turn conversations | Yes, with `x-conversation-id` |
 | Streaming | No; each decision is one JSON response |
 | Tools in the request | Accepted; check the response `warnings` for whether they influenced the decision |
