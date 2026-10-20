@@ -8,11 +8,11 @@ import ArcPreview from '/snippets/arc-preview.mdx';
 
 <ArcPreview />
 
-ARC chooses a model and reasoning effort for every request your coding agent sends. You connect an agent the same way you connect it to [Agent Gateway](/rules-router), but with an ARC tier ID instead of `rayline-router`: `rayline/arc-swift` for lower cost and faster turns, or `rayline/arc-sage` for harder tasks. The agent's tools, files, and sessions stay on your machine; only model requests go to ARC.
+ARC chooses a model and reasoning effort for every request your coding agent sends. You connect an agent the same way you connect it to [Agent Gateway](/rules-router), but with an ARC tier ID instead of `rayline-router`. The guides use ARC Sage, `rayline/arc-sage`; use `rayline/arc-swift` for the cheaper, faster Swift tier. The agent's tools, files, and sessions stay on your machine; only model requests go to ARC.
 
 | Tool | How to connect | Status |
 | --- | --- | --- |
-| [Claude Code (CLI)](/arc/coding-tools/claude-code) | `rayline claude --via env -m rayline/arc-swift`, or environment variables | Supported |
+| [Claude Code (CLI)](/arc/coding-tools/claude-code) | `rayline claude --via env -m rayline/arc-sage`, or environment variables | Supported |
 | [Claude Code in Claude Desktop](/arc/coding-tools/claude-desktop) | `rayline claude app`, then import a file in Desktop | Supported from the next Rayline release |
 | [Codex CLI and Codex desktop](/arc/coding-tools/codex) | `rayline codex` and `rayline codex app` | Not yet available on ARC |
 | [opencode, pi, oh-my-pi, Hermes Agent, OpenClaw](/arc/coding-tools/other-agents) | Manual setup with an ARC tier ID | Not yet tested on ARC |

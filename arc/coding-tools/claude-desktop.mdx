@@ -21,10 +21,10 @@ Claude Desktop ignores `ANTHROPIC_BASE_URL`, and it accepts only model IDs that 
 
 ```bash
 rayline auth login
-rayline claude app --model rayline/arc-swift
+rayline claude app
 ```
 
-Use `--model rayline/arc-sage` for the Sage tier. Run the command again with the other tier to switch; Desktop keeps showing **ARC**.
+Desktop's **ARC** model uses ARC Sage, `rayline/arc-sage`. For the cheaper Swift tier, run `rayline claude app --model rayline/arc-swift`; run the command again to switch back. Desktop keeps showing **ARC** either way.
 
 The command starts the router and prints the path of a configuration file for Desktop, `~/.rayline/claude-desktop/claude-desktop-import.json`. This router is separate from the one `rayline claude` and `rayline codex` use, so both can run at once.
 
