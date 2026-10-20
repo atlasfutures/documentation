@@ -85,6 +85,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `worker` | string | The model and configuration ARC scored, for example `xiaomi/mimo-v2.5-pro@thinking-on`. Two workers can share one model with different reasoning settings. |
 | `provider` | string | The provider the worker is configured for. Omitted when the worker names none. |
 | `thinking` | object | The reasoning configuration the choice was scored under. `mode` is `on` or `off`. `budget_tokens` is the reasoning budget, or `null` when thinking is off. Apply it as given: the choice was scored for this configuration, not for the model alone. |
+| `thinking_level` | string | Present when the decision includes a per-turn steering level, for example `up`, `down`, or `none`. Apply it as a private steering instruction; see [Applying effort](/arc/decisions/applying-effort). |
 | `checkpoint` | string | The ARC checkpoint that made the decision. |
 | `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |

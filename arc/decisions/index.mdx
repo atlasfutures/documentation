@@ -45,7 +45,7 @@ reply = run_on_your_stack(decision["model"], decision["thinking"], system_prompt
 messages.append({"role": "assistant", "content": reply})
 ```
 
-`run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. See the [Decisions reference](/arc/reference/decisions) for every request and response field.
+`run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. To apply the reasoning configuration without breaking prompt caching, see [Applying effort](/arc/decisions/applying-effort). See the [Decisions reference](/arc/reference/decisions) for every request and response field.
 
 ## Multi-turn conversations
 

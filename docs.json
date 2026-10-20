@@ -66,7 +66,8 @@
             "group": "Use ARC",
             "pages": [
               "arc/responses/index",
-              "arc/decisions/index"
+              "arc/decisions/index",
+              "arc/decisions/applying-effort"
             ]
           },
           {

@@ -1,0 +1,139 @@
+---
+title: "Applying ARC's effort decision"
+sidebarTitle: "Applying effort"
+description: "Apply a decision's reasoning configuration without breaking prompt caching or exposing steering text."
+icon: "gauge"
+---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
+<ArcPreview />
+
+A [decision](/arc/reference/decisions) names a model and how hard it should think on this turn. With Decisions, you run the turn yourself, so you also apply that effort yourself. This page shows how to do that the way ARC's own serving stack does: privately, without changing what your user sees and without breaking the provider's prompt cache.
+
+If you would rather not maintain this yourself, run [our vLLM Semantic Router fork](#or-let-our-router-apply-it), which applies the same pattern for you.
+
+## What the decision tells you
+
+| Field | Meaning | How you apply it |
+| --- | --- | --- |
+| `thinking` | The reasoning configuration for the conversation: `mode` (`on` or `off`) and `budget_tokens`. | Set the model's native thinking or effort parameter. Keep it the same for the whole conversation. |
+| `thinking_level` | When present, a per-turn steering level, for example `up`, `down`, or `none`. | Add a private steering instruction to the turn, as described below. |
+
+The two exist separately because providers treat them differently:
+
+- **Native effort is part of the cache key.** Providers render thinking and effort settings into the prompt, so changing them in the middle of a conversation invalidates the cached prefix. The next request pays to write the whole conversation into the cache again. Treat `thinking` as fixed per conversation, and treat a change as a cache boundary.
+- **Steering changes depth without touching the cache.** A short instruction appended after the cached prefix leaves every cached byte unchanged. Rayline's measurements across several model families found that an appended steering instruction preserved the cache on all of them and changed reasoning depth on most. ARC uses steering for turn-by-turn changes.
+
+When `thinking_level` is absent, there is no steering to apply for the turn. The router's registry records which model, provider, and API combinations admit steering.
+
+## The private-append pattern
+
+Keep two transcripts:
+
+- **The visible transcript** is what your user and your application see and store. It never contains a steering instruction.
+- **The provider transcript** is the visible transcript plus a private ledger of the instructions you have written. You send it to the model on every call.
+
+The provider transcript is always a strict extension of what you sent before, so the cached prefix stays byte-identical from turn to turn.
+
+<Steps>
+<Step title="Find the turn's tail">
+The governed turn's tail is the last message of the request: the user's new message, or the message carrying the latest tool results. Skip trailing system or developer messages.
+</Step>
+<Step title="Write only when the level changes">
+Compare the decision's level with the level in force:
+
+- a new steered level: write that level's instruction text;
+- `none` after a steered level: write the neutral text, `Until the next steering instruction, use your normal judgement.`;
+- the same level as before, or `none` with nothing in force: write nothing.
+
+Each written instruction holds until the next one, so writing it once is enough.
+</Step>
+<Step title="Append it as its own block">
+Add the instruction as a separate text block at the end of the tail message. Do not merge it into the user's text, and do not give it a cache directive.
+
+| API | User message tail | Tool-result tail |
+| --- | --- | --- |
+| Anthropic Messages | A `text` block appended to the last user message | A `text` block after the `tool_result` blocks in that same message |
+| OpenAI Chat Completions | A `text` part appended to the last user message | A new user message after the tool messages |
+| OpenAI Responses | An `input_text` part appended to the last message item | A new user message item after the `function_call_output` items |
+</Step>
+<Step title="Record it in the ledger">
+Store the instruction with its anchor: the index of the message it follows, and a hash of the visible transcript up to and including that message. Keep the ledger with your conversation state, not in the visible transcript.
+</Step>
+<Step title="Replay the ledger on every call">
+Before each call, rebuild the provider transcript from the visible transcript and re-insert every ledger item at its anchor, byte for byte. If an anchor's hash no longer matches, because the conversation was edited or compacted, discard the ledger and write the level in force again at the new tail.
+</Step>
+<Step title="Keep the model's output clean">
+Store the model's reply in the visible transcript as usual. The instruction never appears there, so your user never sees it, and later decisions read the conversation without it.
+</Step>
+</Steps>
+
+### Code sketch
+
+A minimal Anthropic Messages version in Python. It omits the tool-result and Responses spellings, image handling, and retries that the reference implementation covers.
+
+```python
+import copy, hashlib, json
+
+NEUTRAL = "Until the next steering instruction, use your normal judgement."
+
+def prefix_hash(messages, through):
+    projected = [{k: v for k, v in m.items() if k != "cache_control"} for m in messages[: through + 1]]
+    return hashlib.sha256(json.dumps(projected, sort_keys=True).encode()).hexdigest()
+
+def as_blocks(content):
+    return [{"type": "text", "text": content}] if isinstance(content, str) else list(content)
+
+class PrivateSteering:
+    def __init__(self, texts):
+        self.texts = texts      # {"up": "...", "down": "..."}, from your ladder
+        self.ledger = []        # [{"anchor": int, "hash": str, "text": str}]
+        self.in_force = None
+
+    def provider_messages(self, visible, level):
+        """Return the messages to send; `visible` is never modified."""
+        # A rewritten history voids the ledger; the level is written again.
+        if any(i["anchor"] >= len(visible) or prefix_hash(visible, i["anchor"]) != i["hash"]
+               for i in self.ledger):
+            self.ledger, self.in_force = [], None
+        tail = len(visible) - 1
+        text = None
+        if level not in (None, "none") and level != self.in_force:
+            text, self.in_force = self.texts[level], level
+        elif level == "none" and self.in_force is not None:
+            text, self.in_force = NEUTRAL, None
+        if text is not None:
+            self.ledger.append({"anchor": tail, "hash": prefix_hash(visible, tail), "text": text})
+        out = copy.deepcopy(visible)
+        for item in self.ledger:
+            message = out[item["anchor"]]
+            message["content"] = as_blocks(message["content"]) + [{"type": "text", "text": item["text"]}]
+        return out
+```
+
+Call `provider_messages` once per turn with the decision's `thinking_level`, send the result, and append the reply to `visible`. Persist `ledger` and `in_force` with the conversation.
+
+### Reference implementation
+
+Our router applies this pattern in its `thinkingcontrol` package. It is held byte for byte to golden test corpora:
+
+- [`placement.go`](https://github.com/atlasfutures/semantic-router/blob/7e104e3f61b53a9fab0792f9fb9e9628147c3f8e/src/semantic-router/pkg/selection/raylinearc/thinkingcontrol/placement.go#L249): the ledger, write-on-change, replay, and transcript-rewrite reset (`place`), the anchor hash (`prefixDigest`, which ignores `cache_control` hints and injected `<system-reminder>` blocks), and per-format placement (`placementFor`, `renderedUnits`).
+- [`render.go`](https://github.com/atlasfutures/semantic-router/blob/7e104e3f61b53a9fab0792f9fb9e9628147c3f8e/src/semantic-router/pkg/selection/raylinearc/thinkingcontrol/render.go): how the native thinking fields are set once per conversation.
+- [`thinking_controls.compiled.json`](https://github.com/atlasfutures/semantic-router/blob/7e104e3f61b53a9fab0792f9fb9e9628147c3f8e/src/semantic-router/pkg/selection/raylinearc/thinkingcontrol/thinking_controls.compiled.json): the instruction texts for each level, the neutral text, and which model, provider, and API combinations admit steering.
+- [`testdata/golden`](https://github.com/atlasfutures/semantic-router/tree/7e104e3f61b53a9fab0792f9fb9e9628147c3f8e/src/semantic-router/pkg/selection/raylinearc/thinkingcontrol/testdata/golden): request bodies before and after placement, for testing your own implementation.
+
+Use the instruction texts from the registry. ARC was trained with those exact instructions, so different wording is a different treatment.
+
+## Cache and privacy caveats
+
+- **Never edit earlier messages.** An instruction goes only at the current tail. Rewriting an earlier message, or moving an instruction, changes the cached prefix and pays for a full cache write.
+- **Keep native effort fixed.** Changing `thinking` mid-conversation, or sending a provider's effort field that varies by turn, invalidates the cache on every model family Rayline measured that has an effort setting.
+- **Replay exactly.** Use the same text, the same position, and the same block structure on every call. Any byte difference in a replayed instruction breaks the cache from that point on.
+- **A model switch starts a new cache anyway.** When the decision moves to another model, that model's cache starts empty. The ledger still applies: replay it on the new model too.
+- **Steering text stays private, but the model sees it.** The instruction never reaches your user or your stored transcript. It is part of what you send to the provider, so the provider's data handling applies to it as it does to the rest of the prompt.
+- **Not every model follows steering.** On some models an instruction moves reasoning depth only a little. Apply the level anyway: ARC's decision already allows for how the chosen model responds.
+- **Do not steer after an image tool result unless the reference implementation admits that model.** The router declines to write there for models without evidence that the task stays intact.
+
+## Or let our router apply it
+
+Our [vLLM Semantic Router fork](/arc/open-source) runs this pattern for you. It keeps the private ledger per conversation, replays it across processes, applies the native configuration once per conversation, and follows the registry as Rayline updates it. When your requests go through the router, it applies the decision and its effort, and your application sends ordinary requests.
