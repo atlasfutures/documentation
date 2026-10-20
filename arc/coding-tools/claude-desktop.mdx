@@ -15,7 +15,9 @@ import ArcPreview from '/snippets/arc-preview.mdx';
 **This switches the whole Desktop app away from your Claude subscription.** Claude Desktop reaches a gateway only through its third-party inference mode, which signs the app out of your claude.ai account while it is active. Chat and Cowork are off in that mode; only Code runs, on ARC. [Switch back](#switch-back-to-your-subscription) at any time by signing out and signing in with Anthropic. Your subscription conversations are kept. Claude Code in your terminal keeps its own login and is not affected.
 </Warning>
 
-Claude Desktop ignores `ANTHROPIC_BASE_URL`, and it accepts only model IDs that look like Claude models. `rayline claude app` handles both. It runs a small local router for Desktop on `http://127.0.0.1:20831`, where Desktop's model **ARC** (ID `claude-arc-desktop`) is routed to the ARC tier you choose. Your Rayline key stays in that router. Desktop stores only a placeholder key.
+`rayline claude app` runs a small local router for Desktop on `http://127.0.0.1:20831` and gives you a configuration file to import. The import adds two models to Desktop's model picker, **arc-sage** and **arc-swift**. Your Rayline key stays in the router; Desktop stores only a placeholder key.
+
+ARC is not a Claude model, and Rayline isn't affiliated with Anthropic. Desktop requires Claude-style model IDs, so the import uses `claude-arc-sage` and `claude-arc-swift` internally; you never type them.
 
 ## Start the router
 
@@ -23,8 +25,6 @@ Claude Desktop ignores `ANTHROPIC_BASE_URL`, and it accepts only model IDs that 
 rayline auth login
 rayline claude app
 ```
-
-Desktop's **ARC** model uses ARC Sage, `rayline/arc-sage`. For the cheaper Swift tier, run `rayline claude app --model rayline/arc-swift`; run the command again to switch back. Desktop keeps showing **ARC** either way.
 
 The command starts the router and prints the path of a configuration file for Desktop, `~/.rayline/claude-desktop/claude-desktop-import.json`. This router is separate from the one `rayline claude` and `rayline codex` use, so both can run at once.
 
@@ -36,7 +36,7 @@ rayline claude app install-service
 
 Without the service, run `rayline claude app` again after a restart.
 
-## Connect Claude Desktop
+## Connect the desktop app
 
 <Steps>
 <Step title="Turn on developer mode">
@@ -57,7 +57,7 @@ Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-des
 | Provider | Gateway |
 | Gateway URL | `http://127.0.0.1:20831` |
 | API key | `rayline-local-placeholder` |
-| Model | `claude-arc-desktop`, shown as **ARC** |
+| Models | **arc-sage** (the default) and **arc-swift** |
 | Model discovery | Off |
 
 {/* screenshot: images/arc/coding-tools/desktop-03-connection.png, desktop-04-models.png */}
@@ -66,7 +66,7 @@ Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-des
 Click **Apply Changes**, then **Save & Restart**. On the sign-in screen, continue with the configured gateway instead of signing in with Anthropic.
 </Step>
 <Step title="Use ARC in Code">
-Open **Code** and choose **ARC** in the model picker. Send a short task to check the connection.
+Open **Code** and choose **arc-sage** in the model picker, or **arc-swift** for the cheaper, faster tier. You can switch between them at any time. Send a short task to check the connection.
 
 {/* screenshot: images/arc/coding-tools/desktop-07-model-picker.png, desktop-08-code-turn.png */}
 </Step>
@@ -101,7 +101,7 @@ This stops the router, removes the login service and deletes `~/.rayline/claude-
 ## Limits
 
 - Chat and Cowork are off while Desktop uses the gateway.
-- Desktop shows the model as **ARC**. To see which model served a request, use [usage](/platform/usage) or `rayline claude app status`.
+- Desktop shows the tier, **arc-sage** or **arc-swift**, not the model ARC chose. To see which model served a request, use [usage](/platform/usage) or `rayline claude app status`.
 - Desktop's effort setting and Claude Code's context-window assumptions are those of a Claude model. ARC chooses the model and effort for each request, and Desktop compacts conversations at its default threshold.
 - Anthropic does not support routing Claude Desktop to non-Claude models. A Desktop update can change this behavior.
 
