@@ -13,7 +13,7 @@ ARC Decisions chooses a model and reasoning configuration for each turn without 
 
 For every turn of a conversation:
 
-1. Send the conversation to `POST /v1/routes` with an ARC tier ID in `model` and the same `x-conversation-id` as the previous turns.
+1. Send the conversation to `POST /v1/routes` with an ARC model ID in `model` and the same `x-conversation-id` as the previous turns.
 2. Read `model` and `thinking` from the response.
 3. Run the turn on that model, with that reasoning configuration, in your own stack.
 4. Append the result to the conversation, handle tools and retries, and repeat.
@@ -47,6 +47,29 @@ messages.append({"role": "assistant", "content": reply})
 
 `run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. To apply the reasoning configuration without breaking prompt caching, see [Applying effort](/arc/decisions/applying-effort). See the [Decisions reference](/arc/reference/decisions) for every request and response field.
 
+## Swift, Sage, or your own value
+
+Every decision includes `presets`: what ARC would choose at ARC Swift's value (V 0.1) and at ARC Sage's value (V 4.5), from one read of your request. Use the preset that matches the trade-off you want, or compare them.
+
+To decide at your own value, request `arc-1.0` with `routing.value_usd`, from 0.1 to 5 US dollars per successful result. The response adds a `custom` result at that value:
+
+```python
+json={
+    "model": "arc-1.0",
+    "messages": messages,
+    "routing": {"value_usd": 2, "temperature": 0.3},
+}
+# decision["presets"]["swift"], decision["presets"]["sage"], decision["custom"]
+```
+
+`routing.temperature` makes ARC explore: it draws among candidates instead of always taking the top choice, and reports the probability of what it chose so you can account for it. Decisions requests are never used to train ARC, and exploration happens only when you ask for it.
+
+Check `routing` in the response: each control you sent is `applied` or `unsupported`. Do not treat an `unsupported` control as having changed the decision. Field details are in the [Decisions reference](/arc/reference/decisions#routing-controls).
+
+## Your own prices
+
+ARC selects at Rayline catalog prices unless you send yours. If your inference costs differ, for example because of negotiated rates or your own hardware, send them in `routing.prices`; see [bring your own prices](/arc/decisions/prices).
+
 ## Multi-turn conversations
 
 ARC decides each turn in the context of the conversation so far. Send a stable `x-conversation-id` on every turn and ARC:
@@ -64,6 +87,4 @@ Apply `thinking` as returned. ARC scored the model under that reasoning configur
 
 ## How billing differs
 
-Decisions meters input and cache-read tokens. It has no output-token pricing category. Provider inference is a separate cost, paid through your execution stack.
-
-The launch rates are fixed token prices. Their calibration to about 2.5% of a reference workload's inference cost is not a percentage commission. See [ARC pricing](/arc/pricing).
+A decision is billed for the tokens ARC reads to make it, once per request, however many results it returns: the presets, any custom result, and alternatives come from the same read. Decisions has no output-token charge. Your prices change which model ARC selects; they never change what the decision costs. Provider inference is a separate cost, paid through your execution stack. See [ARC pricing](/arc/pricing) and [billing](/platform/billing).
