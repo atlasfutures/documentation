@@ -58,7 +58,6 @@
             "group": "Start here",
             "pages": [
               "tools/index",
-              "arc/models",
               "tools/hosted-local",
               "rules-router/reference"
             ]
@@ -118,6 +117,7 @@
             "group": "Start here",
             "pages": [
               "arc/index",
+              "arc/models",
               "arc/quickstart",
               "arc/responses/index",
               "arc/availability"
