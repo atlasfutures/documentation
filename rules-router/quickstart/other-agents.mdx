@@ -119,9 +119,16 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` (the coding default) or `arc-swift` (cheaper and faster), on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. The guides record development-API verification; production and per-launcher verification remain pending. Run their two-request checks and inspect [usage](/platform/usage) after setup.
 
-## Legacy integrations
+## Planned integrations
 
-[Roo Code](https://roocodeinc.github.io/Roo-Code/) is a legacy integration: its
-official documentation announced shutdown on May 15, 2026, and its repository
-is archived. New integration work prioritizes [Cline](/rules-router/quickstart/other-agents/cline). Roo has not been validated
-for the current ARC release.
+[Roomote](https://github.com/RooCodeInc/Roomote) replaces Roo Code in the active
+integration queue. Roomote is a separate, source-available cloud-agent product;
+a Roo Code configuration does not establish Roomote compatibility.
+
+[Cursor](https://cursor.com) is also queued. Editor chat/agent, CLI, and cloud
+agents need separate checks: support in one surface does not establish support
+in the others. Neither Roomote nor Cursor has completed Rayline validation yet.
+
+<span id="legacy-integrations" />
+Roo Code is outside the active support queue. Its historical integration status
+does not transfer to Roomote.

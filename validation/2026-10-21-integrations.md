@@ -13,7 +13,7 @@ On-device inference and local ARC execution are later phases.
 Codex/ChatGPT desktop is last; it is hosting the active documentation session.
 
 Order: Claude Code → OpenCode → pi → oh-my-pi → Hermes → OpenClaw →
-Claude Desktop Code → Kilo Code → Cline → Unreal Agent → Codex CLI → Codex/ChatGPT desktop.
+Claude Desktop Code → Kilo Code → Cline → Unreal Agent → Codex CLI → Roomote → Cursor → Codex/ChatGPT desktop.
 Unreal Agent identifies the candidate previously described as Unity/Unreal. The
 separate system-prompt-code harness remains unidentified.
 
@@ -178,3 +178,34 @@ returned empty Output arrays and no tool calls on both tiers, despite exit zero.
 Alternate Anthropic mode failed both tasks with Invalid Anthropic Messages API
 request. TopazBay assigned BronzeGlacier (13815); reproducer update sent in 13821.
 Do not document Local as working until real file-tool tasks pass after the fix.
+
+## Queue expansion — Roomote, Cursor, review and background agents
+
+David requested Roomote instead of Roo Code and added Cursor. Neither is validated.
+Cline remains in scope; Roomote is a separate product, not a rename of its extension.
+
+| Priority | Candidate | Validation unit | Status |
+| --- | --- | --- | --- |
+| Next | [Roomote](https://github.com/RooCodeInc/Roomote) | Self-hosted worker, model endpoint, task completion and review artifact | Queued; source-available licensing, not assumed OSI open source |
+| Next | [Cursor](https://cursor.com) | Editor chat/agent, CLI, and cloud agents separately | Queued; BYOK does not establish Tab or cloud-agent support |
+| Discovery | [PR Agent](https://github.com/The-PR-Agent/pr-agent) | Review a fixture diff with known defects and check file/line attribution | Not validated |
+| Discovery | [OpenHands](https://github.com/OpenHands/OpenHands) | Background task, tool execution, result collection and resume | Not validated |
+| Discovery | [Goose](https://github.com/aaif-goose/goose) | Headless/recipe execution and result collection | Not validated |
+
+For review tools, replace the receipt-only acceptance check with two fixture diffs
+containing known defects; verify useful findings and correct locations. For
+background workers, run two bounded tasks and inspect durable completion/failure
+state plus tool results. Test Sage and Swift, direct and Local where the tool can
+reach the gateway. A cloud worker's localhost is not the user's Mac: document the
+actual gateway placement and connectivity instead of recommending a loopback URL
+that cannot work. No public gateway exposure is authorized by this queue entry.
+
+Record model/custom-endpoint support, protocol, credential owner, retry behavior,
+cost/usage evidence, and screenshots before adding a working integration guide.
+Review output stays in the isolated test fixture; posting review comments to
+unrelated repositories is not part of this task.
+
+Cursor's official BYOK reference says custom keys apply to chat models, while Tab
+uses Cursor's built-in models. This is a product constraint to verify per surface,
+not evidence that ARC already works:
+https://prod.cursor.com/help/models-and-usage/api-keys
