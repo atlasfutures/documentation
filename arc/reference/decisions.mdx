@@ -3,8 +3,10 @@ title: "Decisions reference"
 description: "Request, response, and conversation fields for ARC Decisions."
 icon: "brackets-curly"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<Note>ARC Decisions is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access. A platform key alone does not enable it.</Note>
+
+<ArcPreview />
 
 ```
 POST https://api.rayline.ai/v1/routes
@@ -25,22 +27,23 @@ See [API keys](/platform/api-keys).
 
 ## Request
 
-Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request body: the same body you would send to generate the turn.
+Send the same body you would send to generate the turn, in any of three formats: [Anthropic Messages](https://docs.anthropic.com/en/api/messages), OpenAI Chat Completions, or OpenAI Responses. The fields below use the Messages names; Chat Completions and Responses bodies use their own equivalents (`messages` or `input`).
 
 | Field | Required | Notes |
 | --- | --- | --- |
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
-| `model` | No | Omit it. A request that names a specific provider model is pinned to that model, and ARC returns `409`. |
+| `model` | Yes, unless your workspace routing is set to ARC | An ARC tier ID: `arc-swift` or `arc-sage`. A request that names a provider model, or no model while your workspace uses rules routing, returns `409`. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
-OpenAI Responses request bodies are not accepted and return `409`.
+ARC reads the format from the body. A body without a format-specific field is read as Anthropic Messages. To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
 
 ### Conversation headers
 
 | Header | Purpose |
 | --- | --- |
+| `x-rayline-format` | Optional: `anthropic`, `chat`, or `responses`, when the body alone does not show its format. An unrecognized value is ignored. |
 | `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
 
 See [Conversation identity](#conversation-identity) for how the conversation ID is resolved.
@@ -85,6 +88,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `worker` | string | The model and configuration ARC scored, for example `xiaomi/mimo-v2.5-pro@thinking-on`. Two workers can share one model with different reasoning settings. |
 | `provider` | string | The provider the worker is configured for. Omitted when the worker names none. |
 | `thinking` | object | The reasoning configuration the choice was scored under. `mode` is `on` or `off`. `budget_tokens` is the reasoning budget, or `null` when thinking is off. Apply it as given: the choice was scored for this configuration, not for the model alone. |
+| `thinking_level` | string | Present when the decision includes a per-turn steering level, for example `up`, `down`, or `none`. Apply it as a private steering instruction; see [Applying effort](/arc/decisions/applying-effort). |
 | `checkpoint` | string | The ARC checkpoint that made the decision. |
 | `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
@@ -128,7 +132,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 
 | Code | Meaning |
 | --- | --- |
-| `format_inferred` | The body had no field that identifies it as Anthropic Messages, so ARC inferred the format. |
+| `format_inferred` | The body had no field unique to one format, so ARC inferred it. Send `x-rayline-format` to state it. |
 | `tools_not_encoded` | The request's tools did not influence this decision. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
 | `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
@@ -142,7 +146,7 @@ Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...
 | `400` | The body is missing, has no `messages`, or cannot be read as messages | No; fix the request |
 | `401` | Missing or invalid API key | No |
 | `403` | Your account does not have ARC access (`arc_private_preview`) | No |
-| `409` | The request pins a provider model, or uses an unsupported request format | No; remove `model` or send a Messages body |
+| `409` | The request names a provider model, or names no ARC tier while your workspace uses rules routing | No; set `model` to an ARC tier ID |
 | `413` | The request body is too large | No |
 | `429` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `503` | Decisions is temporarily unavailable | Yes, with backoff |

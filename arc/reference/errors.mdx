@@ -1,16 +1,17 @@
 ---
 title: "Errors and limits"
-description: "Check authentication and private-preview access."
+description: "Check authentication, request formats, and limits."
 icon: "triangle-exclamation"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<Note>ARC is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
+<ArcPreview />
 
 | HTTP status | Meaning |
 | --- | --- |
 | 400 | The request body is missing or malformed |
 | 401 | Missing or invalid authentication |
-| 403 | Access denied, including private-preview access restrictions |
+| 403 | Access denied for this key or workspace |
 | 404 | Unsupported method or path |
 | 409 | The request conflicts with how the interface routes it, such as a Decisions request that pins a provider model |
 | 413 | The request body is too large |
@@ -20,7 +21,7 @@ icon: "triangle-exclamation"
 
 Decisions error bodies use the Anthropic format, `{"type": "error", "error": {"type": "...", "message": "..."}}`. See the [Decisions reference](/arc/reference/decisions#errors-and-limits) for Decisions-specific causes and limits.
 
-A private-preview access denial includes the error code `arc_private_preview`. A valid API key does not by itself enable ARC access.
+A `404` naming the model means the model ID is not one ARC serves; check the [tier IDs](/arc/quickstart#choose-a-tier).
 
 ## Troubleshooting
 

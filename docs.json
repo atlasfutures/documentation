@@ -52,82 +52,38 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "ARC",
+        "tab": "Use in your tools",
         "groups": [
           {
-            "group": "Get started",
+            "group": "Start here",
             "pages": [
-              "arc/index",
-              "arc/quickstart",
-              "arc/availability"
+              "tools/index",
+              "arc/models",
+              "tools/hosted-local",
+              "rules-router/reference"
             ]
           },
           {
-            "group": "Use ARC",
+            "group": "Tool guides",
             "pages": [
-              "arc/responses/index",
-              "arc/decisions/index"
-            ]
-          },
-          {
-            "group": "Concepts",
-            "pages": [
-              "arc/concepts/checkpoints",
-              "arc/concepts/caching",
-              "arc/concepts/evaluation"
-            ]
-          },
-          {
-            "group": "Open source",
-            "pages": [
-              "arc/open-source/index"
-            ]
-          },
-          {
-            "group": "API reference",
-            "pages": [
-              "arc/reference/compatibility",
-              "arc/reference/responses",
-              "arc/reference/decisions",
-              "arc/reference/errors"
-            ]
-          },
-          {
-            "group": "Platform and billing",
-            "pages": [
-              "platform/api-keys",
-              "platform/usage",
-              "arc/pricing"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Agent Gateway",
-        "groups": [
-          {
-            "group": "Get started",
-            "pages": [
-              "rules-router/index",
-              "rules-router/quickstart/index",
+              "rules-router/quickstart/other-agents/opencode",
+              "rules-router/quickstart/other-agents/hermes",
+              "rules-router/quickstart/other-agents/openclaw",
               "rules-router/quickstart/claude-code",
+              "tools/claude-desktop",
               "rules-router/quickstart/codex",
               {
-                "group": "Other coding agents",
+                "group": "More tools",
                 "pages": [
                   "rules-router/quickstart/other-agents",
-                  "rules-router/quickstart/other-agents/opencode",
                   "rules-router/quickstart/other-agents/pi",
-                  "rules-router/quickstart/other-agents/omp",
-                  "rules-router/quickstart/other-agents/hermes",
-                  "rules-router/quickstart/other-agents/openclaw"
+                  "rules-router/quickstart/other-agents/omp"
                 ]
-              },
-              "rules-router/quickstart/agents"
+              }
             ]
           },
           {
-            "group": "Configure routing",
+            "group": "Connect and operate",
             "pages": [
               "rules-router/policies",
               "rules-router/how-it-works/models",
@@ -136,21 +92,13 @@
             ]
           },
           {
-            "group": "Reference",
+            "group": "CLI reference",
             "pages": [
               "rules-router/cli/index",
               "rules-router/cli/auth",
               "rules-router/cli/claude",
               "rules-router/cli/router",
-              "rules-router/cli/uninstall",
-              "rules-router/reference"
-            ]
-          },
-          {
-            "group": "Usage and pricing",
-            "pages": [
-              "rules-router/guides/dashboard",
-              "rules-router/pricing/index"
+              "rules-router/cli/uninstall"
             ]
           },
           {
@@ -159,6 +107,68 @@
               "rules-router/troubleshooting/index",
               "rules-router/troubleshooting/connectivity",
               "rules-router/troubleshooting/billing-issues"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Build with ARC",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "arc/index",
+              "arc/quickstart",
+              "arc/responses/index",
+              "arc/availability"
+            ]
+          },
+          {
+            "group": "Routing and decisions",
+            "pages": [
+              "rules-router/index",
+              "arc/gateway-routing",
+              "arc/decisions/index",
+              "arc/decisions/applying-effort",
+              "rules-router/quickstart/agents"
+            ]
+          },
+          {
+            "group": "Model behavior",
+            "pages": [
+              "arc/concepts/checkpoints",
+              "arc/concepts/caching",
+              "arc/concepts/evaluation"
+            ]
+          },
+          {
+            "group": "Platform and pricing",
+            "pages": [
+              "platform/api-keys",
+              "platform/usage",
+              "arc/pricing",
+              "rules-router/pricing/index",
+              "platform/data-privacy"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "arc/open-source/index"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API reference",
+            "pages": [
+              "arc/reference/compatibility",
+              "arc/reference/responses",
+              "arc/reference/decisions",
+              "arc/reference/errors"
             ]
           }
         ]
@@ -354,7 +364,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/arc",
+      "destination": "/tools",
       "permanent": true
     },
     {
@@ -389,7 +399,7 @@
     },
     {
       "source": "/guides/dashboard",
-      "destination": "/rules-router/guides/dashboard",
+      "destination": "/platform/usage",
       "permanent": true
     },
     {
@@ -454,7 +464,7 @@
     },
     {
       "source": "/quickstart",
-      "destination": "/rules-router/quickstart",
+      "destination": "/tools",
       "permanent": true
     },
     {
@@ -516,6 +526,34 @@
       "source": "/quickstart/agents",
       "destination": "/rules-router/quickstart/agents",
       "permanent": true
+    },
+    {
+      "source": "/rules-router/quickstart",
+      "destination": "/tools"
+    },
+    {
+      "source": "/rules-router/guides/dashboard",
+      "destination": "/platform/usage"
+    },
+    {
+      "source": "/arc/coding-tools",
+      "destination": "/tools"
+    },
+    {
+      "source": "/arc/coding-tools/claude-code",
+      "destination": "/rules-router/quickstart/claude-code"
+    },
+    {
+      "source": "/arc/coding-tools/claude-desktop",
+      "destination": "/tools/claude-desktop"
+    },
+    {
+      "source": "/arc/coding-tools/codex",
+      "destination": "/rules-router/quickstart/codex"
+    },
+    {
+      "source": "/arc/coding-tools/other-agents",
+      "destination": "/rules-router/quickstart/other-agents"
     }
   ]
 }

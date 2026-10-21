@@ -2,6 +2,8 @@
 title: "Codex"
 description: "Use the Rayline CLI with Codex CLI or desktop."
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
 
 Codex connects to Rayline's local OpenAI Responses router on `http://127.0.0.1:20811/v1`. This path uses plain HTTP on your machine, with no proxy certificate. Install Codex and the [Rayline CLI](/rules-router/cli) first.
 
@@ -87,13 +89,19 @@ codex --profile rayline exec "Reply with the word ready."
 - Codex sends its thread ID as `prompt_cache_key`, and Agent Gateway uses that as the conversation ID for Codex requests, so you do not need to add a conversation header.
 - This is hosted routing only. Subscription mode and local models need the launcher's local router.
 
-Then find the request in [Inspect routed requests](/rules-router/guides/dashboard).
+Then find the request in [Inspect routed requests](/platform/usage).
+
+## ARC
+
+<ArcPreview />
+
+Codex supports only the OpenAI Responses API. ARC tiers on the Responses API are still rolling out: on 20 October 2026 a production Responses request for an ARC model returned `404`. Until the ARC tiers serve Responses, run Codex through the Agent Gateway routes above. This section will describe `--model arc-sage` once Codex on ARC has been tested end to end.
 
 ## Explicit routes
 
 Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.
 
-Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Responses protocol does **not** mean it uses the ARC Responses product.
+Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Responses protocol does **not** mean it uses the ARC Responses product, and ARC is [not yet available for Codex](#arc).
 
 ## Verify
 

@@ -3,10 +3,12 @@ title: "Responses reference"
 description: "API availability for ARC Responses."
 icon: "brackets-curly"
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
 
-<Note>ARC Responses is in private preview. Contact [hello@rayline.ai](mailto:hello@rayline.ai) to request early access.</Note>
 
-ARC Responses combines model selection and generation in one interface. Confirm endpoint details, supported request fields, and response schemas with the Rayline team during private-preview onboarding.
+<ArcPreview />
+
+ARC Responses combines model selection and generation in one interface. Send an [Anthropic Messages](https://docs.anthropic.com/en/api/messages) request to `POST https://api.rayline.ai/v1/messages` with `model` set to an ARC tier ID, `arc-swift` or `arc-sage`. The OpenAI Responses API (`/v1/responses`) does not serve ARC yet.
 
 Do not assume that streaming, tools, or other provider-specific features are available based on a protocol name.
 

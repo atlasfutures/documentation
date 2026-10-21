@@ -1,0 +1,21 @@
+---
+title: "Hosted and Rayline Local"
+description: "Which requests leave your machine, and who bills them."
+icon: "server"
+---
+
+Rayline has three connection paths. They differ in where the routing decision runs and where inference happens.
+
+| Path | What runs on your machine | Where inference runs | Billed through |
+| --- | --- | --- | --- |
+| **Direct hosted** | Only your tool | Rayline's hosted router calls the model | Your Rayline workspace |
+| **Local connector, hosted inference** | Rayline Local (`rld`) forwards requests | Rayline's hosted router calls the model | Your Rayline workspace |
+| **Local inference** | Rayline Local routes to a model on your hardware or your own endpoint | Your machine or endpoint | Your hardware or endpoint provider |
+
+- **Direct hosted** is what you get when you point a tool's base URL at `https://api.rayline.ai`, as the manual setup in each guide does.
+- **Local connector** is what most `rayline <tool>` launchers do. The connector on your machine holds your key and forwards requests to the hosted router. Running it does not make inference local. `rayline codex` and `rayline claude app` always use a local connector.
+- **Local inference** needs a local model or endpoint and a router config that sends requests to it; see [local models](/rules-router/guides/local-models). A hybrid session can keep the main agent in the cloud while subagents run locally.
+
+ARC tiers (`arc-sage`, `arc-swift`) are served by the hosted router. Rayline Local does not include ARC weights; see [open weights and self-hosting](/arc/open-source) for running the routing stack yourself.
+
+Subscription paths, such as `rayline codex --subscription`, send the main agent to your existing subscription, which bills it, not Rayline.
