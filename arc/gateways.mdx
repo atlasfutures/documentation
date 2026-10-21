@@ -1,0 +1,25 @@
+---
+title: "For gateways and aggregators"
+description: "List ARC Swift and ARC Sage in a model gateway."
+icon: "network-wired"
+---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
+<ArcPreview />
+
+Gateways and aggregators list ARC under prefixed IDs, so the provider is explicit:
+
+| Gateway ID | First-party ID |
+| --- | --- |
+| `rayline/arc-swift` | `arc-swift` |
+| `rayline/arc-sage` | `arc-sage` |
+
+Rayline accepts both spellings. Configurable ARC (`arc-1.0`) has no fixed price, because it bills at the served model's price, so it is not offered as a gateway listing.
+
+## Pricing in a listing
+
+Each tier has one fixed rate card, in US dollars per million tokens, with four legs: `input`, `cache_read`, `cache_write`, and `output`. List all four. Rayline reports cache writes separately, so a gateway that charges for cache writes can pass them through instead of folding them into input. The current cards are on [ARC pricing](/arc/pricing).
+
+## Requests
+
+Gateways send Anthropic Messages or OpenAI Chat Completions requests to `https://api.rayline.ai` with the gateway's Rayline key. Pass the end user's conversation identity in `x-conversation-id` so ARC decides each turn in context; see the [generation reference](/arc/reference/generation).

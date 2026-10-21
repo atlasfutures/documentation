@@ -129,6 +129,7 @@
               "rules-router/index",
               "arc/gateway-routing",
               "arc/decisions/index",
+              "arc/decisions/prices",
               "arc/decisions/applying-effort",
               "rules-router/quickstart/agents"
             ]
@@ -146,6 +147,7 @@
             "pages": [
               "platform/api-keys",
               "platform/usage",
+              "platform/billing",
               "arc/pricing",
               "rules-router/pricing/index",
               "platform/data-privacy"
@@ -154,7 +156,8 @@
           {
             "group": "Deployment",
             "pages": [
-              "arc/open-source/index"
+              "arc/open-source/index",
+              "arc/gateways"
             ]
           }
         ]
@@ -166,6 +169,7 @@
             "group": "API reference",
             "pages": [
               "arc/reference/compatibility",
+              "arc/reference/generation",
               "arc/reference/responses",
               "arc/reference/decisions",
               "arc/reference/errors"

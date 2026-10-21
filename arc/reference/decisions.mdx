@@ -34,10 +34,40 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
-| `model` | Yes, unless your workspace routing is set to ARC | An ARC tier ID: `arc-swift` or `arc-sage`. A request that names a provider model, or no model while your workspace uses rules routing, returns `409`. |
+| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The prefixed `rayline/arc-swift` and `rayline/arc-sage` are accepted aliases. A request that names a provider model returns `409` (`non_arc_lookup`); an unknown `arc-*` ID returns `400` (`unknown_model`). |
+| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
 ARC reads the format from the body. A body without a format-specific field is read as Anthropic Messages. To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
+
+### Routing controls
+
+`routing` is an object. Every member is optional; a member Rayline does not recognise is refused with `400` (`routing_unknown_member`), never ignored.
+
+| Member | Type | Meaning |
+| --- | --- | --- |
+| `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift` or `arc-sage` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
+| `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on Decisions. Separate from the model's generation `temperature`. |
+| `prices` | object | Your inference prices: up to 256 model IDs, each with `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. All four are required; 0 is a price, a missing leg is an error. They change which model ARC selects, never what the decision costs. See [bring your own prices](/arc/decisions/prices). |
+| `exclusive` | boolean | `true` limits the candidates to the models in `prices`. Requires `prices`. |
+
+```json
+{
+  "model": "arc-1.0",
+  "messages": [{"role": "user", "content": "Review a database migration for data-loss risks."}],
+  "routing": {
+    "value_usd": 2,
+    "temperature": 0.5,
+    "prices": {
+      "deepseek/deepseek-v4-pro": {"input": 0.4, "cache_read": 0.04, "cache_write": 0.4, "output": 0.9},
+      "anthropic/claude-sonnet-5": {"input": 3, "cache_read": 0.3, "cache_write": 3.75, "output": 15}
+    },
+    "exclusive": true
+  }
+}
+```
+
+Decisions requests are never used to train ARC.
 
 ### Conversation headers
 
@@ -76,7 +106,27 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
   "warnings": [],
   "episode": { "turn_index": 4, "stayed": true },
   "usage": { "encoded_input_tokens": 1840, "cache_read_tokens": 1200 },
-  "latency_ms": 212
+  "latency_ms": 212,
+  "presets": {
+    "swift": {
+      "model": "deepseek/deepseek-v4-pro",
+      "worker": "deepseek/deepseek-v4-pro@thinking-off",
+      "provider": "openrouter",
+      "thinking": { "mode": "off", "budget_tokens": null },
+      "value_usd": 0.1,
+      "cost_weight": 10,
+      "prices": { "basis": "catalog", "price_sha256": null }
+    },
+    "sage": {
+      "model": "xiaomi/mimo-v2.5-pro",
+      "worker": "xiaomi/mimo-v2.5-pro@thinking-on",
+      "provider": "openrouter",
+      "thinking": { "mode": "on", "budget_tokens": 8192 },
+      "value_usd": 4.5,
+      "cost_weight": 0.2222222222222222,
+      "prices": { "basis": "catalog", "price_sha256": null }
+    }
+  }
 }
 ```
 
@@ -95,10 +145,42 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
 | `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
 | `episode` | object | Present when the request carried a [conversation ID](#conversation-identity). `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
-| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision. These are the metered quantities; see [ARC pricing](/arc/pricing). |
+| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). |
 | `latency_ms` | integer | Time ARC spent deciding. |
+| `presets` | object | The decisions at ARC Swift and ARC Sage. See [Presets](#presets). |
+| `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
+| `routing` | object | Present when you sent `routing`. |
 
 ARC does not return a confidence score or an explanation.
+
+### Presets
+
+Every response carries `presets`, with the decision at both fixed tiers, from the same single read of your request:
+
+| Field | Meaning |
+| --- | --- |
+| `presets.swift` | The decision at ARC Swift's value (V 0.1). |
+| `presets.sage` | The decision at ARC Sage's value (V 4.5). |
+
+Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `value_usd`, `cost_weight` (1 / `value_usd`), `prices`, and, when you sent `routing.temperature`, `temperature`.
+
+- `prices.basis` is `catalog` (Rayline catalog prices) or `caller` (your `routing.prices`, identified by `prices.price_sha256`).
+- `temperature` reports `requested`, `applied`, and `status`: `greedy` (you asked for 0), `applied` (ARC drew the model at the `applied` temperature; `propensity` is the probability of the chosen model, and `pi` lists each candidate's probability), `not_applied` (with a `reason`), or `unsupported` (the serving path did not confirm it, so the result is the top choice).
+
+The top-level `model`, `worker`, and `thinking` are the decision for the `model` you requested. Presets are alternatives: running one does not change the conversation's state.
+
+### Custom and routing echo
+
+| Field | Present when | Meaning |
+| --- | --- | --- |
+| `custom` | You sent `routing.value_usd` | The decision at your value, with the same fields as a preset. |
+| `routing` | You sent `routing` | Each member you sent, with `status` `applied` or `unsupported`. `routing.prices` also reports `price_sha256`, `exclusive`, and the priced `models`. `unapplied_keys` lists every member that was not applied. |
+
+Treat `unsupported` as not applied: ARC decided without that control, and the result says so rather than showing your value as used.
+
+### Usage
+
+`usage.encoded_input_tokens` and `usage.cache_read_tokens` count one read of your request, however many results the response carries. That read is what a decision is billed for; see [ARC pricing](/arc/pricing).
 
 ## Conversations
 
@@ -141,16 +223,26 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 
 Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...", "message": "..."}}`.
 
-| Status | Meaning | Retry? |
-| --- | --- | --- |
-| `400` | The body is missing, has no `messages`, or cannot be read as messages | No; fix the request |
-| `401` | Missing or invalid API key | No |
-| `403` | Your account does not have ARC access (`arc_private_preview`) | No |
-| `409` | The request names a provider model, or names no ARC tier while your workspace uses rules routing | No; set `model` to an ARC tier ID |
-| `413` | The request body is too large | No |
-| `429` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
-| `503` | Decisions is temporarily unavailable | Yes, with backoff |
-| `504` | The decision did not complete in time | Yes, with backoff |
+Each error carries a stable `error.code`.
+
+| Status | `error.code` | Meaning | Retry? |
+| --- | --- | --- | --- |
+| `400` | `invalid_body`, `unknown_model` | The body is not a JSON object with messages, or names an unknown ARC ID | No; fix the request |
+| `400` | `routing_invalid`, `routing_unknown_member` | `routing` is not an object, or has a member Rayline does not support | No |
+| `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–5, or differs from a tier's fixed V | No |
+| `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
+| `400` | `prices_invalid`, `price_leg_missing`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, misses a leg, has a negative or non-finite price, or names a model ARC cannot select | No |
+| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has no `prices` | No |
+| `401` | | Missing or invalid API key | No |
+| `402` | `insufficient_funds` | The workspace cannot pay for the decision | No; add funds |
+| `404` | `model_not_served` | The ARC model is not serving in this environment | No |
+| `409` | `non_arc_lookup` | The request names a provider model, not an ARC model | No; set `model` to an ARC ID |
+| `413` | | The request body is too large | No |
+| `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
+| `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |
+| `503` | `unavailable` | Decisions is temporarily unavailable | Yes, with backoff |
+| `504` | `timeout` | The decision did not complete in time | Yes, with backoff |
+| `529` | `capacity` | ARC is at capacity | Yes, with backoff |
 
 Each account can make 30 decision requests per minute across all of its keys. A decision normally completes within about 1.5 seconds.
 

@@ -1,0 +1,46 @@
+---
+title: "Bring your own prices"
+description: "Make ARC Decisions select with the prices you actually pay."
+icon: "tags"
+---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
+<ArcPreview />
+
+ARC weighs each candidate model's expected quality against its expected cost. By default the cost comes from the Rayline catalog. If you pay different prices, for example through negotiated provider rates, a different provider, or your own hardware, send them with the decision so ARC chooses for your costs.
+
+Prices apply to [Decisions](/arc/decisions) only. They change which model ARC selects. They do not change the Decisions charge, Swift or Sage rates, Agent Gateway billing, or what your provider bills you.
+
+## Send prices
+
+Add `routing.prices` to the decision request: a map from model ID to four prices in US dollars per million tokens.
+
+```json
+{
+  "model": "arc-sage",
+  "messages": [{"role": "user", "content": "Refactor the billing module."}],
+  "routing": {
+    "prices": {
+      "deepseek/deepseek-v4-pro": {"input": 0.3, "cache_read": 0.03, "cache_write": 0.3, "output": 0.7},
+      "qwen/qwen3.8-27b": {"input": 0, "cache_read": 0, "cache_write": 0, "output": 0}
+    },
+    "exclusive": true
+  }
+}
+```
+
+- **All four legs are required:** `input`, `cache_read`, `cache_write`, `output`. 0 is a valid price, for example for a model on your own hardware; a missing or blank leg is refused. If your provider does not price cache reads or writes separately, use its input price for both.
+- **Up to 256 models.** A model ID that ARC cannot select is refused with `unknown_price_model`.
+- **`exclusive: true`** limits the candidates to the models you priced. Without it, models you did not price keep their catalog prices.
+
+ARC never substitutes a catalog price for a malformed entry: an invalid request is refused with a `400` naming the problem.
+
+## Check what was applied
+
+The response's `routing.prices` reports `status` (`applied` or `unsupported`), the priced `models`, `exclusive`, and `price_sha256`, a hash of the prices ARC used. Each result's `prices.basis` is `caller` when your prices were applied and `catalog` otherwise. Keep `price_sha256` with your own records to show which prices a decision used.
+
+If `status` is `unsupported`, the decision was made at catalog prices.
+
+## Price profiles
+
+The Rayline platform lets you save named price profiles and test them in the Decisions Playground. A profile is sent as `routing.prices` with `exclusive: true`; its name is not part of the API.

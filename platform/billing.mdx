@@ -1,0 +1,33 @@
+---
+title: "Funding and billing"
+description: "What each request is billed at, and which balance pays for it."
+icon: "wallet"
+---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
+<ArcPreview />
+
+## What a request is billed at
+
+| You request | Billed at | Rayline fee |
+| --- | --- | --- |
+| `arc-swift` or `arc-sage` | The tier's fixed rate card for input, cache-read, cache-write, and output tokens, whichever model serves it | Included in the card |
+| `arc-1.0` | The served model's Rayline catalog price | None |
+| A model through Agent Gateway rules | The served model's Rayline catalog price | 0% commission |
+| A decision (`/v1/routes`) | The tokens ARC reads to decide, once per request | The Decisions rate; your inference is billed by your own provider |
+| A subscription path, such as `rayline codex --subscription` | Your subscription provider | None from Rayline |
+| Local inference through Rayline Local | Your hardware or endpoint | None |
+
+Rates are on [ARC pricing](/arc/pricing) and [Agent Gateway pricing](/rules-router/pricing). A rate is recorded with each request, so a later price change does not alter what an earlier request cost.
+
+## Which balance pays
+
+Hosted requests are paid from the prepaid balance of the workspace that owns the API key. Add funds in the [Rayline platform](https://platform.rayline.ai). A request the workspace cannot pay for is refused with `402` (`insufficient_funds`); Rayline does not substitute a cheaper model.
+
+A workspace linked to a Workshop organization uses that organization's Workshop credits instead. Workshop plans and credits are documented in [Workshop pricing](/workshop/pricing/plans).
+
+The Playground on the Rayline platform bills the workspace you select, after checking that you are a member of it.
+
+## Check a charge
+
+Each request in [usage](/platform/usage) shows the requested model, the served model, the token categories, the rate it was billed at, and the actual charge. Savings estimates are estimates, not charges.
