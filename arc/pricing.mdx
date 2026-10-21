@@ -1,16 +1,17 @@
 ---
 title: "ARC pricing"
-description: "Separate token rates for hosted responses and standalone decisions."
+description: "Fixed rate cards for ARC Swift and ARC Sage, the Decisions fee, and pass-through pricing."
 ---
 
+import ArcPreview from '/snippets/arc-preview.mdx';
 import Rates from '/snippets/arc-rates.mdx';
 
-<Note>ARC is in beta. These proposed launch rates are not active billing rates. Contact [hello@rayline.ai](mailto:hello@rayline.ai) about pricing availability.</Note>
+<ArcPreview />
 
 <Rates />
 
-Responses includes routing and generation, with no additional Decisions charge for the same call.
+- **ARC Swift and ARC Sage** bill every request at the tier's fixed card, whichever model serves it. See [Swift and Sage](/arc/models).
+- **Configurable ARC (`arc-1.0`)** bills at the served model's Rayline catalog price, with no ARC fee. See [configure ARC routing](/arc/gateway-routing).
+- **Decisions** bills the tokens ARC reads to decide, once per request, however many results it returns. Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Decisions](/arc/decisions).
 
-Decisions is billed on encoded input and cache reads. Your chosen provider charges for inference separately. The fixed Decisions rates were calibrated to approximately 2.5% of a reference blended workload's inference cost; they are not a percentage commission or a guarantee across workloads.
-
-For explicit coding-agent policies, [Agent Gateway](/rules-router/pricing) has a 0% commission launch policy. Workshop has its own [plans and credits](/workshop/pricing/plans).
+The rates above come from Rayline's effective price card; the card version and date are shown with them. Each request records the rate it was billed at. See [funding and billing](/platform/billing). [Agent Gateway](/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).
