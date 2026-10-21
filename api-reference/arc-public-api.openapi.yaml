@@ -1,0 +1,923 @@
+openapi: 3.1.0
+info:
+  title: Rayline ARC public API
+  version: 0.1.0
+  description: 'Service-owned contract for ARC model ids, routing extensions and Decisions (/v1/routes). Generated from rayline_router.serving.arc_public_contract;
+    fields marked x-status: proposed await Marcin and Chi.'
+x-arc-model-ids:
+  canonical:
+    arc-swift:
+      mode: tier
+      tier: swift
+      value_usd: 0.1
+    arc-sage:
+      mode: tier
+      tier: sage
+      value_usd: 4.5
+    arc-1.0:
+      mode: configurable
+      tier: null
+      value_usd: null
+  aliases:
+    arc-1: arc-1.0
+    rayline/arc-1: arc-1.0
+    rayline/arc-1.0: arc-1.0
+    rayline/arc-sage: arc-sage
+    rayline/arc-swift: arc-swift
+  x-status: proposed
+x-arc-result-names:
+- swift
+- sage
+- custom
+x-arc-value-usd-bounds:
+- 0.1
+- 5.0
+x-arc-error-codes:
+  invalid_body:
+    status: 400
+    type: invalid_request_error
+  unknown_model:
+    status: 400
+    type: invalid_request_error
+  routing_invalid:
+    status: 400
+    type: invalid_request_error
+  routing_unknown_member:
+    status: 400
+    type: invalid_request_error
+  value_invalid:
+    status: 400
+    type: invalid_request_error
+  value_out_of_bounds:
+    status: 400
+    type: invalid_request_error
+  tier_value_immutable:
+    status: 400
+    type: invalid_request_error
+  temperature_invalid:
+    status: 400
+    type: invalid_request_error
+  prices_invalid:
+    status: 400
+    type: invalid_request_error
+  price_leg_missing:
+    status: 400
+    type: invalid_request_error
+  price_leg_invalid:
+    status: 400
+    type: invalid_request_error
+  exclusive_invalid:
+    status: 400
+    type: invalid_request_error
+  exclusive_without_prices:
+    status: 400
+    type: invalid_request_error
+  prices_not_supported:
+    status: 400
+    type: invalid_request_error
+  unknown_price_model:
+    status: 400
+    type: invalid_request_error
+  insufficient_funds:
+    status: 402
+    type: billing_error
+  model_not_served:
+    status: 404
+    type: not_found_error
+  non_arc_lookup:
+    status: 409
+    type: invalid_request_error
+  rate_limited:
+    status: 429
+    type: rate_limit_error
+  inconsistent_upstream:
+    status: 502
+    type: api_error
+  unavailable:
+    status: 503
+    type: api_error
+  timeout:
+    status: 504
+    type: timeout_error
+  capacity:
+    status: 529
+    type: overloaded_error
+paths:
+  /v1/routes:
+    post:
+      operationId: routeLookup
+      summary: 'Decisions: where would ARC send this request?'
+      description: One encode; the Swift and Sage presets always, plus the custom result at routing.value_usd. Billed once
+        at the Decisions encode rate. Never trained on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutesRequest'
+      responses:
+        '200':
+          description: The route and its alternatives.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutesResponse'
+        '400':
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
+            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
+            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '402':
+          description: 'Error; `error.code` is one of: insufficient_funds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'Error; `error.code` is one of: model_not_served.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: 'Error; `error.code` is one of: non_arc_lookup.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'Error; `error.code` is one of: rate_limited.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '502':
+          description: 'Error; `error.code` is one of: inconsistent_upstream.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: 'Error; `error.code` is one of: unavailable.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '504':
+          description: 'Error; `error.code` is one of: timeout.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '529':
+          description: 'Error; `error.code` is one of: capacity.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/messages:
+    post:
+      operationId: createMessage
+      summary: Generation with ARC routing extensions.
+      x-arc-extension-only: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationRequestExtension'
+      responses:
+        '200':
+          description: The protocol's own response, unchanged.
+        '400':
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
+            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
+            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'Error; `error.code` is one of: model_not_served.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/chat/completions:
+    post:
+      operationId: createChatCompletion
+      summary: Generation with ARC routing extensions.
+      x-arc-extension-only: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationRequestExtension'
+      responses:
+        '200':
+          description: The protocol's own response, unchanged.
+        '400':
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
+            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
+            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'Error; `error.code` is one of: model_not_served.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/responses:
+    post:
+      operationId: createResponse
+      summary: Generation with ARC routing extensions.
+      x-arc-extension-only: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationRequestExtension'
+      responses:
+        '200':
+          description: The protocol's own response, unchanged.
+        '400':
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
+            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
+            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'Error; `error.code` is one of: model_not_served.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+components:
+  schemas:
+    Alternative:
+      additionalProperties: false
+      properties:
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        worker:
+          minLength: 1
+          title: Worker
+          type: string
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider
+        score:
+          title: Score
+          type: number
+      required:
+      - model
+      - worker
+      - score
+      title: Alternative
+      type: object
+    Baseline:
+      additionalProperties: false
+      properties:
+        input_per_mtok:
+          minimum: 0
+          title: Input Per Mtok
+          type: number
+        output_per_mtok:
+          minimum: 0
+          title: Output Per Mtok
+          type: number
+        cache_read_per_mtok:
+          minimum: 0
+          title: Cache Read Per Mtok
+          type: number
+        cache_write_per_mtok:
+          minimum: 0
+          title: Cache Write Per Mtok
+          type: number
+        model:
+          minLength: 1
+          title: Model
+          type: string
+      required:
+      - input_per_mtok
+      - output_per_mtok
+      - cache_read_per_mtok
+      - cache_write_per_mtok
+      - model
+      title: Baseline
+      type: object
+    CandidatePi:
+      additionalProperties: false
+      properties:
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        pi:
+          maximum: 1
+          minimum: 0
+          title: Pi
+          type: number
+      required:
+      - model
+      - pi
+      title: CandidatePi
+      type: object
+    DecisionsRouting:
+      additionalProperties: false
+      description: '``routing`` on ``POST /v1/routes``.'
+      properties:
+        value_usd:
+          anyOf:
+          - maximum: 5.0
+            minimum: 0.1
+            type: number
+          - type: 'null'
+          default: null
+          description: 'The caller''s V: the USD value of one successful result. Adds the `custom` result. Never clamped.
+            On a tier id it must equal the tier''s fixed V.'
+          title: Value Usd
+          x-status: proposed
+        temperature:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          default: null
+          description: A softmax temperature over each result's normalized Stage-1 scores. Uncapped here; 0 is greedy.
+          title: Temperature
+          x-status: proposed
+        prices:
+          anyOf:
+          - additionalProperties:
+              $ref: '#/components/schemas/PriceLegs'
+            maxProperties: 256
+            minProperties: 1
+            type: object
+          - type: 'null'
+          default: null
+          description: BYO prices per served model id. They change selection only, never the Decisions charge. No catalog
+            price is substituted for a malformed entry.
+          title: Prices
+          x-status: proposed
+        exclusive:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: null
+          description: 'true: only the priced models are candidates. Requires `prices`.'
+          title: Exclusive
+          x-status: proposed
+      title: DecisionsRouting
+      type: object
+      x-status: proposed
+    EchoStatus:
+      additionalProperties: false
+      properties:
+        requested:
+          title: Requested
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+      required:
+      - requested
+      - status
+      title: EchoStatus
+      type: object
+    EncodeUsage:
+      additionalProperties: false
+      description: 'The request''s one shared encode: billed once at the Decisions rate however many results it returns.'
+      properties:
+        encoded_input_tokens:
+          minimum: 0
+          title: Encoded Input Tokens
+          type: integer
+        cache_read_tokens:
+          minimum: 0
+          title: Cache Read Tokens
+          type: integer
+      required:
+      - encoded_input_tokens
+      - cache_read_tokens
+      title: EncodeUsage
+      type: object
+    Episode:
+      additionalProperties: false
+      properties:
+        turn_index:
+          minimum: 0
+          title: Turn Index
+          type: integer
+        stayed:
+          title: Stayed
+          type: boolean
+      required:
+      - turn_index
+      - stayed
+      title: Episode
+      type: object
+    ErrorDetail:
+      additionalProperties: false
+      properties:
+        type:
+          minLength: 1
+          title: Type
+          type: string
+        message:
+          title: Message
+          type: string
+        code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Code
+          x-status: proposed
+      required:
+      - type
+      - message
+      title: ErrorDetail
+      type: object
+    ErrorEnvelope:
+      additionalProperties: false
+      description: Every error, in the Anthropic envelope the router already answers with.
+      properties:
+        type:
+          const: error
+          title: Type
+          type: string
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+      required:
+      - type
+      - error
+      title: ErrorEnvelope
+      type: object
+    GenerationRequestExtension:
+      type: object
+      required:
+      - model
+      additionalProperties: true
+      description: The protocol's own request; only the ARC extension members are specified here.
+      properties:
+        model:
+          type: string
+        routing:
+          $ref: '#/components/schemas/GenerationRouting'
+    GenerationRouting:
+      additionalProperties: false
+      description: '``routing`` on generation requests (``arc-1.0``; tiers accept only their own V).'
+      properties:
+        value_usd:
+          anyOf:
+          - maximum: 5.0
+            minimum: 0.1
+            type: number
+          - type: 'null'
+          default: null
+          title: Value Usd
+          x-status: proposed
+        temperature:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          default: null
+          description: Hosted exploration temperature. Capped by the deployment and applied only when the org's data policy
+            allows training; otherwise echoed `unsupported`.
+          title: Temperature
+          x-status: proposed
+      title: GenerationRouting
+      type: object
+      x-status: proposed
+    Presets:
+      additionalProperties: false
+      properties:
+        swift:
+          $ref: '#/components/schemas/RouteResult'
+        sage:
+          $ref: '#/components/schemas/RouteResult'
+      required:
+      - swift
+      - sage
+      title: Presets
+      type: object
+      x-status: proposed
+    PriceLegs:
+      additionalProperties: false
+      description: USD per million tokens. All four legs are required; 0 is a price.
+      properties:
+        input:
+          minimum: 0
+          title: Input
+          type: number
+        cache_read:
+          minimum: 0
+          title: Cache Read
+          type: number
+        cache_write:
+          minimum: 0
+          title: Cache Write
+          type: number
+        output:
+          minimum: 0
+          title: Output
+          type: number
+      required:
+      - input
+      - cache_read
+      - cache_write
+      - output
+      title: PriceLegs
+      type: object
+    PricesEcho:
+      additionalProperties: false
+      properties:
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+        price_sha256:
+          pattern: ^[a-f0-9]{64}$
+          title: Price Sha256
+          type: string
+        exclusive:
+          title: Exclusive
+          type: boolean
+        models:
+          items:
+            type: string
+          minItems: 1
+          title: Models
+          type: array
+      required:
+      - status
+      - price_sha256
+      - exclusive
+      - models
+      title: PricesEcho
+      type: object
+    ResultPrices:
+      additionalProperties: false
+      description: The price world a result was decided in.
+      properties:
+        basis:
+          enum:
+          - catalog
+          - caller
+          title: Basis
+          type: string
+        price_sha256:
+          anyOf:
+          - pattern: ^[a-f0-9]{64}$
+            type: string
+          - type: 'null'
+          title: Price Sha256
+      required:
+      - basis
+      - price_sha256
+      title: ResultPrices
+      type: object
+      x-status: proposed
+    ResultTemperature:
+      additionalProperties: false
+      description: 'One result''s exploration: its own distribution and draw (``u = draw(salt, decision_key, result_name)``).
+
+
+        ``greedy``: T 0 was asked. ``applied``: the model was drawn at ``applied`` T; ``propensity`` is pi(chosen).
+
+        ``not_applied``: served greedy for ``reason``. ``unsupported``: the serving path did not report applying it, so
+
+        every draw field is null and the result is the greedy one.'
+      properties:
+        requested:
+          minimum: 0
+          title: Requested
+          type: number
+        applied:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Applied
+        status:
+          enum:
+          - greedy
+          - applied
+          - not_applied
+          - unsupported
+          title: Status
+          type: string
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        propensity:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 1
+            type: number
+          - type: 'null'
+          title: Propensity
+        explored:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Explored
+        pi:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CandidatePi'
+            type: array
+          - type: 'null'
+          title: Pi
+        decision_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Decision Key
+      required:
+      - requested
+      - applied
+      - status
+      - reason
+      - propensity
+      - explored
+      - pi
+      - decision_key
+      title: ResultTemperature
+      type: object
+      x-status: proposed
+    RouteResult:
+      additionalProperties: false
+      description: 'One operating point''s decision. Alternatives: no result advances the episode or commits an action.'
+      properties:
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        worker:
+          minLength: 1
+          title: Worker
+          type: string
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider
+        thinking:
+          $ref: '#/components/schemas/Thinking'
+        thinking_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Thinking Level
+        policy_action_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Policy Action Id
+        value_usd:
+          maximum: 5.0
+          minimum: 0.1
+          title: Value Usd
+          type: number
+        cost_weight:
+          exclusiveMinimum: 0
+          title: Cost Weight
+          type: number
+        prices:
+          $ref: '#/components/schemas/ResultPrices'
+        temperature:
+          anyOf:
+          - $ref: '#/components/schemas/ResultTemperature'
+          - type: 'null'
+          default: null
+      required:
+      - model
+      - worker
+      - thinking
+      - value_usd
+      - cost_weight
+      - prices
+      title: RouteResult
+      type: object
+      x-status: proposed
+    RoutesRequest:
+      type: object
+      required:
+      - model
+      additionalProperties: true
+      description: The body the caller was going to send to /v1/messages, /v1/chat/completions or /v1/responses, plus the
+        Decisions `routing` block.
+      properties:
+        model:
+          type: string
+          description: An ARC id or alias (x-arc-model-ids).
+        routing:
+          $ref: '#/components/schemas/DecisionsRouting'
+    RoutesResponse:
+      additionalProperties: false
+      description: '``POST /v1/routes`` 200. The top-level route is the decision the byte-identical request would get on the
+
+        requested model (unchanged from today''s envelope); ``presets`` and ``custom`` are alternatives from the same
+
+        encode.'
+      properties:
+        route_id:
+          minLength: 1
+          title: Route Id
+          type: string
+        object:
+          const: route
+          title: Object
+          type: string
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        worker:
+          minLength: 1
+          title: Worker
+          type: string
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider
+        thinking:
+          $ref: '#/components/schemas/Thinking'
+        checkpoint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Checkpoint
+        alternatives:
+          items:
+            $ref: '#/components/schemas/Alternative'
+          title: Alternatives
+          type: array
+        baseline:
+          anyOf:
+          - $ref: '#/components/schemas/Baseline'
+          - type: 'null'
+          default: null
+        selected_pricing:
+          $ref: '#/components/schemas/SelectedPricing'
+        warnings:
+          items:
+            type: string
+          title: Warnings
+          type: array
+        episode:
+          anyOf:
+          - $ref: '#/components/schemas/Episode'
+          - type: 'null'
+          default: null
+        usage:
+          $ref: '#/components/schemas/EncodeUsage'
+        latency_ms:
+          minimum: 0
+          title: Latency Ms
+          type: integer
+        thinking_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Thinking Level
+        policy_action_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Policy Action Id
+        presets:
+          $ref: '#/components/schemas/Presets'
+        custom:
+          anyOf:
+          - $ref: '#/components/schemas/RouteResult'
+          - type: 'null'
+          default: null
+          x-status: proposed
+        routing:
+          anyOf:
+          - $ref: '#/components/schemas/RoutingEcho'
+          - type: 'null'
+          default: null
+          x-status: proposed
+      required:
+      - route_id
+      - object
+      - model
+      - worker
+      - thinking
+      - alternatives
+      - selected_pricing
+      - warnings
+      - usage
+      - latency_ms
+      - presets
+      title: RoutesResponse
+      type: object
+    RoutingEcho:
+      additionalProperties: false
+      description: 'Each ``routing`` member the caller sent, as the serving path acknowledged it. A member the cell did not
+        report
+
+        applying is ``unsupported`` and listed in ``unapplied_keys``; it is never shown as applied.'
+      properties:
+        value_usd:
+          anyOf:
+          - $ref: '#/components/schemas/EchoStatus'
+          - type: 'null'
+          default: null
+        temperature:
+          anyOf:
+          - $ref: '#/components/schemas/EchoStatus'
+          - type: 'null'
+          default: null
+        prices:
+          anyOf:
+          - $ref: '#/components/schemas/PricesEcho'
+          - type: 'null'
+          default: null
+        unapplied_keys:
+          default: []
+          items:
+            type: string
+          title: Unapplied Keys
+          type: array
+      title: RoutingEcho
+      type: object
+      x-status: proposed
+    SelectedPricing:
+      additionalProperties: false
+      properties:
+        input_per_mtok:
+          minimum: 0
+          title: Input Per Mtok
+          type: number
+        output_per_mtok:
+          minimum: 0
+          title: Output Per Mtok
+          type: number
+        cache_read_per_mtok:
+          minimum: 0
+          title: Cache Read Per Mtok
+          type: number
+        cache_write_per_mtok:
+          minimum: 0
+          title: Cache Write Per Mtok
+          type: number
+      required:
+      - input_per_mtok
+      - output_per_mtok
+      - cache_read_per_mtok
+      - cache_write_per_mtok
+      title: SelectedPricing
+      type: object
+    Thinking:
+      additionalProperties: false
+      properties:
+        mode:
+          minLength: 1
+          title: Mode
+          type: string
+        budget_tokens:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Budget Tokens
+      required:
+      - mode
+      - budget_tokens
+      title: Thinking
+      type: object
