@@ -33,7 +33,7 @@ Send the same body you would send to generate the turn, in any of three formats:
 | --- | --- | --- |
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
-| `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
+| `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
 | `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The prefixed `rayline/arc-swift` and `rayline/arc-sage` are accepted aliases. A request that names a provider model returns `409` (`non_arc_lookup`); an unknown `arc-*` ID returns `400` (`unknown_model`). |
 | `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
@@ -215,7 +215,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 | Code | Meaning |
 | --- | --- |
 | `format_inferred` | The body had no field unique to one format, so ARC inferred it. Send `x-rayline-format` to state it. |
-| `tools_not_encoded` | The request's tools did not influence this decision. |
+| `tools_not_encoded` | The request's tools did not influence this decision. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
 | `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
 
