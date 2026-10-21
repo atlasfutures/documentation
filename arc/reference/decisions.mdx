@@ -145,7 +145,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
 | `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
 | `episode` | object | Present when the request carried a [conversation ID](#conversation-identity). `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
-| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). |
+| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until Decisions reuses cached prefixes. |
 | `latency_ms` | integer | Time ARC spent deciding. |
 | `presets` | object | The decisions at ARC Swift and ARC Sage. See [Presets](#presets). |
 | `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
