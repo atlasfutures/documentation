@@ -31,7 +31,7 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | Codex desktop | OpenAI Responses | End-to-end validation pending; CLI results do not establish desktop support |
 | OpenCode, pi, oh-my-pi, Hermes, OpenClaw, Kilo CLI and VS Code | Anthropic Messages | Sage and Swift file-tool smokes passed against dev, direct and through Local; [guides and version limits](/rules-router/quickstart/other-agents) |
 | Cline VS Code | Chat Completions direct; Messages through Local | Sage and Swift file-tool smokes passed against dev; Local needs model mapping and Web Search off. See [Cline](/rules-router/quickstart/other-agents/cline) |
-| Unreal Agent 0.3.1 | OpenAI Responses | Direct dev passed; Local returned empty output and is blocked. See [Unreal Agent](/rules-router/quickstart/other-agents/unreal) |
+| Unreal Agent 0.3.1 | Responses or Messages | Direct dev passed on both; Local Messages passed after the gateway fix. Local Responses is blocked pending release. See [Unreal Agent](/rules-router/quickstart/other-agents/unreal) |
 
 These bounded development checks do not establish production support or all
 tool features. Claude Code and Codex CLI were also retested on the published

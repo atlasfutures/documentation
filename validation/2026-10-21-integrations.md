@@ -264,3 +264,32 @@ inherited ANTHROPIC_MODEL=sonnet and no explicit window failed with unknown
 model at /v1/settings. Adding --model arc-sage or --auto-compact-window 180000
 allowed the forwarded --version command to exit 0. These are startup checks,
 not additional inference acceptance tasks.
+
+## Unreal Messages fix retest
+
+After memex-desktop #7610 deployed to dev (81553efc74), Unreal runner 0.3.1
+completed both Sage/Swift tasks on direct and Local Anthropic provider paths.
+All four ran cat receipt.txt and returned the correct results, exit 0. Direct
+Sage also ran an unrequested bc arithmetic command; record this instruction
+violation separately from successful protocol/tool execution. Local Responses
+remains blocked pending released rayline #99. Sanitized private evidence lives
+in unreal-anthropic-retest-direct and unreal-anthropic-retest-local.
+
+## Configurable ARC client coverage
+
+pi 0.80.2 and OpenCode 2.0.25 each completed two file-reading tasks per path
+with bare arc-1.0 against dev: eight tasks total. All completed a read tool and
+returned the correct receipt results. Local used the released rld 0.2.10 with
+arc-1.0 included in its endpoint models, separate ports 24108/24109/24111/24112.
+No custom routing object was sent; custom V/temperature client coverage remains
+unverified. Evidence: pi-arc1-{direct,local} and opencode-arc1-{direct,local} in
+the private scratch directory. These are live dev results.
+
+## pi custom routing controls
+
+pi 0.80.2 explicitly loaded an isolated extension using before_provider_request
+and after_provider_response. Four real read tasks (V0.5 and V4, direct and Local)
+passed. Every request/continuation echoed value_usd applied; requested routing
+temperature0 echoed not_applied/privacy_mode. Local preserved the routing echo.
+Only routing/status metadata was recorded by the hook. Default configurations
+and other models were not modified. Private evidence: pi-arc1-custom-{direct,local}.
