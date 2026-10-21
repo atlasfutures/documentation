@@ -174,6 +174,16 @@
               "arc/reference/decisions",
               "arc/reference/errors"
             ]
+          },
+          {
+            "group": "Endpoints",
+            "openapi": "api-reference/arc-public-api.openapi.yaml",
+            "pages": [
+              "POST /v1/routes",
+              "POST /v1/messages",
+              "POST /v1/chat/completions",
+              "POST /v1/responses"
+            ]
           }
         ]
       },
@@ -229,6 +239,7 @@
             "group": "Workshop Cloud",
             "pages": [
               "workshop/workshop-cloud/index",
+              "workshop/workshop-cloud/arena",
               "workshop/workshop-cloud/templates",
               "workshop/workshop-cloud/publishing",
               "workshop/workshop-cloud/sharing-and-teams",
@@ -258,7 +269,8 @@
                   "workshop/connectors/managed-ai-connectors",
                   "workshop/connectors/anthropic",
                   "workshop/connectors/openai",
-                  "workshop/connectors/gemini"
+                  "workshop/connectors/gemini",
+                  "workshop/connectors/jev"
                 ]
               },
               {
@@ -559,5 +571,10 @@
       "source": "/arc/coding-tools/other-agents",
       "destination": "/rules-router/quickstart/other-agents"
     }
-  ]
+  ],
+  "api": {
+    "playground": {
+      "display": "none"
+    }
+  }
 }

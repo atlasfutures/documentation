@@ -1,0 +1,175 @@
+---
+title: "Workshop Arena"
+icon: "trophy"
+description: "Create four versions of the same idea for free in Arena, compare the working apps, and choose your favorite."
+---
+
+# Build four versions for free. Pick the best.
+
+Workshop Arena turns one brief into four free builds, created in parallel by four different AI models. Try each result, compare them without knowing which model made which app, and open your favorite as a regular Workshop project.
+
+Arena builds are free. You can run one battle at a time.
+
+<CardGroup cols={3}>
+  <Card title="One brief" icon="message">
+    Describe the app once instead of rebuilding the same idea model by model.
+  </Card>
+  <Card title="Four working versions" icon="layer-group">
+    Explore different implementations and design directions side by side.
+  </Card>
+  <Card title="One project to keep" icon="arrow-right">
+    Choose your preferred result and continue building it in Agent Mode.
+  </Card>
+</CardGroup>
+
+<Warning>
+  Rayline, the creator of Workshop Arena, uses Arena prompts, uploads, generated apps, and votes to benchmark and improve ARC, its AI model. Do not include personal or confidential information. See the [Workshop Terms of Use](https://workshop.ai/termsandconditions) and [Privacy Policy](https://workshop.ai/privacypolicy).
+</Warning>
+
+## When to use Arena
+
+Arena is most useful when you are starting a new app and want to explore several strong first versions before committing to one direction.
+
+Use Arena when you want to:
+
+- Compare different layouts, visual styles, or product approaches
+- Get several interpretations of an idea without repeating your prompt
+- Judge models by the apps they produce instead of choosing a model first
+- Find a strong starting point, then refine it in Workshop
+
+Arena is designed for new frontend apps such as websites, prototypes, dashboards, and interactive tools. If you want to modify an existing project, or your app needs a backend, database, authentication, or integrations, use **Agent Mode**. You can also choose an Arena result first and add those capabilities after opening it in Agent Mode.
+
+<Info>
+  Arena is currently available in Workshop Cloud. It is not available in Workshop Desktop.
+</Info>
+
+## Build and compare
+
+<Steps>
+  <Step title="Open Arena">
+    Go to [app.workshop.ai](https://app.workshop.ai) and select **Arena** from the mode control on the Home screen.
+  </Step>
+
+  <Step title="Describe the app you want">
+    Write one clear brief for all four models. Include the audience, the main job the app should accomplish, essential interactions, and any visual direction that matters.
+
+    You can also attach reference images or other supporting files.
+
+    ```
+    Build an interactive trip planner for a week in Kyoto. Let travelers
+    organize activities by day, save places from a searchable list, and see
+    the route on a map. Use a calm editorial style inspired by Japanese
+    travel magazines, and make it work well on phones.
+    ```
+
+    Click **Build** to start the battle.
+  </Step>
+
+  <Step title="Let four models build in parallel">
+    Arena gives the same brief and starting point to four models. Each model works independently and produces its own app.
+
+    You can watch their progress, choose **Notify me when ready**, or leave and return later through **Projects → Arena**. If you stay on the page, select **Play while you wait** to open the Arena Arcade.
+  </Step>
+
+  <Step title="Review each app">
+    When the builds are ready, select **Review apps**. Try each app and answer **Does this build get the essentials right?**
+
+    Focus on whether the important interactions work and whether the result fulfills your brief. If something is missing or broken, you can optionally add a reason.
+  </Step>
+
+  <Step title="Compare the apps blindly">
+    Arena shows the apps in a series of head-to-head comparisons. The model names stay hidden so you can judge the results without brand bias.
+
+    For each pair, choose:
+
+    - **Works better** — which app is more useful, complete, and reliable
+    - **Looks better** — which app has the stronger design and presentation
+
+    You can choose a tie when the apps are equally strong.
+  </Step>
+
+  <Step title="Choose the version you want to keep">
+    After the comparisons, Arena ranks the completed apps and reveals which model made each one.
+
+    Preview the results, choose the version you want, and select **Open in Agent Mode**. Workshop creates an editable project from that build so you can continue the conversation, change the code, add features, connect services, and publish it normally.
+  </Step>
+</Steps>
+
+## Write a strong Arena brief
+
+All four models receive the same instructions, so the brief is the foundation of the comparison. Describe the outcome you care about without prescribing every implementation detail.
+
+<AccordionGroup>
+  <Accordion title="Name the audience and goal">
+    ```
+    Build a mobile-friendly inventory dashboard for a small vintage clothing
+    store. The owner should be able to see low-stock items and upcoming
+    restocks at a glance.
+    ```
+  </Accordion>
+
+  <Accordion title="Identify the essential interactions">
+    ```
+    Users need to filter by category and supplier, update an item's stock
+    count, and open a detail view with its sales history.
+    ```
+  </Accordion>
+
+  <Accordion title="Give useful visual direction">
+    ```
+    Use a warm editorial style with cream backgrounds, dark green accents,
+    large product photography, and clear typography. Avoid a generic admin
+    dashboard look.
+    ```
+  </Accordion>
+
+  <Accordion title="Leave room for different solutions">
+    Specify what the app must accomplish, but avoid dictating every component or layout. Arena is most valuable when the models have room to propose different strong approaches.
+  </Accordion>
+</AccordionGroup>
+
+## Find and resume your battles
+
+Arena battles appear alongside your other work under **Projects**. Use the **Arena** filter to see only Arena battles.
+
+You can return to a battle while it is building, when it is ready for review, or after its ranking is complete. Before starting another battle, finish comparing the completed apps from your current one.
+
+## If a build does not complete
+
+Arena waits for all four build slots to finish or report a problem before opening the review. If at least two apps complete, you can compare and rank the successful results. An unsuccessful candidate is left out of the comparison.
+
+If fewer than two apps complete, Arena saves your brief and any completed result. Start a new battle when you are ready to try again.
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Which models does Arena use?">
+    Arena uses four AI models selected by Workshop. The lineup can change as new models become available. Model names remain hidden during review and are revealed with the final ranking.
+  </Accordion>
+
+  <Accordion title="Why are the models hidden during comparison?">
+    Blind comparison keeps the focus on the working apps. It helps you choose based on what each result actually does and how it feels to use, rather than your expectations about a model or provider.
+  </Accordion>
+
+  <Accordion title="Does Arena use my Workshop credits?">
+    Arena's four initial builds do not use Workshop credits. After you open your chosen version in Agent Mode, continued building uses credits normally. You can have one battle building or waiting for comparison at a time.
+  </Accordion>
+
+  <Accordion title="Can I keep more than one result?">
+    An Arena battle becomes one Workshop project. Review the ranked apps, then open the version you want to continue building in Agent Mode.
+  </Accordion>
+
+  <Accordion title="Can I use Arena with an existing project?">
+    Arena starts a fresh app from your brief so every model begins from the same place. Use Agent Mode to work on an existing project.
+  </Accordion>
+
+  <Accordion title="Can I publish an Arena app?">
+    Yes. First open your chosen result in Agent Mode. From there, you can continue refining it and publish it like any other Workshop Cloud project. See [Publishing and custom domains](/workshop/workshop-cloud/publishing).
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Start building in Workshop Cloud](https://app.workshop.ai/arena)
+- [Learn how to work with the agent](/workshop/core-concepts/working-with-the-agent)
+- [Publish and share your chosen app](/workshop/workshop-cloud/publishing)

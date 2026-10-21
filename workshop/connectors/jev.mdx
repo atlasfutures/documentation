@@ -1,0 +1,86 @@
+---
+title: "Jev"
+icon: "scale-balanced"
+description: "Connect Jev, TypeSafe's decision model, to classify, route and score inputs in your Workshop apps."
+---
+
+## Overview
+
+[Jev](https://typesafe.ai) is a decision model by TypeSafe. It is not a chat model: instead of generating text, it answers typed questions about an input with calibrated probabilities, in well under a second. Use it in your apps for classification, routing, triage, moderation and scoring.
+
+The Jev connector works in one of three ways, depending on the API key you give it:
+
+| API key | Billing |
+|---------|---------|
+| **None** (leave the field empty) | Workshop credits |
+| **OpenRouter API key** (`sk-or-...`) | Billed by OpenRouter |
+| **TypeSafe API key** | Billed by TypeSafe |
+
+<Warning>
+**Published apps use the connector's key.** If you publish a Workshop app that uses this connector, visitors make requests using it — billed to your Workshop credits, or to your OpenRouter or TypeSafe account.
+</Warning>
+
+## Connecting to Workshop
+
+<Steps>
+  <Step title="Open the Hub">
+    Open the **Workshop Hub** from the sidebar.
+  </Step>
+  <Step title="Go to Connectors">
+    Click the **Connectors** tab.
+  </Step>
+  <Step title="Select Jev">
+    Click the **Jev** card.
+  </Step>
+  <Step title="Enter details">
+    Enter a **Connection Name** (e.g., "My Jev"). Leave **API Key** empty to use Workshop credits, or paste an OpenRouter or TypeSafe API key.
+  </Step>
+  <Step title="Save">
+    Click **Add Connection**.
+  </Step>
+</Steps>
+
+Your Jev connection is now active and available across all conversations. When you leave the key empty, Workshop creates a Workshop API key for the connection. Deleting the connection, or switching it to your own key, revokes that key.
+
+## Verifying your connection
+
+Ask Workshop:
+
+```
+Build an app that uses Jev to flag incoming support emails as spam or not spam
+```
+
+If the app returns a spam probability for each email, your connection is working.
+
+## How Jev answers
+
+Each request sends an input (the `state`) and one or more named questions. There are three question types:
+
+| Type | Asks | Answer |
+|------|------|--------|
+| `noul` | A yes-or-no question | The probability of yes |
+| `choice` | Which of several options fits | The chosen option, with a probability for each |
+| `score` | Where the input sits on an ordered scale | A score from 0 (the first level) to the last level's index, with a probability for each level |
+
+Workshop's agent knows how to write these requests; describe the decision you want in plain language.
+
+## When Workshop uses Jev
+
+When you ask for classification, routing, triage, moderation or scoring that needs no generated text, and don't name an AI provider, Workshop suggests the Jev connector instead of Gemini. Tasks that also generate text, such as drafting a reply to a classified ticket, still default to Gemini. Naming a provider (for example, "use OpenAI") overrides both.
+
+<Note>
+Jev runs in your app's backend, so it isn't available in **Static React App** projects. Use a template with a backend, such as **Dynamic React App**.
+</Note>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Invalid API key" | Check that the full key was copied. OpenRouter keys start with `sk-or-`. |
+| Requests fail with 402 | You are out of Workshop credits. Add credits, or switch the connector to your own key. |
+| Requests fail with 400 | A question is malformed; the error message names the field. All instructions and criteria must be strings. |
+
+## Learn more
+
+- [TypeSafe](https://typesafe.ai)
+- [OpenRouter](https://openrouter.ai)
