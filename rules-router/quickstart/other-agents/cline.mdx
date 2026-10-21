@@ -1,0 +1,135 @@
+---
+title: "Cline"
+description: "Use ARC in Cline through the direct API or a Rayline Local gateway."
+---
+
+Cline can call ARC directly with its **OpenAI Compatible** provider. Its
+**Anthropic** provider can use ARC through Rayline Local with an explicit model
+mapping. These are different configurations; changing only the base URL is not
+enough to switch between them.
+
+<Note>
+Validated in Cline's VS Code extension 4.1.25 on October 21, 2026: one file-reading
+task with ARC Sage and one with ARC Swift on each path. Requests used the
+Rayline development API. Local used a Rayline 0.2.10 source build; production and
+released Local verification remain pending.
+</Note>
+
+## Direct API
+
+Install the [official Cline extension](https://docs.cline.bot/getting-started/installing-cline).
+Open **Cline → Settings → API Configuration** and enter:
+
+| Setting | Value |
+| --- | --- |
+| API Provider | **OpenAI Compatible** |
+| Base URL | `https://api.rayline.ai/v1` |
+| API Key | Your [Rayline API key](/platform/api-keys) |
+| Custom Model ID | `arc-sage`, or `arc-swift` |
+| Context Window Size | `200000` for this configuration |
+| Max Output Tokens | `2048` for the verification below |
+| Supports Images | Off for this text-only verification |
+| Reasoning Effort | **None** |
+
+If ARC is absent from the model list, enter its bare ID in **Custom Model ID**.
+Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
+unrelated task. Keep the same value while continuing a task.
+
+Click **Done**, then start a **New Task**. Existing tasks can retain their
+previous provider configuration. The test used `https://api-dev.rayline.ai/v1`
+with a development key; production keys and development keys are not interchangeable.
+
+<Frame caption="A real direct ARC Swift task in Cline: file read completed and the answer matches the fixture.">
+  <img src="/images/integrations/cline-direct-arc-swift-20261021.webp" alt="Cline showing a completed receipt read, Pen at 3.25 and a price difference of 9.25, with openai-compat:arc-swift selected." />
+</Frame>
+
+## Rayline Local
+
+This path uses **Anthropic Messages** between Cline and the gateway. ARC
+selection and inference remain in the cloud. It does not run an inference model
+or ARC itself on your device.
+
+1. Configure the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
+2. Add the following `model_routes` inside its existing `routes` object, then
+   restart that gateway with the updated configuration:
+
+```json
+"model_routes": {
+  "claude-sonnet-5": {
+    "endpoint": "rayline-dev",
+    "model": "arc-sage"
+  },
+  "claude-haiku-5-5": {
+    "endpoint": "rayline-dev",
+    "model": "arc-swift"
+  }
+}
+```
+
+The endpoint ID must match the endpoint in your gateway configuration. This
+example matches the development gateway linked above.
+
+3. In Cline's **API Configuration**, use:
+
+| Setting | Value |
+| --- | --- |
+| API Provider | **Anthropic** |
+| Use custom base URL | On |
+| Base URL | `http://127.0.0.1:23811` (use your gateway's port) |
+| API Key | `local-client` (a non-secret placeholder) |
+| Model for Sage | `claude-sonnet-5` |
+| Model for Swift | `claude-haiku-5-5` |
+| Reasoning Effort | **None** |
+
+Cline's Anthropic selector does not accept arbitrary ARC IDs. The gateway maps
+these two client labels to the ARC tiers; they are **not** claims about which
+inference model ARC serves. Without the explicit mapping, a recognized Claude
+ID can take the gateway's direct-model route instead of its default ARC route.
+The real Rayline key belongs in the gateway process, not in Cline.
+
+4. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
+   start a **New Task**.
+
+<Warning>
+Keep **Web Search** off for this configuration. Cline's provider-native
+Anthropic search tool is unsupported by ARC. The dev API now returns
+`400 unsupported_server_tool` with an actionable explanation (retested on
+21 October 2026); earlier builds returned a misleading 503. Ordinary file
+tools work with search disabled. The setting applies to new tasks.
+</Warning>
+
+<Frame caption="The Local Swift task. Cline displays its Claude label; the explicit gateway mapping selects ARC Swift.">
+  <img src="/images/integrations/cline-local-arc-swift-20261021.webp" alt="Cline's completed Local file-reading task beside receipt.txt, with the client label claude-haiku-5-5 mapped by the gateway to ARC Swift." />
+</Frame>
+
+## Verify two tasks
+
+Create `receipt.txt` in your workspace:
+
+```text
+Notebook 12.50
+Pen 3.25
+Folder 4.75
+```
+
+- With Sage, ask: **Read receipt.txt and calculate the total. Do not change
+  files or run commands.** Expect a completed file read and **20.50**.
+- Start a new task with Swift and ask: **Read receipt.txt. Which item is cheapest,
+  and what is the difference between the highest and lowest prices? Do not change
+  files or run commands.** Expect **Pen**, **3.25**, and **9.25**.
+
+Check [Rayline usage](/platform/usage) for the corresponding requests. Cline's
+built-in Claude prices and a custom model's default **Free** display do not
+represent Rayline billing. Use the [ARC rate card](/arc/pricing).
+
+## Troubleshooting
+
+- **Old provider still used:** start a new task after changing API settings.
+- **Local authentication error:** confirm the explicit model mapping and the
+  gateway's real API key; `local-client` is only a loopback placeholder.
+- **Repeated 503 with Anthropic:** disable **Web Search** and start a new task.
+- **404 on the Local Chat Completions path:** this gateway build accepts Messages
+  and Responses, not inbound Chat Completions. Use the Local configuration above.
+
+See Cline's [OpenAI-compatible provider reference](https://docs.cline.bot/provider-config/openai-compatible)
+for its custom endpoint and model fields.

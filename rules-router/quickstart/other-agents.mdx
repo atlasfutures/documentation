@@ -3,10 +3,30 @@ title: "Other coding agents"
 sidebarTitle: "Overview"
 description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Agent Gateway."
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
 
 
-<Note>These launchers need Rayline 0.2.8 or later. Check with `rayline --version`. To update, run `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+<Note>
+Install or update Rayline through the [official installer](/rules-router/cli).
+Version 0.2.10 was published on 21 October 2026 through get.rayline.ai; GitHub
+Releases is not the CLI distribution source. The launcher commands below need
+0.2.8 or later. Individual guides distinguish manual configuration tests from
+launcher verification.
+</Note>
+
+## Choose a connection
+
+OpenCode, pi, oh-my-pi, Hermes, OpenClaw, and [Kilo CLI](/rules-router/quickstart/other-agents/kilo)
+can call ARC directly; they do not require a local gateway. Their guides also
+show a Rayline Local path. Both paths passed bounded development-API checks with
+ARC Sage and ARC Swift. See each guide for tested versions and limitations.
+
+[Cline](/rules-router/quickstart/other-agents/cline) also passed both paths with
+the documented settings. [Unreal Agent](/rules-router/quickstart/other-agents/unreal)
+passed direct dev checks; its Local path is blocked by an empty-response bug.
+
+A local gateway does not imply on-device inference or local ARC decisions.
+See [hosted and local connections](/tools/hosted-local) for those separate choices.
+
 
 Rayline can launch five more coding agents against hosted Agent Gateway, the same way `rayline claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
 
@@ -97,6 +117,18 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Use ARC
 
-<ArcPreview />
+These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` (the coding default) or `arc-swift` (cheaper and faster), on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. The guides record development-API verification; production and per-launcher verification remain pending. Run their two-request checks and inspect [usage](/platform/usage) after setup.
 
-These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` (the coding default) or `arc-swift` (cheaper and faster), on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Rayline has not yet tested each agent on ARC; send a short task first and check the request in [usage](/platform/usage).
+## Planned integrations
+
+[Roomote](https://github.com/RooCodeInc/Roomote) replaces Roo Code in the active
+integration queue. Roomote is a separate, source-available cloud-agent product;
+a Roo Code configuration does not establish Roomote compatibility.
+
+[Cursor](https://cursor.com) is also queued. Editor chat/agent, CLI, and cloud
+agents need separate checks: support in one surface does not establish support
+in the others. Neither Roomote nor Cursor has completed Rayline validation yet.
+
+<span id="legacy-integrations" />
+Roo Code is outside the active support queue. Its historical integration status
+does not transfer to Roomote.

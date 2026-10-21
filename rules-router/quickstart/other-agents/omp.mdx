@@ -1,53 +1,42 @@
 ---
 title: "oh-my-pi"
-description: "Run oh-my-pi (omp) through hosted Agent Gateway with rayline omp."
+description: "Connect oh-my-pi to ARC directly or through a Rayline Local gateway."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Use **ARC Sage** for coding or **ARC Swift** for a faster, lower-cost tier. You can connect directly to Rayline without installing a gateway.
+
+<Note>
+Validated on **21 October 2026**: oh-my-pi **18.12.6** completed two file-reading tasks per path, one with Sage and one with Swift, against the **dev API**. Local used a **0.2.10 source build (the revision later published as 0.2.10)**. Production, launchers, resume, compaction, and extensions remain unverified.
+</Note>
+
+![oh-my-pi’s session export shows ARC Sage reading the receipt and calculating the total.](/images/integrations/omp-arc-sage-20261021.webp)
+*oh-my-pi’s session export shows ARC Sage reading the receipt and calculating the total. Actual dev test; client cost displays are not Rayline billing evidence.*
+
+## Choose a connection
+
+| Path | Request path | Inference |
+| --- | --- | --- |
+| Direct API | oh-my-pi → hosted Rayline | Cloud |
+| Rayline Local gateway | oh-my-pi → your gateway → hosted Rayline | Cloud |
+
+A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Rayline Local](/tools/hosted-local).
 
 ## Install
 
-Install oh-my-pi from its [install docs](https://github.com/can1357/oh-my-pi#install). Use version 18.1.10 or later. Then sign in to Rayline:
+Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell where you will run the tool. Keep it out of project files.
+
+## Connect directly
+
+Use a separate configuration directory. These environment settings apply to the current shell:
 
 ```bash
-rayline auth login
+unset OMP_PROFILE PI_PROFILE CLAUDE_CONFIG_DIR
+export PI_CODING_AGENT_DIR="$HOME/.config/omp-rayline"
+mkdir -p "$PI_CODING_AGENT_DIR"
+export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
-## Run
-
-```bash
-rayline omp
-rayline --env <name> omp
-```
-
-Everything after `omp` goes to omp unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
-
-## What Rayline writes
-
-Rayline sets `PI_CODING_AGENT_DIR` to `~/.config/rayline/harness/omp/<env>/`:
-
-| File | Contents | Rewritten each launch |
-| --- | --- | --- |
-| `models.yml` | A `rayline` provider in API-key mode using the Anthropic Messages API, pointed at Agent Gateway, with model `rayline-router` | Yes |
-| `config.yml` | Assigns `rayline/rayline-router` to the `default`, `smol`, `slow`, and `plan` model roles | No; written once, then yours to edit |
-
-Rayline removes `OMP_PROFILE` and `PI_PROFILE` from omp's environment, because a named profile would make omp ignore this directory. It also removes `CLAUDE_CONFIG_DIR`, so omp does not load another Claude Code configuration, for example when you start it from a `rayline claude` session.
-
-## Key handling
-
-`models.yml` names the `RAYLINE_KEY` environment variable instead of containing the key. The key is set only in omp's process environment and is never written to disk.
-
-## Conversations
-
-Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Resuming in a new launch starts a new conversation.
-
-From version 18.1.10, omp also sends its own session ID in API-key mode. When omp is older, Rayline prints a warning asking you to upgrade. On the production service the per-launch conversation ID still applies, so routing works either way.
-
-## Manual setup (without the launcher)
-
-Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
-
-Add this provider to `~/.omp/agent/models.yml`:
+Save this in `$PI_CODING_AGENT_DIR/models.yml`:
 
 ```yaml
 providers:
@@ -59,40 +48,77 @@ providers:
     headers:
       x-conversation-id: "RAYLINE_CONV_ID"
     models:
-      - id: "rayline-router"
-        name: "Rayline router"
-        reasoning: true
-        input: ["text", "image"]
+      - id: "arc-sage"
+        name: "ARC Sage"
+        reasoning: false
+        input: ["text"]
         contextWindow: 200000
-        maxTokens: 32000
+        maxTokens: 2048
+      - id: "arc-swift"
+        name: "ARC Swift"
+        reasoning: false
+        input: ["text"]
+        contextWindow: 200000
+        maxTokens: 2048
 ```
 
-To use it for every model role, add this to `~/.omp/agent/config.yml`:
+oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This smoke configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
-```yaml
-modelRoles:
-  default: "rayline/rayline-router"
-  smol: "rayline/rayline-router"
-  slow: "rayline/rayline-router"
-  plan: "rayline/rayline-router"
+Start with Sage:
+
+```bash
+omp --model rayline/arc-sage
 ```
 
-- In omp, `apiKey` and header values name environment variables. Write the variable's name, not `$RAYLINE_KEY`.
-- `auth: "apiKey"` makes omp authenticate with the API key, as the launcher does. From omp 18.1.10 it also sends its own session ID in this mode.
-- `baseUrl` has no `/v1`; omp adds the Messages path.
+For Swift, use `omp --model rayline/arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
 
-To keep this separate from your normal omp setup, put both files in another directory and set `PI_CODING_AGENT_DIR` to it, as the launcher does. Unset `OMP_PROFILE` and `PI_PROFILE` when you do, because a named profile makes omp ignore that variable.
+## Use a Rayline Local gateway
 
-Check it with a short prompt such as `Reply with the word ready.`
+First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
-## Known limitations
+| Setting | Direct production API | Gateway in the dev smoke |
+| --- | --- | --- |
+| `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the test gateway |
 
-- Named omp profiles are not used under `rayline omp`.
-- Sessions run through Rayline are kept in Rayline's directory, separate from your normal omp sessions.
-- Edits to `models.yml` are lost on the next launch. Change model roles in `config.yml`.
+Use your gateway’s actual port and authentication. **23811 is a test port**, not the default. The test gateway forwarded to `https://api-dev.rayline.ai`; direct tests used that dev host too. A successful dev test does not establish production availability.
+
+## Verify the route
+
+Create `receipt.txt`:
+
+```text
+Notebook 12.50
+Pen 3.25
+Folder 4.75
+```
+
+1. With Sage, ask **Read receipt.txt and add the three prices.** Expect a read-tool call and **20.50**.
+2. With Swift, ask **Read receipt.txt. Which item is cheapest, and what is the difference between the highest and lowest price?** Expect **Pen**, **3.25**, and **9.25**.
+
+In [Usage](/platform/usage), check successful requests, the requested ARC tier, the served model, and the charge. For Local, also inspect the gateway log. A correct answer alone does not prove the route.
+
+<span id="use-arc-directly" />
+<span id="verify-your-setup" />
+<span id="launcher-availability" />
+<span id="run" />
+<span id="what-rayline-writes" />
+<span id="key-handling" />
+<span id="conversations" />
+<span id="manual-setup-without-the-launcher" />
+<span id="known-limitations" />
+
+## Launcher and session behavior
+
+`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer. This launcher remains unverified by the manual-configuration smoke.
+
+The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
 
 ## Troubleshooting
 
-- **`omp` not found on PATH.** Install oh-my-pi and check `which omp`.
-- **Version warning at launch.** Upgrade omp to 18.1.10 or later.
-- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
+- **Another provider or model is used:** check project overrides and the active configuration directory.
+- **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
+- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- See [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

@@ -3,7 +3,38 @@ title: "Hermes Agent"
 description: "Run Hermes Agent through hosted Agent Gateway with rayline hermes."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Use **ARC Sage** (`arc-sage`) or **ARC Swift** (`arc-swift`) directly through the Rayline API, or through a Rayline Local gateway forwarding to hosted Rayline. Both connections use cloud inference. See [what “local” means](/tools/hosted-local).
+
+<Note>
+Live dev validation on **21 October 2026**: Hermes Agent source commit `3fa571a51a6bf1220dfe9a7a23fcd5bb9482a1af` completed two file-reading tasks per path, one with Sage and one with Swift. Local used a Rayline 0.2.10 source build (the revision later published as 0.2.10). Production, launchers, Responses, resume, and compaction remain unverified.
+</Note>
+
+![Hermes’s session export shows the receipt file result and the correct total](/images/integrations/hermes-local-arc-sage-20261021.webp)
+*Actual Sage session through the local gateway to dev. The session record confirms `read_file` and the loopback endpoint.*
+
+## Use ARC directly
+
+In the manual configuration below, replace `rayline-router` with `arc-sage` in the model definition and default. Add a second definition for `arc-swift` to make both tiers available.
+
+```bash
+hermes --provider rayline-anth --model arc-sage -z "Read receipt.txt and add the prices."
+hermes --provider rayline-anth --model arc-swift -z "Read receipt.txt and identify the cheapest item."
+```
+
+## Use a Rayline Local gateway
+
+[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Our dev smoke used `http://127.0.0.1:23811`; 23811 is a test port, not a default. The gateway holds the upstream key; the client used `RAYLINE_KEY=local-client` for this test gateway.
+
+## Verify the route
+
+Create `receipt.txt` with `Notebook 12.50`, `Pen 3.25`, and `Folder 4.75` on separate lines. Ask Sage to read and total it (**20.50**), then Swift to read it and find the cheapest item (**Pen**, **3.25**) and the price spread (**9.25**). Verify a real read-tool result, not just the final answer.
+
+Check the requested ARC tier, served model, successful status, and charge in [Usage](/platform/usage). For Local, also check the gateway log. Client cost estimates are not the Rayline bill. These tests used `https://api-dev.rayline.ai`; the production URL in the examples must be verified separately.
+
+## Launcher availability
+
+The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer. Released-launcher validation is pending.
+
 
 ## Install
 

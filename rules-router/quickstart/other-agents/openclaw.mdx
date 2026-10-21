@@ -1,9 +1,66 @@
 ---
 title: "OpenClaw"
-description: "Run OpenClaw through hosted Agent Gateway with rayline openclaw."
+description: "Connect OpenClaw to ARC directly or through a Rayline Local gateway."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Use **ARC Sage** (`arc-sage`) or **ARC Swift** (`arc-swift`) directly through the Rayline API, or through a Rayline Local gateway forwarding to hosted Rayline. Both connections use cloud inference. See [what “local” means](/tools/hosted-local).
+
+<Note>
+Live dev validation on **21 October 2026**: OpenClaw 2026.10.5 (official npm package, Linux arm64 container) completed two file-reading tasks per path, one with Sage and one with Swift. Local used a Rayline 0.2.10 source build (the revision later published as 0.2.10). The native macOS control UI also passed Sage and Swift both directly and through Local on Node 24.22.1. Production, launchers, Responses, resume, and compaction remain unverified.
+</Note>
+
+## Use ARC directly
+
+In the manual configuration below, replace `rayline-router` with `arc-sage` in the model definition and default. Add a second definition for `arc-swift` to make both tiers available.
+
+```bash
+openclaw agent --local --model rayline/arc-sage --session-id receipt-sage --message "Read receipt.txt and add the prices."
+openclaw agent --local --model rayline/arc-swift --session-id receipt-swift --message "Read receipt.txt and identify the cheapest item."
+```
+
+OpenClaw’s `--local` runs the agent in the current process. **It does not mean local inference or require Rayline Local.** The provider’s base URL decides where these requests go.
+
+## Use a Rayline Local gateway
+
+[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Our dev smoke used `http://127.0.0.1:23811`; 23811 is a test port, not a default. The gateway holds the upstream key; the client used `RAYLINE_KEY=local-client` for this test gateway.
+
+Inside Docker, use `http://host.docker.internal:23811` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
+
+```json
+"request": { "allowPrivateNetwork": true }
+```
+
+Place this under `models.providers.rayline`, alongside `baseUrl`. Keep it scoped to the provider that needs private-network access. Without it, the tested version rejected the host address before making an HTTP request. See OpenClaw’s [host-provider networking guide](https://docs.openclaw.ai/install/docker/networking-and-storage).
+
+## Verify the route
+
+Create `receipt.txt` with `Notebook 12.50`, `Pen 3.25`, and `Folder 4.75` on separate lines. Ask Sage to read and total it (**20.50**), then Swift to read it and find the cheapest item (**Pen**, **3.25**) and the price spread (**9.25**). Verify a real read-tool result, not just the final answer.
+
+Check the requested ARC tier, served model, successful status, and charge in [Usage](/platform/usage). For Local, also check the gateway log. Client cost estimates are not the Rayline bill. These tests used `https://api-dev.rayline.ai`; the production URL in the examples must be verified separately.
+
+## Use the OpenClaw control UI
+
+Start OpenClaw’s own gateway with the same provider configuration, then open its
+control UI and connect with its gateway token. This is a separate gateway from
+Rayline Local: OpenClaw hosts your agent session, while Rayline Local forwards
+model requests.
+
+Select **arc-sage** or **arc-swift** in the chat model picker. Ask each to read
+your fixture and confirm the read-tool result and answer.
+
+<Frame caption="OpenClaw’s native control UI completes a read-tool task through Rayline Local with ARC Swift.">
+![OpenClaw shows the read-tool result and correct cheapest item and price spread, with arc-swift selected](/images/integrations/openclaw-local-swift-20261021.webp)
+</Frame>
+
+Use a current Node release supported by OpenClaw. Our native UI test used
+**Node 24.22.1**; OpenClaw rejected 24.5.0 because of a Node SQLite defect.
+The container CLI tests passed, but its control-UI gateway failed a SQLite
+file-identity check. Native macOS startup passed without disabling that check.
+
+## Launcher availability
+
+The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer. Released-launcher validation is pending.
+
 
 ## Install
 

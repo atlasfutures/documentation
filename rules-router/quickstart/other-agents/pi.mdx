@@ -1,52 +1,41 @@
 ---
 title: "pi"
-description: "Run the pi coding agent through hosted Agent Gateway with rayline pi."
+description: "Connect pi to ARC directly or through a Rayline Local gateway."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Use **ARC Sage** for coding or **ARC Swift** for a faster, lower-cost tier. You can connect directly to Rayline without installing a gateway.
+
+<Note>
+Validated on **21 October 2026**: pi **0.80.2** completed two file-reading tasks per path, one with Sage and one with Swift, against the **dev API**. Local used a **0.2.10 source build (the revision later published as 0.2.10)**. Production, launchers, resume, compaction, and extensions remain unverified.
+</Note>
+
+![pi’s session export shows ARC Swift reading the receipt and calculating the price difference.](/images/integrations/pi-arc-swift-20261021.webp)
+*pi’s session export shows ARC Swift reading the receipt and calculating the price difference. Actual dev test; client cost displays are not Rayline billing evidence.*
+
+## Choose a connection
+
+| Path | Request path | Inference |
+| --- | --- | --- |
+| Direct API | pi → hosted Rayline | Cloud |
+| Rayline Local gateway | pi → your gateway → hosted Rayline | Cloud |
+
+A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Rayline Local](/tools/hosted-local).
 
 ## Install
 
-Install pi (`@earendil-works/pi-coding-agent`) from its [install docs](https://github.com/earendil-works/pi#getting-started), then sign in to Rayline:
+Install [pi](https://github.com/earendil-works/pi#getting-started). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell where you will run the tool. Keep it out of project files.
+
+## Connect directly
+
+Use a separate configuration directory. These environment settings apply to the current shell:
 
 ```bash
-rayline auth login
+export PI_CODING_AGENT_DIR="$HOME/.config/pi-rayline"
+mkdir -p "$PI_CODING_AGENT_DIR"
+export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
-## Run
-
-```bash
-rayline pi
-rayline pi -p "summarize this repo"
-rayline --env <name> pi
-```
-
-Everything after `pi` goes to pi unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
-
-## What Rayline writes
-
-Rayline sets `PI_CODING_AGENT_DIR` to `~/.config/rayline/harness/pi/<env>/`:
-
-| File | Contents | Rewritten each launch |
-| --- | --- | --- |
-| `models.json` | A `rayline` provider using the Anthropic Messages API, pointed at Agent Gateway, with model `rayline-router` | Yes |
-| `settings.json` | Makes `rayline` and `rayline-router` the defaults | No; written once, then yours to edit |
-
-pi also keeps its own auth and sessions in that directory, so sessions run through Rayline are separate from your normal pi sessions.
-
-## Key handling
-
-`models.json` refers to the key as `$RAYLINE_KEY`, which pi resolves from its environment. The key is set only in pi's process environment and is never written to disk.
-
-## Conversations
-
-Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Rayline also turns on pi's session-affinity header. Resuming with `-c` or `--resume` in a new launch starts a new conversation.
-
-## Manual setup (without the launcher)
-
-Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
-
-Add this provider to `~/.pi/agent/models.json`, merging it into `providers` if the file exists:
+Save this in `$PI_CODING_AGENT_DIR/models.json`:
 
 ```json
 {
@@ -58,42 +47,71 @@ Add this provider to `~/.pi/agent/models.json`, merging it into `providers` if t
       "headers": { "x-conversation-id": "$RAYLINE_CONV_ID" },
       "compat": { "sendSessionAffinityHeaders": true },
       "models": [
-        {
-          "id": "rayline-router",
-          "name": "Rayline router",
-          "reasoning": true,
-          "input": ["text", "image"],
-          "contextWindow": 200000,
-          "maxTokens": 32000
-        }
+        { "id": "arc-sage", "name": "ARC Sage", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 },
+        { "id": "arc-swift", "name": "ARC Swift", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 }
       ]
     }
   }
 }
 ```
 
-To make it the default, add these keys to `~/.pi/agent/settings.json`:
+pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The optional session-affinity setting sends pi’s session ID alongside the conversation header. This smoke configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
-```json
-{ "defaultProvider": "rayline", "defaultModel": "rayline-router" }
+Start with Sage:
+
+```bash
+pi --provider rayline --model arc-sage
 ```
 
-- `baseUrl` has no `/v1`; pi adds the Messages path.
-- pi expands `$NAME` in `apiKey` and header values from its environment.
-- `compat.sendSessionAffinityHeaders` makes pi send its own session ID as well. The launcher sets it, but the hosted service currently keys conversations on `x-conversation-id`, so it is optional.
-- The launcher does not set `compat.allowEmptySignature` for the hosted service. Leave it unset.
+For Swift, use `pi --provider rayline --model arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
 
-To keep this separate from your normal pi setup, put both files in another directory and set `PI_CODING_AGENT_DIR` to it, as the launcher does. pi then keeps that setup's sessions and login there too.
+## Use a Rayline Local gateway
 
-Check it with `pi -p "Reply with the word ready."`.
+First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
-## Known limitations
+| Setting | Direct production API | Gateway in the dev smoke |
+| --- | --- | --- |
+| `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the test gateway |
 
-- Sessions from your normal pi setup are not visible under `rayline pi`, and the reverse.
-- Edits to `models.json` are lost on the next launch. Change defaults in `settings.json`.
+Use your gateway’s actual port and authentication. **23811 is a test port**, not the default. The test gateway forwarded to `https://api-dev.rayline.ai`; direct tests used that dev host too. A successful dev test does not establish production availability.
+
+## Verify the route
+
+Create `receipt.txt`:
+
+```text
+Notebook 12.50
+Pen 3.25
+Folder 4.75
+```
+
+1. With Sage, ask **Read receipt.txt and add the three prices.** Expect a read-tool call and **20.50**.
+2. With Swift, ask **Read receipt.txt. Which item is cheapest, and what is the difference between the highest and lowest price?** Expect **Pen**, **3.25**, and **9.25**.
+
+In [Usage](/platform/usage), check successful requests, the requested ARC tier, the served model, and the charge. For Local, also inspect the gateway log. A correct answer alone does not prove the route.
+
+<span id="use-arc-directly" />
+<span id="verify-your-setup" />
+<span id="launcher-availability" />
+<span id="run" />
+<span id="what-rayline-writes" />
+<span id="key-handling" />
+<span id="conversations" />
+<span id="manual-setup-without-the-launcher" />
+<span id="known-limitations" />
+
+## Launcher and session behavior
+
+`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer. This launcher remains unverified by the manual-configuration smoke.
+
+The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
 
 ## Troubleshooting
 
-- **`pi` not found on PATH.** Install pi and check `which pi`.
-- **pi does not pick the Rayline model.** Check `settings.json` in the config directory; delete it to have Rayline write the defaults again on the next launch.
-- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
+- **Another provider or model is used:** check project overrides and the active configuration directory.
+- **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
+- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- See [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

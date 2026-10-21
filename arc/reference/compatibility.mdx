@@ -26,9 +26,18 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | Client | API it uses | ARC support |
 | --- | --- | --- |
 | Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/rules-router/quickstart/claude-code#use-arc-sage-or-swift) |
-| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Yes, with `rayline claude-desktop`; see [Claude Desktop](/tools/claude-desktop) |
-| Codex CLI and Codex desktop | OpenAI Responses | Not yet; ARC does not serve Responses requests on `https://api.rayline.ai` |
-| Other agents on Anthropic Messages | Anthropic Messages | Not yet tested; see [other agents](/rules-router/quickstart/other-agents#use-arc) |
+| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Launcher not yet released or end-to-end validated; see [Claude Desktop](/tools/claude-desktop) |
+| Codex CLI | OpenAI Responses | Sage and Swift file-tool smokes passed against dev, direct and through Local; [versions and limits](/rules-router/quickstart/codex#arc) |
+| Codex desktop | OpenAI Responses | End-to-end validation pending; CLI results do not establish desktop support |
+| OpenCode, pi, oh-my-pi, Hermes, OpenClaw, Kilo CLI and VS Code | Anthropic Messages | Sage and Swift file-tool smokes passed against dev, direct and through Local; [guides and version limits](/rules-router/quickstart/other-agents) |
+| Cline VS Code | Chat Completions direct; Messages through Local | Sage and Swift file-tool smokes passed against dev; Local needs model mapping and Web Search off. See [Cline](/rules-router/quickstart/other-agents/cline) |
+| Unreal Agent 0.3.1 | OpenAI Responses | Direct dev passed; Local returned empty output and is blocked. See [Unreal Agent](/rules-router/quickstart/other-agents/unreal) |
+
+These bounded development checks do not establish production support or all
+tool features. Claude Code and Codex CLI were also retested on the published
+Local 0.2.10 daemon; other rows identify their tested build in the guide.
+Keep provider-native web search off in Cline and Codex; ordinary file-tool
+calls passed.
 
 A protocol name is not a capability: a client that speaks OpenAI Responses reaches ARC only once ARC serves that API.
 
