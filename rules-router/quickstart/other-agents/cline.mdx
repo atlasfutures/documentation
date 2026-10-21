@@ -91,10 +91,11 @@ The real Rayline key belongs in the gateway process, not in Cline.
    start a **New Task**.
 
 <Warning>
-Cline's provider-side Anthropic web-search tool caused ARC to return
-`503 model service unavailable` in this test. Turning off **Web Search** allows
-the file-tool workflow to complete. This is a temporary compatibility workaround;
-web-search support is not validated. The setting applies to new tasks.
+Keep **Web Search** off for this configuration. Cline's provider-native
+Anthropic search tool is unsupported by ARC. The dev API now returns
+`400 unsupported_server_tool` with an actionable explanation (retested on
+21 October 2026); earlier builds returned a misleading 503. Ordinary file
+tools work with search disabled. The setting applies to new tasks.
 </Warning>
 
 <Frame caption="The Local Swift task. Cline displays its Claude label; the explicit gateway mapping selects ARC Swift.">

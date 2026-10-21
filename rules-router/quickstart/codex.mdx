@@ -82,6 +82,7 @@ Create a profile that selects it, `~/.codex/rayline.config.toml`:
 ```toml
 model_provider = "rayline"
 model = "arc-sage"
+web_search = "disabled"
 ```
 
 Start Codex with the profile:
@@ -97,6 +98,14 @@ codex --profile rayline exec "Reply with the word ready."
 - This is hosted routing only. Subscription mode and local models need the launcher's local router.
 
 Then find the request in [Inspect routed requests](/platform/usage).
+
+<Warning>
+Keep built-in web search disabled for ARC. With Codex 0.163.0 and
+`web_search = "live"`, the dev direct API returned `request_shape`; the Local
+path completed a turn but exposed no search tool and did not perform the
+requested search. These failures are under investigation. The validated
+file-tool tasks used `web_search = "disabled"`.
+</Warning>
 
 ## ARC
 

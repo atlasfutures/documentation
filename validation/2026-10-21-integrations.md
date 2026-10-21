@@ -159,7 +159,7 @@ A minimal body containing only a user message and
 503; sent to assigned investigator BoldFox (13811). His trace investigation
 reports `no_capable_arm` from the Sage cell, not a general router outage.
 TopazBay reports #7607 merged as 853f7c4212 and deployed to dev
-(routerproxy-00601-nuh). Independent retest remains pending. The fix returns an
+(routerproxy-00601-nuh). Independent minimal-payload retest confirmed 400 `unsupported_server_tool`. The fix returns an
 actionable 400; it does not add provider-side web-search support, so keep that
 setting off.
 
@@ -236,3 +236,21 @@ fixture results and exit 0. The earlier 2.1.273 client received a Sage upstream
 minimum-version error requiring 2.1.280+. No global Claude installation changed.
 Raw sanitized results: scratch `claude-released-launcher-env` and
 `claude-released-local-2307`. These are live dev checks, not production checks.
+
+## OpenClaw native control UI
+
+OpenClaw 2026.10.5 on macOS arm64, Node 24.22.1, passed both Local UI tasks
+with real read calls. Sage returned 20.50; Swift returned Pen 3.25 and spread
+9.25. Screenshot embedded in guide. Gateway bound to loopback port 23822,
+provider forwarded to the dev-backed rld on 23811. Native startup succeeded
+with SQLite identity checks intact. Node 24.5.0 was rejected by OpenClaw for
+the known Node SQLite NUL truncation issue. Container UI remains unverified;
+its CLI had passed all four tasks.
+
+## Codex optional web search
+
+Codex 0.163.0 with `web_search = "live"` and arc-swift failed direct dev with
+`request_shape` (exit 1). Local returned exit 0 but said it had no web-search
+tool and did not perform the task: this is a failed acceptance test, not a
+successful search. Reported to TopazBay in message 13845 for investigation.
+Earlier file-reading tests explicitly disabled web search.
