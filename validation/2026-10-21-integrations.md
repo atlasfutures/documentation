@@ -158,8 +158,10 @@ A minimal body containing only a user message and
 `tools: [{"type":"web_search_20250305","name":"web_search"}]` reproduces the
 503; sent to assigned investigator BoldFox (13811). His trace investigation
 reports `no_capable_arm` from the Sage cell, not a general router outage.
-TopazBay reports the actionable server-tool 400 fix in memex-desktop #7607 is in
-review. The workaround remains necessary until the fix is deployed and retested.
+TopazBay reports #7607 merged as 853f7c4212 and deployed to dev
+(routerproxy-00601-nuh). Independent retest remains pending. The fix returns an
+actionable 400; it does not add provider-side web-search support, so keep that
+setting off.
 
 ## Codex and Unreal Agent
 
@@ -209,3 +211,28 @@ Cursor's official BYOK reference says custom keys apply to chat models, while Ta
 uses Cursor's built-in models. This is a product constraint to verify per surface,
 not evidence that ARC already works:
 https://prod.cursor.com/help/models-and-usage/api-keys
+
+## Kilo editor follow-up
+
+The official 7.8.15 VS Code extension initiated and completed four new requests
+(two tasks on each path), using the same receipt fixture. Local Sage at 22:20:39Z
+returned 20.50; Local Swift at 22:21:05Z returned Pen 3.25 and spread 9.25.
+Direct Sage at 22:23:24Z returned 20.50; Direct Swift at 22:23:59Z returned Pen
+3.25 and spread 9.25. Every UI session shows an executed Read tool. This closes
+the earlier extension-initiated-request gap. A new Local screenshot records the
+actual extension request rather than the CLI-history viewer.
+
+Direct editor test used KILO_CONFIG pointing outside the workspace and an
+inherited RAYLINE_KEY, without writing the credential into configuration. A new
+VS Code user-data path exceeded the Unix socket limit at first; shortening it
+resolved startup. This was a test-environment path issue, not a Rayline failure.
+
+## Released Claude Code follow-up
+
+Claude Code 2.1.307 (official darwin-arm64 checksum verified) passed Sage and
+Swift Read tasks through the published Rayline 0.2.10 env launcher and the
+published rld 0.2.10 gateway on port 24011. All four returned the correct
+fixture results and exit 0. The earlier 2.1.273 client received a Sage upstream
+minimum-version error requiring 2.1.280+. No global Claude installation changed.
+Raw sanitized results: scratch `claude-released-launcher-env` and
+`claude-released-local-2307`. These are live dev checks, not production checks.

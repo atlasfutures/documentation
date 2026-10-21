@@ -26,9 +26,10 @@ answering model or ARC's routing model on your computer. See
 [Hosted and Rayline Local](/tools/hosted-local).
 
 <Note>
-Validated on **21 October 2026** with Claude Code **2.1.273** on macOS:
+Validated on **21 October 2026** with Claude Code **2.1.307** on macOS:
 two file-reading tasks per path, using Sage and Swift, completed against the
-**dev API**. The Local gateway test used a **0.2.10 source build (the revision later published as 0.2.10)**.
+**dev API**. The repeat test used the **published Rayline Local 0.2.10** gateway.
+The released `rayline --env dev claude --via env` launcher also passed both tasks.
 These checks do not establish production availability or validate subagents,
 resume, extensions, or compaction. Production examples below must be checked
 against your workspace before starting a larger task.
@@ -38,7 +39,9 @@ against your workspace before starting a larger task.
 
 ## Connect directly
 
-Install [Claude Code](https://code.claude.com/docs/en/setup). Create a
+Install the current [Claude Code release](https://code.claude.com/docs/en/setup).
+An older 2.1.273 client was rejected by a Sage-selected upstream model that
+required 2.1.280 or later; updating to 2.1.307 resolved that error. Create a
 [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell
 where you will start Claude. Keep the key out of project files and source control.
 

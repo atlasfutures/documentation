@@ -1,17 +1,16 @@
 ---
 title: "Kilo Code"
-description: "Connect Kilo CLI to ARC directly or through a Rayline Local gateway."
+description: "Connect Kilo CLI and its VS Code extension to ARC directly or through Rayline Local."
 ---
 
 Use Kilo's custom Anthropic provider to request `arc-sage` or `arc-swift`.
 Rayline Local is optional for this CLI configuration.
 
 <Note>
-Validated with Kilo CLI 7.8.15 against the development API: two file-reading tasks
-per path, one with ARC Sage and one with ARC Swift. Local used a Rayline 0.2.10
-source build. The screenshot shows a CLI session opened in the VS Code
-extension; it does not establish that requests initiated by the extension work.
-Production and released Local validation remain pending.
+Kilo CLI and VS Code extension **7.8.15** each passed two file-reading tasks per
+path against the development API, one with Sage and one with Swift. The extension
+tasks were initiated in its UI. Local used the Rayline 0.2.10 source build.
+Production and other features remain unverified.
 </Note>
 
 ## Choose your connection
@@ -136,3 +135,20 @@ Folder 4.75
 
 See Kilo's [custom provider reference](https://kilo.ai/docs/code-with-ai/agents/custom-models)
 for configuration scope and environment references.
+
+## VS Code extension
+
+The extension can use the same trusted configuration as the CLI. Fully quit the
+test VS Code instance, then launch it from a shell that has `RAYLINE_KEY` loaded
+and `KILO_CONFIG` pointing to the configuration file above. Environment variables
+set after an editor starts do not update that running process.
+
+Open **Kilo Code**, start a **New Session**, and select **arc-sage** or
+**arc-swift** under **Rayline**. Run both verification tasks above. The direct
+smoke used a trusted configuration outside the project with an environment key
+reference. The Local smoke used a project configuration with the non-secret
+`local-client` placeholder. Do not put a real API key in a project file.
+
+<Frame caption="A request initiated in the Kilo VS Code extension, through Rayline Local: the read completed and Swift returned the correct cheapest item and price spread.">
+  <img src="/images/integrations/kilo-editor-local-arc-swift-20261021.webp" alt="Kilo's completed ARC Swift editor task beside the receipt fixture." />
+</Frame>
