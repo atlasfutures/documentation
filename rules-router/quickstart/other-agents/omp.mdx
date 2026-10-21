@@ -3,7 +3,67 @@ title: "oh-my-pi"
 description: "Run oh-my-pi (omp) through hosted Agent Gateway with rayline omp."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Use **ARC Sage** (`arc-sage`) for coding, or **ARC Swift** (`arc-swift`) for a faster, lower-cost tier. You can connect directly to Rayline or send requests through a Rayline Local gateway. Both paths below use cloud inference.
+
+<Note>
+Live dev validation, **21 October 2026**: oh-my-pi **18.12.6** completed two file-reading tasks on each path, one with Sage and one with Swift. Local used an **unreleased Rayline 0.2.10 source build**. Production, launchers, resume, compaction, and extensions were not covered by these checks.
+</Note>
+
+![omp session export showing ARC Sage, a successful file read, and the correct answer](/images/integrations/omp-arc-sage-20261021.webp)
+*Actual session export from the direct dev test. The client’s cost display is not the Rayline charge.*
+
+## Choose a connection
+
+| Path | Configuration | Gateway required? |
+| --- | --- | --- |
+| Direct API | Rayline's API base URL and your Rayline API key | No |
+| Rayline Local | Your gateway's loopback URL and client authentication | Yes; the gateway holds the upstream Rayline key |
+
+See [what “local” means](/tools/hosted-local). A local gateway does not imply on-device inference or locally running ARC.
+
+## Use ARC directly
+
+Use the [manual configuration below](#manual-setup-without-the-launcher), then replace `rayline-router` with `arc-sage` in the provider's model definition and default model settings. To make Swift available too, duplicate the model definition with ID `arc-swift` and name `ARC Swift`.
+
+Run a specific tier with:
+
+```bash
+omp --model rayline/arc-sage
+omp --model rayline/arc-swift
+```
+
+Assign your chosen tier to all four `modelRoles` if background and planning calls should use it too.
+
+## Use a Rayline Local gateway
+
+First configure a gateway that forwards `arc-sage` and `arc-swift` to your Rayline endpoint. Keep its upstream key in the gateway process environment. In this tool's manual provider configuration, change only:
+
+| Setting | Direct production API | Local gateway used in the dev smoke |
+| --- | --- | --- |
+| `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for this test gateway |
+
+The port and client authentication depend on your gateway. `23811` is a test port, not a Rayline default. Never send your real Rayline key to an unfamiliar local listener. The upstream dev endpoint used in validation was `https://api-dev.rayline.ai`.
+
+## Verify your setup
+
+Create a file named `receipt.txt` containing:
+
+```text
+Notebook 12.50
+Pen 3.25
+Folder 4.75
+```
+
+1. With Sage, ask **Read receipt.txt and add the three prices.** Expect a read-tool call and **20.50**.
+2. With Swift, ask **Read receipt.txt. Which item is cheapest, and what is the difference between the highest and lowest price?** Expect **Pen**, **3.25**, and **9.25**.
+
+Check the successful requests, requested ARC tier, served model, and charge in [Usage](/platform/usage). For Local, also inspect your gateway's request log. A correct answer alone does not prove the route. The client's cost display for a custom model is not the Rayline bill.
+
+## Launcher availability
+
+The launcher instructions below need Rayline **0.2.8 or later**. The latest public GitHub release was **0.2.7** when checked on 21 October 2026; the newer launchers were available in source. Do not assume `rayline update` supplies an unreleased version. The manual ARC tests above did not validate these launcher commands.
+
 
 ## Install
 

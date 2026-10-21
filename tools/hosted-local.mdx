@@ -1,21 +1,40 @@
 ---
 title: "Hosted and Rayline Local"
-description: "Which requests leave your machine, and who bills them."
+description: "Separate the gateway, routing decision, and inference location."
 icon: "server"
 ---
 
-Rayline has three connection paths. They differ in where the routing decision runs and where inference happens.
+A request has three independent locations: **where the gateway runs**, **where ARC chooses a model**, and **where that model generates the answer**. “Local” needs to name which of these it means.
 
-| Path | What runs on your machine | Where inference runs | Billed through |
+| Component | What it does | What running it locally means |
+| --- | --- | --- |
+| Rayline Local gateway | Receives your tool's request and forwards it to a configured endpoint | The gateway runs on your computer. Inference can still be entirely in the cloud. |
+| Inference model | Generates the answer and tool calls | A model server, such as llama.cpp, runs on your hardware. |
+| ARC routing model | Chooses where to send an inference request | ARC makes the routing decision on your hardware. Its chosen inference endpoints can be cloud, on-device, or a mixture. |
+
+## Choose your connection
+
+| Connection | Request path | Where ARC runs in these guides | Where inference runs |
 | --- | --- | --- | --- |
-| **Direct hosted** | Only your tool | Rayline's hosted router calls the model | Your Rayline workspace |
-| **Local connector, hosted inference** | Rayline Local (`rld`) forwards requests | Rayline's hosted router calls the model | Your Rayline workspace |
-| **Local inference** | Rayline Local routes to a model on your hardware or your own endpoint | Your machine or endpoint | Your hardware or endpoint provider |
+| Direct API | Your tool → hosted Rayline | Hosted Rayline | Cloud |
+| Rayline Local gateway | Your tool → local gateway → hosted Rayline | Hosted Rayline | Cloud |
 
-- **Direct hosted** is what you get when you point a tool's base URL at `https://api.rayline.ai`, as the manual setup in each guide does.
-- **Local connector** is what most `rayline <tool>` launchers do. The connector on your machine holds your key and forwards requests to the hosted router. Running it does not make inference local. `rayline codex` and `rayline claude-desktop` always use a local connector.
-- **Local inference** needs a local model or endpoint and a router config that sends requests to it; see [local models](/rules-router/guides/local-models). A hybrid session can keep the main agent in the cloud while subagents run locally.
+The integration guides cover these two cloud-backed paths. **You do not need a local inference model to use a local gateway.** Both charge inference to your Rayline workspace.
 
-ARC tiers (`arc-sage`, `arc-swift`) are served by the hosted router. Rayline Local does not include ARC weights; see [open weights and self-hosting](/arc/open-source) for running the routing stack yourself.
+A tool can connect directly when it supports the required API protocol, a custom base URL, and Rayline authentication. A launcher may choose a local gateway for configuration or protocol handling even when a manual direct connection is possible. Check the individual guide; a `rayline <tool>` command does not by itself tell you which path it uses.
 
-Subscription paths, such as `rayline codex --subscription`, send the main agent to your existing subscription, which bills it, not Rayline.
+Claude Code, OpenCode, pi, and oh-my-pi completed direct and local-gateway ARC file-tool smoke tests against dev on 21 October 2026. Those are bounded checks, not production certification. Each guide records its tested version and limitations. Other integrations remain subject to their own validation.
+
+## On-device inference
+
+A local inference endpoint needs its own model installation, hardware capacity, and routing configuration. A mixed route can send some calls to cloud models and others to your on-device model. See [local models](/rules-router/guides/local-models).
+
+This is separate from validating a gateway that only forwards to hosted Rayline. The phase-one integration checks do not validate mixed cloud/on-device inference.
+
+## Run ARC locally
+
+Running the ARC routing model locally is a third deployment choice. It does not require that every selected inference model also run locally. Rayline Local does not currently include ARC weights; see [open weights and self-hosting](/arc/open-source) for source and artifact availability.
+
+## Subscription billing
+
+Subscription paths, such as `rayline codex --subscription`, send the main agent to your existing subscription. That subscription bills those requests rather than Rayline. Consult the tool guide before mixing subscription and Rayline API paths.
