@@ -293,3 +293,10 @@ passed. Every request/continuation echoed value_usd applied; requested routing
 temperature0 echoed not_applied/privacy_mode. Local preserved the routing echo.
 Only routing/status metadata was recorded by the hook. Default configurations
 and other models were not modified. Private evidence: pi-arc1-custom-{direct,local}.
+
+BronzeGlacier reports namespace-tool round-trip fix in rayline #105, stacked
+on #103/#99, with source-build Codex subagent evidence. Not yet released or
+independently retested by this lane; public guide retains the limitation.
+Roomote protocol inspection also found Local0.2.10 POST /v1/chat/completions
+returns404; reported to TopazBay13878. No Roomote acceptance claim follows
+from this endpoint probe.

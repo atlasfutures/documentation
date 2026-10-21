@@ -107,6 +107,13 @@ requested search. These failures are under investigation. The validated
 file-tool tasks used `web_search = "disabled"`.
 </Warning>
 
+<Note>
+Codex subagent tools use a namespaced tool declaration that Local 0.2.10
+omits when translating to an Anthropic endpoint. The file-tool tests disabled
+subagents. A fix is pending release; do not assume subagent support from the
+single-agent results.
+</Note>
+
 ## ARC
 
 Codex CLI **0.163.0** completed real file-tool tasks with ARC Sage and Swift on
