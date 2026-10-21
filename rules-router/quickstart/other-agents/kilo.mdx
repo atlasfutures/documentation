@@ -1,0 +1,138 @@
+---
+title: "Kilo Code"
+description: "Connect Kilo CLI to ARC directly or through a Rayline Local gateway."
+---
+
+Use Kilo's custom Anthropic provider to request `arc-sage` or `arc-swift`.
+Rayline Local is optional for this CLI configuration.
+
+<Note>
+Validated with Kilo CLI 7.8.15 against the development API: two file-reading tasks
+per path, one with ARC Sage and one with ARC Swift. Local used a Rayline 0.2.10
+source build. The screenshot shows a CLI session opened in the VS Code
+extension; it does not establish that requests initiated by the extension work.
+Production and released Local validation remain pending.
+</Note>
+
+## Choose your connection
+
+| Setting | Direct API | Rayline Local gateway |
+| --- | --- | --- |
+| Base URL | `https://api.rayline.ai/v1` | `http://127.0.0.1:23811/v1` |
+| Client key | Your Rayline API key | `local-client` placeholder |
+| Where the real key lives | Kilo process environment | Gateway process environment |
+| ARC and inference | Cloud | Cloud in this configuration |
+
+For Local, first start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
+The port is configurable; use the same port in both configurations.
+
+## Configure Kilo
+
+Install Kilo using its [official instructions](https://kilo.ai/docs/getting-started/install).
+Create a configuration outside your project, for example
+`~/.config/kilo/rayline.json`, with this content:
+
+```json
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "model": "rayline/arc-sage",
+  "small_model": "rayline/arc-swift",
+  "permission": {
+    "*": "deny",
+    "read": "allow"
+  },
+  "provider": {
+    "rayline": {
+      "name": "Rayline",
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "baseURL": "https://api.rayline.ai/v1",
+        "apiKey": "{env:RAYLINE_KEY}",
+        "headers": {
+          "x-conversation-id": "{env:RAYLINE_CONV_ID}"
+        }
+      },
+      "models": {
+        "arc-sage": {
+          "name": "arc-sage",
+          "limit": {
+            "context": 200000,
+            "output": 2048
+          },
+          "reasoning": true,
+          "tool_call": true
+        },
+        "arc-swift": {
+          "name": "arc-swift",
+          "limit": {
+            "context": 200000,
+            "output": 2048
+          },
+          "reasoning": true,
+          "tool_call": true
+        }
+      }
+    }
+  }
+}
+```
+
+For Local, change only `baseURL` to the loopback URL above. The `/v1` suffix is
+required by this provider configuration.
+
+Export your Rayline key as `RAYLINE_KEY` for direct access, or set
+`RAYLINE_KEY=local-client` for Local. Then start Kilo with the explicit config:
+
+```bash
+export KILO_CONFIG="$HOME/.config/kilo/rayline.json"
+export RAYLINE_CONV_ID="$(uuidgen)"
+kilo run --pure --model rayline/arc-sage "Read receipt.txt and calculate the total."
+```
+
+`rayline/` is Kilo's provider selector; the API receives the bare model ID.
+Use `rayline/arc-swift` to select Swift. Keep a conversation ID for one session
+and generate a new one for an unrelated session.
+
+<Warning>
+Kilo rejects environment-variable references in project configuration files.
+Keep this file outside the project and select it with `KILO_CONFIG`, or use
+Kilo's trusted global configuration. Do not replace the environment reference
+with a real API key in a project file.
+</Warning>
+
+The sample permits file reads and denies other tools for this verification.
+Adjust permissions deliberately for normal coding work.
+
+## Verify two requests
+
+Create `receipt.txt` in the working directory:
+
+```text
+Notebook 12.50
+Pen 3.25
+Folder 4.75
+```
+
+1. With Sage, ask Kilo to read the file and calculate the total. Expect a
+   completed `read` tool call and **20.50**.
+2. With Swift, ask which item is cheapest and the difference between the highest
+   and lowest prices. Expect a completed `read` call, **Pen**, and **9.25**.
+3. Check [Rayline usage](/platform/usage) for the corresponding requests.
+   Kilo's token or cost display is not an authoritative Rayline bill.
+
+<Frame caption="Actual Local ARC Swift CLI session opened in Kilo's VS Code extension.">
+  <img src="/images/integrations/kilo-local-arc-swift-20261021.webp" alt="Kilo session showing a completed receipt read and the correct cheapest item and price difference, with arc-swift selected." />
+</Frame>
+
+## Troubleshooting
+
+- **Environment references rejected:** move the config outside the project and
+  use `KILO_CONFIG`.
+- **Another provider is selected:** check the explicit config path and use
+  `--model rayline/arc-sage` or `rayline/arc-swift`.
+- **Local connection refused:** start the gateway and match its port.
+- **Authentication failure:** check the key in the process that makes the
+  upstream request: Kilo for direct access, the gateway for Local.
+
+See Kilo's [custom provider reference](https://kilo.ai/docs/code-with-ai/agents/custom-models)
+for configuration scope and environment references.

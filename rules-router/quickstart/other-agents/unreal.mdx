@@ -1,0 +1,74 @@
+---
+title: "Unreal Agent"
+description: "Connect Unreal Agent to ARC through the Responses API."
+---
+
+[Unreal Agent](https://github.com/unreallabsai/unreal-agent) can call Rayline's
+Responses API directly. It does not require Rayline Local for this path.
+
+<Note>
+The official **0.3.1** macOS arm64 runner passed two real file-tool tasks against
+the **development API** on 21 October 2026: one with ARC Sage and one with ARC
+Swift. Both executed `cat receipt.txt` successfully and returned the correct
+answer. Production and the interactive TUI remain unverified.
+</Note>
+
+## Direct API
+
+Install the official runner:
+
+```bash
+brew install unreallabsai/tap/unreal-agent
+```
+
+Load your Rayline key into `UNREAL_HARNESS_LLM_API_KEY` from your secrets manager;
+see [API keys](/platform/api-keys). Then configure the Responses provider:
+
+```bash
+export UNREAL_HARNESS_LLM_PROVIDER=openai
+export UNREAL_HARNESS_LLM_BASE_URL=https://api.rayline.ai/v1
+export UNREAL_HARNESS_LLM_MODEL=arc-sage
+```
+
+The production URL above is the intended configuration. The recorded smoke used
+`https://api-dev.rayline.ai/v1` with a development key.
+
+Run the agent from a project directory:
+
+```bash
+unreal-agent-runner -workspace "$PWD" -p 'Read receipt.txt and calculate the total. Do not change files.'
+```
+
+The runner writes JSONL events to stdout. The `openai` provider selects the
+Responses wire protocol; it does not mean the request is billed by OpenAI.
+
+## Verify both tiers
+
+Create `receipt.txt` with known prices. Run one fresh task asking Sage for the
+total. Then select Swift and ask for the cheapest item and price spread:
+
+```bash
+UNREAL_HARNESS_LLM_MODEL=arc-swift unreal-agent-runner \
+  -workspace "$PWD" \
+  -p 'Read receipt.txt. Which item is cheapest, and what is the price spread? Do not change files.'
+```
+
+Check for a completed shell operation with exit code zero **and** a final answer
+that matches the file. An exit-zero runner process alone is insufficient.
+Inspect [Rayline Usage](/platform/usage) for the corresponding requests.
+
+## Rayline Local
+
+<Warning>
+This path is currently blocked. With the same runner configured for the Local
+Responses endpoint, both Sage and Swift exited zero but produced no tool call
+and an empty response. Do not treat these runs as successful integration tests.
+The alternate Anthropic provider also failed with an invalid-request error.
+The issue has been assigned for investigation.
+</Warning>
+
+The failing configuration used `UNREAL_HARNESS_LLM_PROVIDER=openai`, base URL
+`http://127.0.0.1:23811/v1`, and placeholder client key `local-client`, with the
+[gateway forwarding to hosted Rayline](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
+Local inference and locally running ARC were not involved. Use the direct path
+for development validation until the gateway fix is retested.

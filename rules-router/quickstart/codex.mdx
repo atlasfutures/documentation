@@ -33,6 +33,13 @@ rayline codex --subscription -- exec "summarize this repo"
 
 ## Codex desktop
 
+<Warning>
+Desktop validation is pending. CLI success does not validate the desktop app.
+The app hosts the current test session, so testing a different route requires a
+separate session that can supervise its restart.
+</Warning>
+
+
 ```bash
 rayline codex app
 rayline codex app ~/projects/app
@@ -74,7 +81,7 @@ Create a profile that selects it, `~/.codex/rayline.config.toml`:
 
 ```toml
 model_provider = "rayline"
-model = "rayline-router"
+model = "arc-sage"
 ```
 
 Start Codex with the profile:
@@ -93,17 +100,56 @@ Then find the request in [Inspect routed requests](/platform/usage).
 
 ## ARC
 
-<ArcPreview />
+Codex CLI **0.163.0** completed real file-tool tasks with ARC Sage and Swift on
+21 October 2026, both directly against `https://api-dev.rayline.ai/v1` and through
+Rayline Local, including a repeat on the published 0.2.10 daemon. Each task read a receipt with a shell command and returned the
+verified answer. **Production and the desktop app are not yet validated.**
+The earlier production Responses 404 observation from 20 October is historical;
+it does not describe the current development endpoint.
 
-Codex supports only the OpenAI Responses API. ARC tiers on the Responses API are still rolling out: on 20 October 2026 a production Responses request for an ARC model returned `404`. Until the ARC tiers serve Responses, run Codex through the Agent Gateway routes above. This section will describe `--model arc-sage` once Codex on ARC has been tested end to end.
+For direct ARC, select `arc-sage` or `arc-swift` in the manual profile above.
+The test used an isolated `CODEX_HOME`, disabled shell snapshots, and excluded
+`RAYLINE_KEY` from tool-shell environments:
+
+```toml
+# Add these sections to config.toml.
+[features]
+shell_snapshot = false
+
+[shell_environment_policy]
+exclude = ["RAYLINE_KEY"]
+```
+
+For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
+change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
+placeholder `RAYLINE_KEY=local-client`. The gateway alone receives your real
+upstream key. Codex still speaks Responses; this tested gateway forwards to the
+hosted Messages endpoint. Inference remains in the cloud.
+
+Codex warns that it has no built-in metadata for the ARC model IDs and uses
+fallback metadata. The file-tool smoke does not verify the full context window,
+compaction, images, subagents, or every Codex feature.
 
 ## Explicit routes
 
 Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.
 
-Hosted Codex traffic uses `/v1/responses` and rules-based selection. The Responses protocol does **not** mean it uses the ARC Responses product, and ARC is [not yet available for Codex](#arc).
+Codex uses `/v1/responses`. The requested model determines whether it uses an ARC tier or another configured route; the protocol alone does not establish that.
 
 ## Verify
+
+Create a small `receipt.txt` containing three items with known prices. Start two
+fresh sessions:
+
+```bash
+codex --profile rayline --model arc-sage exec "Read receipt.txt and calculate the total. Do not change files."
+codex --profile rayline --model arc-swift exec "Read receipt.txt. Which item is cheapest, and what is the price spread? Do not change files."
+```
+
+Confirm that both sessions execute a file-reading command successfully and return
+the correct answers. Check [Rayline Usage](/platform/usage) for the requests.
+For a launcher-managed gateway, also inspect:
+
 
 ```bash
 rayline router status

@@ -28,7 +28,7 @@ answering model or ARC's routing model on your computer. See
 <Note>
 Validated on **21 October 2026** with Claude Code **2.1.273** on macOS:
 two file-reading tasks per path, using Sage and Swift, completed against the
-**dev API**. The Local gateway test used an **unreleased 0.2.10 source build**.
+**dev API**. The Local gateway test used a **0.2.10 source build (the revision later published as 0.2.10)**.
 These checks do not establish production availability or validate subagents,
 resume, extensions, or compaction. Production examples below must be checked
 against your workspace before starting a larger task.
@@ -91,10 +91,9 @@ Use `-m arc-swift` for Swift. The gateway forwards inference to hosted Rayline;
 this command does not download an inference model.
 
 <Note>
-The public GitHub release was **0.2.7** when checked on 21 October 2026, while
-newer launcher behavior exists in source. The gateway smoke used `rld` with an
-explicit endpoint configuration, not this launcher command. Launcher validation
-on the next released binary is still pending.
+Rayline 0.2.10 is available through the official installer. The gateway smoke
+used `rld` with an explicit endpoint configuration, not this launcher command.
+Released-launcher validation is still pending.
 </Note>
 
 For an existing local gateway configured to forward to Rayline, use the direct
