@@ -139,6 +139,11 @@ route handled the request.
 
 - **Authentication error:** check that `RAYLINE_KEY` is available in the shell
   starting Claude and that `ANTHROPIC_API_KEY` is unset.
+- **“Couldn’t read the auto-compact window” with `sonnet`:** Rayline 0.2.10
+  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. In the
+  env launcher test, passing `--model arc-sage` or
+  `--auto-compact-window 180000` allowed startup. The `arc-sage` and `arc-swift`
+  IDs themselves passed the task tests.
 - **`unrecognized_model` in debug output:** Claude emitted this message for ARC
   IDs during the successful tests. Check the final request result before
   treating the message as a failure.

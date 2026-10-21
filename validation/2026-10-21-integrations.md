@@ -254,3 +254,13 @@ Codex 0.163.0 with `web_search = "live"` and arc-swift failed direct dev with
 tool and did not perform the task: this is a failed acceptance test, not a
 successful search. Reported to TopazBay in message 13845 for investigation.
 Earlier file-reading tests explicitly disabled web search.
+
+OpenClaw native control UI direct dev also passed Sage and Swift with real
+read calls and the same correct results (separate gateway on 23823). The key
+was supplied through an environment SecretRef, not saved in UI credentials.
+
+Claude bare-alias startup reproduction: with published 0.2.10 env launcher,
+inherited ANTHROPIC_MODEL=sonnet and no explicit window failed with unknown
+model at /v1/settings. Adding --model arc-sage or --auto-compact-window 180000
+allowed the forwarded --version command to exit 0. These are startup checks,
+not additional inference acceptance tasks.
