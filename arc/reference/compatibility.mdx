@@ -7,7 +7,7 @@ import ArcPreview from '/snippets/arc-preview.mdx';
 
 <ArcPreview />
 
-Any Rayline API key can use ARC. Request ARC with a tier model ID, `rayline/arc-swift` or `rayline/arc-sage`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
+Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift` or `arc-sage`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
 
 Do not assume support for streaming, tool calls, structured output, image or audio inputs, or provider SDK compatibility based on an endpoint's protocol name. Confirm these capabilities before building an integration.
 
@@ -25,10 +25,10 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 
 | Client | API it uses | ARC support |
 | --- | --- | --- |
-| Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/arc/coding-tools/claude-code) |
-| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Yes, with `rayline claude app`; see [Claude Desktop](/arc/coding-tools/claude-desktop) |
+| Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/rules-router/quickstart/claude-code#use-arc-sage-or-swift) |
+| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Yes, with `rayline claude app`; see [Claude Desktop](/tools/claude-desktop) |
 | Codex CLI and Codex desktop | OpenAI Responses | Not yet; ARC does not serve Responses requests on `https://api.rayline.ai` |
-| Other agents on Anthropic Messages | Anthropic Messages | Not yet tested; see [other agents](/arc/coding-tools/other-agents) |
+| Other agents on Anthropic Messages | Anthropic Messages | Not yet tested; see [other agents](/rules-router/quickstart/other-agents#use-arc) |
 
 A protocol name is not a capability: a client that speaks OpenAI Responses reaches ARC only once ARC serves that API.
 

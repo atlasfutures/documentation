@@ -42,12 +42,12 @@ Without the service, run `rayline claude app` again after a restart.
 <Step title="Turn on developer mode">
 Open Claude Desktop. From the menu bar, choose **Help → Troubleshooting → Enable Developer Mode**.
 
-{/* screenshot: images/arc/coding-tools/desktop-01-enable-developer-mode.png */}
+{/* screenshot: images/tools/claude-desktop/desktop-01-enable-developer-mode.png */}
 </Step>
 <Step title="Open the third-party inference settings">
 Choose **Developer → Configure Third-Party Inference…**.
 
-{/* screenshot: images/arc/coding-tools/desktop-02-developer-menu.png */}
+{/* screenshot: images/tools/claude-desktop/desktop-02-developer-menu.png */}
 </Step>
 <Step title="Import the Rayline configuration">
 Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-desktop-import.json`. Check the imported values:
@@ -60,7 +60,7 @@ Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-des
 | Models | **arc-sage** (the default) and **arc-swift** |
 | Model discovery | Off |
 
-{/* screenshot: images/arc/coding-tools/desktop-03-connection.png, desktop-04-models.png */}
+{/* screenshot: images/tools/claude-desktop/desktop-03-connection.png, desktop-04-models.png */}
 </Step>
 <Step title="Apply and restart">
 Click **Apply Changes**, then **Save & Restart**. On the sign-in screen, continue with the configured gateway instead of signing in with Anthropic.
@@ -68,7 +68,7 @@ Click **Apply Changes**, then **Save & Restart**. On the sign-in screen, continu
 <Step title="Use ARC in Code">
 Open **Code** and choose **arc-sage** in the model picker, or **arc-swift** for the cheaper, faster tier. You can switch between them at any time. Send a short task to check the connection.
 
-{/* screenshot: images/arc/coding-tools/desktop-07-model-picker.png, desktop-08-code-turn.png */}
+{/* screenshot: images/tools/claude-desktop/desktop-07-model-picker.png, desktop-08-code-turn.png */}
 </Step>
 </Steps>
 
@@ -86,7 +86,7 @@ rayline claude app validate
 1. In Claude Desktop, open the account menu at the bottom left, which shows **Gateway**, and choose **Sign out**.
 2. On the sign-in screen, sign in with your Anthropic account.
 
-{/* screenshot: images/arc/coding-tools/desktop-09-sign-out.png */}
+{/* screenshot: images/tools/claude-desktop/desktop-09-sign-out.png */}
 
 Your claude.ai conversations and settings return. The imported configuration stays in **Developer → Configure Third-Party Inference…**, so you can switch to ARC again by signing out and continuing with the gateway. `rayline claude app off` prints these steps and stops the router.
 

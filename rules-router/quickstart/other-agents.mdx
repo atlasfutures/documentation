@@ -3,6 +3,8 @@ title: "Other coding agents"
 sidebarTitle: "Overview"
 description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Agent Gateway."
 ---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
 
 <Note>These launchers need Rayline 0.2.8 or later. Check with `rayline --version`. To update, run `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
 
@@ -85,10 +87,16 @@ The agent still works.
 
 ### Check the connection
 
-After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/rules-router/guides/dashboard). An authentication error usually means `RAYLINE_KEY` is missing from the agent's environment or holds the wrong key.
+After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_KEY` is missing from the agent's environment or holds the wrong key.
 
 ## Troubleshooting
 
 - **`<agent>` not found on PATH.** Install the agent and make sure its binary is on your `PATH`; the error includes an install hint. On Windows, Rayline also finds `.exe`, `.cmd`, `.bat`, and `.com` files.
 - **Sign-in errors in scripts.** Run `rayline auth login` once on a terminal, then check `rayline status`.
 - **The agent uses another model.** Check whether a project-level config for that agent overrides the provider or model.
+
+## Use ARC
+
+<ArcPreview />
+
+These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` (the coding default) or `arc-swift` (cheaper and faster), on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Rayline has not yet tested each agent on ARC; send a short task first and check the request in [usage](/platform/usage).

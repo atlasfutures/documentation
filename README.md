@@ -1,6 +1,6 @@
 # Rayline documentation
 
-One Mintlify site, three product tabs: **ARC · Agent Gateway · Workshop**.
+One Mintlify site, four tabs: **Use in your tools · Build with ARC · API Reference · Workshop**.
 
 ## Local preview and checks
 

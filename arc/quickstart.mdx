@@ -13,8 +13,8 @@ Any Rayline API key can use ARC. You need no separate access request.
 
 | Tier | Model ID | Use it for |
 | --- | --- | --- |
-| ARC Swift | `rayline/arc-swift` | Lower cost and faster turns |
-| ARC Sage | `rayline/arc-sage` | Harder tasks where quality matters more than cost |
+| ARC Swift | `arc-swift` | Lower cost and faster turns |
+| ARC Sage | `arc-sage` | Harder tasks where quality matters more than cost |
 
 Both tiers choose a model and reasoning effort for every request. Tier IDs may change before launch.
 
@@ -30,7 +30,7 @@ curl --fail-with-body https://api.rayline.ai/v1/messages \
   -H "anthropic-version: 2023-06-01" \
   -H "Content-Type: application/json" \
   -H "x-conversation-id: quickstart-1" \
-  -d '{"model":"rayline/arc-swift","max_tokens":512,"messages":[{"role":"user","content":"Summarize the purpose of a regression test."}]}'
+  -d '{"model":"arc-swift","max_tokens":512,"messages":[{"role":"user","content":"Summarize the purpose of a regression test."}]}'
 ```
 
 This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. The OpenAI Responses API (`/v1/responses`) does not serve ARC yet.
@@ -42,7 +42,7 @@ curl --fail-with-body https://api.rayline.ai/v1/routes \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "x-conversation-id: quickstart-2" \
-  -d '{"model":"rayline/arc-swift","messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
+  -d '{"model":"arc-swift","messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
 ```
 
 The response names the `model` and `thinking` configuration to run in your own stack. See [Decisions](/arc/decisions) and the [Decisions reference](/arc/reference/decisions).
@@ -52,4 +52,4 @@ Find the request in [usage](/platform/usage), with the model ARC chose and the t
 </Step>
 </Steps>
 
-To use ARC from a coding agent, see [coding tools](/arc/coding-tools).
+To use ARC from a coding agent, see [use in your tools](/tools).

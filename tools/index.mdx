@@ -1,0 +1,51 @@
+---
+title: "Use Rayline in your tools"
+sidebarTitle: "Choose your tool"
+description: "Connect a coding agent to ARC or to your own routing rules."
+icon: "screwdriver-wrench"
+---
+import ArcPreview from '/snippets/arc-preview.mdx';
+
+<span id="prerequisites" />
+<span id="the-quick-version" />
+<span id="start-in-2-minutes" />
+<span id="what-rayline-does" />
+<span id="how-much-does-it-save" />
+<span id="why-open-source-models" />
+<span id="learn-more" />
+
+Rayline connects the coding agent you already use to models. Pick what decides the model for each request, then follow the guide for your tool.
+
+- **ARC** chooses the model and reasoning effort for every request. Coding tools use **ARC Sage** (`arc-sage`) by default, or **ARC Swift** (`arc-swift`) for lower cost. See [Swift and Sage](/arc/models).
+- **Your routing rules** pin the main agent and assign models to subagents. See [routing policies](/rules-router/policies).
+
+<ArcPreview />
+
+## Tool guides
+
+<CardGroup cols={2}>
+<Card title="OpenCode" icon="code" href="/rules-router/quickstart/other-agents/opencode">`rayline opencode`, or opencode's own config.</Card>
+<Card title="Hermes Agent" icon="robot" href="/rules-router/quickstart/other-agents/hermes">`rayline hermes`, on Messages or Responses.</Card>
+<Card title="OpenClaw" icon="robot" href="/rules-router/quickstart/other-agents/openclaw">`rayline openclaw`, with SecretRef key handling.</Card>
+<Card title="Claude Code (terminal)" icon="terminal" href="/rules-router/quickstart/claude-code">`rayline claude`, hosted or local.</Card>
+<Card title="Claude Desktop (Code)" icon="desktop" href="/tools/claude-desktop">`rayline claude app` and Desktop's third-party mode.</Card>
+<Card title="Codex (terminal and app)" icon="code" href="/rules-router/quickstart/codex">`rayline codex` and `rayline codex app`.</Card>
+<Card title="pi and oh-my-pi" icon="robot" href="/rules-router/quickstart/other-agents">More launchers and their shared options.</Card>
+</CardGroup>
+
+Each guide states the connection, the protocol, the key handling, and how to undo the setup. [Tool compatibility](/rules-router/reference) records which combinations are tested.
+
+<span id="what-happens-next" />
+<span id="background-reading" />
+
+## Before you start
+
+1. Install the [Rayline CLI](/rules-router/cli#install) and sign in with `rayline auth login`. The CLI creates a router key for the selected workspace; see [API keys](/platform/api-keys) to use a workspace key instead.
+2. Decide where the requests go. [Hosted and Rayline Local](/tools/hosted-local) explains which requests leave your machine and how each path is billed.
+3. Check the request in [usage](/platform/usage) after your first task: the requested model, the model that served it, and the charge.
+
+<span id="prefer-to-set-environment-variables-yourself" />
+
+## Other agents and apps
+
+Agent Gateway and ARC are not restricted to coding agents. Before connecting another client, check its request protocol, authentication, model identifiers, and required features against [tool compatibility](/rules-router/reference) and [API compatibility](/arc/reference/compatibility). A configurable API base URL alone does not guarantee compatibility. To build your own agent, see [custom agents and SDKs](/rules-router/quickstart/agents).

@@ -1,7 +1,7 @@
 [
   {
     "source": "/",
-    "destination": "/arc",
+    "destination": "/tools",
     "fragments": [
       "start-in-2-minutes",
       "what-rayline-does",
@@ -120,7 +120,7 @@
   },
   {
     "source": "/guides/dashboard",
-    "destination": "/rules-router/guides/dashboard",
+    "destination": "/platform/usage",
     "fragments": [
       "accessing-the-dashboard",
       "kpi-cards",
@@ -311,7 +311,7 @@
   },
   {
     "source": "/quickstart",
-    "destination": "/rules-router/quickstart",
+    "destination": "/tools",
     "fragments": [
       "prerequisites",
       "the-quick-version",

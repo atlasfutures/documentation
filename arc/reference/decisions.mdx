@@ -34,7 +34,7 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Accepted. See the `tools_not_encoded` and `tool_schemas_not_encoded` [warnings](#warnings). |
-| `model` | Yes, unless your workspace routing is set to ARC | An ARC tier ID: `rayline/arc-swift` or `rayline/arc-sage`. A request that names a provider model, or no model while your workspace uses rules routing, returns `409`. |
+| `model` | Yes, unless your workspace routing is set to ARC | An ARC tier ID: `arc-swift` or `arc-sage`. A request that names a provider model, or no model while your workspace uses rules routing, returns `409`. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
 ARC reads the format from the body. A body without a format-specific field is read as Anthropic Messages. To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
