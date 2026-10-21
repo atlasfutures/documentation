@@ -1,6 +1,6 @@
 ---
 title: "Unreal Agent"
-description: "Connect Unreal Agent to ARC through the Responses API."
+description: "Connect Unreal Agent to ARC directly or through a Local Messages gateway."
 ---
 
 [Unreal Agent](https://github.com/unreallabsai/unreal-agent) can call Rayline's
@@ -57,18 +57,39 @@ Check for a completed shell operation with exit code zero **and** a final answer
 that matches the file. An exit-zero runner process alone is insufficient.
 Inspect [Rayline Usage](/platform/usage) for the corresponding requests.
 
+<Frame caption="Rayline Usage separates the requested ARC tier from the served model, and shows Messages protocol and cloud execution. Dev validation example; rounded costs are not exact billing evidence.">
+![Rayline Usage expands an ARC Swift Messages request to show its served model, status, billing basis, and cloud execution](/images/integrations/unreal-messages-usage-20261021.webp)
+</Frame>
+
 ## Rayline Local
 
-<Warning>
-This path is currently blocked. With the same runner configured for the Local
-Responses endpoint, both Sage and Swift exited zero but produced no tool call
-and an empty response. Do not treat these runs as successful integration tests.
-The alternate Anthropic provider also failed with an invalid-request error.
-The issue has been assigned for investigation.
-</Warning>
+Use the **Anthropic provider** for the tested Local path. Start a
+[gateway forwarding to hosted Rayline](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
+then set:
 
-The failing configuration used `UNREAL_HARNESS_LLM_PROVIDER=openai`, base URL
-`http://127.0.0.1:23811/v1`, and placeholder client key `local-client`, with the
-[gateway forwarding to hosted Rayline](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
-Local inference and locally running ARC were not involved. Use the direct path
-for development validation until the gateway fix is retested.
+```bash
+export UNREAL_HARNESS_LLM_PROVIDER=anthropic
+export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
+export UNREAL_HARNESS_LLM_API_KEY=local-client
+export UNREAL_HARNESS_LLM_MODEL=arc-sage
+```
+
+Use your gateway's actual port and authentication. The placeholder above is for
+the isolated test gateway; its environment holds the real upstream key. Unreal's
+Anthropic provider expects `/v1` here. This path forwards cloud inference; it
+does not run the inference model or ARC locally.
+
+On 21 October 2026, after the dev gateway fix, both Sage and Swift completed
+real `cat receipt.txt` calls and returned the correct answers through this
+Messages path. The same provider also completed both tasks directly against
+`https://api-dev.rayline.ai/v1`. The direct Sage run executed an extra arithmetic
+command despite the prompt's restriction; these tests establish transport and
+tool execution, not instruction-following guarantees.
+
+<Warning>
+The **OpenAI/Responses provider through Local 0.2.10** remains blocked: both
+Sage and Swift exited zero with no tool call and an empty answer. A fix is pending
+release. Use the tested Anthropic path above, or the direct Responses path.
+The earlier Anthropic invalid-request failure was fixed on dev; production
+verification is still pending.
+</Warning>

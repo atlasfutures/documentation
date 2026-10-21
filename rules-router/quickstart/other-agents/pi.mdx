@@ -115,3 +115,51 @@ Each launcher invocation generates a conversation ID. In manual setup, generate 
 - **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
 - **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
 - See [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
+
+## Configurable ARC
+
+`arc-1.0` also completed two real file-reading tasks per path against dev on
+21 October 2026. Add a model entry named `arc-1.0` alongside the Sage and Swift
+entries above, then select it with `--model arc-1.0`.
+For Local, include `arc-1.0` in the gateway endpoint’s model list as well.
+
+The default-configuration checks used the server’s routing settings.
+Configurable ARC uses the served model’s catalog price rather than a fixed tier
+rate; see [Configure ARC routing](/arc/gateway-routing).
+
+### Send your own routing value
+
+pi 0.80.2 supports a `before_provider_request` extension hook. Save this as
+`arc-routing.ts`:
+
+```typescript
+export default function (pi) {
+  pi.on("before_provider_request", (event, ctx) => {
+    if (ctx.model?.provider !== "rayline" || ctx.model?.id !== "arc-1.0") return;
+    const value = Number(process.env.RAYLINE_VALUE_USD);
+    if (!Number.isFinite(value) || value < 0.1 || value > 5) {
+      throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 5");
+    }
+    return { ...event.payload, routing: { value_usd: value, temperature: 0 } };
+  });
+  pi.on("after_provider_response", (event) => {
+    console.error("ARC routing:", event.headers["x-rayline-routing"] ?? "not exposed");
+  });
+}
+```
+
+Start pi with the extension explicitly loaded:
+
+```bash
+RAYLINE_VALUE_USD=0.5 pi --extension ./arc-routing.ts --provider rayline --model arc-1.0
+```
+
+The guard leaves other providers and ARC tiers unchanged. This routing
+`temperature` controls ARC exploration, not the answer model’s temperature.
+Check the response echo rather than assuming the setting took effect.
+
+Live dev tasks at values **0.5** and **4** passed both directly and through
+published Local 0.2.10. Every response echoed `value_usd.status: "applied"`.
+For the test workspace, `temperature: 0` echoed `not_applied` with reason
+`privacy_mode`; the workspace’s privacy policy controlled exploration. The
+read tool and correct answer completed on all four tasks.
