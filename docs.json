@@ -122,7 +122,6 @@
               "arc/index",
               "arc/models",
               "arc/quickstart",
-              "arc/responses/index",
               "arc/availability"
             ]
           },
@@ -173,7 +172,6 @@
             "pages": [
               "arc/reference/compatibility",
               "arc/reference/generation",
-              "arc/reference/responses",
               "arc/reference/decisions",
               "arc/reference/errors"
             ]
@@ -573,6 +571,26 @@
     {
       "source": "/arc/coding-tools/other-agents",
       "destination": "/rules-router/quickstart/other-agents"
+    },
+    {
+      "source": "/arc/responses",
+      "destination": "/arc/models",
+      "permanent": true
+    },
+    {
+      "source": "/arc/reference/responses",
+      "destination": "/arc/reference/generation",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/generation-with-arc-routing-extensions",
+      "destination": "/arc/reference/generation",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/decisions:-where-would-arc-send-this-request",
+      "destination": "/api-reference/create-a-routing-decision",
+      "permanent": true
     }
   ],
   "api": {

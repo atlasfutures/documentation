@@ -3,9 +3,6 @@ title: "Availability and compatibility"
 description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
-
-<ArcPreview />
 
 Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift` or `arc-sage`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
 
@@ -23,22 +20,8 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 
 ## Coding tools
 
-| Client | API it uses | ARC support |
-| --- | --- | --- |
-| Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/rules-router/quickstart/claude-code#use-arc-sage-or-swift) |
-| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Launcher not yet released or end-to-end validated; see [Claude Desktop](/tools/claude-desktop) |
-| Codex CLI | OpenAI Responses | Sage and Swift file-tool smokes passed against dev, direct and through Local; [versions and limits](/rules-router/quickstart/codex#arc) |
-| Codex desktop | OpenAI Responses | End-to-end validation pending; CLI results do not establish desktop support |
-| OpenCode, pi, oh-my-pi, Hermes, OpenClaw, Kilo CLI and VS Code | Anthropic Messages | Sage and Swift file-tool smokes passed against dev, direct and through Local; [guides and version limits](/rules-router/quickstart/other-agents) |
-| Cline VS Code | Chat Completions direct; Messages through Local | Sage and Swift file-tool smokes passed against dev; Local needs model mapping and Web Search off. See [Cline](/rules-router/quickstart/other-agents/cline) |
-| Unreal Agent 0.3.1 | Responses or Messages | Direct dev passed on both; Local Messages passed after the gateway fix. Local Responses is blocked pending release. See [Unreal Agent](/rules-router/quickstart/other-agents/unreal) |
+Follow the [guide for your tool](/tools) for its provider settings, ARC model IDs, and connection options. The [client compatibility guide](/rules-router/reference) explains how the Rayline platform and Rayline Local connect to different clients.
 
-These bounded development checks do not establish production support or all
-tool features. Claude Code and Codex CLI were also retested on the published
-Local 0.2.10 daemon; other rows identify their tested build in the guide.
-Keep provider-native web search off in Cline and Codex; ordinary file-tool
-calls passed.
+Cline's Local connection requires explicit model mapping and provider-native Web Search to be off. See the [Cline setup](/rules-router/quickstart/other-agents/cline#rayline-local).
 
-A protocol name is not a capability: a client that speaks OpenAI Responses reaches ARC only once ARC serves that API.
-
-See [Responses](/arc/reference/responses), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).
+See [using ARC models](/arc/reference/generation), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).
