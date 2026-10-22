@@ -15,3 +15,10 @@ This Mintlify site has four top-level tabs: Use in your tools, Build with ARC, A
 - Preserve the shared paper/ink themes, Akkurat/Sohne typography, rounded surfaces, accessible contrast, and system theme default.
 - Run mint validate and mint broken-links before review. Stop the local preview first: validation rebuilds its shared generated files.
 - Do not publish, change domains, or merge to an auto-deploy branch without release authorization. See README.md for the cutover gates.
+
+## Customer-facing integration guides
+
+- Lead with the cloud Rayline platform setup; present Rayline Local as an optional connection or explain when a tool requires it. Use protocol names only where they explain a configuration field.
+- ARC Sage suits challenging coding and agent tasks; ARC Swift is a fast workhorse for everyday tasks. Both support coding and agent workflows.
+- Keep test dates, source revisions, validation matrices, release coordination, and agent-session details in private engineering records, not published guides. Describe actionable product limits without recounting the test that found them.
+- Place screenshots beside the setup steps they explain (provider settings, model selection, connection controls). Do not use test-result screenshots as proof of agent work. Use actual tool brand marks on tool cards.

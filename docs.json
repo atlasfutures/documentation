@@ -68,9 +68,6 @@
               "rules-router/quickstart/other-agents/opencode",
               "rules-router/quickstart/other-agents/hermes",
               "rules-router/quickstart/other-agents/openclaw",
-              "rules-router/quickstart/other-agents/kilo",
-              "rules-router/quickstart/other-agents/cline",
-              "rules-router/quickstart/other-agents/unreal",
               "rules-router/quickstart/claude-code",
               "tools/claude-desktop",
               "rules-router/quickstart/codex",
@@ -79,7 +76,10 @@
                 "pages": [
                   "rules-router/quickstart/other-agents",
                   "rules-router/quickstart/other-agents/pi",
-                  "rules-router/quickstart/other-agents/omp"
+                  "rules-router/quickstart/other-agents/omp",
+                  "rules-router/quickstart/other-agents/kilo",
+                  "rules-router/quickstart/other-agents/cline",
+                  "rules-router/quickstart/other-agents/unreal"
                 ]
               }
             ]

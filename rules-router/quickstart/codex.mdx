@@ -2,10 +2,79 @@
 title: "Codex"
 description: "Use the Rayline CLI with Codex CLI or desktop."
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
 
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Connect Codex to the Rayline platform with a provider profile, or use Rayline Local.
 
-Codex connects to Rayline's local OpenAI Responses router on `http://127.0.0.1:20811/v1`. This path uses plain HTTP on your machine, with no proxy certificate. Install Codex and the [Rayline CLI](/rules-router/cli) first.
+Install Codex before you begin.
+
+<span id="manual-setup-without-the-launcher" />
+
+## Connect to the Rayline platform
+
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then add the provider to `~/.codex/config.toml`:
+
+```toml
+[model_providers.rayline]
+name = "Rayline"
+base_url = "https://api.rayline.ai/v1"
+env_key = "RAYLINE_KEY"
+wire_api = "responses"
+```
+
+Create a profile that selects it, `~/.codex/rayline.config.toml`:
+
+```toml
+model_provider = "rayline"
+model = "arc-sage"
+web_search = "disabled"
+```
+
+Keep the API key out of tool-shell environments and saved shell snapshots:
+
+```toml
+# Add these sections to config.toml.
+[features]
+shell_snapshot = false
+
+[shell_environment_policy]
+exclude = ["RAYLINE_KEY"]
+```
+
+Start Codex with the profile:
+
+```bash
+codex --profile rayline exec "Reply with the word ready."
+```
+
+- `env_key` names the variable that holds the key; Codex sends it as a bearer token and never stores it in the config.
+- `wire_api = "responses"` makes Codex call `/v1/responses`.
+- Current Codex releases read profiles from `<name>.config.toml` in the Codex home and reject a `[profiles.<name>]` table in `config.toml`. If you set `CODEX_HOME`, put both files there.
+- Codex sends its thread ID as `prompt_cache_key`, and Agent Gateway uses that as the conversation ID for Codex requests, so you do not need to add a conversation header.
+- This is hosted routing only. Subscription mode and local models need the launcher's local router.
+
+Then find the request in [Inspect routed requests](/platform/usage).
+
+Keep built-in web search disabled (`web_search = "disabled"`) when using ARC.
+
+Rayline Local 0.2.10 does not forward Codex’s namespaced subagent tools to Anthropic endpoints. Use single-agent tasks with that version.
+
+<span id="arc" />
+
+## Use ARC through Rayline Local
+
+Select `arc-sage` or `arc-swift` in the profile above.
+For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
+change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
+placeholder `RAYLINE_KEY=local-client`. The gateway alone receives your real
+upstream key. Codex still speaks Responses; the gateway forwards to the
+hosted Messages endpoint. Inference remains in the cloud.
+
+Codex warns that it has no built-in metadata for the ARC model IDs and uses
+fallback metadata. Set context limits to match the models you use.
+
+## Launch with Rayline Local
+
+Install the [Rayline CLI](/rules-router/cli). The launcher starts a local gateway at `http://127.0.0.1:20811/v1` and configures Codex for you.
 
 ## Codex CLI
 
@@ -33,12 +102,6 @@ rayline codex --subscription -- exec "summarize this repo"
 
 ## Codex desktop
 
-<Warning>
-Desktop validation is pending. CLI success does not validate the desktop app.
-The app hosts the current test session, so testing a different route requires a
-separate session that can supervise its restart.
-</Warning>
-
 
 ```bash
 rayline codex app
@@ -65,112 +128,22 @@ From Rayline 0.2.8, Codex never receives your router key. Its provider points at
 
 If the Codex desktop app was already running before you updated Rayline, quit and relaunch it once. `rayline codex app` reuses a running app whose routing is current, and a running process keeps the environment it started with.
 
-## Manual setup (without the launcher)
-
-The launcher runs a local router between Codex and Agent Gateway. You can instead point Codex straight at the hosted Responses API. Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then add the provider to `~/.codex/config.toml`:
-
-```toml
-[model_providers.rayline]
-name = "Rayline"
-base_url = "https://api.rayline.ai/v1"
-env_key = "RAYLINE_KEY"
-wire_api = "responses"
-```
-
-Create a profile that selects it, `~/.codex/rayline.config.toml`:
-
-```toml
-model_provider = "rayline"
-model = "arc-sage"
-web_search = "disabled"
-```
-
-Start Codex with the profile:
-
-```bash
-codex --profile rayline exec "Reply with the word ready."
-```
-
-- `env_key` names the variable that holds the key; Codex sends it as a bearer token and never stores it in the config.
-- `wire_api = "responses"` makes Codex call `/v1/responses`.
-- Current Codex releases read profiles from `<name>.config.toml` in the Codex home and reject a `[profiles.<name>]` table in `config.toml`. If you set `CODEX_HOME`, put both files there.
-- Codex sends its thread ID as `prompt_cache_key`, and Agent Gateway uses that as the conversation ID for Codex requests, so you do not need to add a conversation header.
-- This is hosted routing only. Subscription mode and local models need the launcher's local router.
-
-Then find the request in [Inspect routed requests](/platform/usage).
-
-<Warning>
-Keep built-in web search disabled for ARC. With Codex 0.163.0 and
-`web_search = "live"`, the dev direct API returned `request_shape`; the Local
-path completed a turn but exposed no search tool and did not perform the
-requested search. These failures are under investigation. The validated
-file-tool tasks used `web_search = "disabled"`.
-</Warning>
-
-<Note>
-Codex subagent tools use a namespaced tool declaration that Local 0.2.10
-omits when translating to an Anthropic endpoint. The file-tool tests disabled
-subagents. A fix is pending release; do not assume subagent support from the
-single-agent results.
-</Note>
-
-## ARC
-
-Codex CLI **0.163.0** completed real file-tool tasks with ARC Sage and Swift on
-21 October 2026, both directly against `https://api-dev.rayline.ai/v1` and through
-Rayline Local, including a repeat on the published 0.2.10 daemon. Each task read a receipt with a shell command and returned the
-verified answer. **Production and the desktop app are not yet validated.**
-The earlier production Responses 404 observation from 20 October is historical;
-it does not describe the current development endpoint.
-
-For direct ARC, select `arc-sage` or `arc-swift` in the manual profile above.
-The test used an isolated `CODEX_HOME`, disabled shell snapshots, and excluded
-`RAYLINE_KEY` from tool-shell environments:
-
-```toml
-# Add these sections to config.toml.
-[features]
-shell_snapshot = false
-
-[shell_environment_policy]
-exclude = ["RAYLINE_KEY"]
-```
-
-For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
-change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
-placeholder `RAYLINE_KEY=local-client`. The gateway alone receives your real
-upstream key. Codex still speaks Responses; this tested gateway forwards to the
-hosted Messages endpoint. Inference remains in the cloud.
-
-Codex warns that it has no built-in metadata for the ARC model IDs and uses
-fallback metadata. The file-tool smoke does not verify the full context window,
-compaction, images, subagents, or every Codex feature.
-
 ## Explicit routes
 
 Custom configurations can select local or API endpoints, or hosted Agent Gateway routes. See the [CLI configuration guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for the schema.
 
 Codex uses `/v1/responses`. The requested model determines whether it uses an ARC tier or another configured route; the protocol alone does not establish that.
 
-## Verify
+<span id="verify" />
 
-Create a small `receipt.txt` containing three items with known prices. Start two
-fresh sessions:
+## Try your first task
 
-```bash
-codex --profile rayline --model arc-sage exec "Read receipt.txt and calculate the total. Do not change files."
-codex --profile rayline --model arc-swift exec "Read receipt.txt. Which item is cheapest, and what is the price spread? Do not change files."
-```
-
-Confirm that both sessions execute a file-reading command successfully and return
-the correct answers. Check [Rayline Usage](/platform/usage) for the requests.
-For a launcher-managed gateway, also inspect:
-
+From a project directory, ask Codex to explain the project:
 
 ```bash
-rayline router status
-rayline router logs --lines 120
-rayline top
+codex --profile rayline exec "Read the README and summarize how to run this project."
 ```
 
-Check the configured endpoint and the selected route before assuming a session is local, using a subscription, or charged through Rayline.
+Use `--model arc-swift` to switch to Swift. View the request and selected model in [Rayline Usage](/platform/usage).
+
+For a launcher-managed gateway, check its status with `rayline router status`.

@@ -3,17 +3,12 @@ title: "Cline"
 description: "Use ARC in Cline through the direct API or a Rayline Local gateway."
 ---
 
+<span id="verify-two-tasks" />
+
 Cline can call ARC directly with its **OpenAI Compatible** provider. Its
 **Anthropic** provider can use ARC through Rayline Local with an explicit model
 mapping. These are different configurations; changing only the base URL is not
 enough to switch between them.
-
-<Note>
-Validated in Cline's VS Code extension 4.1.25 on October 21, 2026: one file-reading
-task with ARC Sage and one with ARC Swift on each path. Requests used the
-Rayline development API. Local used a Rayline 0.2.10 source build; production and
-released Local verification remain pending.
-</Note>
 
 ## Direct API
 
@@ -36,12 +31,7 @@ Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
 unrelated task. Keep the same value while continuing a task.
 
 Click **Done**, then start a **New Task**. Existing tasks can retain their
-previous provider configuration. The test used `https://api-dev.rayline.ai/v1`
-with a development key; production keys and development keys are not interchangeable.
-
-<Frame caption="A real direct ARC Swift task in Cline: file read completed and the answer matches the fixture.">
-  <img src="/images/integrations/cline-direct-arc-swift-20261021.webp" alt="Cline showing a completed receipt read, Pen at 3.25 and a price difference of 9.25, with openai-compat:arc-swift selected." />
-</Frame>
+previous provider configuration.
 
 ## Rayline Local
 
@@ -56,18 +46,18 @@ or ARC itself on your device.
 ```json
 "model_routes": {
   "claude-sonnet-5": {
-    "endpoint": "rayline-dev",
+    "endpoint": "rayline",
     "model": "arc-sage"
   },
   "claude-haiku-5-5": {
-    "endpoint": "rayline-dev",
+    "endpoint": "rayline",
     "model": "arc-swift"
   }
 }
 ```
 
 The endpoint ID must match the endpoint in your gateway configuration. This
-example matches the development gateway linked above.
+example matches the gateway linked above.
 
 3. In Cline's **API Configuration**, use:
 
@@ -92,35 +82,14 @@ The real Rayline key belongs in the gateway process, not in Cline.
 
 <Warning>
 Keep **Web Search** off for this configuration. Cline's provider-native
-Anthropic search tool is unsupported by ARC. The dev API now returns
-`400 unsupported_server_tool` with an actionable explanation (retested on
-21 October 2026); earlier builds returned a misleading 503. Ordinary file
-tools work with search disabled. The setting applies to new tasks.
+Anthropic search tool is unsupported by ARC. Ordinary file tools work with search disabled. The setting applies to new tasks.
 </Warning>
 
-<Frame caption="The Local Swift task. Cline displays its Claude label; the explicit gateway mapping selects ARC Swift.">
-  <img src="/images/integrations/cline-local-arc-swift-20261021.webp" alt="Cline's completed Local file-reading task beside receipt.txt, with the client label claude-haiku-5-5 mapped by the gateway to ARC Swift." />
-</Frame>
+## Try your first task
 
-## Verify two tasks
-
-Create `receipt.txt` in your workspace:
-
-```text
-Notebook 12.50
-Pen 3.25
-Folder 4.75
-```
-
-- With Sage, ask: **Read receipt.txt and calculate the total. Do not change
-  files or run commands.** Expect a completed file read and **20.50**.
-- Start a new task with Swift and ask: **Read receipt.txt. Which item is cheapest,
-  and what is the difference between the highest and lowest prices? Do not change
-  files or run commands.** Expect **Pen**, **3.25**, and **9.25**.
-
-Check [Rayline usage](/platform/usage) for the corresponding requests. Cline's
-built-in Claude prices and a custom model's default **Free** display do not
-represent Rayline billing. Use the [ARC rate card](/arc/pricing).
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
 ## Troubleshooting
 

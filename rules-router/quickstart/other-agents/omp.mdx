@@ -3,16 +3,13 @@ title: "oh-my-pi"
 description: "Connect oh-my-pi to ARC directly or through a Rayline Local gateway."
 ---
 
-Use **ARC Sage** for coding or **ARC Swift** for a faster, lower-cost tier. You can connect directly to Rayline without installing a gateway.
+<span id="verify-the-route" />
 
-<Note>
-Validated on **21 October 2026**: oh-my-pi **18.12.6** completed two file-reading tasks per path, one with Sage and one with Swift, against the **dev API**. Local used a **0.2.10 source build (the revision later published as 0.2.10)**. Production, launchers, resume, compaction, and extensions remain unverified.
-</Note>
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
 
-![oh-my-pi’s session export shows ARC Sage reading the receipt and calculating the total.](/images/integrations/omp-arc-sage-20261021.webp)
-*oh-my-pi’s session export shows ARC Sage reading the receipt and calculating the total. Actual dev test; client cost displays are not Rayline billing evidence.*
+<span id="choose-a-connection" />
 
-## Choose a connection
+## Two ways to use ARC with oh-my-pi
 
 | Path | Request path | Inference |
 | --- | --- | --- |
@@ -62,7 +59,7 @@ providers:
         maxTokens: 2048
 ```
 
-oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This smoke configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
 Start with Sage:
 
@@ -76,27 +73,18 @@ For Swift, use `omp --model rayline/arc-swift`. The provider prefix `rayline/`, 
 
 First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
-| Setting | Direct production API | Gateway in the dev smoke |
+| Setting | Rayline platform | Rayline Local |
 | --- | --- | --- |
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
-| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the test gateway |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
-Use your gateway’s actual port and authentication. **23811 is a test port**, not the default. The test gateway forwarded to `https://api-dev.rayline.ai`; direct tests used that dev host too. A successful dev test does not establish production availability.
+Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
 
-## Verify the route
+## Try your first task
 
-Create `receipt.txt`:
-
-```text
-Notebook 12.50
-Pen 3.25
-Folder 4.75
-```
-
-1. With Sage, ask **Read receipt.txt and add the three prices.** Expect a read-tool call and **20.50**.
-2. With Swift, ask **Read receipt.txt. Which item is cheapest, and what is the difference between the highest and lowest price?** Expect **Pen**, **3.25**, and **9.25**.
-
-In [Usage](/platform/usage), check successful requests, the requested ARC tier, the served model, and the charge. For Local, also inspect the gateway log. A correct answer alone does not prove the route.
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
 <span id="use-arc-directly" />
 <span id="verify-your-setup" />
@@ -110,7 +98,7 @@ In [Usage](/platform/usage), check successful requests, the requested ARC tier, 
 
 ## Launcher and session behavior
 
-`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer. This launcher remains unverified by the manual-configuration smoke.
+`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
 
 The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 

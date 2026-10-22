@@ -3,15 +3,9 @@ title: "Unreal Agent"
 description: "Connect Unreal Agent to ARC directly or through a Local Messages gateway."
 ---
 
-[Unreal Agent](https://github.com/unreallabsai/unreal-agent) can call Rayline's
-Responses API directly. It does not require Rayline Local for this path.
+<span id="verify-both-tiers" />
 
-<Note>
-The official **0.3.1** macOS arm64 runner passed two real file-tool tasks against
-the **development API** on 21 October 2026: one with ARC Sage and one with ARC
-Swift. Both executed `cat receipt.txt` successfully and returned the correct
-answer. Production and the interactive TUI remain unverified.
-</Note>
+Use [Unreal Agent](https://github.com/unreallabsai/unreal-agent) with ARC through the Rayline platform. Choose **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks.
 
 ## Direct API
 
@@ -30,40 +24,31 @@ export UNREAL_HARNESS_LLM_BASE_URL=https://api.rayline.ai/v1
 export UNREAL_HARNESS_LLM_MODEL=arc-sage
 ```
 
-The production URL above is the intended configuration. The recorded smoke used
-`https://api-dev.rayline.ai/v1` with a development key.
 
 Run the agent from a project directory:
 
 ```bash
-unreal-agent-runner -workspace "$PWD" -p 'Read receipt.txt and calculate the total. Do not change files.'
+unreal-agent-runner -workspace "$PWD" -p 'Read the README and explain how to run this project.'
 ```
 
 The runner writes JSONL events to stdout. The `openai` provider selects the
 Responses wire protocol; it does not mean the request is billed by OpenAI.
 
-## Verify both tiers
+## Try another ARC model
 
-Create `receipt.txt` with known prices. Run one fresh task asking Sage for the
-total. Then select Swift and ask for the cheapest item and price spread:
+To use Swift for an everyday task, select it when starting the runner:
 
 ```bash
 UNREAL_HARNESS_LLM_MODEL=arc-swift unreal-agent-runner \
   -workspace "$PWD" \
-  -p 'Read receipt.txt. Which item is cheapest, and what is the price spread? Do not change files.'
+  -p 'Read the README and summarize the installation steps.'
 ```
 
-Check for a completed shell operation with exit code zero **and** a final answer
-that matches the file. An exit-zero runner process alone is insufficient.
-Inspect [Rayline Usage](/platform/usage) for the corresponding requests.
-
-<Frame caption="Rayline Usage separates the requested ARC tier from the served model, and shows Messages protocol and cloud execution. Dev validation example; rounded costs are not exact billing evidence.">
-![Rayline Usage expands an ARC Swift Messages request to show its served model, status, billing basis, and cloud execution](/images/integrations/unreal-messages-usage-20261021.webp)
-</Frame>
+View the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
 ## Rayline Local
 
-Use the **Anthropic provider** for the tested Local path. Start a
+Use the **Anthropic provider** for Rayline Local. Start a
 [gateway forwarding to hosted Rayline](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
 then set:
 
@@ -75,21 +60,8 @@ export UNREAL_HARNESS_LLM_MODEL=arc-sage
 ```
 
 Use your gateway's actual port and authentication. The placeholder above is for
-the isolated test gateway; its environment holds the real upstream key. Unreal's
+the gateway described above; its environment holds the real upstream key. Unreal's
 Anthropic provider expects `/v1` here. This path forwards cloud inference; it
 does not run the inference model or ARC locally.
 
-On 21 October 2026, after the dev gateway fix, both Sage and Swift completed
-real `cat receipt.txt` calls and returned the correct answers through this
-Messages path. The same provider also completed both tasks directly against
-`https://api-dev.rayline.ai/v1`. The direct Sage run executed an extra arithmetic
-command despite the prompt's restriction; these tests establish transport and
-tool execution, not instruction-following guarantees.
-
-<Warning>
-The **OpenAI/Responses provider through Local 0.2.10** remains blocked: both
-Sage and Swift exited zero with no tool call and an empty answer. A fix is pending
-release. Use the tested Anthropic path above, or the direct Responses path.
-The earlier Anthropic invalid-request failure was fixed on dev; production
-verification is still pending.
-</Warning>
+Use the Anthropic provider with Rayline Local 0.2.10. Its OpenAI provider can return an empty answer through that gateway version; the cloud connection above uses the OpenAI provider directly.
