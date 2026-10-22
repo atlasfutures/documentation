@@ -198,6 +198,7 @@ paths:
         schema:
           type: string
           default: '2023-06-01'
+        example: '2023-06-01'
       x-arc-extension-only: true
       requestBody:
         required: true
