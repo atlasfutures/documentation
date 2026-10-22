@@ -22,13 +22,17 @@ Open **Cline → Settings → API Configuration** and enter:
 | API Key | Your [Rayline API key](/platform/api-keys) |
 | Custom Model ID | `arc-sage`, or `arc-swift` |
 | Context Window Size | `200000` for this configuration |
-| Max Output Tokens | `2048` for the verification below |
-| Supports Images | Off for this text-only verification |
+| Max Output Tokens | `2048`; increase for longer responses |
+| Supports Images | Off for text-only tasks |
 | Reasoning Effort | **None** |
 
 If ARC is absent from the model list, enter its bare ID in **Custom Model ID**.
 Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
 unrelated task. Keep the same value while continuing a task.
+
+![Cline API Configuration with the Rayline platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
+
+Enter your own Rayline API key in the API key field.
 
 Click **Done**, then start a **New Task**. Existing tasks can retain their
 previous provider configuration.
@@ -71,6 +75,8 @@ example matches the gateway linked above.
 | Model for Swift | `claude-haiku-5-5` |
 | Reasoning Effort | **None** |
 
+![Cline Anthropic provider configured with a Rayline Local URL and the model label mapped to ARC Sage](/images/tools/setup/cline-local-settings.webp)
+
 Cline's Anthropic selector does not accept arbitrary ARC IDs. The gateway maps
 these two client labels to the ARC tiers; they are **not** claims about which
 inference model ARC serves. Without the explicit mapping, a recognized Claude
@@ -79,6 +85,8 @@ The real Rayline key belongs in the gateway process, not in Cline.
 
 4. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
    start a **New Task**.
+
+![Cline Features settings with Web Search turned off](/images/tools/setup/cline-web-search.webp)
 
 <Warning>
 Keep **Web Search** off for this configuration. Cline's provider-native
