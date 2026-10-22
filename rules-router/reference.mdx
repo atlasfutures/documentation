@@ -1,23 +1,48 @@
 ---
-title: "Client compatibility"
-description: "Messages and Responses describe protocols, not the routing product."
+title: "How tools connect"
+sidebarTitle: "How tools connect"
+description: "Understand the settings that let an agent harness use Rayline."
 ---
 
-Agent harness compatibility depends on the request protocol and routing configuration. The same requirements apply to coding, research, automation, and other agent workflows.
+To use Rayline, your agent harness needs a way to send model requests to it. Most setup guides ask you to choose an API provider, enter a base URL and API key, and select a model. This page explains what those settings mean and why some tools use Rayline Local.
 
-| Client/path | Integration |
-| --- | --- |
-| Hosted Claude Code | Anthropic Messages-compatible routing through `api.rayline.ai` |
-| Claude Code local | Rayline's local static router through proxy mode |
-| Codex CLI/desktop | Rayline's OpenAI Responses-compatible local router |
-| Explicit hosted Codex route | Agent Gateway's Responses path |
+If your tool has a [setup guide](/tools), follow that first. For a comparison of the two connection paths, see [Rayline cloud and Rayline Local](/tools/hosted-local).
 
-Start with [Claude Code](/rules-router/quickstart/claude-code) or [Codex](/rules-router/quickstart/codex). Local Codex defaults can reuse subscription login; explicit configurations choose a different inference path.
+## Start with the connection
 
-Do not infer full provider compatibility solely from an endpoint's name. Check the [current local-router compatibility documentation](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for supported request forms and configuration.
+**A direct connection** sends requests from your tool to Rayline in the cloud. It works when the tool lets you configure the required endpoint, credentials, model ID, and request format.
 
-ARC's beta availability is documented [separately](/arc/reference/compatibility). Choose ARC for adaptive model selection or Agent Gateway rules for explicit routing.
+**A Rayline Local connection** sends requests to a gateway on your computer first. Use it when your tool's guide requires that setup, or when you want to manage routing and upstream destinations locally. Local then forwards requests to the endpoints you configure.
+
+A tool may support both paths. For example, Claude Code can connect directly or through Local. Cline's direct setup uses its OpenAI Compatible provider, while its Local setup uses the Anthropic provider with explicit model mapping. Follow the [Cline guide](/rules-router/quickstart/other-agents/cline) when switching: changing the URL alone is not enough.
+
+## What the provider setting means
+
+The provider setting tells your tool how to format requests and read responses. These formats are also called **API protocols**. They do not determine where the model runs or which model ARC chooses.
+
+| Request format | Typical endpoint | What you may see in a tool |
+| --- | --- | --- |
+| Anthropic Messages | `/v1/messages` | Anthropic, Messages, or a custom Anthropic base URL |
+| OpenAI Chat Completions | `/v1/chat/completions` | OpenAI Compatible or Chat Completions |
+| OpenAI Responses | `/v1/responses` | Responses or a provider configuration such as Codex's `wire_api` |
+
+The tool's provider setting must match the endpoint it calls. An “OpenAI Compatible” label can refer specifically to Chat Completions; it does not necessarily mean the tool sends OpenAI Responses requests.
+
+**ARC is the model-selection service, not a request format.** You request an ARC model such as `arc-swift` or `arc-sage` using the format supported by your connection. See [using ARC models](/arc/reference/generation) for endpoints and [API compatibility](/arc/reference/compatibility) for capability details.
+
+## What Rayline Local can handle
+
+Local can hold upstream credentials, map a tool's model labels to configured models, and route requests to supported destinations. These features can make a tool usable with a setup it cannot express directly.
+
+Support depends on the particular client and gateway configuration. Protocol conversion, streaming, tool calls, images, and provider-native features must work along the complete request path. Local does not automatically make every feature of every provider available.
 
 ## Connecting another client
 
-Check the client can use the configured endpoint and authentication scheme, and verify its required model IDs, streaming behavior, tool messages, and input types. Test a representative request before routing a full workload. Client-specific policy controls, including subagent classification and slot assignments, are not automatically available to every app using the same protocol.
+For a harness without a dedicated guide:
+
+1. Find its custom-provider or API settings. Check whether you can set the base URL, API key, and model ID.
+2. Identify its request format. Match it to a supported Rayline endpoint, or a documented Local configuration.
+3. Check the features your workflow needs, especially streaming, tool calls, and input types.
+4. Send a small representative task before moving a full workflow. If the harness uses tools, include a tool call in that task.
+
+Use the [Rayline Local configuration reference](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for supported request forms and endpoint settings. Features such as subagent classification and model assignments also depend on what the harness sends; they are not implied by its API protocol.

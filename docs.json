@@ -57,7 +57,12 @@
           {
             "group": "Start here",
             "pages": [
-              "tools/index",
+              "tools/index"
+            ]
+          },
+          {
+            "group": "Connection options",
+            "pages": [
               "tools/hosted-local",
               "rules-router/reference"
             ]
