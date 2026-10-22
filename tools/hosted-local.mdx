@@ -1,29 +1,68 @@
 ---
-title: "Hosted and Rayline Local"
-description: "Separate the gateway, routing decision, and inference location."
+title: "Rayline cloud and Rayline Local"
+sidebarTitle: "Cloud or Rayline Local"
+description: "Choose where your agent harness connects, then choose where its requests go."
 icon: "server"
 ---
 
+Your agent harness sends requests to an API endpoint to get answers and tool calls. You can connect it directly to **Rayline in the cloud**, or send its requests through **Rayline Local**, a gateway running on your computer.
+
+Start with the direct connection in your [tool's guide](/tools). Use Rayline Local when the guide requires it, or when you want to manage the destinations and routing on your own machine.
+
 <span id="choose-your-connection" />
+<span id="connect-through-the-cloud-or-rayline-local" />
 
-A request has three independent locations: **where the gateway runs**, **where ARC chooses a model**, and **where that model generates the answer**. “Local” needs to name which of these it means.
+## Two ways to connect
 
-| Component | What it does | What running it locally means |
+### Connect directly to Rayline
+
+**Your agent harness → Rayline cloud → inference model**
+
+Configure your tool with the Rayline API URL, your Rayline API key, and an ARC model ID. Rayline receives the request, ARC chooses the model and reasoning effort, and the selected model generates the answer. You do not need to install a gateway.
+
+You can also use the hosted **Agent Gateway** with [routing rules](/rules-router/policies) that assign models explicitly. ARC and explicit routing rules are different ways to choose a model; either can be reached through Rayline's cloud services.
+
+### Connect through Rayline Local
+
+**Your agent harness → Rayline Local on your computer → configured destination**
+
+Your tool connects to a local address, such as `http://127.0.0.1:23811`. Rayline Local receives the request and forwards it according to your configuration. It can keep upstream API keys in the gateway and apply local routing rules.
+
+Local can forward requests to Rayline's cloud services, but it is not limited to Rayline. You can configure other cloud providers, gateways such as **OpenRouter**, or a model server running on your own hardware. Each destination needs a supported protocol and the appropriate credentials. See [endpoint configuration](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md) for supported combinations.
+
+```mermaid
+flowchart LR
+  Harness[Agent harness] --> Local[Rayline Local]
+  Local --> Rayline[Rayline cloud]
+  Local --> Cloud[Other providers or OpenRouter]
+  Local --> Device[On-device model server]
+```
+
+These are destinations you configure. Installing Rayline Local does not automatically enable ARC to choose between all of them.
+
+## Where the work runs
+
+Connecting through a local gateway does not mean the model runs on your device. For example, **your tool → Rayline Local → ARC Sage in Rayline cloud** still uses cloud routing and cloud inference.
+
+There are three separate components you can consider running locally:
+
+| Component | Its job | What local means |
 | --- | --- | --- |
-| Rayline Local gateway | Receives your tool's request and forwards it to a configured endpoint | The gateway runs on your computer. Inference can still be entirely in the cloud. |
-| Inference model | Generates the answer and tool calls | A model server, such as llama.cpp, runs on your hardware. |
-| ARC routing model | Chooses where to send an inference request | ARC makes the routing decision on your hardware. Its chosen inference endpoints can be cloud, on-device, or a mixture. |
+| Rayline Local gateway | Receive requests and forward them to configured endpoints | The gateway runs on your computer; the destination can still be in the cloud. |
+| Inference model | Generate answers and tool calls | A model runs on your hardware through a compatible model server. |
+| ARC routing model | Choose the inference model and reasoning effort | ARC makes the routing decision on your hardware; the selected inference model can be local or cloud-hosted. |
 
-## Connect through the cloud or Rayline Local
+## On-device inference
 
-| Connection | Request path | Where ARC runs in these guides | Where inference runs |
-| --- | --- | --- | --- |
-| Rayline platform (default) | Your tool → hosted Rayline | Hosted Rayline | Cloud |
-| Rayline Local gateway | Your tool → local gateway → hosted Rayline | Hosted Rayline | Cloud |
+Models such as [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) and [Recursive Flint](https://huggingface.co/RecursiveSI/flint) are examples of open-weight inference models. Running one locally requires enough memory and a runtime that supports that model, such as llama.cpp or another compatible server. Follow the model's installation instructions for its supported runtimes.
 
-The integration guides cover these two cloud-backed paths. **You do not need a local inference model to use a local gateway.** Both charge inference to your Rayline workspace.
+Configure Rayline Local to reach that server, or combine it with cloud endpoints in your routing rules. See [local models](/rules-router/guides/local-models) for setup. A model's availability as open weights does not by itself establish compatibility with every agent harness or Rayline runtime.
 
-A tool can connect directly when it supports the required API protocol, a custom base URL, and Rayline authentication. A launcher may choose a local gateway for configuration or protocol handling even when a manual direct connection is possible. Check the individual guide; a `rayline <tool>` command does not by itself tell you which path it uses.
+## Run ARC locally
+
+Running ARC on-device means running the **routing model**, separately from the inference models that generate answers. A local ARC routing model could select cloud-hosted inference, on-device inference, or a mix of the two.
+
+Rayline Local does not currently include ARC weights. See [open weights and self-hosting](/arc/open-source) for source and artifact availability.
 
 ## Configure a cloud-forwarding gateway
 
@@ -61,15 +100,10 @@ Leave this process running. In a **different shell**, configure the client with 
 
 Check requests in [Rayline Usage](/platform/usage) to see the selected ARC tier, served model, and charge. Stop this gateway with Ctrl+C when finished.
 
-## On-device inference
+## Who bills the requests?
 
-A local inference endpoint needs its own model installation, hardware capacity, and routing configuration. A mixed route can send some calls to cloud models and others to your on-device model. See [local models](/rules-router/guides/local-models).
+When Rayline Local forwards a request to Rayline cloud, it is billed to your Rayline workspace just like a direct request. When you configure a different provider or gateway, that service bills usage under the account associated with its API key. Running inference on your own hardware uses your local compute resources.
 
+<span id="subscription-billing" />
 
-## Run ARC locally
-
-Running the ARC routing model locally is a third deployment choice. It does not require that every selected inference model also run locally. Rayline Local does not currently include ARC weights; see [open weights and self-hosting](/arc/open-source) for source and artifact availability.
-
-## Subscription billing
-
-Subscription paths, such as `rayline codex --subscription`, send the main agent to your existing subscription. That subscription bills those requests rather than Rayline. Consult the tool guide before mixing subscription and Rayline API paths.
+Subscription paths, such as `rayline codex --subscription`, send the main agent to your existing subscription. That subscription bills those requests rather than Rayline. Consult the tool guide before mixing subscription and API paths.
