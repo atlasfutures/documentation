@@ -140,8 +140,7 @@
             "group": "Model behavior",
             "pages": [
               "arc/concepts/checkpoints",
-              "arc/concepts/caching",
-              "arc/concepts/evaluation"
+              "arc/concepts/caching"
             ]
           },
           {
@@ -590,6 +589,11 @@
     {
       "source": "/api-reference/decisions:-where-would-arc-send-this-request",
       "destination": "/api-reference/create-a-routing-decision",
+      "permanent": true
+    },
+    {
+      "source": "/arc/concepts/evaluation",
+      "destination": "/arc/models",
       "permanent": true
     }
   ],
