@@ -2,19 +2,20 @@
 title: "Claude Code"
 description: "Connect Claude Code to ARC directly or through a Rayline Local gateway."
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
+
+<span id="verify-the-route" />
 
 Use Claude Code with **ARC Sage** (`arc-sage`) or **ARC Swift** (`arc-swift`).
 Sage prioritizes quality; Swift prioritizes lower cost and faster turns. Both
 choose the model and reasoning effort for your request.
 
-<ArcPreview />
-
 For Code sessions inside the Claude desktop app, use the separate
 [Claude Desktop guide](/tools/claude-desktop). Desktop does not read these
 terminal environment variables.
 
-## Choose a connection
+<span id="choose-a-connection" />
+
+## Two ways to use ARC with Claude Code
 
 | Connection | Request path | Use it when |
 | --- | --- | --- |
@@ -24,16 +25,6 @@ terminal environment variables.
 Both paths use **cloud inference**. Running a local gateway does not run the
 answering model or ARC's routing model on your computer. See
 [Hosted and Rayline Local](/tools/hosted-local).
-
-<Note>
-Validated on **21 October 2026** with Claude Code **2.1.307** on macOS:
-two file-reading tasks per path, using Sage and Swift, completed against the
-**dev API**. The repeat test used the **published Rayline Local 0.2.10** gateway.
-The released `rayline --env dev claude --via env` launcher also passed both tasks.
-These checks do not establish production availability or validate subagents,
-resume, extensions, or compaction. Production examples below must be checked
-against your workspace before starting a larger task.
-</Note>
 
 <span id="advanced-manual-environment-variables" />
 
@@ -93,12 +84,6 @@ rayline claude --via proxy -m arc-sage --auto-compact-window 180000
 Use `-m arc-swift` for Swift. The gateway forwards inference to hosted Rayline;
 this command does not download an inference model.
 
-<Note>
-Rayline 0.2.10 is available through the official installer. The gateway smoke
-used `rld` with an explicit endpoint configuration, not this launcher command.
-The proxy launcher itself is not yet validated; the released env launcher
-and a separately started released daemon passed both tasks.
-</Note>
 
 For an existing local gateway configured to forward to Rayline, use the direct
 setup with its local base URL and the authentication that gateway requires.
@@ -108,49 +93,23 @@ local listener.
 
 <span id="verify-its-working" />
 
-## Verify the route
+## Try your first task
 
-Try two small tasks before using a larger project. Create `receipt.txt`:
-
-```text
-Notebook 12.50
-Pen 3.25
-Folder 4.75
-```
-
-Ask Claude:
-
-1. **Read receipt.txt and add the three prices.** Expect a file-read tool call and a total of **20.50**.
-2. **Read receipt.txt. Which item is cheapest, and what is the difference between the most and least expensive?** Expect **Pen**, **3.25**, and a difference of **9.25**.
-
-In [Usage](/platform/usage), check that the requests succeeded and inspect the
-**requested model**, **served model**, and **recorded charge**. A tool-reading task
-normally produces more than one model request. Claude's own cost estimate for a
-custom model is not your Rayline bill.
-
-For the local gateway, also check `rayline router status` and
-`rayline router logs --lines 120`. A correct answer alone does not prove which
-route handled the request.
-
-![Rayline Usage shows four successful requests from the two Claude Code tasks, with requested ARC tiers and served models](/images/integrations/claude-code-usage-20261021.webp)
-*Direct dev smoke: two tasks produced four successful Messages calls. Amounts shown are rounded.*
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
 ## Troubleshooting
 
 - **Authentication error:** check that `RAYLINE_KEY` is available in the shell
   starting Claude and that `ANTHROPIC_API_KEY` is unset.
 - **“Couldn’t read the auto-compact window” with `sonnet`:** Rayline 0.2.10
-  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. In the
-  env launcher test, passing `--model arc-sage` or
-  `--auto-compact-window 180000` allowed startup. The `arc-sage` and `arc-swift`
-  IDs themselves passed the task tests.
-- **`unrecognized_model` in debug output:** Claude emitted this message for ARC
-  IDs during the successful tests. Check the final request result before
+  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. Pass `--model arc-sage` or
+  `--auto-compact-window 180000` to set the model or context window explicitly.
+- **`unrecognized_model` in debug output:** Claude can emit this message for custom model IDs. Check the final request result before
   treating the message as a failure.
 - **Another model is requested:** inspect project settings, model overrides,
   and background model settings. Start in a small test folder to isolate them.
-- **A dev example works but production fails:** record the endpoint and error.
-  Success on dev does not prove the same feature has been deployed to production.
 
 <span id="disabling-rayline-temporarily" />
 

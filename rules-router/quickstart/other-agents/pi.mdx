@@ -3,16 +3,13 @@ title: "pi"
 description: "Connect pi to ARC directly or through a Rayline Local gateway."
 ---
 
-Use **ARC Sage** for coding or **ARC Swift** for a faster, lower-cost tier. You can connect directly to Rayline without installing a gateway.
+<span id="verify-the-route" />
 
-<Note>
-Validated on **21 October 2026**: pi **0.80.2** completed two file-reading tasks per path, one with Sage and one with Swift, against the **dev API**. Local used a **0.2.10 source build (the revision later published as 0.2.10)**. Production, launchers, resume, compaction, and extensions remain unverified.
-</Note>
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
 
-![pi’s session export shows ARC Swift reading the receipt and calculating the price difference.](/images/integrations/pi-arc-swift-20261021.webp)
-*pi’s session export shows ARC Swift reading the receipt and calculating the price difference. Actual dev test; client cost displays are not Rayline billing evidence.*
+<span id="choose-a-connection" />
 
-## Choose a connection
+## Two ways to use ARC with pi
 
 | Path | Request path | Inference |
 | --- | --- | --- |
@@ -55,7 +52,7 @@ Save this in `$PI_CODING_AGENT_DIR/models.json`:
 }
 ```
 
-pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The optional session-affinity setting sends pi’s session ID alongside the conversation header. This smoke configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The optional session-affinity setting sends pi’s session ID alongside the conversation header. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
 Start with Sage:
 
@@ -69,27 +66,18 @@ For Swift, use `pi --provider rayline --model arc-swift`. The provider prefix `r
 
 First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
-| Setting | Direct production API | Gateway in the dev smoke |
+| Setting | Rayline platform | Rayline Local |
 | --- | --- | --- |
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
-| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the test gateway |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
-Use your gateway’s actual port and authentication. **23811 is a test port**, not the default. The test gateway forwarded to `https://api-dev.rayline.ai`; direct tests used that dev host too. A successful dev test does not establish production availability.
+Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
 
-## Verify the route
+## Try your first task
 
-Create `receipt.txt`:
-
-```text
-Notebook 12.50
-Pen 3.25
-Folder 4.75
-```
-
-1. With Sage, ask **Read receipt.txt and add the three prices.** Expect a read-tool call and **20.50**.
-2. With Swift, ask **Read receipt.txt. Which item is cheapest, and what is the difference between the highest and lowest price?** Expect **Pen**, **3.25**, and **9.25**.
-
-In [Usage](/platform/usage), check successful requests, the requested ARC tier, the served model, and the charge. For Local, also inspect the gateway log. A correct answer alone does not prove the route.
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
 <span id="use-arc-directly" />
 <span id="verify-your-setup" />
@@ -103,7 +91,7 @@ In [Usage](/platform/usage), check successful requests, the requested ARC tier, 
 
 ## Launcher and session behavior
 
-`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer. This launcher remains unverified by the manual-configuration smoke.
+`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
@@ -118,12 +106,10 @@ Each launcher invocation generates a conversation ID. In manual setup, generate 
 
 ## Configurable ARC
 
-`arc-1.0` also completed two real file-reading tasks per path against dev on
-21 October 2026. Add a model entry named `arc-1.0` alongside the Sage and Swift
+To use configurable ARC, add a model entry named `arc-1.0` alongside the Sage and Swift
 entries above, then select it with `--model arc-1.0`.
 For Local, include `arc-1.0` in the gateway endpoint’s model list as well.
 
-The default-configuration checks used the server’s routing settings.
 Configurable ARC uses the served model’s catalog price rather than a fixed tier
 rate; see [Configure ARC routing](/arc/gateway-routing).
 
@@ -158,8 +144,4 @@ The guard leaves other providers and ARC tiers unchanged. This routing
 `temperature` controls ARC exploration, not the answer model’s temperature.
 Check the response echo rather than assuming the setting took effect.
 
-Live dev tasks at values **0.5** and **4** passed both directly and through
-published Local 0.2.10. Every response echoed `value_usd.status: "applied"`.
-For the test workspace, `temperature: 0` echoed `not_applied` with reason
-`privacy_mode`; the workspace’s privacy policy controlled exploration. The
-read tool and correct answer completed on all four tasks.
+The `x-rayline-routing` response header reports whether each setting was applied. A workspace privacy policy can override exploration settings; check `status` and `reason` in that header.

@@ -3,38 +3,73 @@ title: "Hermes Agent"
 description: "Run Hermes Agent through hosted Agent Gateway with rayline hermes."
 ---
 
-Use **ARC Sage** (`arc-sage`) or **ARC Swift** (`arc-swift`) directly through the Rayline API, or through a Rayline Local gateway forwarding to hosted Rayline. Both connections use cloud inference. See [what “local” means](/tools/hosted-local).
+<span id="verify-the-route" />
 
-<Note>
-Live dev validation on **21 October 2026**: Hermes Agent source commit `3fa571a51a6bf1220dfe9a7a23fcd5bb9482a1af` completed two file-reading tasks per path, one with Sage and one with Swift. Local used a Rayline 0.2.10 source build (the revision later published as 0.2.10). Production, launchers, Responses, resume, and compaction remain unverified.
-</Note>
+Use **ARC Sage** (`arc-sage`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
 
-![Hermes’s session export shows the receipt file result and the correct total](/images/integrations/hermes-local-arc-sage-20261021.webp)
-*Actual Sage session through the local gateway to dev. The session record confirms `read_file` and the loopback endpoint.*
+Install the tool using its [installation guide](https://hermes-agent.nousresearch.com/docs/getting-started/installation) before you begin.
 
-## Use ARC directly
+<span id="use-arc-directly" />
 
-In the manual configuration below, replace `rayline-router` with `arc-sage` in the model definition and default. Add a second definition for `arc-swift` to make both tiers available.
+<span id="manual-setup-without-the-launcher" />
 
-```bash
-hermes --provider rayline-anth --model arc-sage -z "Read receipt.txt and add the prices."
-hermes --provider rayline-anth --model arc-swift -z "Read receipt.txt and identify the cheapest item."
+## Connect to the Rayline platform
+
+Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
+
+Add these providers to `~/.hermes/config.yaml`, and point `model` at the first one:
+
+```yaml
+model:
+  provider: "custom:rayline-anth"
+  default: "arc-sage"
+  context_length: 200000
+providers:
+  rayline-anth:
+    api_mode: "anthropic_messages"
+    base_url: "https://api.rayline.ai"
+    key_env: "RAYLINE_KEY"
+    extra_headers:
+      x-conversation-id: "${RAYLINE_CONV_ID}"
+    models:
+      arc-sage:
+        context_length: 200000
+  rayline-resp:
+    api_mode: "codex_responses"
+    base_url: "https://api.rayline.ai/v1"
+    key_env: "RAYLINE_KEY"
+    extra_headers:
+      x-conversation-id: "${RAYLINE_CONV_ID}"
+    models:
+      arc-sage:
+        context_length: 200000
 ```
+
+- `key_env` names the variable that holds the key; Hermes expands `${NAME}` in other values.
+- `rayline-anth` uses the Messages API at `/v1/messages`, so its `base_url` has no `/v1`. `rayline-resp` uses the Responses API at `/v1/responses`, so its `base_url` ends in `/v1`. Select it with `--provider rayline-resp --model arc-sage`.
+- The launcher also sets `fallback_providers: []`, so a failed request is not retried against another provider. Add it if you want the same behaviour.
+
+To keep this separate from your normal Hermes home, save it as `config.yaml` in another directory and set `HERMES_HOME` to that directory, as the launcher does.
+
+Check it with `hermes -z "Reply with the word ready."`.
 
 ## Use a Rayline Local gateway
 
-[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Our dev smoke used `http://127.0.0.1:23811`; 23811 is a test port, not a default. The gateway holds the upstream key; the client used `RAYLINE_KEY=local-client` for this test gateway.
+[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_KEY=local-client` in the client. The gateway holds your Rayline API key.
 
-## Verify the route
+## Try your first task
 
-Create `receipt.txt` with `Notebook 12.50`, `Pen 3.25`, and `Folder 4.75` on separate lines. Ask Sage to read and total it (**20.50**), then Swift to read it and find the cheapest item (**Pen**, **3.25**) and the price spread (**9.25**). Verify a real read-tool result, not just the final answer.
+From your project directory, run:
 
-Check the requested ARC tier, served model, successful status, and charge in [Usage](/platform/usage). For Local, also check the gateway log. Client cost estimates are not the Rayline bill. These tests used `https://api-dev.rayline.ai`; the production URL in the examples must be verified separately.
+```bash
+hermes --provider rayline-anth --model arc-sage -z "Read the README and explain how to run this project."
+```
+
+To use Swift, add `arc-swift` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer. Released-launcher validation is pending.
-
+The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer.
 
 ## Install
 
@@ -74,46 +109,6 @@ Each provider names the key's environment variable with `key_env: RAYLINE_KEY`. 
 Each launch is one Agent Gateway conversation: both providers send a per-launch `x-conversation-id` header. Resuming with `--continue` or `--resume` in a new launch starts a new conversation.
 
 Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade to v2026.9.21 or later.
-
-## Manual setup (without the launcher)
-
-Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
-
-Add these providers to `~/.hermes/config.yaml`, and point `model` at the first one:
-
-```yaml
-model:
-  provider: "custom:rayline-anth"
-  default: "rayline-router"
-  context_length: 200000
-providers:
-  rayline-anth:
-    api_mode: "anthropic_messages"
-    base_url: "https://api.rayline.ai"
-    key_env: "RAYLINE_KEY"
-    extra_headers:
-      x-conversation-id: "${RAYLINE_CONV_ID}"
-    models:
-      rayline-router:
-        context_length: 200000
-  rayline-resp:
-    api_mode: "codex_responses"
-    base_url: "https://api.rayline.ai/v1"
-    key_env: "RAYLINE_KEY"
-    extra_headers:
-      x-conversation-id: "${RAYLINE_CONV_ID}"
-    models:
-      rayline-router:
-        context_length: 200000
-```
-
-- `key_env` names the variable that holds the key; Hermes expands `${NAME}` in other values.
-- `rayline-anth` uses the Messages API at `/v1/messages`, so its `base_url` has no `/v1`. `rayline-resp` uses the Responses API at `/v1/responses`, so its `base_url` ends in `/v1`. Select it with `--provider rayline-resp --model rayline-router`.
-- The launcher also sets `fallback_providers: []`, so a failed request is not retried against another provider. Add it if you want the same behaviour.
-
-To keep this separate from your normal Hermes home, save it as `config.yaml` in another directory and set `HERMES_HOME` to that directory, as the launcher does.
-
-Check it with `hermes -z "Reply with the word ready."`.
 
 ## Known limitations
 

@@ -4,6 +4,8 @@ description: "Separate the gateway, routing decision, and inference location."
 icon: "server"
 ---
 
+<span id="choose-your-connection" />
+
 A request has three independent locations: **where the gateway runs**, **where ARC chooses a model**, and **where that model generates the answer**. “Local” needs to name which of these it means.
 
 | Component | What it does | What running it locally means |
@@ -12,75 +14,57 @@ A request has three independent locations: **where the gateway runs**, **where A
 | Inference model | Generates the answer and tool calls | A model server, such as llama.cpp, runs on your hardware. |
 | ARC routing model | Chooses where to send an inference request | ARC makes the routing decision on your hardware. Its chosen inference endpoints can be cloud, on-device, or a mixture. |
 
-## Choose your connection
+## Connect through the cloud or Rayline Local
 
 | Connection | Request path | Where ARC runs in these guides | Where inference runs |
 | --- | --- | --- | --- |
-| Direct API | Your tool → hosted Rayline | Hosted Rayline | Cloud |
+| Rayline platform (default) | Your tool → hosted Rayline | Hosted Rayline | Cloud |
 | Rayline Local gateway | Your tool → local gateway → hosted Rayline | Hosted Rayline | Cloud |
 
 The integration guides cover these two cloud-backed paths. **You do not need a local inference model to use a local gateway.** Both charge inference to your Rayline workspace.
 
 A tool can connect directly when it supports the required API protocol, a custom base URL, and Rayline authentication. A launcher may choose a local gateway for configuration or protocol handling even when a manual direct connection is possible. Check the individual guide; a `rayline <tool>` command does not by itself tell you which path it uses.
 
-Claude Code, OpenCode, pi, oh-my-pi, Hermes, OpenClaw, Kilo CLI, Cline, and Codex CLI completed direct and local-gateway ARC file-tool smoke tests against dev on 21 October 2026. Those are bounded checks, not production certification. Each guide records its tested version and limitations. Other integrations remain subject to their own validation.
-
 ## Configure a cloud-forwarding gateway
 
-The integration smokes used Rayline source revision `a2db8785f30c`, published as **0.2.10** on 21 October 2026. Claude Code and Codex CLI Sage and Swift tasks were also retested successfully with the published daemon binary. Other tool rows remain source-build checks; per-launcher verification is separate. Install releases through [the official CLI channel](/rules-router/cli), not GitHub Releases.
-
-<Accordion title="Reproduce the dev gateway setup">
-
-Build the exact tested revision with Rust and Cargo installed:
-
-```bash
-git clone https://github.com/rayline-ai/rayline.git rayline-integration-test
-cd rayline-integration-test
-git checkout a2db8785f30c41c8f821662dd1a1d73d71558115
-cargo build -p rayline-cli -p rayline-daemon --locked -j 2
-```
-
-Save `router.json` in this test directory:
+Install [Rayline](/rules-router/cli#install). Save this configuration as `router.json`:
 
 ```json
 {
   "endpoints": [{
-    "id": "rayline-dev",
+    "id": "rayline",
     "protocol": "anthropic_messages",
-    "base_url": "https://api-dev.rayline.ai",
+    "base_url": "https://api.rayline.ai",
     "api_key_env": "RAYLINE_KEY",
     "models": ["arc-sage", "arc-swift", "arc-1.0", "rayline-router"]
   }],
   "routes": {
-    "main": { "endpoint": "rayline-dev", "model": "arc-sage" },
-    "subagent": { "endpoint": "rayline-dev", "model": "arc-sage" }
+    "main": { "endpoint": "rayline", "model": "arc-sage" },
+    "subagent": { "endpoint": "rayline", "model": "arc-sage" }
   }
 }
 ```
 
-In the gateway's shell, load your **dev** Rayline API key into `RAYLINE_KEY`. Use free ports; the following are the ports used in the smoke. Do not stop an existing gateway to make room.
+Load your [Rayline API key](/platform/api-keys) into `RAYLINE_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 
 ```bash
-RAYLINE_METRICS_PORT=23812 ./target/debug/rld serve \
+RAYLINE_METRICS_PORT=23812 rld serve \
   --no-local-model \
   --local-router-port 23811 \
   --adapter-port 23808 \
   --injector-port 23809 \
   --router-config-path "$PWD/router.json" \
-  --data-dir "$PWD/test-gateway-data"
+  --data-dir "$PWD/rayline-gateway-data"
 ```
 
-Leave this process running. In a **different shell**, configure the client with base URL `http://127.0.0.1:23811` (OpenCode adds `/v1`) and placeholder client key `local-client`. This test gateway holds the real upstream key and forwards cloud requests; it does not download a local model.
+Leave this process running. In a **different shell**, configure the client with base URL `http://127.0.0.1:23811` (OpenCode adds `/v1`) and placeholder client key `local-client`. This gateway holds the real upstream key and forwards cloud requests; it does not download a local model.
 
-Inspect the test gateway's activity at `http://127.0.0.1:23812/v1/router/top/snapshot`. The smoke recorded completed remote calls. Its `selected_model` field showed a routing alias, so use Rayline Usage to identify the served inference model. Stop only this test gateway with Ctrl+C when finished.
-
-</Accordion>
+Check requests in [Rayline Usage](/platform/usage) to see the selected ARC tier, served model, and charge. Stop this gateway with Ctrl+C when finished.
 
 ## On-device inference
 
 A local inference endpoint needs its own model installation, hardware capacity, and routing configuration. A mixed route can send some calls to cloud models and others to your on-device model. See [local models](/rules-router/guides/local-models).
 
-This is separate from validating a gateway that only forwards to hosted Rayline. The phase-one integration checks do not validate mixed cloud/on-device inference.
 
 ## Run ARC locally
 
