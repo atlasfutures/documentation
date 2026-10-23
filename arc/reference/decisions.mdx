@@ -99,7 +99,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
     "cache_read_per_mtok": 0.003625,
     "cache_write_per_mtok": 0.435
   },
-  "warnings": [],
+  "warnings": ["episode_not_tracked: this cell keeps no episodes for route lookups, so the conversation did not influence this route"],
   "usage": { "encoded_input_tokens": 3040, "cache_read_tokens": 0 },
   "latency_ms": 212,
   "presets": {
@@ -138,7 +138,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
-| `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
+| `warnings` | array of strings | Always present. Until Decisions keeps conversations, every lookup carries `episode_not_tracked`. See [Warnings](#warnings). |
 | `episode` | object | Reserved for conversation tracking, which Decisions does not yet do; absent today (see [conversations](#conversations)). When present, `turn_index` counts the conversation's turns and `stayed` is `true` when ARC kept the previous turn's worker. |
 | `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until Decisions reuses cached prefixes. |
 | `latency_ms` | integer | Time ARC spent deciding. |
@@ -179,7 +179,7 @@ Treat `unsupported` as not applied: ARC decided without that control, and the re
 
 ## Conversations
 
-Decisions does not yet keep conversations: each lookup is decided on its own, as if it were the conversation's first turn, and ARC reads the whole request every time. A lookup that sends `x-conversation-id` returns the `episode_not_tracked` warning, the response has no `episode`, and `usage.cache_read_tokens` is 0.
+Decisions does not yet keep conversations: each lookup is decided on its own, as if it were the conversation's first turn, and ARC reads the whole request every time. Every lookup returns the `episode_not_tracked` warning, whether or not it sends a conversation ID; the response has no `episode`, and `usage.cache_read_tokens` is 0.
 
 When conversation tracking ships, sending the same `x-conversation-id` on every turn will let ARC decide each turn in light of the turns before it, including whether to stay on the current model, and re-use the context it already encoded, reported as `cache_read_tokens`. Sending the header today is harmless.
 
@@ -209,7 +209,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 | `format_inferred` | The body had no field unique to one format, so ARC inferred it. Send `x-rayline-format` to state it. |
 | `tools_not_encoded` | The request's tools did not influence this decision. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
-| `episode_not_tracked` | The request named a conversation, but Decisions does not yet keep conversations; it was decided on its own. |
+| `episode_not_tracked` | Decisions does not yet keep conversations, so this lookup was decided on its own. Returned on every lookup today, with or without a conversation ID. |
 | `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
 
 ## Errors and limits
