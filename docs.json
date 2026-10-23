@@ -57,7 +57,12 @@
           {
             "group": "Start here",
             "pages": [
-              "tools/index",
+              "tools/index"
+            ]
+          },
+          {
+            "group": "Connection options",
+            "pages": [
               "tools/hosted-local",
               "rules-router/reference"
             ]
@@ -76,7 +81,10 @@
                 "pages": [
                   "rules-router/quickstart/other-agents",
                   "rules-router/quickstart/other-agents/pi",
-                  "rules-router/quickstart/other-agents/omp"
+                  "rules-router/quickstart/other-agents/omp",
+                  "rules-router/quickstart/other-agents/kilo",
+                  "rules-router/quickstart/other-agents/cline",
+                  "rules-router/quickstart/other-agents/unreal"
                 ]
               }
             ]
@@ -119,7 +127,6 @@
               "arc/index",
               "arc/models",
               "arc/quickstart",
-              "arc/responses/index",
               "arc/availability"
             ]
           },
@@ -138,8 +145,7 @@
             "group": "Model behavior",
             "pages": [
               "arc/concepts/checkpoints",
-              "arc/concepts/caching",
-              "arc/concepts/evaluation"
+              "arc/concepts/caching"
             ]
           },
           {
@@ -170,7 +176,6 @@
             "pages": [
               "arc/reference/compatibility",
               "arc/reference/generation",
-              "arc/reference/responses",
               "arc/reference/decisions",
               "arc/reference/errors"
             ]
@@ -570,6 +575,31 @@
     {
       "source": "/arc/coding-tools/other-agents",
       "destination": "/rules-router/quickstart/other-agents"
+    },
+    {
+      "source": "/arc/responses",
+      "destination": "/arc/models",
+      "permanent": true
+    },
+    {
+      "source": "/arc/reference/responses",
+      "destination": "/arc/reference/generation",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/generation-with-arc-routing-extensions",
+      "destination": "/arc/reference/generation",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/decisions:-where-would-arc-send-this-request",
+      "destination": "/api-reference/create-a-routing-decision",
+      "permanent": true
+    },
+    {
+      "source": "/arc/concepts/evaluation",
+      "destination": "/arc/models",
+      "permanent": true
     }
   ],
   "api": {

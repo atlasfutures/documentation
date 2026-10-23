@@ -2,8 +2,11 @@ openapi: 3.1.0
 info:
   title: Rayline ARC public API
   version: 0.1.0
-  description: 'Service-owned contract for ARC model ids, routing extensions and Decisions (/v1/routes). Generated from rayline_router.serving.arc_public_contract;
-    fields marked x-status: proposed await Marcin and Chi.'
+  description: 'ARC model IDs, routing extensions, and routing decisions. Generation endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
+servers:
+- url: https://api.rayline.ai
+security:
+- raylineApiKey: []
 x-arc-model-ids:
   canonical:
     arc-swift:
@@ -106,7 +109,7 @@ paths:
   /v1/routes:
     post:
       operationId: routeLookup
-      summary: 'Decisions: where would ARC send this request?'
+      summary: Create a routing decision
       description: One encode; the Swift and Sage presets always, plus the custom result at routing.value_usd. Billed once
         at the Decisions encode rate. Never trained on.
       requestBody:
@@ -115,6 +118,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RoutesRequest'
+            example:
+              model: arc-swift
+              messages:
+              - role: user
+                content: Explain how a database index works.
       responses:
         '200':
           description: The route and its alternatives.
@@ -181,7 +189,16 @@ paths:
   /v1/messages:
     post:
       operationId: createMessage
-      summary: Generation with ARC routing extensions.
+      summary: Anthropic Messages
+      description: Anthropic Messages request format with ARC model selection. The body schema below lists ARC-specific fields; include the Messages fields shown in the example.
+      parameters:
+      - name: anthropic-version
+        in: header
+        required: true
+        schema:
+          type: string
+          default: '2023-06-01'
+        example: '2023-06-01'
       x-arc-extension-only: true
       requestBody:
         required: true
@@ -189,6 +206,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
+            example:
+              model: arc-swift
+              max_tokens: 1024
+              messages:
+              - role: user
+                content: Explain how a database index works.
       responses:
         '200':
           description: The protocol's own response, unchanged.
@@ -209,7 +232,8 @@ paths:
   /v1/chat/completions:
     post:
       operationId: createChatCompletion
-      summary: Generation with ARC routing extensions.
+      summary: OpenAI Chat Completions
+      description: OpenAI Chat Completions request format with ARC model selection. The body schema below lists ARC-specific fields; include messages as shown in the example.
       x-arc-extension-only: true
       requestBody:
         required: true
@@ -217,6 +241,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
+            example:
+              model: arc-swift
+              messages:
+              - role: user
+                content: Explain how a database index works.
       responses:
         '200':
           description: The protocol's own response, unchanged.
@@ -237,7 +266,8 @@ paths:
   /v1/responses:
     post:
       operationId: createResponse
-      summary: Generation with ARC routing extensions.
+      summary: OpenAI Responses
+      description: OpenAI Responses request format with ARC model selection. Availability is rolling out; consult the ARC compatibility guide before choosing this endpoint. The body schema below lists ARC-specific fields; include input as shown in the example.
       x-arc-extension-only: true
       requestBody:
         required: true
@@ -245,6 +275,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
+            example:
+              model: arc-swift
+              input: Explain how a database index works.
       responses:
         '200':
           description: The protocol's own response, unchanged.
@@ -263,6 +296,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 components:
+  securitySchemes:
+    raylineApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Rayline API key.
   schemas:
     Alternative:
       additionalProperties: false

@@ -1,11 +1,8 @@
 ---
-title: "Generation with ARC"
+title: "Using ARC models"
 description: "Messages, Chat Completions, and Responses requests to ARC models, and the routing extension."
 icon: "message"
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
-
-<ArcPreview />
 
 ARC generates through the API your client already speaks. Set `model` to an ARC ID; ARC chooses the model and reasoning effort, runs the turn, and returns the provider's response in the same format.
 
@@ -49,3 +46,16 @@ curl https://api.rayline.ai/v1/messages \
 ```
 
 Send the same `x-conversation-id` on every turn of a conversation so ARC decides each turn in context. Errors use the same codes as [Decisions](/arc/reference/decisions#errors-and-limits).
+
+## Conversation identity
+
+An ARC request takes its conversation ID from the first of these that is present:
+
+1. The `x-conversation-id` header.
+2. The body field `prompt_cache_key`, on a request from Codex.
+
+With neither, the turn is stateless.
+
+Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is not read; send `x-conversation-id`.
+
+See [API compatibility](/arc/reference/compatibility) and [errors and limits](/arc/reference/errors).

@@ -5,9 +5,11 @@ icon: "database"
 ---
 ARC's decision context and a provider's generation context are different things. Reusing text in your application does not prove that either service served it from cache.
 
-## Responses
+<span id="responses" />
 
-The proposed launch rate card separates uncached input, cache reads, and output. The routing fee is waived for Responses. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
+## ARC models
+
+The proposed launch rate card separates uncached input, cache reads, and output. The routing fee is waived for ARC models. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
 
 ## Decisions
 
@@ -19,8 +21,5 @@ ARC also weighs your provider's cache when it decides. Moving a conversation to 
 
 Generated output may become input on a later turn. Count each actual metered event once; do not add an extra copy merely because the same text has appeared before.
 
-<Note>
-ARC is in beta. A conversation's cached context expires after a period of inactivity; do not rely on a specific retention time.
-</Note>
 
 Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the launch token categories.

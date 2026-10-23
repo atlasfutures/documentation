@@ -1,14 +1,22 @@
 ---
-title: "Other coding agents"
+title: "More agent harnesses"
 sidebarTitle: "Overview"
 description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Agent Gateway."
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
 
+<span id="planned-integrations" />
 
-<Note>These launchers need Rayline 0.2.8 or later. Check with `rayline --version`. To update, run `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+Install or update Rayline through the [official installer](/rules-router/cli). The launcher commands below require Rayline 0.2.8 or later.
 
-Rayline can launch five more coding agents against hosted Agent Gateway, the same way `rayline claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
+<span id="choose-a-connection" />
+
+<span id="use-arc-with-your-coding-agent" />
+
+## Use ARC with your agent harness
+
+Follow your tool’s guide to connect to the Rayline platform. Each guide also explains its Rayline Local option. Both paths can use cloud inference; see [hosted and local connections](/tools/hosted-local).
+
+Rayline can launch these agent harnesses against hosted Agent Gateway, the same way `rayline claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
 
 | Command | Agent | Install | Guide |
 | --- | --- | --- | --- |
@@ -97,6 +105,6 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Use ARC
 
-<ArcPreview />
+These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` for challenging coding and agent tasks, or `arc-swift` as a fast workhorse for everyday tasks, on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Check [usage](/platform/usage) after your first task.
 
-These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage` (the coding default) or `arc-swift` (cheaper and faster), on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Rayline has not yet tested each agent on ARC; send a short task first and check the request in [usage](/platform/usage).
+<span id="legacy-integrations" />

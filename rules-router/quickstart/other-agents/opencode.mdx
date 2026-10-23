@@ -1,55 +1,44 @@
 ---
-title: "opencode"
-description: "Run opencode through hosted Agent Gateway with rayline opencode."
+title: "OpenCode"
+description: "Connect OpenCode to ARC directly or through a Rayline Local gateway."
 ---
 
-<Note>Needs Rayline 0.2.8 or later. Update with `rayline update`, or `brew upgrade rayline` if you installed with Homebrew.</Note>
+<span id="verify-the-route" />
+
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
+
+<span id="choose-a-connection" />
+
+## Two ways to use ARC with OpenCode
+
+| Path | Request path | Inference |
+| --- | --- | --- |
+| Direct API | OpenCode → hosted Rayline | Cloud |
+| Rayline Local gateway | OpenCode → your gateway → hosted Rayline | Cloud |
+
+A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Rayline Local](/tools/hosted-local).
 
 ## Install
 
-Install opencode from its [install docs](https://opencode.ai/docs/#install), then sign in to Rayline:
+Install [OpenCode](https://opencode.ai/docs/#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell where you will run the tool. Keep it out of project files.
+
+## Connect directly
+
+Use a separate configuration directory. These environment settings apply to the current shell:
 
 ```bash
-rayline auth login
+mkdir -p "$HOME/.config/opencode-rayline"
+export OPENCODE_CONFIG="$HOME/.config/opencode-rayline/opencode.json"
+export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
-## Run
-
-```bash
-rayline opencode --standalone
-rayline opencode run --standalone "summarize this repo"
-rayline --env <name> opencode --standalone
-```
-
-With opencode 2, pass `--standalone`. Without it, opencode sends the work to its shared background service, which does not see the config or key that Rayline sets for this launch. Everything after `opencode` goes to opencode unchanged. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
-
-## What Rayline writes
-
-| File | Contents | Rewritten each launch |
-| --- | --- | --- |
-| `~/.config/rayline/harness/opencode/<env>/opencode.json` | A `rayline` provider using opencode's Anthropic provider, pointed at Agent Gateway, with `rayline/rayline-router` as both `model` and `small_model` | Yes |
-
-Rayline sets `OPENCODE_CONFIG` to this file. opencode merges it over your global config, so your other opencode settings still apply. Project-level opencode configs take precedence over it.
-
-## Key handling
-
-The config refers to the key as `{env:RAYLINE_KEY}`, opencode's environment substitution. The key itself is set only in opencode's process environment and is never written to disk.
-
-## Conversations
-
-Each launch is one Agent Gateway conversation: the config sends a per-launch `x-conversation-id` header. Continuing a session in a new launch with `opencode -c` or `--session` starts a new conversation.
-
-## Manual setup (without the launcher)
-
-Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
-
-Save this as `~/.config/opencode/opencode.json`, or merge its `provider` entry into your existing global or project config:
+Save this in `$OPENCODE_CONFIG`:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "rayline/rayline-router",
-  "small_model": "rayline/rayline-router",
+  "model": "rayline/arc-sage",
+  "small_model": "rayline/arc-swift",
   "provider": {
     "rayline": {
       "name": "Rayline",
@@ -60,45 +49,81 @@ Save this as `~/.config/opencode/opencode.json`, or merge its `provider` entry i
         "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
       },
       "models": {
-        "rayline-router": {
-          "name": "Rayline router",
-          "limit": { "context": 200000, "output": 32000 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] },
-          "reasoning": true,
-          "tool_call": true,
-          "attachment": true
-        }
+        "arc-sage": { "name": "ARC Sage", "limit": { "context": 200000, "output": 2048 }, "reasoning": true, "tool_call": true },
+        "arc-swift": { "name": "ARC Swift", "limit": { "context": 200000, "output": 2048 }, "reasoning": true, "tool_call": true }
       }
     }
   }
 }
 ```
 
-- `baseURL` includes `/v1`, because opencode's Anthropic provider adds only `/messages`.
-- `{env:NAME}` is opencode's environment substitution, so neither the key nor the conversation ID is stored in the file.
-- `small_model` sends opencode's background calls, such as session titles, through Agent Gateway too. Remove it to let opencode choose its own small model.
-- The model `limit` tells opencode when to compact; keep it.
+OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
-To keep this separate from your normal config, save it anywhere and set `OPENCODE_CONFIG` to its path, as the launcher does.
-
-opencode 2 runs a shared background service, and the `opencode` command sends work to it. That service reads configuration and environment variables from the shell that first started it, so `RAYLINE_KEY`, `RAYLINE_CONV_ID`, and `OPENCODE_CONFIG` in your current shell do not reach it. Pass `--standalone` to run with a private server that uses your current shell:
+Start with Sage:
 
 ```bash
-opencode --standalone
-opencode run --standalone "Reply with the word ready."
+opencode --standalone --model rayline/arc-sage
 ```
 
-You should get a reply. Without `--standalone`, if the service was started without these variables, requests go out with no key, or through whatever model the service already uses.
+For Swift, use `opencode --standalone --model rayline/arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
 
-## Known limitations
+## Choose ARC in the web interface
 
-- With opencode 2, `rayline opencode` needs `--standalone`; see [Run](#run).
-- A project-level opencode config that sets its own model or provider overrides Rayline's.
-- Edits to Rayline's `opencode.json` are lost on the next launch. Put your own settings in opencode's global or project config.
+After adding the provider configuration, open **Settings → Models**, search for `arc-`, and enable **arc-sage** and **arc-swift**. This makes both models available in the session picker.
+
+![Enable ARC Sage and ARC Swift in OpenCode Settings → Models](/images/tools/setup/opencode-model-settings.webp)
+
+Start a new session and open the model picker below the prompt. Choose **arc-sage** for challenging tasks or **arc-swift** for everyday work.
+
+![Choose ARC Sage or ARC Swift in the OpenCode session model picker](/images/tools/setup/opencode-model-picker.webp)
+
+## Use a Rayline Local gateway
+
+First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+
+| Setting | Rayline platform | Rayline Local |
+| --- | --- | --- |
+| `baseURL` | `https://api.rayline.ai/v1` | `http://127.0.0.1:23811/v1` |
+| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the gateway below |
+
+Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+
+## Try your first task
+
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
+
+<span id="use-arc-directly" />
+<span id="verify-your-setup" />
+<span id="launcher-availability" />
+<span id="run" />
+<span id="what-rayline-writes" />
+<span id="key-handling" />
+<span id="conversations" />
+<span id="manual-setup-without-the-launcher" />
+<span id="known-limitations" />
+
+## Launcher and session behavior
+
+`rayline opencode` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+
+The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+
+Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
 
 ## Troubleshooting
 
-- **`opencode` not found on PATH.** Install opencode and check `which opencode`.
-- **Requests never reach Agent Gateway, or use another model.** Add `--standalone`, so opencode does not hand the work to a background service started without Rayline's config.
-- **Requests go to another provider.** Look for `model` or `provider` settings in the project's opencode config.
-- See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
+- **Another provider or model is used:** check project overrides and the active configuration directory.
+- **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
+- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- See [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).
+
+## Configurable ARC
+
+To use configurable ARC, add a model entry named `arc-1.0` alongside the Sage and Swift
+entries above, then select it with `--model rayline/arc-1.0`.
+For Local, include `arc-1.0` in the gateway endpoint’s model list as well.
+
+Configurable ARC uses the served model’s catalog price rather than a fixed tier
+rate; see [Configure ARC routing](/arc/gateway-routing).

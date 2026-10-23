@@ -3,21 +3,12 @@ title: "Claude Code in Claude Desktop"
 sidebarTitle: "Claude Desktop"
 description: "Run Claude Desktop's Code sessions on ARC with rayline claude-desktop."
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
-
-<ArcPreview />
-
-<Note>
-`rayline claude-desktop` ships in the Rayline release after 0.2.9. Check with `rayline --version`, and update with `rayline update`.
-</Note>
-
-<Warning>
-**This switches the whole Desktop app away from your Claude subscription.** Claude Desktop reaches a gateway only through its third-party inference mode, which signs the app out of your claude.ai account while it is active. Chat and Cowork are off in that mode; only Code runs, on ARC. [Switch back](#switch-back-to-your-subscription) at any time by signing out and signing in with Anthropic. Your subscription conversations are kept. Claude Code in your terminal keeps its own login and is not affected.
-</Warning>
 
 `rayline claude-desktop` runs a small local router for Desktop on `http://127.0.0.1:20831` and gives you a configuration file to import. The import adds two models to Desktop's model picker, **arc-sage** and **arc-swift**. Your Rayline key stays in the router. Desktop gets a random token that only unlocks this router on your machine; the router refuses requests without it, as well as requests from web pages.
 
 ARC is not a Claude model, and Rayline isn't affiliated with Anthropic. Desktop requires Claude-style model IDs, so the import uses `claude-arc-sage` and `claude-arc-swift` internally; you never type them.
+
+The `claude-desktop` launcher is not included in the current Rayline release.
 
 ## Start the router
 
@@ -42,12 +33,10 @@ Without the service, run `rayline claude-desktop` again after a restart.
 <Step title="Turn on developer mode">
 Open Claude Desktop. From the menu bar, choose **Help → Troubleshooting → Enable Developer Mode**.
 
-{/* screenshot: images/tools/claude-desktop/desktop-01-enable-developer-mode.png */}
 </Step>
 <Step title="Open the third-party inference settings">
 Choose **Developer → Configure Third-Party Inference…**.
 
-{/* screenshot: images/tools/claude-desktop/desktop-02-developer-menu.png */}
 </Step>
 <Step title="Import the Rayline configuration">
 Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-desktop-import.json`. Check the imported values:
@@ -60,15 +49,13 @@ Choose **Import configuration** and select `~/.rayline/claude-desktop/claude-des
 | Models | **arc-sage** (the default) and **arc-swift** |
 | Model discovery | Off |
 
-{/* screenshot: images/tools/claude-desktop/desktop-03-connection.png, desktop-04-models.png */}
 </Step>
 <Step title="Apply and restart">
 Click **Apply Changes**, then **Save & Restart**. On the sign-in screen, continue with the configured gateway instead of signing in with Anthropic.
 </Step>
 <Step title="Use ARC in Code">
-Open **Code** and choose **arc-sage** in the model picker, or **arc-swift** for the cheaper, faster tier. You can switch between them at any time. Send a short task to check the connection.
+Open **Code** and choose **arc-sage** for challenging tasks or **arc-swift** as a fast everyday workhorse. You can switch between them at any time. Send a short task to check the connection.
 
-{/* screenshot: images/tools/claude-desktop/desktop-07-model-picker.png, desktop-08-code-turn.png */}
 </Step>
 </Steps>
 
@@ -86,7 +73,6 @@ rayline claude-desktop validate
 1. In Claude Desktop, open the account menu at the bottom left, which shows **Gateway**, and choose **Sign out**.
 2. On the sign-in screen, sign in with your Anthropic account.
 
-{/* screenshot: images/tools/claude-desktop/desktop-09-sign-out.png */}
 
 Your claude.ai conversations and settings return. The imported configuration stays in **Developer → Configure Third-Party Inference…**, so you can switch to ARC again by signing out and continuing with the gateway. `rayline claude-desktop off` prints these steps and stops the router.
 
@@ -97,6 +83,10 @@ rayline claude-desktop uninstall
 ```
 
 This stops the router, removes the login service and deletes `~/.rayline/claude-desktop`. It does not change Desktop's own settings; delete the gateway configuration in **Developer → Configure Third-Party Inference…** if you no longer want it.
+
+## Subscription and feature availability
+
+Third-party inference mode uses Rayline for Code sessions. To return to your Claude subscription, sign out of the gateway and sign in with Anthropic. Your subscription conversations are preserved, and your terminal Claude Code login is unchanged.
 
 ## Limits
 

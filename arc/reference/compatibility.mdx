@@ -3,9 +3,6 @@ title: "Availability and compatibility"
 description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
-import ArcPreview from '/snippets/arc-preview.mdx';
-
-<ArcPreview />
 
 Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift` or `arc-sage`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
 
@@ -21,15 +18,12 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | Streaming | No; each decision is one JSON response |
 | Tools in the request | Accepted; check the response `warnings` for whether they influenced the decision |
 
-## Coding tools
+<span id="coding-tools" />
 
-| Client | API it uses | ARC support |
-| --- | --- | --- |
-| Claude Code (CLI) | Anthropic Messages | Yes; see [Claude Code](/rules-router/quickstart/claude-code#use-arc-sage-or-swift) |
-| Claude Code in Claude Desktop | Anthropic Messages, through Desktop's gateway mode | Yes, with `rayline claude-desktop`; see [Claude Desktop](/tools/claude-desktop) |
-| Codex CLI and Codex desktop | OpenAI Responses | Not yet; ARC does not serve Responses requests on `https://api.rayline.ai` |
-| Other agents on Anthropic Messages | Anthropic Messages | Not yet tested; see [other agents](/rules-router/quickstart/other-agents#use-arc) |
+## Agent harnesses
 
-A protocol name is not a capability: a client that speaks OpenAI Responses reaches ARC only once ARC serves that API.
+Follow the [guide for your tool](/tools) for its provider settings, ARC model IDs, and connection options. The [client compatibility guide](/rules-router/reference) explains how the Rayline platform and Rayline Local connect to different clients.
 
-See [Responses](/arc/reference/responses), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).
+Cline's Local connection requires explicit model mapping and provider-native Web Search to be off. See the [Cline setup](/rules-router/quickstart/other-agents/cline#rayline-local).
+
+See [using ARC models](/arc/reference/generation), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).
