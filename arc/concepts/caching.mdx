@@ -15,7 +15,7 @@ The proposed launch rate card separates uncached input, cache reads, and output.
 
 The launch rate card has input and cache-read categories only. Your inference provider meters its own input, caches, and output separately.
 
-When you send the same `x-conversation-id` on every turn, ARC keeps the context it has already read and encodes only what is new. Each response reports the split in `usage.encoded_input_tokens` and `usage.cache_read_tokens`. Without a conversation ID, every request is read in full.
+Today ARC reads every Decisions request in full, with or without `x-conversation-id`: each response reports all of it in `usage.encoded_input_tokens`, and `usage.cache_read_tokens` is 0. Re-using a conversation's already-read context, reported as `cache_read_tokens` and billed at the cache-read rate, is planned; this page will say when it applies.
 
 ARC also weighs your provider's cache when it decides. Moving a conversation to a different model can discard that provider's cached prefix, so staying on the current model is often the cheaper choice. See [conversations](/arc/reference/decisions#conversations).
 

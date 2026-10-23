@@ -100,8 +100,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
     "cache_write_per_mtok": 0.435
   },
   "warnings": [],
-  "episode": { "turn_index": 4, "stayed": true },
-  "usage": { "encoded_input_tokens": 1840, "cache_read_tokens": 1200 },
+  "usage": { "encoded_input_tokens": 3040, "cache_read_tokens": 0 },
   "latency_ms": 212,
   "presets": {
     "swift": {
@@ -140,7 +139,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
 | `warnings` | array of strings | Always present, usually empty. See [Warnings](#warnings). |
-| `episode` | object | Present when the request carried a [conversation ID](#conversation-identity). `turn_index` counts the conversation's turns. `stayed` is `true` when ARC kept the previous turn's worker. |
+| `episode` | object | Reserved for conversation tracking, which Decisions does not yet do; absent today (see [conversations](#conversations)). When present, `turn_index` counts the conversation's turns and `stayed` is `true` when ARC kept the previous turn's worker. |
 | `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until Decisions reuses cached prefixes. |
 | `latency_ms` | integer | Time ARC spent deciding. |
 | `presets` | object | The decisions at ARC Swift and ARC Sage. See [Presets](#presets). |
@@ -180,12 +179,9 @@ Treat `unsupported` as not applied: ARC decided without that control, and the re
 
 ## Conversations
 
-Send the same `x-conversation-id` on every turn of a conversation. ARC then:
+Decisions does not yet keep conversations: each lookup is decided on its own, as if it were the conversation's first turn, and ARC reads the whole request every time. A lookup that sends `x-conversation-id` returns the `episode_not_tracked` warning, the response has no `episode`, and `usage.cache_read_tokens` is 0.
 
-- Decides each turn in light of the turns before it, including whether to stay on the current model. Switching models mid-conversation can discard a provider's prompt cache, and ARC accounts for that cost.
-- Re-uses the context it already encoded, so a later turn is mostly reported as `cache_read_tokens` rather than `encoded_input_tokens`.
-
-Without a conversation ID, each request is decided on its own and the response has no `episode`.
+When conversation tracking ships, sending the same `x-conversation-id` on every turn will let ARC decide each turn in light of the turns before it, including whether to stay on the current model, and re-use the context it already encoded, reported as `cache_read_tokens`. Sending the header today is harmless.
 
 Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
 
@@ -202,7 +198,7 @@ With neither, the request is stateless.
 
 The body field `metadata.user_id` is not read. Anthropic defines it as a per-user identifier, and one ID for every conversation of a user would decide those conversations in each other's context. Send `x-conversation-id` to identify the conversation.
 
-The same order applies to a routed turn, so a lookup and the turn it precedes land on the same episode.
+The same order applies to a routed turn. Once Decisions keeps conversations, a lookup and the turn it precedes will land on the same episode.
 
 ## Warnings
 
@@ -213,6 +209,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 | `format_inferred` | The body had no field unique to one format, so ARC inferred it. Send `x-rayline-format` to state it. |
 | `tools_not_encoded` | The request's tools did not influence this decision. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
+| `episode_not_tracked` | The request named a conversation, but Decisions does not yet keep conversations; it was decided on its own. |
 | `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
 
 ## Errors and limits
