@@ -130,6 +130,48 @@ x-arc-error-codes:
   execution_no_feasible_target:
     status: 409
     type: invalid_request_error
+  execution_counts_inconsistent:
+    status: 400
+    type: invalid_request_error
+  execution_attribution_invalid:
+    status: 400
+    type: invalid_request_error
+  execution_unknown_action:
+    status: 400
+    type: invalid_request_error
+  execution_last_served_conflict:
+    status: 400
+    type: invalid_request_error
+  execution_identity_mismatch:
+    status: 409
+    type: invalid_request_error
+  execution_hold_conflict:
+    status: 409
+    type: invalid_request_error
+  execution_hold_unavailable:
+    status: 409
+    type: invalid_request_error
+  execution_hold_infeasible:
+    status: 409
+    type: invalid_request_error
+  price_profile_invalid:
+    status: 400
+    type: invalid_request_error
+  price_profile_conflict:
+    status: 400
+    type: invalid_request_error
+  price_profile_forbidden:
+    status: 403
+    type: permission_error
+  price_profile_not_found:
+    status: 404
+    type: not_found_error
+  price_profile_archived:
+    status: 409
+    type: invalid_request_error
+  price_profile_unavailable:
+    status: 503
+    type: api_error
 paths:
   /v1/routes:
     post:
@@ -156,10 +198,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoutesResponse'
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, execution_invalid, invalid_body,
-            policy_invalid, policy_preset_not_admitted, policy_schedule_not_admitted, price_leg_invalid, price_leg_missing,
-            prices_invalid, prices_not_supported, response_fields_invalid, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, execution_attribution_invalid,
+            execution_counts_inconsistent, execution_invalid, execution_last_served_conflict, execution_unknown_action, invalid_body,
+            policy_invalid, policy_preset_not_admitted, policy_schedule_not_admitted, price_leg_invalid, price_profile_conflict,
+            price_profile_invalid, price_leg_missing, prices_invalid, prices_not_supported, response_fields_invalid, routing_invalid,
+            routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model, value_invalid,
+            value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -171,13 +215,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served.'
+          description: 'Error; `error.code` is one of: model_not_served, price_profile_not_found.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '409':
-          description: 'Error; `error.code` is one of: execution_no_feasible_target, non_arc_lookup.'
+          description: 'Error; `error.code` is one of: execution_hold_conflict, execution_hold_infeasible, execution_hold_unavailable,
+            execution_identity_mismatch, execution_no_feasible_target, non_arc_lookup, price_profile_archived.'
           content:
             application/json:
               schema:
@@ -195,7 +240,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '503':
-          description: 'Error; `error.code` is one of: unavailable.'
+          description: 'Error; `error.code` is one of: price_profile_unavailable, unavailable.'
           content:
             application/json:
               schema:
@@ -208,6 +253,12 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '529':
           description: 'Error; `error.code` is one of: capacity.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'Error; `error.code` is one of: price_profile_forbidden.'
           content:
             application/json:
               schema:
@@ -452,7 +503,7 @@ components:
           - type: boolean
           - type: 'null'
           default: null
-          description: 'true: only the priced models are candidates. Requires `prices`.'
+          description: 'true: only the priced models are candidates. Requires `prices` or `price_profile_id`.'
           title: Exclusive
           x-status: proposed
         price_profile_id:
@@ -828,6 +879,12 @@ components:
         model_choice:
           anyOf:
           - $ref: '#/components/schemas/ModelChoice'
+          - type: 'null'
+          default: null
+          x-status: proposed
+        provenance:
+          anyOf:
+          - $ref: '#/components/schemas/ResultProvenance'
           - type: 'null'
           default: null
           x-status: proposed
@@ -1434,7 +1491,8 @@ components:
       x-status: proposed
     RoutingPolicy:
       additionalProperties: false
-      description: '``routing.policy``: a versioned preset and validated overrides. No DSL.'
+      description: '``routing.policy``: a versioned preset and validated overrides. No DSL. Omit a member to keep the preset
+        default; null is refused (policy_invalid).'
       properties:
         preset:
           enum:
@@ -1444,10 +1502,7 @@ components:
           title: Preset
           type: string
         overrides:
-          anyOf:
-          - $ref: '#/components/schemas/RoutingPolicyOverrides'
-          - type: 'null'
-          default: null
+          $ref: '#/components/schemas/RoutingPolicyOverrides'
       required:
       - preset
       title: RoutingPolicy
@@ -1457,66 +1512,51 @@ components:
       additionalProperties: false
       properties:
         schedule:
-          anyOf:
-          - $ref: '#/components/schemas/RoutingSchedule'
-          - type: 'null'
-          default: null
+          $ref: '#/components/schemas/RoutingSchedule'
         selection:
-          anyOf:
-          - $ref: '#/components/schemas/RoutingSelection'
-          - type: 'null'
-          default: null
+          $ref: '#/components/schemas/RoutingSelection'
       title: RoutingPolicyOverrides
       type: object
+      description: Omit a member to keep the preset default; null is refused (policy_invalid).
     RoutingSchedule:
       additionalProperties: false
       description: Per dimension, the switch-point classes at which it may change; an omitted dimension keeps the preset's.
+        Omit a member to keep the preset default; null is refused (policy_invalid).
       properties:
         model:
-          anyOf:
-          - items:
-              enum:
-              - cache_boundaries
-              - user_messages
-              - all_turns
-              type: string
-            type: array
-          - type: 'null'
-          default: null
           title: Model
+          items:
+            enum:
+            - cache_boundaries
+            - user_messages
+            - all_turns
+            type: string
+          type: array
         thinking:
-          anyOf:
-          - items:
-              enum:
-              - cache_boundaries
-              - user_messages
-              - all_turns
-              type: string
-            type: array
-          - type: 'null'
-          default: null
           title: Thinking
+          items:
+            enum:
+            - cache_boundaries
+            - user_messages
+            - all_turns
+            type: string
+          type: array
       title: RoutingSchedule
       type: object
     RoutingSelection:
       additionalProperties: false
-      description: '``prefer-local``''s thresholds; an omitted one keeps the preset''s (`SELECTION_DEFAULTS`).'
+      description: '``prefer-local``''s thresholds; an omitted one keeps the preset''s (`SELECTION_DEFAULTS`). Omit a member
+        to keep the preset default; null is refused (policy_invalid).'
       properties:
         min_p_pass:
-          anyOf:
-          - maximum: 1
-            minimum: 0
-            type: number
-          - type: 'null'
-          default: null
           title: Min P Pass
+          maximum: 1
+          minimum: 0
+          type: number
         max_rest_tokens:
-          anyOf:
-          - exclusiveMinimum: 0
-            type: integer
-          - type: 'null'
-          default: null
           title: Max Rest Tokens
+          exclusiveMinimum: 0
+          type: integer
       title: RoutingSelection
       type: object
     TokenLegs:
@@ -1585,3 +1625,20 @@ components:
       - id
       - version
       - content_hash
+    ResultProvenance:
+      additionalProperties: false
+      properties:
+        package_sha256:
+          pattern: ^[a-f0-9]{64}$
+          title: Package Sha256
+          type: string
+        point_id:
+          pattern: ^[a-f0-9]{64}$
+          title: Point Id
+          type: string
+      required:
+      - package_sha256
+      - point_id
+      title: ResultProvenance
+      type: object
+      x-status: proposed

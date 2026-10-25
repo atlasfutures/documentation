@@ -44,7 +44,7 @@ You need a local inference server with your Qwen model, such as llama.cpp, Ollam
   </Step>
 </Steps>
 
-That is the whole setup. With no further configuration, Rayline Local sends the **hybrid default** policy, `arc-policy.hybrid-default.v1`, on every decision:
+That is the whole setup. With no further configuration, Rayline Local sends the **hybrid default** policy, `arc-policy.hybrid-default.v1`, on every decision, unless your profile sets its own policy:
 
 - **The model** may change at cache boundaries: task start, a subagent start, a compaction, or a typed user turn whose cache has gone cold.
 - **The reasoning configuration** may change on every turn.
@@ -66,7 +66,7 @@ To change the defaults, add a `hybrid.routing` block to `~/.config/rayline/setti
 | Key | Meaning |
 | --- | --- |
 | `policy` | `utility` (the default) uses the hybrid default policy. `prefer_local` uses the local model whenever ARC predicts it will pass, and utility selection over the cloud models otherwise. |
-| `min_p_pass` | The prefer-local threshold: ARC's predicted pass probability, between 0 and 1. The default is 0.65. Valid only with `prefer_local`. |
+| `min_p_pass` | The prefer-local threshold: ARC's predicted pass probability, greater than 0 and less than 1. The default is 0.65. Valid only with `prefer_local`. |
 | `schedule` | When the model (`model`) and the reasoning configuration (`thinking`) may change. Each is a list of `cache_boundaries`, `user_messages` (any typed user turn), and `all_turns`. |
 | `value_usd` | Your V: what a successful task is worth to you, from 0.1 to 5 US dollars. A higher V favours more capable, more expensive models. |
 
