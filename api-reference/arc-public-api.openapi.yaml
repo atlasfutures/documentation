@@ -2,7 +2,8 @@ openapi: 3.1.0
 info:
   title: Rayline ARC public API
   version: 0.1.0
-  description: 'ARC model IDs, routing extensions, and routing decisions. Generation endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
+  description: ARC model IDs, routing extensions, and routing decisions. Generation endpoints document ARC-specific fields;
+    use the corresponding protocol schema for the complete request body.
 servers:
 - url: https://api.rayline.ai
 security:
@@ -105,6 +106,30 @@ x-arc-error-codes:
   capacity:
     status: 529
     type: overloaded_error
+  response_fields_invalid:
+    status: 400
+    type: invalid_request_error
+  policy_not_supported:
+    status: 400
+    type: invalid_request_error
+  policy_invalid:
+    status: 400
+    type: invalid_request_error
+  policy_preset_not_admitted:
+    status: 400
+    type: invalid_request_error
+  policy_schedule_not_admitted:
+    status: 400
+    type: invalid_request_error
+  execution_not_supported:
+    status: 400
+    type: invalid_request_error
+  execution_invalid:
+    status: 400
+    type: invalid_request_error
+  execution_no_feasible_target:
+    status: 409
+    type: invalid_request_error
 paths:
   /v1/routes:
     post:
@@ -131,8 +156,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoutesResponse'
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
+          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, execution_invalid, invalid_body,
+            policy_invalid, policy_preset_not_admitted, policy_schedule_not_admitted, price_leg_invalid, price_leg_missing,
+            prices_invalid, prices_not_supported, response_fields_invalid, routing_invalid, routing_unknown_member, temperature_invalid,
             tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
           content:
             application/json:
@@ -151,7 +177,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '409':
-          description: 'Error; `error.code` is one of: non_arc_lookup.'
+          description: 'Error; `error.code` is one of: execution_no_feasible_target, non_arc_lookup.'
           content:
             application/json:
               schema:
@@ -190,7 +216,8 @@ paths:
     post:
       operationId: createMessage
       summary: Anthropic Messages
-      description: Anthropic Messages request format with ARC model selection. The body schema below lists ARC-specific fields; include the Messages fields shown in the example.
+      description: Anthropic Messages request format with ARC model selection. The body schema below lists ARC-specific fields;
+        include the Messages fields shown in the example.
       parameters:
       - name: anthropic-version
         in: header
@@ -217,8 +244,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
+            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
+            value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -233,7 +261,8 @@ paths:
     post:
       operationId: createChatCompletion
       summary: OpenAI Chat Completions
-      description: OpenAI Chat Completions request format with ARC model selection. The body schema below lists ARC-specific fields; include messages as shown in the example.
+      description: OpenAI Chat Completions request format with ARC model selection. The body schema below lists ARC-specific
+        fields; include messages as shown in the example.
       x-arc-extension-only: true
       requestBody:
         required: true
@@ -251,8 +280,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
+            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
+            value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -267,7 +297,9 @@ paths:
     post:
       operationId: createResponse
       summary: OpenAI Responses
-      description: OpenAI Responses request format with ARC model selection. Availability is rolling out; consult the ARC compatibility guide before choosing this endpoint. The body schema below lists ARC-specific fields; include input as shown in the example.
+      description: OpenAI Responses request format with ARC model selection. Availability is rolling out; consult the ARC
+        compatibility guide before choosing this endpoint. The body schema below lists ARC-specific fields; include input
+        as shown in the example.
       x-arc-extension-only: true
       requestBody:
         required: true
@@ -283,8 +315,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
+            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
+            value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -422,6 +455,29 @@ components:
           description: 'true: only the priced models are candidates. Requires `prices`.'
           title: Exclusive
           x-status: proposed
+        response_fields:
+          description: 'Opt-in response members. `predictions`: each result''s Stage-1 model choice with its predicted pass
+            probability, rest-of-episode tokens and cost, and the offered candidates'' table.'
+          items:
+            const: predictions
+            type: string
+          minItems: 1
+          title: Response Fields
+          type: array
+          x-status: proposed
+        policy:
+          $ref: '#/components/schemas/RoutingPolicy'
+          description: 'A versioned policy preset and small overrides (per-dimension schedule classes). Absent: exactly today''s
+            behaviour. Rayline Local sends arc-policy.hybrid-default.v1 explicitly.'
+          title: Policy
+        execution:
+          type: object
+          additionalProperties: true
+          title: Execution
+          x-status: proposed
+          description: 'For executors, not people: the execution facts (event, history, cache and capacity per target) of
+            a caller that runs turns itself, version arc-execution-context.v2. Rayline Local fills it in. Changes only this
+            caller''s results; never billed, persisted or trained on. Refused on generation requests.'
       title: DecisionsRouting
       type: object
       x-status: proposed
@@ -756,6 +812,18 @@ components:
           - $ref: '#/components/schemas/ResultTemperature'
           - type: 'null'
           default: null
+        model_choice:
+          anyOf:
+          - $ref: '#/components/schemas/ModelChoice'
+          - type: 'null'
+          default: null
+          x-status: proposed
+        receipt:
+          anyOf:
+          - $ref: '#/components/schemas/ResultReceipt'
+          - type: 'null'
+          default: null
+          x-status: proposed
       required:
       - model
       - worker
@@ -871,6 +939,22 @@ components:
           - type: 'null'
           default: null
           x-status: proposed
+        candidates:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Candidate'
+            minItems: 1
+            type: array
+          - type: 'null'
+          default: null
+          title: Candidates
+          x-status: proposed
+        candidates_context:
+          anyOf:
+          - $ref: '#/components/schemas/CandidatesContext'
+          - type: 'null'
+          default: null
+          x-status: proposed
       required:
       - route_id
       - object
@@ -907,6 +991,18 @@ components:
           - $ref: '#/components/schemas/PricesEcho'
           - type: 'null'
           default: null
+        response_fields:
+          anyOf:
+          - $ref: '#/components/schemas/EchoStatus'
+          - type: 'null'
+          default: null
+          x-status: proposed
+        policy:
+          anyOf:
+          - $ref: '#/components/schemas/PolicyEcho'
+          - type: 'null'
+          default: null
+          x-status: proposed
         unapplied_keys:
           default: []
           items:
@@ -959,4 +1055,484 @@ components:
       - mode
       - budget_tokens
       title: Thinking
+      type: object
+    Candidate:
+      additionalProperties: false
+      description: 'One Stage-1 candidate offered to this request (``candidates[]``): a model in the policy''s naming, and
+        its
+
+        effort where the package chooses model+effort.'
+      properties:
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        effort:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Effort
+        prediction:
+          $ref: '#/components/schemas/Prediction'
+      required:
+      - model
+      - effort
+      - prediction
+      title: Candidate
+      type: object
+      x-status: proposed
+    CandidatesContext:
+      additionalProperties: false
+      properties:
+        boundary:
+          enum:
+          - task_start
+          - user_message
+          - subagent_start
+          - compaction
+          title: Boundary
+          type: string
+        selector_id:
+          minLength: 1
+          title: Selector Id
+          type: string
+        provenance:
+          additionalProperties:
+            pattern: ^[a-f0-9]{64}$
+            type: string
+          propertyNames:
+            const: package_sha256
+          title: Provenance
+          type: object
+      required:
+      - boundary
+      - selector_id
+      - provenance
+      title: CandidatesContext
+      type: object
+      x-status: proposed
+    ModelChoice:
+      additionalProperties: false
+      description: The Stage-1 candidate a result chose, with its row's prediction.
+      properties:
+        model:
+          minLength: 1
+          title: Model
+          type: string
+        effort:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Effort
+        prediction:
+          $ref: '#/components/schemas/Prediction'
+      required:
+      - model
+      - effort
+      - prediction
+      title: ModelChoice
+      type: object
+      x-status: proposed
+    PolicyEcho:
+      additionalProperties: false
+      description: '``routing.policy`` echo: whether the cell applied it, and the preset as sent.'
+      properties:
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+        preset:
+          enum:
+          - arc-policy.package-default.v1
+          - arc-policy.hybrid-default.v1
+          - arc-policy.prefer-local.v1
+          title: Preset
+          type: string
+      required:
+      - status
+      - preset
+      title: PolicyEcho
+      type: object
+      x-status: proposed
+    Prediction:
+      additionalProperties: false
+      description: 'One head''s prediction for one candidate or action, from the policy itself: nothing here is recomputed
+        from
+
+        catalog rates. ``cost_usd`` is ``tokens`` priced in the result''s price world (``RouteResult.prices``); null when
+        any
+
+        leg it needs is unknown.'
+      properties:
+        success:
+          anyOf:
+          - maximum: 1
+            minimum: 0
+            type: number
+          - type: 'null'
+          title: Success
+        success_head:
+          const: stage_one_p_pass
+          title: Success Head
+          type: string
+        tokens:
+          anyOf:
+          - $ref: '#/components/schemas/TokenLegs'
+          - type: 'null'
+        cost_usd:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Cost Usd
+        horizon:
+          const: rest_of_episode
+          title: Horizon
+          type: string
+      required:
+      - success
+      - success_head
+      - tokens
+      - cost_usd
+      - horizon
+      title: Prediction
+      type: object
+      x-status: proposed
+    ReceiptDecidedBy:
+      additionalProperties: false
+      properties:
+        model:
+          anyOf:
+          - enum:
+            - schedule
+            - held
+            - capacity_handoff
+            - held_unavailable
+            - prefer_local_threshold
+            - utility_fallback
+            type: string
+          - type: 'null'
+          title: Model
+        thinking:
+          enum:
+          - schedule
+          - held
+          title: Thinking
+          type: string
+      required:
+      - model
+      - thinking
+      title: ReceiptDecidedBy
+      type: object
+      x-status: proposed
+    ReceiptEligible:
+      additionalProperties: false
+      properties:
+        model:
+          anyOf:
+          - enum:
+            - cache_boundaries
+            - user_messages
+            - all_turns
+            type: string
+          - type: 'null'
+          title: Model
+        thinking:
+          anyOf:
+          - enum:
+            - cache_boundaries
+            - user_messages
+            - all_turns
+            type: string
+          - type: 'null'
+          title: Thinking
+      required:
+      - model
+      - thinking
+      title: ReceiptEligible
+      type: object
+      x-status: proposed
+    ReceiptExcluded:
+      additionalProperties: false
+      properties:
+        action_id:
+          pattern: ^[a-f0-9]{64}$
+          title: Action Id
+          type: string
+        reason:
+          enum:
+          - context_capacity
+          - runtime_unavailable
+          - capacity_unknown_local
+          title: Reason
+          type: string
+      required:
+      - action_id
+      - reason
+      title: ReceiptExcluded
+      type: object
+      x-status: proposed
+    ReceiptSelection:
+      additionalProperties: false
+      description: A prefer-local decision's comparison (`arc_policy_contract.SelectionRecord`).
+      properties:
+        rule:
+          const: prefer_local
+          title: Rule
+          type: string
+        min_p_pass:
+          title: Min P Pass
+          type: number
+        max_rest_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Rest Tokens
+        local:
+          items:
+            $ref: '#/components/schemas/ReceiptSelectionCompared'
+          title: Local
+          type: array
+        outcome:
+          enum:
+          - prefer_local_threshold
+          - utility_fallback
+          title: Outcome
+          type: string
+      required:
+      - rule
+      - min_p_pass
+      - max_rest_tokens
+      - local
+      - outcome
+      title: ReceiptSelection
+      type: object
+      x-status: proposed
+    ReceiptSelectionCompared:
+      additionalProperties: false
+      properties:
+        action_id:
+          pattern: ^[a-f0-9]{64}$
+          title: Action Id
+          type: string
+        p_pass:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: P Pass
+        rest_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rest Tokens
+        eligible:
+          title: Eligible
+          type: boolean
+      required:
+      - action_id
+      - p_pass
+      - rest_tokens
+      - eligible
+      title: ReceiptSelectionCompared
+      type: object
+      x-status: proposed
+    ResultReceipt:
+      additionalProperties: false
+      description: 'How one result was decided; present only when the request sent ``routing.policy`` or a v2
+
+        ``routing.execution`` (a v1 envelope gets no receipt). ``capacity_unknown``: the offered actions admitted
+
+        without a capacity verdict (``fits: null`` or no fact at all).'
+      properties:
+        action_id:
+          pattern: ^[a-f0-9]{64}$
+          title: Action Id
+          type: string
+        control_id:
+          anyOf:
+          - pattern: ^[a-f0-9]{64}$
+            type: string
+          - type: 'null'
+          title: Control Id
+        policy:
+          anyOf:
+          - enum:
+            - arc-policy.package-default.v1
+            - arc-policy.hybrid-default.v1
+            - arc-policy.prefer-local.v1
+            type: string
+          - type: 'null'
+          title: Policy
+        decided_by:
+          $ref: '#/components/schemas/ReceiptDecidedBy'
+        eligible:
+          $ref: '#/components/schemas/ReceiptEligible'
+        held_from:
+          anyOf:
+          - pattern: ^[a-f0-9]{64}$
+            type: string
+          - type: 'null'
+          title: Held From
+        excluded:
+          items:
+            $ref: '#/components/schemas/ReceiptExcluded'
+          title: Excluded
+          type: array
+        capacity_unknown:
+          items:
+            pattern: ^[a-f0-9]{64}$
+            type: string
+          title: Capacity Unknown
+          type: array
+        basis:
+          anyOf:
+          - enum:
+            - explicit_client
+            - marker_inferred
+            - service_inferred
+            type: string
+          - type: 'null'
+          title: Basis
+        selection:
+          anyOf:
+          - $ref: '#/components/schemas/ReceiptSelection'
+          - type: 'null'
+          default: null
+      required:
+      - action_id
+      - control_id
+      - policy
+      - decided_by
+      - eligible
+      - held_from
+      - excluded
+      - capacity_unknown
+      - basis
+      title: ResultReceipt
+      type: object
+      x-status: proposed
+    RoutingPolicy:
+      additionalProperties: false
+      description: '``routing.policy``: a versioned preset and validated overrides. No DSL.'
+      properties:
+        preset:
+          enum:
+          - arc-policy.package-default.v1
+          - arc-policy.hybrid-default.v1
+          - arc-policy.prefer-local.v1
+          title: Preset
+          type: string
+        overrides:
+          anyOf:
+          - $ref: '#/components/schemas/RoutingPolicyOverrides'
+          - type: 'null'
+          default: null
+      required:
+      - preset
+      title: RoutingPolicy
+      type: object
+      x-status: proposed
+    RoutingPolicyOverrides:
+      additionalProperties: false
+      properties:
+        schedule:
+          anyOf:
+          - $ref: '#/components/schemas/RoutingSchedule'
+          - type: 'null'
+          default: null
+        selection:
+          anyOf:
+          - $ref: '#/components/schemas/RoutingSelection'
+          - type: 'null'
+          default: null
+      title: RoutingPolicyOverrides
+      type: object
+    RoutingSchedule:
+      additionalProperties: false
+      description: Per dimension, the switch-point classes at which it may change; an omitted dimension keeps the preset's.
+      properties:
+        model:
+          anyOf:
+          - items:
+              enum:
+              - cache_boundaries
+              - user_messages
+              - all_turns
+              type: string
+            type: array
+          - type: 'null'
+          default: null
+          title: Model
+        thinking:
+          anyOf:
+          - items:
+              enum:
+              - cache_boundaries
+              - user_messages
+              - all_turns
+              type: string
+            type: array
+          - type: 'null'
+          default: null
+          title: Thinking
+      title: RoutingSchedule
+      type: object
+    RoutingSelection:
+      additionalProperties: false
+      description: '``prefer-local``''s thresholds; an omitted one keeps the preset''s (`SELECTION_DEFAULTS`).'
+      properties:
+        min_p_pass:
+          anyOf:
+          - maximum: 1
+            minimum: 0
+            type: number
+          - type: 'null'
+          default: null
+          title: Min P Pass
+        max_rest_tokens:
+          anyOf:
+          - exclusiveMinimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          title: Max Rest Tokens
+      title: RoutingSelection
+      type: object
+    TokenLegs:
+      additionalProperties: false
+      description: Predicted tokens per billed leg over the prediction's horizon. A leg the head cannot predict is null, never
+        0.
+      properties:
+        input:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Input
+        cache_read:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Cache Read
+        cache_write:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Cache Write
+        output:
+          anyOf:
+          - minimum: 0
+            type: number
+          - type: 'null'
+          title: Output
+      required:
+      - input
+      - cache_read
+      - cache_write
+      - output
+      title: TokenLegs
       type: object

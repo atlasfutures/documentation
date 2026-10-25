@@ -1,0 +1,99 @@
+---
+title: "Hybrid local and cloud routing"
+sidebarTitle: "Hybrid local and cloud"
+description: "Keep easy work on a local Qwen model and send harder work to the cloud, with ARC deciding each turn."
+icon: "laptop-code"
+---
+
+Hybrid routing keeps easy work on a model running on your computer and sends harder work, or work that no longer fits the local context window, to a cloud model. ARC makes each decision. Rayline Local runs it, and your agent harness runs unmodified.
+
+<Note>
+Hybrid routing is in preview. It needs a Rayline release that includes `rayline hybrid`, which has not been published yet, and the Decisions routing policy, which `api.rayline.ai` does not accept yet. It runs on macOS 13 or later, and on Linux.
+</Note>
+
+## Setup
+
+You need a local inference server with your Qwen model, such as llama.cpp, Ollama, or MLX. Rayline does not start, download, or stop it. You also need the hybrid profile (`hybrid.json`), which tells Rayline Local which local and cloud targets ARC may choose between.
+
+<Steps>
+  <Step title="Sign in">
+    ```bash
+    rayline auth login
+    ```
+
+    Rayline Local uses the saved Rayline API key only for the Rayline API it signed in to. An API key set in the launch environment, such as `RAYLINE_ROUTER_API_KEY`, takes precedence.
+  </Step>
+  <Step title="Point Rayline at your local model">
+    ```bash
+    rayline local custom --url http://127.0.0.1:11434/v1 --model qwen3.8:27b
+    ```
+
+    This writes the `local_model` entry in `~/.config/rayline/settings.json`:
+
+    ```json
+    {"local_model": {"mode": "custom", "base_url": "http://127.0.0.1:11434/v1", "model": "qwen3.8:27b"}}
+    ```
+  </Step>
+  <Step title="Start and connect a harness">
+    ```bash
+    rayline hybrid start --config /absolute/path/to/hybrid.json
+    rayline hybrid run pi -- "Fix the failing test in parser.py"
+    ```
+
+    `start` prints the routing policy it applied and the local model it bound. `run` also supports `claude`, `codex`, `opencode`, `omp`, `hermes`, and `openclaw`. Use `rayline hybrid status` to check it and `rayline hybrid stop` to stop it. Start a fresh harness session after every `start`.
+  </Step>
+</Steps>
+
+That is the whole setup. With no further configuration, Rayline Local sends the **hybrid default** policy, `arc-policy.hybrid-default.v1`, on every decision:
+
+- **The model** may change at cache boundaries: task start, a subagent start, a compaction, or a typed user turn whose cache has gone cold.
+- **The reasoning configuration** may change on every turn.
+- **A request that outgrows the local window** is handed to a cloud model, at any turn.
+
+Easy work stays on your computer. Harder work and context spills go to the cloud.
+
+## Optional overrides
+
+To change the defaults, add a `hybrid.routing` block to `~/.config/rayline/settings.json`. Every key is optional:
+
+```json
+{"hybrid": {"routing": {"policy": "prefer_local",
+                        "min_p_pass": 0.65,
+                        "schedule": {"model": ["cache_boundaries", "user_messages"]},
+                        "value_usd": 1.0}}}
+```
+
+| Key | Meaning |
+| --- | --- |
+| `policy` | `utility` (the default) uses the hybrid default policy. `prefer_local` uses the local model whenever ARC predicts it will pass, and utility selection over the cloud models otherwise. |
+| `min_p_pass` | The prefer-local threshold: ARC's predicted pass probability, between 0 and 1. The default is 0.65. Valid only with `prefer_local`. |
+| `schedule` | When the model (`model`) and the reasoning configuration (`thinking`) may change. Each is a list of `cache_boundaries`, `user_messages` (any typed user turn), and `all_turns`. |
+| `value_usd` | Your V: what a successful task is worth to you, from 0.1 to 5 US dollars. A higher V favours more capable, more expensive models. |
+
+Unknown keys are refused when Rayline Local starts. Rayline Local maps the block onto the Decisions request: `policy` to [`routing.policy.preset`](/arc/reference/decisions#routing-policy), `min_p_pass` to `routing.policy.overrides.selection`, `schedule` to `routing.policy.overrides.schedule`, and `value_usd` to `routing.value_usd`.
+
+<Tip>
+Prefer-local's threshold is deliberately conservative. ARC's pass prediction for a small local model separates easy tasks from hard ones only weakly, so a lower threshold keeps more work local at a higher risk of failed tasks.
+</Tip>
+
+## When work moves to the cloud
+
+Before each request, Rayline Local counts the exact prompt the local model would receive, including tools, history, and the output limit, and tells ARC whether it fits the local window. When a conversation grows past it, for example in a long tool loop with no compaction, ARC hands the turn to a cloud model. The conversation continues there. No tool is replayed, and nothing is switched in the middle of a response.
+
+For llama.cpp, set `--ctx-size` to the profile's context window and use `--parallel 1`, so the window Rayline Local reports is the one llama.cpp serves.
+
+## See what ARC decided
+
+Every decision carries a [receipt](/arc/reference/decisions#receipt). For example, `decided_by.model: capacity_handoff` means the local model no longer fit, and `prefer_local_threshold` means prefer-local kept the turn local. Rayline Local writes each receipt to `runtime.log` in its state directory, `~/.rayline/hybrid` by default, without prompts.
+
+If a decision is refused, the harness shows the error:
+
+| Error | Meaning |
+| --- | --- |
+| `policy_preset_not_admitted` | The ARC deployment does not serve that policy. |
+| `policy_schedule_not_admitted` | The ARC checkpoint does not support that schedule class. |
+| `execution_no_feasible_target` | No offered model can run the request. |
+
+## Use the policy without Rayline Local
+
+`routing.policy` is part of the [Decisions API](/arc/reference/decisions#routing-policy), so your own executor can send it. The local and capacity behaviour depends on the execution facts Rayline Local supplies in `routing.execution`; without them, a preset changes only when the model and reasoning configuration may change.

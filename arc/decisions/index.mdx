@@ -67,6 +67,15 @@ Check `routing` in the response: each control you sent is `applied` or `unsuppor
 
 ARC selects at Rayline catalog prices unless you send yours. If your inference costs differ, for example because of negotiated rates or your own hardware, send them in `routing.prices`; see [bring your own prices](/arc/decisions/prices).
 
+## Routing policy and predictions
+
+Two optional controls, in preview, change how a decision is made and what it tells you:
+
+- **`routing.policy`** picks a versioned preset for when the model and reasoning configuration may change. Omit it for today's behaviour. `arc-policy.hybrid-default.v1` switches models at cache boundaries and hands a request that no longer fits to a target that does; `arc-policy.prefer-local.v1` keeps work on a local model whenever ARC predicts it will pass. With a policy, each result carries a `receipt` that says how it was decided. See [routing policy](/arc/reference/decisions#routing-policy) and [hybrid local and cloud routing](/arc/decisions/hybrid-local).
+- **`"response_fields": ["predictions"]`** adds ARC's predicted pass probability, rest-of-episode tokens, and cost for each result and each offered model. See [predictions](/arc/reference/decisions#predictions).
+
+Neither changes what a decision costs.
+
 ## Multi-turn conversations
 
 ARC decides each turn in the context of the conversation so far. Send a stable `x-conversation-id` on every turn and ARC:
