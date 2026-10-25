@@ -31,7 +31,7 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
 | `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The prefixed `rayline/arc-swift` and `rayline/arc-sage` are accepted aliases. A request that names a provider model returns `409` (`non_arc_lookup`); an unknown `arc-*` ID returns `400` (`unknown_model`). |
-| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
+| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, prices, routing policy, and opt-in predictions. |
 | `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
 ARC reads the format from the body. A body without a format-specific field is read as Anthropic Messages. To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
@@ -45,7 +45,16 @@ ARC reads the format from the body. A body without a format-specific field is re
 | `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift` or `arc-sage` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on Decisions. Separate from the model's generation `temperature`. |
 | `prices` | object | Your inference prices: up to 256 model IDs, each with `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. All four are required; 0 is a price, a missing leg is an error. They change which model ARC selects, never what the decision costs. See [bring your own prices](/arc/decisions/prices). |
-| `exclusive` | boolean | `true` limits the candidates to the models in `prices`. Requires `prices`. |
+| `exclusive` | boolean | `true` limits the candidates to the priced models. Requires `prices` or `price_profile_id`. |
+| `price_profile_id` | string | A saved price profile from your organization, used instead of `prices`. Send one or the other, never both. See [price profiles](/arc/decisions/prices#price-profiles). |
+| `price_profile_version` | integer, 1 or more | Pins a saved profile version. Omit it to use the profile's current version. Requires `price_profile_id`. |
+| `response_fields` | array | Opt-in response members. The only value is `["predictions"]`: each result adds its [`model_choice`](#predictions) and `provenance`, and the response adds the offered `candidates`. |
+| `policy` | object | A versioned [routing policy](#routing-policy) preset with optional overrides. Omit it for today's behaviour. |
+| `execution` | object | For executors, not people: the execution facts of a caller that runs turns itself (`arc-execution-context.v2`). [Rayline Local](/arc/decisions/hybrid-local) fills it in. It changes only that caller's results and is never billed, stored, or trained on. |
+
+<Note>
+`policy`, `execution`, `response_fields`, and saved price profiles are in preview and are not yet accepted by `api.rayline.ai`. Until they are, a production request that sends one is refused or has the member reported `unsupported`.
+</Note>
 
 ```json
 {
@@ -64,6 +73,45 @@ ARC reads the format from the body. A body without a format-specific field is re
 ```
 
 Decisions requests are never used to train ARC.
+
+### Routing policy
+
+`routing.policy` names how ARC may change the model and the reasoning configuration over a conversation. It has one required member, `preset`, and optional `overrides`:
+
+```json
+"routing": {
+  "policy": {
+    "preset": "arc-policy.prefer-local.v1",
+    "overrides": {
+      "schedule": {"model": ["cache_boundaries", "user_messages"], "thinking": ["all_turns"]},
+      "selection": {"min_p_pass": 0.55}
+    }
+  }
+}
+```
+
+| Preset | Behaviour |
+| --- | --- |
+| No `policy` | Exactly today's behaviour: the same decisions, response, and billing as before policies existed. |
+| `arc-policy.package-default.v1` | Today's behaviour, named explicitly. |
+| `arc-policy.hybrid-default.v1` | Utility selection. The model may change at cache boundaries, the reasoning configuration on every turn, and a request that no longer fits its current target is handed to one that does. Rayline Local sends this preset by default. |
+| `arc-policy.prefer-local.v1` | As hybrid-default, but at a model switch point ARC chooses an offered local target when its predicted pass probability is at least `min_p_pass` (default 0.65) and, if set, its predicted rest-of-episode tokens are at most `max_rest_tokens`. Otherwise utility selection decides over the cloud targets. With no local target it is the same as utility selection. |
+
+**Schedule overrides.** `overrides.schedule` sets, per dimension (`model` and `thinking`), the set of switch-point classes at which that dimension may change. At any other turn the dimension holds: the same model, or the same reasoning configuration. An omitted dimension keeps the preset's schedule.
+
+| Class | A turn matches when |
+| --- | --- |
+| `cache_boundaries` | Task start, subagent start, compaction, or a typed user turn whose cache is observed cold. Unknown cache state counts as warm. |
+| `user_messages` | Any typed user turn. |
+| `all_turns` | Any turn, including tool results. |
+
+The hybrid-default and prefer-local presets use model `["cache_boundaries"]` and thinking `["all_turns"]`. A forced handoff when the current target no longer fits is always allowed, outside the schedule. A class the serving checkpoint does not support for that dimension is refused with `policy_schedule_not_admitted`; switching models at `all_turns` is not supported by current checkpoints.
+
+**Selection overrides.** `overrides.selection` sets prefer-local's thresholds: `min_p_pass`, from 0 to 1, and `max_rest_tokens`, a positive integer or omitted for no budget. They are refused with `policy_invalid` on any other preset.
+
+`policy` is accepted on Decisions only. A generation request that sends it is refused with `policy_not_supported`. A deployment may limit the presets it serves; an unlisted preset is refused with `policy_preset_not_admitted`.
+
+The local and capacity behaviour depends on the facts in `routing.execution`, which an executor such as Rayline Local supplies. Without them, a preset changes only the schedule. See [hybrid local and cloud routing](/arc/decisions/hybrid-local).
 
 ### Conversation headers
 
@@ -145,8 +193,10 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `presets` | object | The decisions at ARC Swift and ARC Sage. See [Presets](#presets). |
 | `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
 | `routing` | object | Present when you sent `routing`. |
+| `candidates` | array | Present when you requested `predictions`: every model offered to this request, each with its `model`, `effort`, and `prediction`. |
+| `candidates_context` | object | Present with `candidates`: the decision point (`boundary`), the selector that scored them (`selector_id`), and the package hash. |
 
-ARC does not return a confidence score or an explanation.
+ARC does not return an explanation. It returns its own success predictions only when you ask for them; see [Predictions](#predictions).
 
 ### Presets
 
@@ -157,7 +207,7 @@ Every response carries `presets`, with the decision at both fixed tiers, from th
 | `presets.swift` | The decision at ARC Swift's value (V 0.1). |
 | `presets.sage` | The decision at ARC Sage's value (V 4.5). |
 
-Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `value_usd`, `cost_weight` (1 / `value_usd`), `prices`, and, when you sent `routing.temperature`, `temperature`.
+Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `value_usd`, `cost_weight` (1 / `value_usd`), `prices`, and, when you sent `routing.temperature`, `temperature`. When you requested predictions it adds `model_choice`, and when you sent `routing.policy` or `routing.execution` it adds a [`receipt`](#receipt).
 
 - `prices.basis` is `catalog` (Rayline catalog prices) or `caller` (your `routing.prices`, identified by `prices.price_sha256`).
 - `temperature` reports `requested`, `applied`, and `status`: `greedy` (you asked for 0), `applied` (ARC drew the model at the `applied` temperature; `propensity` is the probability of the chosen model, and `pi` lists each candidate's probability), `not_applied` (with a `reason`), or `unsupported` (the serving path did not confirm it, so the result is the top choice).
@@ -172,6 +222,65 @@ The top-level `model`, `worker`, and `thinking` are the decision for the `model`
 | `routing` | You sent `routing` | Each member you sent, with `status` `applied` or `unsupported`. `routing.prices` also reports `price_sha256`, `exclusive`, and the priced `models`. `unapplied_keys` lists every member that was not applied. |
 
 Treat `unsupported` as not applied: ARC decided without that control, and the result says so rather than showing your value as used.
+
+### Predictions
+
+Send `"response_fields": ["predictions"]` to see the numbers behind a choice. Each result adds `model_choice`:
+
+```json
+"model_choice": {
+  "model": "claude-haiku-5.5",
+  "effort": null,
+  "prediction": {
+    "success": 0.94,
+    "success_head": "stage_one_p_pass",
+    "tokens": {"input": 1407, "cache_read": 1, "cache_write": 0, "output": 4910},
+    "cost_usd": 0.0026,
+    "horizon": "rest_of_episode"
+  }
+}
+```
+
+- `success` is ARC's predicted probability that the task passes on this model, from the first-stage selector (`success_head: stage_one_p_pass`). It is a prediction, not a guarantee.
+- `tokens` are the predicted tokens for the rest of the episode (`horizon: rest_of_episode`), per billed leg.
+- `cost_usd` prices those tokens in the result's price world: your prices when they were applied, otherwise catalog prices. It is `null` when any leg it needs is unknown.
+- Each result with a `model_choice` also carries `provenance`: the `package_sha256` of the checkpoint and the `point_id` of the result's value.
+- On a turn where the model was held, no first-stage choice is made: `model_choice`, `candidates`, and `candidates_context` are `null`.
+
+Any value ARC could not compute is `null`, never 0. The `routing.response_fields` echo reports `applied` or `unsupported`. Predictions do not change the decision or its charge.
+
+### Receipt
+
+When you send `routing.policy` or `routing.execution`, each result carries a `receipt` that says how it was decided. Requests without either are unchanged and carry no receipt.
+
+```json
+"receipt": {
+  "action_id": "<sha256>",
+  "control_id": "<sha256>",
+  "policy": "arc-policy.hybrid-default.v1",
+  "decided_by": {"model": "capacity_handoff", "thinking": "schedule"},
+  "eligible": {"model": null, "thinking": "all_turns"},
+  "held_from": "<sha256>",
+  "excluded": [{"action_id": "<sha256>", "reason": "context_capacity"}],
+  "capacity_unknown": [],
+  "basis": "marker_inferred"
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `action_id`, `control_id` | The chosen action (model and reasoning control) and its control. |
+| `policy` | The preset applied, or `null`. |
+| `decided_by.model` | `schedule` (a switch point allowed a choice), `held` (the model stayed), `capacity_handoff` (the held target no longer fit), `held_unavailable` (the held model was not offered, so ARC chose as at a start), `prefer_local_threshold` or `utility_fallback` (a prefer-local decision), or `null` for a single-stage checkpoint. |
+| `decided_by.thinking` | `schedule` or `held`. |
+| `eligible` | Per dimension, the schedule class this turn matched, or `null` when it matched none. |
+| `held_from` | The action the conversation was on before a handoff, or `null`. |
+| `excluded` | Offered actions ARC excluded, with `reason`: `context_capacity`, `runtime_unavailable`, or `capacity_unknown_local`. |
+| `capacity_unknown` | Offered actions admitted without a capacity fact. |
+| `basis` | Where the turn's event came from: `explicit_client`, `marker_inferred` (inferred from the wire by the executor), `service_inferred`, or `null`. |
+| `selection` | Prefer-local decisions only: the rule, `min_p_pass`, `max_rest_tokens`, each local target's `p_pass`, `rest_tokens` and eligibility, and the `outcome`. Absent otherwise. |
+
+The `routing.policy` echo reports `status` (`applied` or `unsupported`) and the `preset` as sent. A policy does not change the Decisions charge.
 
 ### Usage
 
@@ -225,7 +334,18 @@ Each error carries a stable `error.code`.
 | `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–5, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
 | `400` | `prices_invalid`, `price_leg_missing`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, misses a leg, has a negative or non-finite price, or names a model ARC cannot select | No |
-| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has no `prices` | No |
+| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has no `prices` or `price_profile_id` | No |
+| `400` | `response_fields_invalid` | `routing.response_fields` is not `["predictions"]` | No |
+| `400` | `policy_invalid` | `routing.policy` names an unknown preset or class, or sets selection thresholds on a preset without a selection rule | No |
+| `400` | `policy_preset_not_admitted`, `policy_schedule_not_admitted` | This deployment does not serve the preset, or the checkpoint does not support a schedule class for that dimension | No; use a supported preset or class |
+| `400` | `execution_invalid`, `execution_counts_inconsistent`, `execution_attribution_invalid`, `execution_unknown_action`, `execution_last_served_conflict` | `routing.execution` is malformed or contradicts the messages | No; report it to the executor's maintainers |
+| `409` | `execution_identity_mismatch`, `execution_hold_conflict`, `execution_hold_unavailable`, `execution_hold_infeasible` | The execution facts conflict with the serving checkpoint or the offer | No; report it to the executor's maintainers |
+| `409` | `execution_no_feasible_target` | No offered target can run the request | No |
+| `400` | `price_profile_invalid`, `price_profile_conflict` | `price_profile_id` or `price_profile_version` is malformed, or was sent with `prices` | No |
+| `403` | `price_profile_forbidden` | The caller is not an active member of the profile's organization | No |
+| `404` | `price_profile_not_found` | The profile or version does not exist in this organization | No |
+| `409` | `price_profile_archived` | The profile is archived | No; restore it or use another |
+| `503` | `price_profile_unavailable` | Saved profiles are unavailable or not enabled in this environment | Yes, with backoff |
 | `401` | | Missing or invalid API key | No |
 | `402` | `insufficient_funds` | The workspace cannot pay for the decision | No; add funds |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |

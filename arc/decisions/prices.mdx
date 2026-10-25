@@ -40,4 +40,12 @@ If `status` is `unsupported`, the decision was made at catalog prices.
 
 ## Price profiles
 
-The Rayline platform lets you save named price profiles and test them in the Decisions Playground. A profile is sent as `routing.prices` with `exclusive: true`; its name is not part of the API.
+The Rayline platform lets you save named price profiles and test them in the Decisions Playground.
+
+To use a saved profile from the API, send its ID instead of `routing.prices`. This is in preview and not yet accepted by `api.rayline.ai`:
+
+```json
+"routing": {"price_profile_id": "YOUR_SAVED_PROFILE_ID", "price_profile_version": 3, "exclusive": true}
+```
+
+The profile ID is shown under **Version details**. Omit `price_profile_version` to use the current version; pin it for reproducible runs. Archived profiles cannot be used. Send a profile or `routing.prices`, never both. The response's `routing.price_profile` reports `status`, `id`, `version`, and `content_hash`; `routing.prices` still reports the `price_sha256` ARC used. The two hashes identify different things and are not interchangeable.

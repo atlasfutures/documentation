@@ -56,7 +56,7 @@ There are three separate components you can consider running locally:
 
 Models such as [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) and [Recursive Flint](https://huggingface.co/RecursiveSI/flint) are examples of open-weight inference models. Running one locally requires enough memory and a runtime that supports that model, such as llama.cpp or another compatible server. Follow the model's installation instructions for its supported runtimes.
 
-Configure Rayline Local to reach that server, or combine it with cloud endpoints in your routing rules. See [local models](/rules-router/guides/local-models) for setup. A model's availability as open weights does not by itself establish compatibility with every agent harness or Rayline runtime.
+Configure Rayline Local to reach that server, or combine it with cloud endpoints in your routing rules. To let ARC choose between your local model and cloud models turn by turn, see [hybrid local and cloud routing](/arc/decisions/hybrid-local). See [local models](/rules-router/guides/local-models) for setup. A model's availability as open weights does not by itself establish compatibility with every agent harness or Rayline runtime.
 
 ## Run ARC locally
 

@@ -138,6 +138,7 @@
               "arc/decisions/index",
               "arc/decisions/prices",
               "arc/decisions/applying-effort",
+              "arc/decisions/hybrid-local",
               "rules-router/quickstart/agents"
             ]
           },
