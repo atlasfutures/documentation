@@ -244,9 +244,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
-            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
-            value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported, routing_invalid,
+            routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model, value_invalid,
+            value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -280,9 +280,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
-            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
-            value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported, routing_invalid,
+            routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model, value_invalid,
+            value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -315,9 +315,9 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported,
-            routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model,
-            value_invalid, value_out_of_bounds.'
+            price_leg_missing, prices_invalid, execution_not_supported, policy_not_supported, prices_not_supported, routing_invalid,
+            routing_unknown_member, temperature_invalid, tier_value_immutable, unknown_model, unknown_price_model, value_invalid,
+            value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -455,6 +455,19 @@ components:
           description: 'true: only the priced models are candidates. Requires `prices`.'
           title: Exclusive
           x-status: proposed
+        price_profile_id:
+          type: string
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$
+          title: Price Profile Id
+          x-status: proposed
+          description: A saved price profile of the API key's organization, resolved by the gateway. Mutually exclusive with
+            `prices`.
+        price_profile_version:
+          type: integer
+          minimum: 1
+          title: Price Profile Version
+          x-status: proposed
+          description: Pins a saved profile version; omitted means the current version. Requires `price_profile_id`.
         response_fields:
           description: 'Opt-in response members. `predictions`: each result''s Stage-1 model choice with its predicted pass
             probability, rest-of-episode tokens and cost, and the offered candidates'' table.'
@@ -1003,6 +1016,12 @@ components:
           - type: 'null'
           default: null
           x-status: proposed
+        price_profile:
+          anyOf:
+          - $ref: '#/components/schemas/PriceProfileEcho'
+          - type: 'null'
+          default: null
+          x-status: proposed
         unapplied_keys:
           default: []
           items:
@@ -1536,3 +1555,33 @@ components:
       - output
       title: TokenLegs
       type: object
+    PriceProfileEcho:
+      additionalProperties: false
+      title: PriceProfileEcho
+      type: object
+      x-status: proposed
+      description: Gateway-owned acknowledgment of a saved price profile. `applied` only after the cell acknowledged the resolved
+        price digest.
+      properties:
+        status:
+          type: string
+          enum:
+          - applied
+          - unsupported
+          title: Status
+        id:
+          type: string
+          title: Id
+        version:
+          type: integer
+          minimum: 1
+          title: Version
+        content_hash:
+          type: string
+          pattern: ^sha256:[a-f0-9]{64}$
+          title: Content Hash
+      required:
+      - status
+      - id
+      - version
+      - content_hash
