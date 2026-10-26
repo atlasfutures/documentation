@@ -23,10 +23,6 @@ x-arc-model-ids:
       value_usd: null
   aliases:
     arc-1: arc-1.0
-    rayline/arc-1: arc-1.0
-    rayline/arc-1.0: arc-1.0
-    rayline/arc-sage: arc-sage-1.0
-    rayline/arc-swift: arc-swift-1.0
   x-status: proposed
 x-arc-result-names:
 - swift
