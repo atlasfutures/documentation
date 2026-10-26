@@ -28,10 +28,9 @@ A `404` naming the model means the model ID is not one ARC serves; check the [ti
 
 ## Troubleshooting
 
-- Confirm your workspace's preview access with the Rayline team.
 - Use the base URL and key for the same environment and workspace.
 - Inspect the status and error message without logging your API key.
 - Do not retry `400`, `401`, `402`, `403`, `409`, or `413`; fix the request, add funds, or fix access first.
 - Retry `429` after the `Retry-After` interval, and `503` or `504` with exponential backoff.
 
-Decisions limits are in the [Decisions reference](/arc/reference/decisions#errors-and-limits). For Responses, confirm rate limits, supported input sizes, and retention details during preview onboarding before integrating.
+Decisions limits are in the [Decisions reference](/arc/reference/decisions#errors-and-limits).

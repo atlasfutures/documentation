@@ -20,7 +20,7 @@ Open **Cline → Settings → API Configuration** and enter:
 | API Provider | **OpenAI Compatible** |
 | Base URL | `https://api.rayline.ai/v1` |
 | API Key | Your [Rayline API key](/platform/api-keys) |
-| Custom Model ID | `arc-sage`, or `arc-swift` |
+| Custom Model ID | `arc-sage-1.0`, or `arc-swift-1.0` |
 | Context Window Size | `200000` for this configuration |
 | Max Output Tokens | `2048`; increase for longer responses |
 | Supports Images | Off for text-only tasks |
@@ -51,11 +51,11 @@ or ARC itself on your device.
 "model_routes": {
   "claude-sonnet-5": {
     "endpoint": "rayline",
-    "model": "arc-sage"
+    "model": "arc-sage-1.0"
   },
   "claude-haiku-5-5": {
     "endpoint": "rayline",
-    "model": "arc-swift"
+    "model": "arc-swift-1.0"
   }
 }
 ```

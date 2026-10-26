@@ -44,8 +44,8 @@ Save this in `$PI_CODING_AGENT_DIR/models.json`:
       "headers": { "x-conversation-id": "$RAYLINE_CONV_ID" },
       "compat": { "sendSessionAffinityHeaders": true },
       "models": [
-        { "id": "arc-sage", "name": "ARC Sage", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 },
-        { "id": "arc-swift", "name": "ARC Swift", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 }
+        { "id": "arc-sage-1.0", "name": "ARC Sage", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 },
+        { "id": "arc-swift-1.0", "name": "ARC Swift", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 }
       ]
     }
   }
@@ -57,10 +57,10 @@ pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The opti
 Start with Sage:
 
 ```bash
-pi --provider rayline --model arc-sage
+pi --provider rayline --model arc-sage-1.0
 ```
 
-For Swift, use `pi --provider rayline --model arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
+For Swift, use `pi --provider rayline --model arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
 
 ## Use a Rayline Local gateway
 

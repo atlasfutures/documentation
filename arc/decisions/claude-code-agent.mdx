@@ -34,7 +34,7 @@ Setup
 
 Build `python arc_agent.py [--yes] "<task>"`
 1. Keep the conversation in OpenAI Chat Completions format (a system message, then user/assistant/tool messages), with one tool, `run_shell(cmd)`, that runs a command in the current directory. Ask y/N before each command unless --yes.
-2. Every turn: POST the conversation (messages and tools) to {base}/v1/routes with "model": "arc-swift" and header x-conversation-id set to one uuid per run. Read `model` and `thinking` from the response.
+2. Every turn: POST the conversation (messages and tools) to {base}/v1/routes with "model": "arc-swift-1.0" and header x-conversation-id set to one uuid per run. Read `model` and `thinking` from the response.
 3. Run the turn: POST {base}/v1/chat/completions with the same messages and tools and "model" set to the decision's `model` exactly as returned. Set reasoning_effort from `thinking`: mode "off" -> "none"; mode "on" with budget_tokens null -> omit it; mode "on" with budget_tokens N -> "low" if N <= 2000, "medium" if N <= 4000, else "high".
 4. Execute any tool calls, append the results, and repeat until the model replies with no tool calls (max 8 turns).
 5. Print one line per turn: route_id, chosen model, thinking mode, the decision's latency_ms and usage.encoded_input_tokens, and the code (text before ":") of each warning.

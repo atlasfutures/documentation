@@ -37,8 +37,8 @@ Save this in `$OPENCODE_CONFIG`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "rayline/arc-sage",
-  "small_model": "rayline/arc-swift",
+  "model": "rayline/arc-sage-1.0",
+  "small_model": "rayline/arc-swift-1.0",
   "provider": {
     "rayline": {
       "name": "Rayline",
@@ -49,14 +49,14 @@ Save this in `$OPENCODE_CONFIG`:
         "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
       },
       "models": {
-        "arc-sage": {
+        "arc-sage-1.0": {
           "name": "ARC Sage",
           "limit": { "context": 200000, "output": 32000 },
           "cost": { "input": 1, "output": 5, "cache_read": 0.05, "cache_write": 1.25 },
           "reasoning": true,
           "tool_call": true
         },
-        "arc-swift": {
+        "arc-swift-1.0": {
           "name": "ARC Swift",
           "limit": { "context": 200000, "output": 32000 },
           "cost": { "input": 0.05, "output": 0.25, "cache_read": 0.005, "cache_write": 0.0625 },
@@ -76,24 +76,24 @@ OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1
 Start with Sage:
 
 ```bash
-opencode --standalone --model rayline/arc-sage
+opencode --standalone --model rayline/arc-sage-1.0
 ```
 
-For Swift, use `opencode --standalone --model rayline/arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
+For Swift, use `opencode --standalone --model rayline/arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
 
 For a scripted, non-interactive run, use `opencode run` and close standard input, or the run waits for input that never arrives:
 
 ```bash
-opencode run --standalone --model rayline/arc-sage "Reply with the word ready." < /dev/null
+opencode run --standalone --model rayline/arc-sage-1.0 "Reply with the word ready." < /dev/null
 ```
 
 ## Choose ARC in the web interface
 
-After adding the provider configuration, open **Settings → Models**, search for `arc-`, and enable **arc-sage** and **arc-swift**. This makes both models available in the session picker.
+After adding the provider configuration, open **Settings → Models**, search for `arc-`, and enable **arc-sage-1.0** and **arc-swift-1.0**. This makes both models available in the session picker.
 
 ![Enable ARC Sage and ARC Swift in OpenCode Settings → Models](/images/tools/setup/opencode-model-settings.webp)
 
-Start a new session and open the model picker below the prompt. Choose **arc-sage** for challenging tasks or **arc-swift** for everyday work.
+Start a new session and open the model picker below the prompt. Choose **arc-sage-1.0** for challenging tasks or **arc-swift-1.0** for everyday work.
 
 ![Choose ARC Sage or ARC Swift in the OpenCode session model picker](/images/tools/setup/opencode-model-picker.webp)
 

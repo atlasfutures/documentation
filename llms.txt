@@ -5,7 +5,7 @@
 ## Start here
 
 - [Use Rayline in your tools](https://docs.rayline.ai/tools): connect OpenCode, Hermes Agent, OpenClaw, Claude Code, Claude Desktop, Codex, pi and oh-my-pi.
-- [ARC Swift and ARC Sage](https://docs.rayline.ai/arc/models): model IDs `arc-swift`, `arc-sage`, and configurable `arc-1.0`.
+- [ARC Swift and ARC Sage](https://docs.rayline.ai/arc/models): model IDs `arc-swift-1.0`, `arc-sage-1.0`, and configurable `arc-1.0`.
 - [API quickstart](https://docs.rayline.ai/arc/quickstart): a first Messages request and a first decision.
 
 ## API reference

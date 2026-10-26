@@ -5,7 +5,7 @@ description: "Connect Claude Code to ARC directly or through a Rayline Local gat
 
 <span id="verify-the-route" />
 
-Use Claude Code with **ARC Sage** (`arc-sage`) or **ARC Swift** (`arc-swift`).
+Use Claude Code with **ARC Sage** (`arc-sage-1.0`) or **ARC Swift** (`arc-swift-1.0`).
 Sage prioritizes quality; Swift prioritizes lower cost and faster turns. Both
 choose the model and reasoning effort for your request.
 
@@ -42,8 +42,8 @@ Run Claude in a subshell so these settings apply only to this session:
 (
   export ANTHROPIC_BASE_URL=https://api.rayline.ai
   export ANTHROPIC_AUTH_TOKEN="$RAYLINE_API_KEY"
-  export ANTHROPIC_MODEL=arc-sage
-  export ANTHROPIC_DEFAULT_HAIKU_MODEL=arc-sage
+  export ANTHROPIC_MODEL=arc-sage-1.0
+  export ANTHROPIC_DEFAULT_HAIKU_MODEL=arc-sage-1.0
   export CLAUDE_CODE_AUTO_COMPACT_WINDOW=180000
   unset ANTHROPIC_API_KEY
   claude
@@ -55,7 +55,7 @@ Run Claude in a subshell so these settings apply only to this session:
 - `ANTHROPIC_DEFAULT_HAIKU_MODEL` sends background calls, such as titles and summaries, to the same ARC tier.
 - The compaction setting gives Claude Code an explicit context threshold for the custom model ID.
 
-To use Swift, set both model variables to `arc-swift`. To use your
+To use Swift, set both model variables to `arc-swift-1.0`. To use your
 [Agent Gateway rules](/rules-router/policies), set them to `rayline-router`.
 Claude Code supplies its session ID; no extra conversation header is needed.
 
@@ -78,10 +78,10 @@ rayline auth login
 The proxy connection keeps the Rayline key in the local gateway:
 
 ```bash
-rayline claude --via proxy -m arc-sage --auto-compact-window 180000
+rayline claude --via proxy -m arc-sage-1.0 --auto-compact-window 180000
 ```
 
-Use `-m arc-swift` for Swift. The gateway forwards inference to hosted Rayline;
+Use `-m arc-swift-1.0` for Swift. The gateway forwards inference to hosted Rayline;
 this command does not download an inference model.
 
 
@@ -104,7 +104,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 - **Authentication error:** check that `RAYLINE_API_KEY` is available in the shell
   starting Claude and that `ANTHROPIC_API_KEY` is unset.
 - **“Couldn’t read the auto-compact window” with `sonnet`:** Rayline 0.2.10
-  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. Pass `--model arc-sage` or
+  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. Pass `--model arc-sage-1.0` or
   `--auto-compact-window 180000` to set the model or context window explicitly.
 - **`unrecognized_model` in debug output:** Claude can emit this message for custom model IDs. Check the final request result before
   treating the message as a failure.

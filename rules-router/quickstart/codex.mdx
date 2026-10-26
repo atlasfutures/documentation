@@ -25,7 +25,7 @@ Create a profile that selects it, `~/.codex/rayline.config.toml`:
 
 ```toml
 model_provider = "rayline"
-model = "arc-sage"
+model = "arc-sage-1.0"
 web_search = "disabled"
 ```
 
@@ -66,7 +66,7 @@ Rayline Local 0.2.10 does not forward Codex’s namespaced subagent tools to Ant
 
 ## Use ARC through Rayline Local
 
-Select `arc-sage` or `arc-swift` in the profile above.
+Select `arc-sage-1.0` or `arc-swift-1.0` in the profile above.
 For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
 change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
 placeholder `RAYLINE_API_KEY=local-client`. The gateway alone receives your real
@@ -148,6 +148,6 @@ From a project directory, ask Codex to explain the project:
 codex --profile rayline exec "Read the README and summarize how to run this project."
 ```
 
-Use `--model arc-swift` to switch to Swift. View the request and selected model in [Rayline Usage](/platform/usage).
+Use `--model arc-swift-1.0` to switch to Swift. View the request and selected model in [Rayline Usage](/platform/usage).
 
 For a launcher-managed gateway, check its status with `rayline router status`.

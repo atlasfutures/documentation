@@ -21,7 +21,7 @@ see [API keys](/platform/api-keys). Then configure the Responses provider:
 ```bash
 export UNREAL_HARNESS_LLM_PROVIDER=openai
 export UNREAL_HARNESS_LLM_BASE_URL=https://api.rayline.ai/v1
-export UNREAL_HARNESS_LLM_MODEL=arc-sage
+export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
 ```
 
 
@@ -39,7 +39,7 @@ Responses wire protocol; it does not mean the request is billed by OpenAI.
 To use Swift for an everyday task, select it when starting the runner:
 
 ```bash
-UNREAL_HARNESS_LLM_MODEL=arc-swift unreal-agent-runner \
+UNREAL_HARNESS_LLM_MODEL=arc-swift-1.0 unreal-agent-runner \
   -workspace "$PWD" \
   -p 'Read the README and summarize the installation steps.'
 ```
@@ -56,7 +56,7 @@ then set:
 export UNREAL_HARNESS_LLM_PROVIDER=anthropic
 export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
 export UNREAL_HARNESS_LLM_API_KEY=local-client
-export UNREAL_HARNESS_LLM_MODEL=arc-sage
+export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
 ```
 
 Use your gateway's actual port and authentication. The placeholder above is for
