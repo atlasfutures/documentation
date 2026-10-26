@@ -53,7 +53,7 @@ Each launch prints the router URL, the conversation ID, and the config directory
 
 ## How your key is handled
 
-The router key is never written to the agent's config. Every config refers to the `RAYLINE_KEY` environment variable, which Rayline sets only for the agent's process. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
+Since Rayline 0.2.12, the launcher writes the router key only into the Rayline-owned config directory, readable only by you, and removes `RAYLINE_KEY` and `RAYLINE_ROUTER_API_KEY` from the agent's environment, so the agent's tools never see the key. Each agent's guide says how its config refers to the key. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
 
 ## Conversations
 
@@ -61,17 +61,17 @@ Agent Gateway groups requests into conversations. Each launch gets a new convers
 
 ## Manual setup (without the launcher)
 
-You can connect each agent to Agent Gateway yourself, with the same configuration `rayline <agent>` writes. Each agent's guide has a copy-paste config. They all rely on two environment variables.
+You can connect each agent to Agent Gateway yourself, with the configuration `rayline <agent>` writes. The manual configs read your key from the `RAYLINE_API_KEY` environment variable, the variable used across the Rayline docs; the launcher instead keeps the key in its own config files. Each agent's guide has a copy-paste config. They all rely on two environment variables.
 
 ### The API key
 
-Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_KEY` in the shell that starts the agent, for example from your secrets manager:
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_API_KEY` in the shell that starts the agent, for example from your secrets manager:
 
 ```bash
-export RAYLINE_KEY="<your Rayline API key>"
+export RAYLINE_API_KEY="<your Rayline API key>"
 ```
 
-Every config below refers to `RAYLINE_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
+Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
 
 ### The conversation ID
 
@@ -95,7 +95,7 @@ The agent still works.
 
 ### Check the connection
 
-After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_KEY` is missing from the agent's environment or holds the wrong key.
+After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_API_KEY` is missing from the agent's environment or holds the wrong key.
 
 ## Troubleshooting
 

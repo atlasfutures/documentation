@@ -15,7 +15,7 @@ Install the tool using its [installation guide](https://docs.openclaw.ai/install
 
 ## Connect to the Rayline platform
 
-Set `RAYLINE_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+Set `RAYLINE_API_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
 
 Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make it the default model:
 
@@ -32,7 +32,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
       "rayline": {
         "baseUrl": "https://api.rayline.ai",
         "api": "anthropic-messages",
-        "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_KEY" },
+        "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" },
         "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
         "models": [
           {
@@ -50,9 +50,9 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 }
 ```
 
-- Give the key as this SecretRef, never as the `${RAYLINE_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
+- Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Agent Gateway does not serve.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Then select `rayline-resp/arc-sage`.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage` for ARC until [Responses support](/arc/availability) arrives.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway:
 
   ```json
@@ -76,11 +76,11 @@ export RAYLINE_CONV_ID="oc-$(printf %s "my-task" | shasum -a 256 | cut -c1-32)"
 openclaw agent --local --session-id my-task --message "Reply with the word ready."
 ```
 
-`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
+`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
 
 ## Use a Rayline Local gateway
 
-[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_KEY=local-client` in the client. The gateway holds your Rayline API key.
+[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
 
 Inside Docker, use `http://host.docker.internal:23811` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
 
@@ -150,13 +150,15 @@ It also turns off memory search, the heartbeat, and the compaction memory flush,
 
 ## Key handling
 
-Both providers take the key as an environment SecretRef:
+The launcher writes the key to a `router-key` file in its config directory, readable only by you, and both providers refer to it with a file SecretRef. The key is not in OpenClaw's environment.
+
+If you write an OpenClaw config by hand, use an environment SecretRef, not the `${RAYLINE_API_KEY}` shorthand:
 
 ```json
-"apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_KEY" }
+"apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" }
 ```
 
-The key is set only in OpenClaw's process environment. If you write an OpenClaw config by hand, use this form, not the `${RAYLINE_KEY}` shorthand. OpenClaw resolves a `${RAYLINE_KEY}` string when it loads the config and then writes the resolved key in plain text to its agent model cache, `~/.openclaw/agents/<agent>/agent/models.json`. For a SecretRef it writes only the variable's name.
+OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and then writes the resolved key in plain text to its agent model cache, `~/.openclaw/agents/<agent>/agent/models.json`. For a SecretRef it writes only the variable's name.
 
 ## Conversations
 
@@ -178,5 +180,5 @@ The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
 
 - **`openclaw` not found on PATH.** Install OpenClaw and check `which openclaw`.
 - **The turn uses another model.** A running Gateway may be serving it; stop the Gateway or keep `--local` on the turn.
-- **Your key appears in `models.json`.** An older config used the `${RAYLINE_KEY}` shorthand. Switch to the SecretRef form and delete the cached `models.json`. Treat the key as exposed: revoke it in [API keys](/platform/api-keys), then run `rayline auth logout` and `rayline auth login` so the next launch creates a new one.
+- **Your key appears in `models.json`.** The config used a `${...}` shorthand for the key. Switch to the SecretRef form and delete the cached `models.json`. Treat the key as exposed: revoke it in [API keys](/platform/api-keys), then run `rayline auth logout` and `rayline auth login` so the next launch creates a new one.
 - See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

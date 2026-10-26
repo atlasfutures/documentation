@@ -33,7 +33,7 @@ answering model or ARC's routing model on your computer. See
 Install the current [Claude Code release](https://code.claude.com/docs/en/setup).
 An older 2.1.273 client was rejected by a Sage-selected upstream model that
 required 2.1.280 or later; updating to 2.1.307 resolved that error. Create a
-[Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell
+[Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell
 where you will start Claude. Keep the key out of project files and source control.
 
 Run Claude in a subshell so these settings apply only to this session:
@@ -41,7 +41,7 @@ Run Claude in a subshell so these settings apply only to this session:
 ```bash
 (
   export ANTHROPIC_BASE_URL=https://api.rayline.ai
-  export ANTHROPIC_AUTH_TOKEN="$RAYLINE_KEY"
+  export ANTHROPIC_AUTH_TOKEN="$RAYLINE_API_KEY"
   export ANTHROPIC_MODEL=arc-sage
   export ANTHROPIC_DEFAULT_HAIKU_MODEL=arc-sage
   export CLAUDE_CODE_AUTO_COMPACT_WINDOW=180000
@@ -101,7 +101,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Troubleshooting
 
-- **Authentication error:** check that `RAYLINE_KEY` is available in the shell
+- **Authentication error:** check that `RAYLINE_API_KEY` is available in the shell
   starting Claude and that `ANTHROPIC_API_KEY` is unset.
 - **“Couldn’t read the auto-compact window” with `sonnet`:** Rayline 0.2.10
   cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. Pass `--model arc-sage` or

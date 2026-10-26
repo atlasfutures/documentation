@@ -20,7 +20,7 @@ A local gateway does not imply on-device inference or locally running ARC. See [
 
 ## Install
 
-Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell where you will run the tool. Keep it out of project files.
+Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run the tool. Keep it out of project files.
 
 ## Connect directly
 
@@ -41,7 +41,7 @@ providers:
     baseUrl: "https://api.rayline.ai"
     api: "anthropic-messages"
     auth: "apiKey"
-    apiKey: "RAYLINE_KEY"
+    apiKey: "RAYLINE_API_KEY"
     headers:
       x-conversation-id: "RAYLINE_CONV_ID"
     models:
@@ -76,7 +76,7 @@ First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-f
 | Setting | Rayline platform | Rayline Local |
 | --- | --- | --- |
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
-| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the gateway below |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
 Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
 

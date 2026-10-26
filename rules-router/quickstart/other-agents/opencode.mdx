@@ -20,7 +20,7 @@ A local gateway does not imply on-device inference or locally running ARC. See [
 
 ## Install
 
-Install [OpenCode](https://opencode.ai/docs/#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_KEY` in the shell where you will run the tool. Keep it out of project files.
+Install [OpenCode](https://opencode.ai/docs/#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run the tool. Keep it out of project files.
 
 ## Connect directly
 
@@ -45,19 +45,33 @@ Save this in `$OPENCODE_CONFIG`:
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.rayline.ai/v1",
-        "apiKey": "{env:RAYLINE_KEY}",
+        "apiKey": "{env:RAYLINE_API_KEY}",
         "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
       },
       "models": {
-        "arc-sage": { "name": "ARC Sage", "limit": { "context": 200000, "output": 2048 }, "reasoning": true, "tool_call": true },
-        "arc-swift": { "name": "ARC Swift", "limit": { "context": 200000, "output": 2048 }, "reasoning": true, "tool_call": true }
+        "arc-sage": {
+          "name": "ARC Sage",
+          "limit": { "context": 200000, "output": 32000 },
+          "cost": { "input": 1, "output": 5, "cache_read": 0.05, "cache_write": 1.25 },
+          "reasoning": true,
+          "tool_call": true
+        },
+        "arc-swift": {
+          "name": "ARC Swift",
+          "limit": { "context": 200000, "output": 32000 },
+          "cost": { "input": 0.05, "output": 0.25, "cache_read": 0.005, "cache_write": 0.0625 },
+          "reasoning": true,
+          "tool_call": true
+        }
       }
     }
   }
 }
 ```
 
-OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 32,000 tokens.
+
+`cost` gives OpenCode each tier's fixed rate card, in US dollars per million tokens, so its session cost display matches what Rayline bills. The rates come from [ARC pricing](/arc/pricing); update them if the card changes.
 
 Start with Sage:
 
@@ -66,6 +80,12 @@ opencode --standalone --model rayline/arc-sage
 ```
 
 For Swift, use `opencode --standalone --model rayline/arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
+
+For a scripted, non-interactive run, use `opencode run` and close standard input, or the run waits for input that never arrives:
+
+```bash
+opencode run --standalone --model rayline/arc-sage "Reply with the word ready." < /dev/null
+```
 
 ## Choose ARC in the web interface
 
@@ -84,7 +104,7 @@ First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-f
 | Setting | Rayline platform | Rayline Local |
 | --- | --- | --- |
 | `baseURL` | `https://api.rayline.ai/v1` | `http://127.0.0.1:23811/v1` |
-| `RAYLINE_KEY` | Your Rayline API key | `local-client` for the gateway below |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
 Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
 
