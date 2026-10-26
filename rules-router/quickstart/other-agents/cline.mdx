@@ -30,6 +30,16 @@ If ARC is absent from the model list, enter its bare ID in **Custom Model ID**.
 Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
 unrelated task. Keep the same value while continuing a task.
 
+<Note>
+This guide configures the Cline **VS Code extension**. Cline also ships a CLI
+(`npm install -g cline`, the unscoped package; `@cline/cli` is an unrelated,
+stale package) that reaches ARC with the same provider, model and base URL via
+`cline auth -p openai-compatible -k <key> -m arc-sage -b https://api.rayline.ai/v1`.
+The CLI has no custom-header setting, so the `x-conversation-id` step above does
+not apply to it: Rayline then derives a conversation from the request itself, so
+a task still holds together, but you cannot name a conversation yourself.
+</Note>
+
 ![Cline API Configuration with the Rayline platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
 
 Enter your own Rayline API key in the API key field.

@@ -130,7 +130,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
+Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. If you send no `x-conversation-id`, Rayline falls back to the session identifiers OpenCode already sends on every request, so a conversation still holds together without the header; setting it explicitly is what lets you decide where one conversation ends and the next begins.
 
 ## Troubleshooting
 

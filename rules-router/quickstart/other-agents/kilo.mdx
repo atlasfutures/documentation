@@ -22,7 +22,7 @@ The port is configurable; use the same port in both configurations.
 
 ## Configure Kilo
 
-Install Kilo using its [official instructions](https://kilo.ai/docs/getting-started/install).
+Install Kilo using its [official instructions](https://kilo.ai/docs/getting-started/install). The CLI is the scoped npm package `@kilocode/cli`; the unscoped `kilocode` on npm is an unrelated placeholder and not Kilo.
 Create a configuration outside your project, for example
 `~/.config/kilo/rayline.json`, with this content:
 
@@ -51,7 +51,7 @@ Create a configuration outside your project, for example
           "name": "arc-sage-1.0",
           "limit": {
             "context": 200000,
-            "output": 2048
+            "output": 32000
           },
           "reasoning": true,
           "tool_call": true
@@ -60,7 +60,7 @@ Create a configuration outside your project, for example
           "name": "arc-swift-1.0",
           "limit": {
             "context": 200000,
-            "output": 2048
+            "output": 32000
           },
           "reasoning": true,
           "tool_call": true
@@ -73,6 +73,11 @@ Create a configuration outside your project, for example
 
 For Local, change only `baseURL` to the loopback URL above. The `/v1` suffix is
 required by this provider configuration.
+
+The `limit.output` value is Kilo's own cap on a reply, not Rayline's: ARC
+passes `max_tokens` through unchanged and enforces no output ceiling of its own,
+so set this to what your tasks need. A low value truncates long edits and tool
+transcripts without any error from Rayline.
 
 Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
 `RAYLINE_API_KEY=local-client` for Local. Then start Kilo with the explicit config:
