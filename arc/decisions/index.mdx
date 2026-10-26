@@ -29,7 +29,7 @@ def decide(conversation_id: str, system: str, messages: list) -> dict:
     response = requests.post(
         ROUTES_URL,
         headers={**HEADERS, "x-conversation-id": conversation_id},
-        json={"model": "arc-swift", "system": system, "messages": messages},
+        json={"model": "arc-swift", "max_tokens": 1024, "system": system, "messages": messages},
         timeout=10,
     )
     response.raise_for_status()
@@ -42,7 +42,7 @@ reply = run_on_your_stack(decision["model"], decision["thinking"], system_prompt
 messages.append({"role": "assistant", "content": reply})
 ```
 
-`run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. To apply the reasoning configuration without breaking prompt caching, see [Applying effort](/arc/decisions/applying-effort). See the [Decisions reference](/arc/reference/decisions) for every request and response field.
+This body is in Anthropic Messages format, which requires `max_tokens`; ARC reads it but does not use it. `run_on_your_stack` is your own dispatch: your provider clients, credentials, and model-ID mapping. To apply the reasoning configuration without breaking prompt caching, see [Applying effort](/arc/decisions/applying-effort). See the [Decisions reference](/arc/reference/decisions) for every request and response field.
 
 ## Swift, Sage, or your own value
 

@@ -19,7 +19,7 @@ Rates are on [ARC pricing](/arc/pricing) and [Agent Gateway pricing](/rules-rout
 
 ## Which balance pays
 
-Hosted requests are paid from the prepaid balance of the workspace that owns the API key. Add funds in the [Rayline platform](https://platform.rayline.ai). A request the workspace cannot pay for is refused with `402` (`insufficient_funds`); Rayline does not substitute a cheaper model.
+Hosted requests are paid from the prepaid balance of the workspace that owns the API key. Add funds in the [Rayline platform](https://platform.rayline.ai). Fund the workspace before its first request: a new workspace has no balance. A request the workspace cannot pay for is refused with `402` and `error.type` `billing_error`, whose message links to the top-up page; Rayline does not substitute a cheaper model. See [errors and limits](/arc/reference/errors).
 
 A workspace linked to a Workshop organization uses that organization's Workshop credits instead. Workshop plans and credits are documented in [Workshop pricing](/workshop/pricing/plans).
 

@@ -30,11 +30,12 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
-| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The prefixed `rayline/arc-swift` and `rayline/arc-sage` are accepted aliases. A request that names a provider model returns `409` (`non_arc_lookup`); an unknown `arc-*` ID returns `400` (`unknown_model`). |
+| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. Use the bare IDs; prefixed IDs such as `rayline/arc-swift` are not accepted here. Any other ID, including a provider model or an unknown `arc-*` ID, returns `409` (`non_arc_lookup`). |
 | `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
-| `max_tokens`, `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
+| `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the decision. Chat Completions and Responses bodies do not need it. |
+| `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
-ARC reads the format from the body. A body without a format-specific field is read as Anthropic Messages. To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
+ARC reads the format from the body. A body with `input` is read as OpenAI Responses. A `messages` body is read as Anthropic Messages when it carries an Anthropic-only field, such as a top-level `system`, a `tool_use` or `tool_result` block, or a tool with `input_schema`; it is read as OpenAI Chat Completions when it carries a Chat-only marker, such as a `system` or `tool` role in `messages` or a tool with `function`. A `messages` body with neither, for example a single user message with string content, is read as OpenAI Chat Completions (`openai.chat.v1`). To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
 
 ### Routing controls
 
@@ -216,20 +217,20 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 
 Errors use the Anthropic error format: `{"type": "error", "error": {"type": "...", "message": "..."}}`.
 
-Each error carries a stable `error.code`.
+Errors from the routing contract carry a stable `error.code`. A body ARC cannot read in its format returns `400` with only a message, for example `request body could not be read as anthropic.messages.v1 messages`.
 
 | Status | `error.code` | Meaning | Retry? |
 | --- | --- | --- | --- |
-| `400` | `invalid_body`, `unknown_model` | The body is not a JSON object with messages, or names an unknown ARC ID | No; fix the request |
+| `400` | | The body is not a JSON object with messages, or cannot be read in its format (for example, an Anthropic Messages body without `max_tokens`) | No; fix the request |
 | `400` | `routing_invalid`, `routing_unknown_member` | `routing` is not an object, or has a member Rayline does not support | No |
 | `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–5, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
 | `400` | `prices_invalid`, `price_leg_missing`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, misses a leg, has a negative or non-finite price, or names a model ARC cannot select | No |
 | `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has no `prices` | No |
 | `401` | | Missing or invalid API key | No |
-| `402` | `insufficient_funds` | The workspace cannot pay for the decision | No; add funds |
+| `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the decision. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |
-| `409` | `non_arc_lookup` | The request names a provider model, not an ARC model | No; set `model` to an ARC ID |
+| `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID | No; set `model` to `arc-swift`, `arc-sage`, or `arc-1.0` |
 | `413` | | The request body is too large | No |
 | `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |

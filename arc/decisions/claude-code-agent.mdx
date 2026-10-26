@@ -1,0 +1,63 @@
+---
+title: "Build an ARC Decisions agent with Claude Code"
+sidebarTitle: "Build an agent with Claude Code"
+description: "A copy-paste prompt that has Claude Code build a working agent loop on ARC Decisions."
+icon: "terminal"
+---
+
+This prompt asks [Claude Code](https://code.claude.com/docs/en/overview) to build a small Python agent in which ARC Decisions chooses the model and thinking level for every turn, and the turn then runs on that model through Rayline's Chat Completions endpoint. It is a starting point for your own integration: the same loop works with your own provider clients in place of the Rayline gateway.
+
+## Before you start
+
+1. Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and [add funds](/platform/billing#which-balance-pays) to its workspace. Decisions and the generated turns are both billed to that workspace.
+2. Export the key in the shell where you start Claude Code:
+
+   ```bash
+   export RAYLINE_API_KEY="<your Rayline API key>"
+   ```
+
+3. Create an empty directory with a few files for the agent to inspect, and start `claude` in it.
+
+## The prompt
+
+Paste this into Claude Code:
+
+````text
+Build a small, working example of ARC Decisions in this directory: a Python command-line agent where ARC picks the model and thinking level for every turn, and the turn then runs on that model through the Rayline gateway.
+
+Read first: https://docs.rayline.ai/arc/decisions.md and https://docs.rayline.ai/arc/reference/decisions.md
+
+Setup
+- My Rayline key is in the env var RAYLINE_API_KEY (starts with rlk-). Never print it, log it, or write it to a file.
+- Base URL: $RAYLINE_BASE_URL if set, else https://api.rayline.ai.
+- Python 3.10+, standard library plus `requests` only. One file: arc_agent.py.
+
+Build `python arc_agent.py [--yes] "<task>"`
+1. Keep the conversation in OpenAI Chat Completions format (a system message, then user/assistant/tool messages), with one tool, `run_shell(cmd)`, that runs a command in the current directory. Ask y/N before each command unless --yes.
+2. Every turn: POST the conversation (messages and tools) to {base}/v1/routes with "model": "arc-swift" and header x-conversation-id set to one uuid per run. Read `model` and `thinking` from the response.
+3. Run the turn: POST {base}/v1/chat/completions with the same messages and tools and "model" set to the decision's `model` exactly as returned. Set reasoning_effort from `thinking`: mode "off" -> "none"; mode "on" with budget_tokens null -> omit it; mode "on" with budget_tokens N -> "low" if N <= 2000, "medium" if N <= 4000, else "high".
+4. Execute any tool calls, append the results, and repeat until the model replies with no tool calls (max 8 turns).
+5. Print one line per turn: route_id, chosen model, thinking mode, the decision's latency_ms and usage.encoded_input_tokens, and the code (text before ":") of each warning.
+6. If the chosen model cannot be run (a 404 from chat/completions), say so and try the next model in `alternatives`. On 401 (bad key) or 402 (no balance), stop and print the API's error message; treat any other error the same way.
+
+Done when: `python arc_agent.py --yes "How many .py files are in this directory? Use the shell."` prints at least two decision lines, runs a shell command, and ends with the correct count. Run it and show me the output.
+````
+
+## What to expect
+
+Claude Code writes `arc_agent.py`, runs it, and shows output like this:
+
+```text
+[turn 1] rt_17b75045ac394432a42de2264f6caafb model=anthropic/claude-haiku-5.5 thinking=on latency_ms=1449 encoded_input_tokens=152 warnings=tools_not_encoded,episode_not_tracked
+  $ ls -1 *.py 2>/dev/null | wc -l
+[turn 2] rt_45fe7725b0cf48a18fbe18472a464118 model=anthropic/claude-haiku-5.5 thinking=on latency_ms=342 encoded_input_tokens=244 warnings=tools_not_encoded,episode_not_tracked
+There are **4** `.py` files in this directory (top level only, not including subdirectories).
+```
+
+The models, IDs, and timings will differ. The count includes `arc_agent.py` itself. The warning codes are explained in the [Decisions reference](/arc/reference/decisions#warnings). Each decision line is one `/v1/routes` request, billed at the [Decisions rate](/arc/pricing); each turn is then billed at the chosen model's catalog price.
+
+## Where to go next
+
+- Replace the Chat Completions call with your own provider clients; see [what you own](/arc/decisions#what-you-own).
+- Decide at your own value with `arc-1.0` and `routing.value_usd`; see [Swift, Sage, or your own value](/arc/decisions#swift-sage-or-your-own-value).
+- Apply the thinking level without breaking the prompt cache; see [Applying effort](/arc/decisions/applying-effort).

@@ -61,17 +61,17 @@ Agent Gateway groups requests into conversations. Each launch gets a new convers
 
 ## Manual setup (without the launcher)
 
-You can connect each agent to Agent Gateway yourself, with the same configuration `rayline <agent>` writes. Each agent's guide has a copy-paste config. They all rely on two environment variables.
+You can connect each agent to Agent Gateway yourself, with the configuration `rayline <agent>` writes. The manual configs read your key from `RAYLINE_API_KEY`, the variable used across the Rayline docs; the launcher sets its own `RAYLINE_KEY` for the agent process. Each agent's guide has a copy-paste config. They all rely on two environment variables.
 
 ### The API key
 
-Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_KEY` in the shell that starts the agent, for example from your secrets manager:
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_API_KEY` in the shell that starts the agent, for example from your secrets manager:
 
 ```bash
-export RAYLINE_KEY="<your Rayline API key>"
+export RAYLINE_API_KEY="<your Rayline API key>"
 ```
 
-Every config below refers to `RAYLINE_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
+Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
 
 ### The conversation ID
 
@@ -95,7 +95,7 @@ The agent still works.
 
 ### Check the connection
 
-After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_KEY` is missing from the agent's environment or holds the wrong key.
+After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_API_KEY` is missing from the agent's environment or holds the wrong key.
 
 ## Troubleshooting
 

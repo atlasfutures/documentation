@@ -10,7 +10,7 @@ ARC generates through the API your client already speaks. Set `model` to an ARC 
 | --- | --- | --- |
 | `POST https://api.rayline.ai/v1/messages` | Anthropic Messages | Yes |
 | `POST https://api.rayline.ai/v1/chat/completions` | OpenAI Chat Completions | Yes |
-| `POST https://api.rayline.ai/v1/responses` | OpenAI Responses | Rolling out; see [compatibility](/arc/reference/compatibility) |
+| `POST https://api.rayline.ai/v1/responses` | OpenAI Responses | Not yet; see [availability](/arc/availability) |
 
 Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. See [API keys](/platform/api-keys).
 
@@ -22,7 +22,7 @@ Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. Se
 | `arc-sage` | ARC Sage, fixed V 4.5 | Sage's fixed rate card |
 | `arc-1.0` | Configurable ARC | The served model's catalog price, no ARC fee |
 
-`rayline/arc-swift`, `rayline/arc-sage`, `arc-1`, `rayline/arc-1`, and `rayline/arc-1.0` are accepted aliases. Any other `arc-*` ID is refused with `400` (`unknown_model`); a bare `arc` is not an ID.
+`arc-1` is an accepted alias for `arc-1.0`. Use the bare IDs: prefixed IDs such as `rayline/arc-swift` and any other `arc-*` ID return `404` (`not_found_error`, `Model not found`); a bare `arc` is not an ID.
 
 ## Routing extension
 
@@ -45,7 +45,7 @@ curl https://api.rayline.ai/v1/messages \
        "messages":[{"role":"user","content":"Plan a zero-downtime schema migration."}]}'
 ```
 
-Send the same `x-conversation-id` on every turn of a conversation so ARC decides each turn in context. Errors use the same codes as [Decisions](/arc/reference/decisions#errors-and-limits).
+Send the same `x-conversation-id` on every turn of a conversation so ARC decides each turn in context. Errors use the Anthropic error format; see [errors and limits](/arc/reference/errors).
 
 ## Conversation identity
 

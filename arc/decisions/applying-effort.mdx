@@ -23,6 +23,28 @@ The two exist separately because providers treat them differently:
 
 When `thinking_level` is absent, there is no steering to apply for the turn. The router's registry records which model, provider, and API combinations admit steering.
 
+## Run the turn through the Rayline gateway
+
+If you run the chosen model through Rayline's own [Chat Completions endpoint](/arc/reference/generation) (`POST /v1/chat/completions` with the decision's `model`), set `reasoning_effort` from `thinking`. Rayline passes `reasoning_effort` to the provider.
+
+| Decision `thinking` | `reasoning_effort` |
+| --- | --- |
+| `mode` `off` | `"none"` |
+| `mode` `on`, `budget_tokens` `null` | Omit it, so the model uses its provider's default reasoning. This is how ARC's own router runs such a decision. |
+| `mode` `on`, `budget_tokens` N | `"low"` when N is 2,000 or less, `"medium"` when N is 4,000 or less, otherwise `"high"` |
+
+The thresholds are the ones Rayline uses when it converts an Anthropic `thinking.budget_tokens` to an OpenAI effort. On `POST /v1/messages`, send Anthropic's `thinking` field instead: `{"type": "disabled"}` for `off`, or `{"type": "enabled", "budget_tokens": N}` for a budget.
+
+```python
+def reasoning_fields(thinking: dict) -> dict:
+    if thinking["mode"] == "off":
+        return {"reasoning_effort": "none"}
+    budget = thinking.get("budget_tokens")
+    if budget is None:
+        return {}
+    return {"reasoning_effort": "low" if budget <= 2000 else "medium" if budget <= 4000 else "high"}
+```
+
 ## The private-append pattern
 
 Keep two transcripts:

@@ -41,7 +41,7 @@ Create a configuration outside your project, for example
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.rayline.ai/v1",
-        "apiKey": "{env:RAYLINE_KEY}",
+        "apiKey": "{env:RAYLINE_API_KEY}",
         "headers": {
           "x-conversation-id": "{env:RAYLINE_CONV_ID}"
         }
@@ -74,8 +74,8 @@ Create a configuration outside your project, for example
 For Local, change only `baseURL` to the loopback URL above. The `/v1` suffix is
 required by this provider configuration.
 
-Export your Rayline key as `RAYLINE_KEY` for direct access, or set
-`RAYLINE_KEY=local-client` for Local. Then start Kilo with the explicit config:
+Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
+`RAYLINE_API_KEY=local-client` for Local. Then start Kilo with the explicit config:
 
 ```bash
 export KILO_CONFIG="$HOME/.config/kilo/rayline.json"
@@ -119,7 +119,7 @@ for configuration scope and environment references.
 ## VS Code extension
 
 The extension can use the same trusted configuration as the CLI. Fully quit the
-VS Code instance, then launch it from a shell that has `RAYLINE_KEY` loaded
+VS Code instance, then launch it from a shell that has `RAYLINE_API_KEY` loaded
 and `KILO_CONFIG` pointing to the configuration file above. Environment variables
 set after an editor starts do not update that running process.
 

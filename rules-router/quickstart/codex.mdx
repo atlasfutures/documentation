@@ -11,13 +11,13 @@ Install Codex before you begin.
 
 ## Connect to the Rayline platform
 
-Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then add the provider to `~/.codex/config.toml`:
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys) and load it into `RAYLINE_API_KEY` from your secrets manager; see [API keys](/platform/api-keys). Then add the provider to `~/.codex/config.toml`:
 
 ```toml
 [model_providers.rayline]
 name = "Rayline"
 base_url = "https://api.rayline.ai/v1"
-env_key = "RAYLINE_KEY"
+env_key = "RAYLINE_API_KEY"
 wire_api = "responses"
 ```
 
@@ -37,7 +37,7 @@ Keep the API key out of tool-shell environments and saved shell snapshots:
 shell_snapshot = false
 
 [shell_environment_policy]
-exclude = ["RAYLINE_KEY"]
+exclude = ["RAYLINE_API_KEY"]
 ```
 
 Start Codex with the profile:
@@ -65,7 +65,7 @@ Rayline Local 0.2.10 does not forward Codex’s namespaced subagent tools to Ant
 Select `arc-sage` or `arc-swift` in the profile above.
 For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
 change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
-placeholder `RAYLINE_KEY=local-client`. The gateway alone receives your real
+placeholder `RAYLINE_API_KEY=local-client`. The gateway alone receives your real
 upstream key. Codex still speaks Responses; the gateway forwards to the
 hosted Messages endpoint. Inference remains in the cloud.
 
