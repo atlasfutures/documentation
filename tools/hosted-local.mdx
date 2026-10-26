@@ -75,11 +75,11 @@ Install [Rayline](/rules-router/cli#install). Save this configuration as `router
     "protocol": "anthropic_messages",
     "base_url": "https://api.rayline.ai",
     "api_key_env": "RAYLINE_API_KEY",
-    "models": ["arc-sage", "arc-swift", "arc-1.0", "rayline-router"]
+    "models": ["arc-sage-1.0", "arc-swift-1.0", "arc-1.0", "rayline-router"]
   }],
   "routes": {
-    "main": { "endpoint": "rayline", "model": "arc-sage" },
-    "subagent": { "endpoint": "rayline", "model": "arc-sage" }
+    "main": { "endpoint": "rayline", "model": "arc-sage-1.0" },
+    "subagent": { "endpoint": "rayline", "model": "arc-sage-1.0" }
   }
 }
 ```

@@ -5,7 +5,7 @@ description: "Connect Kilo CLI and its VS Code extension to ARC directly or thro
 
 <span id="verify-two-requests" />
 
-Use Kilo's custom Anthropic provider to request `arc-sage` or `arc-swift`.
+Use Kilo's custom Anthropic provider to request `arc-sage-1.0` or `arc-swift-1.0`.
 Rayline Local is optional for this CLI configuration.
 
 ## Choose your connection
@@ -29,8 +29,8 @@ Create a configuration outside your project, for example
 ```json
 {
   "$schema": "https://app.kilo.ai/config.json",
-  "model": "rayline/arc-sage",
-  "small_model": "rayline/arc-swift",
+  "model": "rayline/arc-sage-1.0",
+  "small_model": "rayline/arc-swift-1.0",
   "permission": {
     "*": "deny",
     "read": "allow"
@@ -47,8 +47,8 @@ Create a configuration outside your project, for example
         }
       },
       "models": {
-        "arc-sage": {
-          "name": "arc-sage",
+        "arc-sage-1.0": {
+          "name": "arc-sage-1.0",
           "limit": {
             "context": 200000,
             "output": 2048
@@ -56,8 +56,8 @@ Create a configuration outside your project, for example
           "reasoning": true,
           "tool_call": true
         },
-        "arc-swift": {
-          "name": "arc-swift",
+        "arc-swift-1.0": {
+          "name": "arc-swift-1.0",
           "limit": {
             "context": 200000,
             "output": 2048
@@ -80,11 +80,11 @@ Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
 ```bash
 export KILO_CONFIG="$HOME/.config/kilo/rayline.json"
 export RAYLINE_CONV_ID="$(uuidgen)"
-kilo run --pure --model rayline/arc-sage "Read the README and explain how to run this project."
+kilo run --pure --model rayline/arc-sage-1.0 "Read the README and explain how to run this project."
 ```
 
 `rayline/` is Kilo's provider selector; the API receives the bare model ID.
-Use `rayline/arc-swift` to select Swift. Keep a conversation ID for one session
+Use `rayline/arc-swift-1.0` to select Swift. Keep a conversation ID for one session
 and generate a new one for an unrelated session.
 
 <Warning>
@@ -108,7 +108,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 - **Environment references rejected:** move the config outside the project and
   use `KILO_CONFIG`.
 - **Another provider is selected:** check the explicit config path and use
-  `--model rayline/arc-sage` or `rayline/arc-swift`.
+  `--model rayline/arc-sage-1.0` or `rayline/arc-swift-1.0`.
 - **Local connection refused:** start the gateway and match its port.
 - **Authentication failure:** check the key in the process that makes the
   upstream request: Kilo for direct access, the gateway for Local.
@@ -123,9 +123,9 @@ VS Code instance, then launch it from a shell that has `RAYLINE_API_KEY` loaded
 and `KILO_CONFIG` pointing to the configuration file above. Environment variables
 set after an editor starts do not update that running process.
 
-Open **Kilo Code**, start a **New Session**, and select **arc-sage** or
-**arc-swift** under **Rayline**. Try a task using the selected model. Keep your real API key in the environment; use the `local-client` placeholder only with the Local configuration above.
+Open **Kilo Code**, start a **New Session**, and select **arc-sage-1.0** or
+**arc-swift-1.0** under **Rayline**. Try a task using the selected model. Keep your real API key in the environment; use the `local-client` placeholder only with the Local configuration above.
 
-To keep ARC selected for new sessions, open **Kilo Settings → Models → Default Model**, search for **Rayline**, and choose **arc-sage** or **arc-swift**.
+To keep ARC selected for new sessions, open **Kilo Settings → Models → Default Model**, search for **Rayline**, and choose **arc-sage-1.0** or **arc-swift-1.0**.
 
 ![Choose an ARC tier under Rayline in Kilo’s Default Model setting](/images/tools/setup/kilo-model-settings.webp)

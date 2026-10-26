@@ -5,7 +5,7 @@ description: "Run Hermes Agent through hosted Agent Gateway with rayline hermes.
 
 <span id="verify-the-route" />
 
-Use **ARC Sage** (`arc-sage`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
+Use **ARC Sage** (`arc-sage-1.0`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift-1.0`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
 
 Install the tool using its [installation guide](https://hermes-agent.nousresearch.com/docs/getting-started/installation) before you begin.
 
@@ -22,7 +22,7 @@ Add these providers to `~/.hermes/config.yaml`, and point `model` at the first o
 ```yaml
 model:
   provider: "custom:rayline-anth"
-  default: "arc-sage"
+  default: "arc-sage-1.0"
   context_length: 200000
 providers:
   rayline-anth:
@@ -32,7 +32,7 @@ providers:
     extra_headers:
       x-conversation-id: "${RAYLINE_CONV_ID}"
     models:
-      arc-sage:
+      arc-sage-1.0:
         context_length: 200000
   rayline-resp:
     api_mode: "codex_responses"
@@ -41,7 +41,7 @@ providers:
     extra_headers:
       x-conversation-id: "${RAYLINE_CONV_ID}"
     models:
-      arc-sage:
+      arc-sage-1.0:
         context_length: 200000
 ```
 
@@ -62,10 +62,10 @@ Check it with `hermes -z "Reply with the word ready."`.
 From your project directory, run:
 
 ```bash
-hermes --provider rayline-anth --model arc-sage -z "Read the README and explain how to run this project."
+hermes --provider rayline-anth --model arc-sage-1.0 -z "Read the README and explain how to run this project."
 ```
 
-To use Swift, add `arc-swift` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
+To use Swift, add `arc-swift-1.0` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
 
 ## Launcher availability
 

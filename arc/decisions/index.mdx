@@ -29,7 +29,7 @@ def decide(conversation_id: str, system: str, messages: list) -> dict:
     response = requests.post(
         ROUTES_URL,
         headers={**HEADERS, "x-conversation-id": conversation_id},
-        json={"model": "arc-swift", "max_tokens": 1024, "system": system, "messages": messages},
+        json={"model": "arc-swift-1.0", "max_tokens": 1024, "system": system, "messages": messages},
         timeout=10,
     )
     response.raise_for_status()

@@ -9,11 +9,11 @@ security:
 - raylineApiKey: []
 x-arc-model-ids:
   canonical:
-    arc-swift:
+    arc-swift-1.0:
       mode: tier
       tier: swift
       value_usd: 0.1
-    arc-sage:
+    arc-sage-1.0:
       mode: tier
       tier: sage
       value_usd: 4.5
@@ -25,8 +25,8 @@ x-arc-model-ids:
     arc-1: arc-1.0
     rayline/arc-1: arc-1.0
     rayline/arc-1.0: arc-1.0
-    rayline/arc-sage: arc-sage
-    rayline/arc-swift: arc-swift
+    rayline/arc-sage: arc-sage-1.0
+    rayline/arc-swift: arc-swift-1.0
   x-status: proposed
 x-arc-result-names:
 - swift
@@ -119,7 +119,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RoutesRequest'
             example:
-              model: arc-swift
+              model: arc-swift-1.0
               messages:
               - role: user
                 content: Explain how a database index works.
@@ -207,7 +207,7 @@ paths:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
             example:
-              model: arc-swift
+              model: arc-swift-1.0
               max_tokens: 1024
               messages:
               - role: user
@@ -242,7 +242,7 @@ paths:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
             example:
-              model: arc-swift
+              model: arc-swift-1.0
               messages:
               - role: user
                 content: Explain how a database index works.
@@ -276,7 +276,7 @@ paths:
             schema:
               $ref: '#/components/schemas/GenerationRequestExtension'
             example:
-              model: arc-swift
+              model: arc-swift-1.0
               input: Explain how a database index works.
       responses:
         '200':

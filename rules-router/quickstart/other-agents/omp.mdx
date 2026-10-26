@@ -45,13 +45,13 @@ providers:
     headers:
       x-conversation-id: "RAYLINE_CONV_ID"
     models:
-      - id: "arc-sage"
+      - id: "arc-sage-1.0"
         name: "ARC Sage"
         reasoning: false
         input: ["text"]
         contextWindow: 200000
         maxTokens: 2048
-      - id: "arc-swift"
+      - id: "arc-swift-1.0"
         name: "ARC Swift"
         reasoning: false
         input: ["text"]
@@ -64,10 +64,10 @@ oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and he
 Start with Sage:
 
 ```bash
-omp --model rayline/arc-sage
+omp --model rayline/arc-sage-1.0
 ```
 
-For Swift, use `omp --model rayline/arc-swift`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage` and `arc-swift`.
+For Swift, use `omp --model rayline/arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
 
 ## Use a Rayline Local gateway
 

@@ -30,7 +30,7 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
-| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The versioned tier IDs `arc-swift-1.0` and `arc-sage-1.0` (as on the price card), and `arc-1`, are also accepted. Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `409` (`non_arc_lookup`). |
+| `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted). Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `409` (`non_arc_lookup`). |
 | `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
 | `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the decision. Chat Completions and Responses bodies do not need it. |
 | `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
@@ -43,7 +43,7 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 
 | Member | Type | Meaning |
 | --- | --- | --- |
-| `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift` or `arc-sage` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
+| `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on Decisions. Separate from the model's generation `temperature`. |
 | `prices` | object | Your inference prices: up to 256 model IDs, each with `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. All four are required; 0 is a price, a missing leg is an error. They change which model ARC selects, never what the decision costs. See [bring your own prices](/arc/decisions/prices). |
 | `exclusive` | boolean | `true` limits the candidates to the models in `prices`. Requires `prices`. |
@@ -229,7 +229,7 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `401` | | Missing or invalid API key | No |
 | `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the decision. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |
-| `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID such as `arc-2.0` | No; set `model` to `arc-swift`, `arc-sage`, or `arc-1.0` |
+| `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID such as `arc-2.0` | No; set `model` to `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` |
 | `413` | | The request body is too large | No |
 | `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |

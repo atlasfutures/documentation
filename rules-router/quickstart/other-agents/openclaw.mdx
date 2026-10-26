@@ -5,7 +5,7 @@ description: "Connect OpenClaw to ARC directly or through a Rayline Local gatewa
 
 <span id="verify-the-route" />
 
-Use **ARC Sage** (`arc-sage`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
+Use **ARC Sage** (`arc-sage-1.0`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift-1.0`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
 
 Install the tool using its [installation guide](https://docs.openclaw.ai/install) before you begin.
 
@@ -23,7 +23,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 {
   "agents": {
     "defaults": {
-      "model": { "primary": "rayline/arc-sage" }
+      "model": { "primary": "rayline/arc-sage-1.0" }
     }
   },
   "models": {
@@ -36,7 +36,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
         "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
         "models": [
           {
-            "id": "arc-sage",
+            "id": "arc-sage-1.0",
             "name": "ARC Sage",
             "reasoning": true,
             "input": ["text", "image"],
@@ -52,7 +52,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Agent Gateway does not serve.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage` for ARC until [Responses support](/arc/availability) arrives.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway:
 
   ```json
@@ -95,10 +95,10 @@ Place this under `models.providers.rayline`, alongside `baseUrl`. Keep it scoped
 From your project directory, run:
 
 ```bash
-openclaw agent --local --model rayline/arc-sage --message "Read the README and explain how to run this project."
+openclaw agent --local --model rayline/arc-sage-1.0 --message "Read the README and explain how to run this project."
 ```
 
-To use Swift, add `arc-swift` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
+To use Swift, add `arc-swift-1.0` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
 
 ## Use the OpenClaw control UI
 
@@ -107,7 +107,7 @@ control UI and connect with its gateway token. This is a separate gateway from
 Rayline Local: OpenClaw hosts your agent session, while Rayline Local forwards
 model requests.
 
-Select **arc-sage** or **arc-swift** in the chat model picker, then start a task in your project.
+Select **arc-sage-1.0** or **arc-swift-1.0** in the chat model picker, then start a task in your project.
 
 ![Select ARC Sage or ARC Swift when starting an OpenClaw session](/images/tools/setup/openclaw-model-picker.webp)
 
