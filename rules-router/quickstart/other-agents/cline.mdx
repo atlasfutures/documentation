@@ -12,8 +12,11 @@ enough to switch between them.
 
 ## Direct API
 
-Install the [official Cline extension](https://docs.cline.bot/getting-started/installing-cline).
-Open **Cline → Settings → API Configuration** and enter:
+Cline installs three ways: as a native desktop app, as an extension inside an
+IDE (VS Code, Cursor, JetBrains, Windsurf and others), or as a CLI. This guide
+configures the **IDE extension**, shown in VS Code; see the
+[Cline install page](https://docs.cline.bot/getting-started/installing-cline)
+for the others. Open **Cline → Settings → API Configuration** and enter:
 
 | Setting | Value |
 | --- | --- |
@@ -31,13 +34,14 @@ Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
 unrelated task. Keep the same value while continuing a task.
 
 <Note>
-This guide configures the Cline **VS Code extension**. Cline also ships a CLI
+The **Custom Headers** step is specific to the IDE extension. Cline's CLI
 (`npm install -g cline`, the unscoped package; `@cline/cli` is an unrelated,
-stale package) that reaches ARC with the same provider, model and base URL via
-`cline auth -p openai-compatible -k <key> -m arc-sage -b https://api.rayline.ai/v1`.
-The CLI has no custom-header setting, so the `x-conversation-id` step above does
-not apply to it: Rayline then derives a conversation from the request itself, so
-a task still holds together, but you cannot name a conversation yourself.
+stale package) reaches ARC with the same provider, model and base URL via
+`cline auth -p openai-compatible -k <key> -m arc-sage -b https://api.rayline.ai/v1`,
+but has no custom-header setting, so `x-conversation-id` does not apply to it:
+Rayline then derives a conversation from the request itself, so a task still
+holds together, but you cannot name a conversation yourself. The desktop app's
+settings have not been checked against ARC.
 </Note>
 
 ![Cline API Configuration with the Rayline platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
