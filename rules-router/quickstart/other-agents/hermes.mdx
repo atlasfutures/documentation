@@ -102,7 +102,7 @@ Fallback providers are turned off, so a failed request is not retried against an
 
 ## Key handling
 
-Each provider names the key's environment variable with `key_env: RAYLINE_KEY`. The key is set only in Hermes' process environment and is never written to disk.
+The launcher writes the key as each provider's `api_key` in the Rayline-owned `config.yaml`, readable only by you, and removes it from Hermes' environment. A manual config names the variable instead, with `key_env: RAYLINE_API_KEY`.
 
 ## Conversations
 

@@ -40,6 +40,10 @@ shell_snapshot = false
 exclude = ["RAYLINE_API_KEY"]
 ```
 
+<Note>
+Codex calls the OpenAI Responses API, and the Rayline platform does not yet serve ARC there ([availability](/arc/availability)). Until it does, use ARC from Codex through a [Rayline Local gateway](#use-arc-through-rayline-local), which forwards to the Messages API, or set `model = "rayline-router"` for Agent Gateway routing.
+</Note>
+
 Start Codex with the profile:
 
 ```bash

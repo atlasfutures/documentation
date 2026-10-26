@@ -30,12 +30,12 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
-| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. Use the bare IDs; prefixed IDs such as `rayline/arc-swift` are not accepted here. Any other ID, including a provider model or an unknown `arc-*` ID, returns `409` (`non_arc_lookup`). |
+| `model` | Yes | An ARC model ID: `arc-swift`, `arc-sage`, or `arc-1.0`. The versioned tier IDs `arc-swift-1.0` and `arc-sage-1.0` (as on the price card), and `arc-1`, are also accepted. Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `409` (`non_arc_lookup`). |
 | `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
 | `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the decision. Chat Completions and Responses bodies do not need it. |
 | `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
 
-ARC reads the format from the body. A body with `input` is read as OpenAI Responses. A `messages` body is read as Anthropic Messages when it carries an Anthropic-only field, such as a top-level `system`, a `tool_use` or `tool_result` block, or a tool with `input_schema`; it is read as OpenAI Chat Completions when it carries a Chat-only marker, such as a `system` or `tool` role in `messages` or a tool with `function`. A `messages` body with neither, for example a single user message with string content, is read as OpenAI Chat Completions (`openai.chat.v1`). To state the format, send the `x-rayline-format` header with `anthropic`, `chat`, or `responses`.
+ARC reads the format from the body. A body with `input` is read as OpenAI Responses. A `messages` body is read as Anthropic Messages when it carries an Anthropic-only field, such as a top-level `system`, a `tool_use` or `tool_result` block, or a tool with `input_schema`; it is read as OpenAI Chat Completions when it carries a Chat-only marker, such as a `system` or `tool` role in `messages` or a tool with `function`. A `messages` body with neither, for example a single user message with string content, is read as OpenAI Chat Completions (`openai.chat.v1`). ARC reads the format from the body only; to make it unambiguous, include one of these markers, for example a `system` role message for Chat Completions or a top-level `system` for Anthropic Messages.
 
 ### Routing controls
 
@@ -70,7 +70,6 @@ Decisions requests are never used to train ARC.
 
 | Header | Purpose |
 | --- | --- |
-| `x-rayline-format` | Optional: `anthropic`, `chat`, or `responses`, when the body alone does not show its format. An unrecognized value is ignored. |
 | `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
 
 See [Conversation identity](#conversation-identity) for how the conversation ID is resolved.
@@ -207,7 +206,7 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 
 | Code | Meaning |
 | --- | --- |
-| `format_inferred` | The body had no field unique to one format, so ARC inferred it. Send `x-rayline-format` to state it. |
+| `format_inferred` | The body had no field unique to one format, so ARC read it as Chat Completions. Add a format marker to the body (see [Request](#request)) to make it explicit. |
 | `tools_not_encoded` | The request's tools did not influence this decision. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
 | `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
 | `episode_not_tracked` | Decisions does not yet keep conversations, so this lookup was decided on its own. Returned on every lookup today, with or without a conversation ID. |
@@ -230,7 +229,7 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `401` | | Missing or invalid API key | No |
 | `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the decision. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |
-| `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID | No; set `model` to `arc-swift`, `arc-sage`, or `arc-1.0` |
+| `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID such as `arc-2.0` | No; set `model` to `arc-swift`, `arc-sage`, or `arc-1.0` |
 | `413` | | The request body is too large | No |
 | `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |

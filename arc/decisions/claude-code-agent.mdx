@@ -38,7 +38,7 @@ Build `python arc_agent.py [--yes] "<task>"`
 3. Run the turn: POST {base}/v1/chat/completions with the same messages and tools and "model" set to the decision's `model` exactly as returned. Set reasoning_effort from `thinking`: mode "off" -> "none"; mode "on" with budget_tokens null -> omit it; mode "on" with budget_tokens N -> "low" if N <= 2000, "medium" if N <= 4000, else "high".
 4. Execute any tool calls, append the results, and repeat until the model replies with no tool calls (max 8 turns).
 5. Print one line per turn: route_id, chosen model, thinking mode, the decision's latency_ms and usage.encoded_input_tokens, and the code (text before ":") of each warning.
-6. If the chosen model cannot be run (a 404 from chat/completions), say so and try the next model in `alternatives`. On 401 (bad key) or 402 (no balance), stop and print the API's error message; treat any other error the same way.
+6. If the chosen model cannot be run (chat/completions answers 404, or 400 saying the model is not served on /v1/chat/completions), say so and try the next model in `alternatives`. On 401 (bad key) or 402 (no balance), stop and print the API's error message; treat any other error the same way.
 
 Done when: `python arc_agent.py --yes "How many .py files are in this directory? Use the shell."` prints at least two decision lines, runs a shell command, and ends with the correct count. Run it and show me the output.
 ````
