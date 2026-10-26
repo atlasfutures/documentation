@@ -102,7 +102,7 @@ x-arc-error-codes:
     status: 529
     type: overloaded_error
 paths:
-  /v1/routes:
+  /v1/decisions:
     post:
       operationId: routeLookup
       summary: Create a routing decision
@@ -375,7 +375,7 @@ components:
       type: object
     DecisionsRouting:
       additionalProperties: false
-      description: '``routing`` on ``POST /v1/routes``.'
+      description: '``routing`` on ``POST /v1/decisions``.'
       properties:
         value_usd:
           anyOf:
@@ -777,7 +777,7 @@ components:
           $ref: '#/components/schemas/DecisionsRouting'
     RoutesResponse:
       additionalProperties: false
-      description: '``POST /v1/routes`` 200. The top-level route is the decision the byte-identical request would get on the
+      description: '``POST /v1/decisions`` 200. The top-level route is the decision the byte-identical request would get on the
 
         requested model (unchanged from today''s envelope); ``presets`` and ``custom`` are alternatives from the same
 

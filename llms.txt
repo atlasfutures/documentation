@@ -10,7 +10,7 @@
 
 ## API reference
 
-- [OpenAPI (machine-readable)](https://docs.rayline.ai/api-reference/arc-public-api.openapi.yaml): service-owned contract for ARC model IDs, the `routing` extension, Decisions (`POST /v1/routes`) and error codes.
+- [OpenAPI (machine-readable)](https://docs.rayline.ai/api-reference/arc-public-api.openapi.yaml): service-owned contract for ARC model IDs, the `routing` extension, Decisions (`POST /v1/decisions`) and error codes.
 - [Generation with ARC](https://docs.rayline.ai/arc/reference/generation): Messages, Chat Completions, Responses; `routing.value_usd` and `routing.temperature`.
 - [Decisions reference](https://docs.rayline.ai/arc/reference/decisions): `routing.{value_usd, temperature, prices, exclusive}`, `presets.{swift,sage}`, `custom`, the `routing` echo, `error.code`.
 - [API compatibility](https://docs.rayline.ai/arc/reference/compatibility) and [errors and limits](https://docs.rayline.ai/arc/reference/errors).

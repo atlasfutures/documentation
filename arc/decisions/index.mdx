@@ -10,7 +10,7 @@ ARC Decisions chooses a model and reasoning configuration for each turn without 
 
 For every turn of a conversation:
 
-1. Send the conversation to `POST /v1/routes` with an ARC model ID in `model` and the same `x-conversation-id` as the previous turns.
+1. Send the conversation to `POST /v1/decisions` with an ARC model ID in `model` and the same `x-conversation-id` as the previous turns.
 2. Read `model` and `thinking` from the response.
 3. Run the turn on that model, with that reasoning configuration, in your own stack.
 4. Append the result to the conversation, handle tools and retries, and repeat.
@@ -19,7 +19,7 @@ For every turn of a conversation:
 import os
 import requests
 
-ROUTES_URL = "https://api.rayline.ai/v1/routes"
+DECISIONS_URL = "https://api.rayline.ai/v1/decisions"
 HEADERS = {
     "Authorization": f"Bearer {os.environ['RAYLINE_API_KEY']}",
     "Content-Type": "application/json",
@@ -27,7 +27,7 @@ HEADERS = {
 
 def decide(conversation_id: str, system: str, messages: list) -> dict:
     response = requests.post(
-        ROUTES_URL,
+        DECISIONS_URL,
         headers={**HEADERS, "x-conversation-id": conversation_id},
         json={"model": "arc-swift-1.0", "max_tokens": 1024, "system": system, "messages": messages},
         timeout=10,

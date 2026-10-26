@@ -185,7 +185,7 @@
             "group": "Endpoints",
             "openapi": "api-reference/arc-public-api.openapi.yaml",
             "pages": [
-              "POST /v1/routes",
+              "POST /v1/decisions",
               "POST /v1/messages",
               "POST /v1/chat/completions",
               "POST /v1/responses"
