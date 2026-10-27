@@ -60,8 +60,6 @@ Then find the request in [Inspect routed requests](/platform/usage).
 
 Keep built-in web search disabled (`web_search = "disabled"`) when using ARC.
 
-Rayline Local 0.2.10 does not forward Codex’s namespaced subagent tools to Anthropic endpoints. Use single-agent tasks with that version.
-
 <span id="arc" />
 
 ## Use ARC through Rayline Local
@@ -72,6 +70,11 @@ change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex 
 placeholder `RAYLINE_API_KEY=local-client`. The gateway alone receives your real
 upstream key. Codex still speaks Responses; the gateway forwards to the
 hosted Messages endpoint. Inference remains in the cloud.
+
+Codex's sub-agent tools (the `multi_agent_v1` namespace) are forwarded to
+Anthropic Messages endpoints, including ARC, so multi-agent tasks work on this
+path. A gateway endpoint configured as Chat Completions or a local model
+refuses them with a `400 unsupported_tool`; use single-agent tasks there.
 
 Codex warns that it has no built-in metadata for the ARC model IDs and uses
 fallback metadata. Set context limits to match the models you use.
