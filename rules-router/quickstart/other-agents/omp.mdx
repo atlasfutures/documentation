@@ -30,7 +30,6 @@ Use a separate configuration directory. These environment settings apply to the 
 unset OMP_PROFILE PI_PROFILE CLAUDE_CONFIG_DIR
 export PI_CODING_AGENT_DIR="$HOME/.config/omp-rayline"
 mkdir -p "$PI_CODING_AGENT_DIR"
-export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
 Save this in `$PI_CODING_AGENT_DIR/models.yml`:
@@ -42,8 +41,6 @@ providers:
     api: "anthropic-messages"
     auth: "apiKey"
     apiKey: "RAYLINE_API_KEY"
-    headers:
-      x-conversation-id: "RAYLINE_CONV_ID"
     models:
       - id: "arc-sage-1.0"
         name: "ARC Sage"
@@ -78,7 +75,7 @@ First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-f
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
 | `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
-Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+`23811` is the port the linked gateway setup uses; if yours is on another port, use that one. The gateway forwards each request to Rayline in the cloud, where ARC chooses the model and the model generates the answer.
 
 ## Try your first task
 
@@ -98,11 +95,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
 
 The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
+Each launcher invocation is one conversation. In manual setup, Rayline recognises the session id omp already sends on every request, so a conversation holds together on its own.
 
 ## Troubleshooting
 

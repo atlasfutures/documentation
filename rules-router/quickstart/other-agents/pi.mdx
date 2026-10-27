@@ -29,7 +29,6 @@ Use a separate configuration directory. These environment settings apply to the 
 ```bash
 export PI_CODING_AGENT_DIR="$HOME/.config/pi-rayline"
 mkdir -p "$PI_CODING_AGENT_DIR"
-export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
 Save this in `$PI_CODING_AGENT_DIR/models.json`:
@@ -41,7 +40,6 @@ Save this in `$PI_CODING_AGENT_DIR/models.json`:
       "baseUrl": "https://api.rayline.ai",
       "api": "anthropic-messages",
       "apiKey": "$RAYLINE_API_KEY",
-      "headers": { "x-conversation-id": "$RAYLINE_CONV_ID" },
       "compat": { "sendSessionAffinityHeaders": true },
       "models": [
         { "id": "arc-sage-1.0", "name": "ARC Sage", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 },
@@ -71,7 +69,7 @@ First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-f
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
 | `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
 
-Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+`23811` is the port the linked gateway setup uses; if yours is on another port, use that one. The gateway forwards each request to Rayline in the cloud, where ARC chooses the model and the model generates the answer.
 
 ## Try your first task
 
@@ -91,11 +89,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
+Each launcher invocation is one conversation. In manual setup, `sendSessionAffinityHeaders` makes pi send its session id on every request, which Rayline uses to keep a conversation together, so nothing else is needed.
 
 ## Troubleshooting
 

@@ -31,7 +31,6 @@ This path reads your key from `RAYLINE_API_KEY`, set in the [Install](#install) 
 ```bash
 mkdir -p "$HOME/.config/opencode-rayline"
 export OPENCODE_CONFIG="$HOME/.config/opencode-rayline/opencode.json"
-export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
 Save this in `$OPENCODE_CONFIG`:
@@ -47,8 +46,7 @@ Save this in `$OPENCODE_CONFIG`:
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.rayline.ai/v1",
-        "apiKey": "{env:RAYLINE_API_KEY}",
-        "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
+        "apiKey": "{env:RAYLINE_API_KEY}"
       },
       "models": {
         "arc-sage-1.0": {
@@ -128,11 +126,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline opencode` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+`rayline opencode` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. If you send no `x-conversation-id`, Rayline falls back to the session identifiers OpenCode already sends on every request, so a conversation still holds together without the header; setting it explicitly is what lets you decide where one conversation ends and the next begins.
+Each launcher invocation is one conversation. In manual setup, Rayline recognises the session identifiers OpenCode already sends on every request, so a conversation holds together on its own.
 
 ## Troubleshooting
 

@@ -47,10 +47,7 @@ Create a configuration outside your project, for example
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.rayline.ai/v1",
-        "apiKey": "{env:RAYLINE_API_KEY}",
-        "headers": {
-          "x-conversation-id": "{env:RAYLINE_CONV_ID}"
-        }
+        "apiKey": "{env:RAYLINE_API_KEY}"
       },
       "models": {
         "arc-sage-1.0": {
@@ -91,13 +88,11 @@ Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
 
 ```bash
 export KILO_CONFIG="$HOME/.config/kilo/rayline.json"
-export RAYLINE_CONV_ID="$(uuidgen)"
 kilo run --pure --model rayline/arc-sage-1.0 "Read the README and explain how to run this project."
 ```
 
 `rayline/` is Kilo's provider selector; the API receives the bare model ID.
-Use `rayline/arc-swift-1.0` to select Swift. Keep a conversation ID for one session
-and generate a new one for an unrelated session.
+Use `rayline/arc-swift-1.0` to select Swift.
 
 <Warning>
 Kilo rejects environment-variable references in project configuration files.

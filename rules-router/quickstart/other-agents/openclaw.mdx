@@ -15,7 +15,7 @@ Install the tool using its [installation guide](https://docs.openclaw.ai/install
 
 ## Connect to the Rayline platform
 
-Set `RAYLINE_API_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
+Set `RAYLINE_API_KEY` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
 
 Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make it the default model:
 
@@ -33,7 +33,6 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
         "baseUrl": "https://api.rayline.ai",
         "api": "anthropic-messages",
         "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" },
-        "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
         "models": [
           {
             "id": "arc-sage-1.0",
@@ -69,14 +68,13 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
   `memory` is a top-level key, OpenClaw's global memory configuration. `heartbeat` and `compaction` go under `agents.defaults`.
 
-To keep a session in one conversation across relaunches, as the launcher does with `--session-id`, derive the ID from the session ID:
+To keep a session in one conversation across relaunches, give it a session ID:
 
 ```bash
-export RAYLINE_CONV_ID="oc-$(printf %s "my-task" | shasum -a 256 | cut -c1-32)"
 openclaw agent --local --session-id my-task --message "Reply with the word ready."
 ```
 
-`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
+`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there.
 
 ## Use a Rayline Local gateway
 
@@ -115,7 +113,7 @@ Use a current Node release supported by OpenClaw. Node 24.5.0 has a SQLite defec
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer.
+The launcher instructions below require Rayline 0.2.12 or later.
 
 ## Install
 
