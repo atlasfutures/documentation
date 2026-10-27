@@ -69,7 +69,7 @@ Save this in `$OPENCODE_CONFIG`:
 }
 ```
 
-OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 128,000 tokens, the maximum ARC accepts as published at `GET /v1/models`.
+OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 128,000 tokens, the maximum ARC accepts.
 
 `cost` gives OpenCode each tier's fixed rate card, in US dollars per million tokens, so its session cost display matches what Rayline bills. The rates come from [ARC pricing](/arc/pricing); update them if the card changes.
 
