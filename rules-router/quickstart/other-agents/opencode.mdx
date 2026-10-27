@@ -16,7 +16,7 @@ Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a f
 | Direct API | OpenCode → hosted Rayline | Cloud |
 | Rayline Local gateway | OpenCode → your gateway → hosted Rayline | Cloud |
 
-Both reach the same hosted ARC, so pick by where you want your Rayline API key to live. **Direct** is the simpler setup: OpenCode holds the key and talks to Rayline itself. **Rayline Local** puts a small gateway on your machine that holds the key instead; OpenCode gets a placeholder and never sees the real one, so nothing OpenCode runs can leak it. Choose Local when you would rather not hand the key to the agent or to the tools it executes.
+Both reach the same hosted ARC. Start with **Direct**, the simpler setup. Use **Rayline Local** when you want Rayline's local features — routing rules, provider configuration, or an on-device model — in front of OpenCode; see [Cloud or Rayline Local](/tools/hosted-local) for what each path gives you.
 
 A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Rayline Local](/tools/hosted-local).
 
