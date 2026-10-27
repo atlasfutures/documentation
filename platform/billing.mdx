@@ -9,7 +9,7 @@ icon: "wallet"
 | You request | Billed at | Rayline fee |
 | --- | --- | --- |
 | `arc-swift-1.0` or `arc-sage-1.0` | The tier's fixed rate card for input, cache-read, cache-write, and output tokens, whichever model serves it | Included in the card |
-| `arc-1.0` | Check [Dynamic pricing and billing availability](/arc/pricing#arc-dynamic) | Shown with Dynamic pricing when available |
+| `arc-1.0` | The served model's Rayline catalog price | None |
 | A model through legacy Rules Router settings | The served model's Rayline catalog price | 0% commission |
 | A decision (`/v1/routes`) | The tokens ARC reads to decide, once per request | The Decisions rate; your inference is billed by your own provider |
 | A subscription path, such as `raydock codex --subscription` | Your subscription provider | None from Rayline |

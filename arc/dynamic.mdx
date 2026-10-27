@@ -11,16 +11,14 @@ ARC Swift and ARC Sage use settings Rayline fixes for each tier. ARC Dynamic, `a
 - **Value (V)** is how many US dollars a successful result is worth to you. ARC weighs each candidate model's expected quality against its expected cost at that value. V is not a spending limit. Swift uses V 0.1 and Sage uses V 4.5; `arc-1.0` accepts V within the range the current ARC release supports.
 - **Routing temperature** sets how much ARC explores other candidates instead of always taking its top choice. It is a softmax temperature on ARC's normalized scores; 0 always takes the top choice. It is separate from the model's generation `temperature`.
 
-Check [ARC Dynamic pricing and billing availability](/arc/pricing#arc-dynamic) before sending requests. When pass-through pricing is available, it uses the served model's catalog price and the ARC fee shown there. Model availability and support for routing controls do not confirm that pass-through billing is enabled.
-
-A Swift or Sage request is billed at its tier's fixed rate card. Changing V never turns a Swift or Sage request into `arc-1.0`; a tier request that sets a different V is rejected.
+Requests to `arc-1.0` are billed at the **served model's catalog price**, with no ARC fee. A Swift or Sage request is billed at its tier's fixed rate card instead. Changing V never turns a Swift or Sage request into `arc-1.0`; a tier request that sets a different V is rejected.
 
 ## When to use which
 
 | You want | Use |
 | --- | --- |
 | A fixed price per token and no tuning | [`arc-swift-1.0` or `arc-sage-1.0`](/arc/models) |
-| Your own routing value and temperature | `arc-1.0`; check [pricing and availability](/arc/pricing#arc-dynamic) |
+| Your own cost/quality trade-off, billed at what the chosen model costs | `arc-1.0` |
 | A model choice to run in your own stack, with your own prices | [Decisions](/arc/decisions) |
 
 ## Data and exploration

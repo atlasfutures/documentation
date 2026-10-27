@@ -20,7 +20,7 @@ Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. Se
 | --- | --- | --- |
 | `arc-swift-1.0` | ARC Swift, fixed V 0.1 | Swift's fixed rate card |
 | `arc-sage-1.0` | ARC Sage, fixed V 4.5 | Sage's fixed rate card |
-| `arc-1.0` | ARC Dynamic | Check [Dynamic pricing and billing availability](/arc/pricing#arc-dynamic) |
+| `arc-1.0` | ARC Dynamic | The served model's catalog price, no ARC fee |
 
 `arc-1` is also accepted for `arc-1.0`. Prefixed IDs such as `rayline/arc-swift`, and unknown `arc-*` IDs such as `arc-2.0`, return `404` (`not_found_error`, `Model not found`); a bare `arc` is not an ID.
 
