@@ -3,9 +3,27 @@ title: "Uninstall Raydock"
 description: "Stop the runtime, sign out, and remove the CLI and its files."
 ---
 
-Raydock has no uninstall command. Remove it in this order, so nothing keeps running and no credentials stay behind.
+Raydock has no top-level uninstall command. Stop its separate runtimes and undo client setup before deleting the files.
 
 ## 1. Stop the runtime and sign out
+
+Close any agent sessions you started through Raydock. If you used Claude Desktop, first run:
+
+```bash
+raydock claude-desktop uninstall
+```
+
+This restores Desktop’s saved profile before removing the login service and its runtime state. Do this **before** deleting `~/.rayline`; that directory contains the recovery state. See [Claude Desktop removal](/tools/claude-desktop#remove-it).
+
+If you used ARC hybrid routing, stop its separate runtime too:
+
+```bash
+raydock hybrid stop
+```
+
+For an instance started with `--state-dir`, run `raydock hybrid --state-dir <path> stop` for that same directory. Stop any model server you launched separately if you no longer need it.
+
+Then stop the shared router and sign out:
 
 ```bash
 raydock router stop
@@ -49,11 +67,13 @@ On Windows, in PowerShell:
 Remove-Item -Recurse -Force "$HOME\.rayline", "$HOME\.config\rayline", "$env:APPDATA\rayline"
 ```
 
+If you used custom runtime state directories, remove those after stopping their instances.
+
 This removes the binaries, runtime state and logs, the bundled llama.cpp server, the isolated Claude Code and Codex homes, your settings and credentials, and the proxy's certificate authority. Raydock never adds that certificate to your system trust store, so there is nothing to remove there.
 
 Finally, take `~/.rayline/bin` off your `PATH`. On macOS and Linux, delete the lines the installer added to `~/.zshrc`, `~/.bash_profile`, or `~/.bashrc`: the comment `# Added by Raydock CLI installer` (or `# Added by Rayline CLI installer` on an older installation) and the `export PATH="$HOME/.rayline/bin:$PATH"` line after it. On Windows, remove the directory from your user `PATH` in **Environment Variables**.
 
-If you installed into another directory with `RAYLINE_INSTALL_DIR`, the steps above leave the binaries there. Delete just the two binaries, not the whole directory, which may hold other tools:
+If you installed into another directory with `RAYLINE_INSTALL_DIR`, the steps above leave the binaries there. Delete the Raydock binaries, alias, and bundled license listed below. Keep the directory itself if it holds other tools:
 
 ```bash
 rm "<install dir>/raydock" "<install dir>/rayline" "<install dir>/rld" "<install dir>/rayline-core" "<install dir>/rayline-core-LICENSE"

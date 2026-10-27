@@ -92,15 +92,15 @@ Raydock starts the router, points Codex at it for this run, and passes everythin
 
 ## Choose who serves the requests
 
-`--auth` decides where the main agent's requests go:
+`--auth` controls Codex subscription authentication. Without a custom config, it also selects the default route:
 
 | Option | Requests go to | Billed through |
 | --- | --- | --- |
 | `--auth auto` (default) | Hosted Rules Router, for the main agent and subagents | Your Rayline workspace |
 | `--auth subscription`, or `--subscription` | Your existing ChatGPT/Codex login for the main agent; subagents go to your local model when one is configured | Your ChatGPT plan |
-| `--auth none` | Local endpoints only, from your local model or `--config` | Nothing hosted |
+| `--auth none` | No Codex subscription auth; uses the local default or endpoints in `--config` | The configured provider, if any |
 
-The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, `auto` follows the routes in that file instead. Use `--model <model>` to request a specific model; without it, the router chooses per request.
+The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model; without it, the router chooses per request.
 
 ```bash
 raydock codex --subscription -- exec "summarize this repo"

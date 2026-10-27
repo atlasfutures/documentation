@@ -998,5 +998,33 @@
       "quick-diagnostics",
       "specific-areas"
     ]
+  },
+  {
+    "source": "/arc/models",
+    "destination": "/arc/models",
+    "fragments": [
+      "configurable-arc"
+    ]
+  },
+  {
+    "source": "/platform/usage",
+    "destination": "/platform/usage",
+    "fragments": [
+      "agent-gateway"
+    ]
+  },
+  {
+    "source": "/arc/pricing",
+    "destination": "/arc/pricing",
+    "fragments": [
+      "agent-gateway"
+    ]
+  },
+  {
+    "source": "/tools/claude-desktop",
+    "destination": "/tools/claude-desktop",
+    "fragments": [
+      "connect-the-desktop-app"
+    ]
   }
 ]
