@@ -36,7 +36,7 @@ unrelated task. Keep the same value while continuing a task.
 The **Custom Headers** step is specific to the IDE extension. Cline's CLI
 (install exactly `cline` with `npm install -g cline`; the package named
 `@cline/cli` is a different, stale tool) reaches ARC with the same provider, model and base URL via
-`cline auth -p openai-compatible -k <key> -m arc-sage -b https://api.rayline.ai/v1`,
+`cline auth -p openai-compatible -k <key> -m arc-sage-1.0 -b https://api.rayline.ai/v1`,
 but has no custom-header setting, so `x-conversation-id` does not apply to it:
 Rayline then derives a conversation from the request itself, so a task still
 holds together, but you cannot name a conversation yourself. The desktop app's
