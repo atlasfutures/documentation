@@ -1,6 +1,6 @@
 ---
 title: "Raydock CLI"
-description: "Install the CLI and find every supported command, option, and file."
+description: "Install the CLI and find its commands, options, and configuration files."
 ---
 
 Use `raydock` for new commands. The previous `rayline` command remains a supported alias; configuration and credentials stay in their existing locations.
@@ -24,7 +24,7 @@ On Windows, in PowerShell:
 irm https://get.rayline.ai/install.ps1 | iex
 ```
 
-The installers download the Raydock CLI, `rld` daemon, and `rayline-core` execution core, verify them against the release checksums, and install `raydock` plus the `rayline` alias in `~/.rayline/bin`. They then add that directory to your `PATH`:
+The installers download the Raydock CLI, `rld` daemon, and `rayline-core` execution core and verify them against the release checksums. By default, all three binaries and the `rayline` alias go in `~/.rayline/bin`. The installers then add that directory to your `PATH`:
 
 - on macOS and Linux, by appending `export PATH="$HOME/.rayline/bin:$PATH"` to `~/.zshrc`, `~/.bash_profile` on macOS, or `~/.bashrc` on Linux, depending on your shell;
 - on Windows, in your user `PATH`.
@@ -34,6 +34,7 @@ Open a new terminal afterwards. With another shell, the installer prints the lin
 | Variable | Effect |
 | --- | --- |
 | `RAYLINE_INSTALL_DIR` | Install into another directory. On macOS and Linux the installer then leaves your shell profile alone; add the directory to your `PATH` yourself. |
+| `RAYLINE_DAEMON_DIR` | On macOS and Linux, install `rld` into a separate directory. Otherwise it goes in the CLI's install directory. |
 | `RAYLINE_NO_PATH_UPDATE=1` | Skip the `PATH` change. |
 
 To install a specific version, pass its full version string, as `raydock --version` prints it (for example `0.2.8+108012255153`), to the script with `curl -fsSL https://get.rayline.ai/install.sh | bash -s -- <version>`. On Windows, set `RAYLINE_VERSION` before running the installer.
@@ -72,18 +73,22 @@ For the menu bar app, update the `rayline-app` cask or replace `Rayline.app` in 
 | --- | --- |
 | `raydock auth login` | Sign in for hosted routing. See [raydock auth](/raydock/cli/auth). |
 | `raydock status` | Show your sign-in state. Same as `raydock auth status`. |
-| `raydock claude` | Launch Claude Code with hosted routing. See [raydock claude](/raydock/cli/claude). |
-| `raydock claude --local` | Launch Claude Code with the on-device hybrid router. |
+| `raydock claude` | Launch Claude Code through the hosted Legacy Rules Router by default. See [raydock claude](/raydock/cli/claude). |
+| `raydock claude --local` | Launch Claude Code with the on-device static router. |
+| `raydock claude-desktop` | Connect Claude Desktop's Code sessions to ARC. See [Claude Desktop](/tools/claude-desktop). |
 | `raydock codex -- exec "summarize this repo"` | Run Codex CLI through Rayline. See [Codex](/tools/codex). |
 | `raydock codex app` | Launch the Codex desktop app through Rayline. |
 | `raydock codex configure` | Write a reusable Codex profile that points at the local router. |
 | `raydock opencode`, `pi`, `omp`, `hermes`, `openclaw` | Launch another agent harness through hosted routing. See [more agent harnesses](/tools/more-tools). |
 | `raydock local <command>` | Choose and manage the local model. See [local models](/raydock/local-models). |
 | `raydock router <command>` | Start, inspect, or stop the local runtime. See [raydock router](/raydock/cli/router). |
+| `raydock hybrid <command>` | Run ARC routing across local and cloud inference, or connect a harness to it. See the [hybrid setup guide](https://github.com/rayline-ai/rayline/blob/main/docs/hybrid-routing.md). |
 | `raydock top` | Show live request metrics for the local runtime. |
 | `raydock update` | Check for or install a CLI update. |
 
 Every command accepts `--help`. Run `raydock --help` for the list your installed version supports.
+
+The bare Claude Code, Codex, OpenCode, pi, omp, Hermes, and OpenClaw launchers request `rayline-router`, the hosted Legacy Rules Router. They do not select an ARC tier automatically; each [tool guide](/tools) explains its ARC setup. `raydock hybrid` uses ARC selection and is separate from the static routing in `raydock claude --local`. Hybrid routing requires macOS 13 or later, or Linux.
 
 <span id="global-options" />
 <span id="--env" />
@@ -105,7 +110,7 @@ Sign-in sessions and router keys are stored per environment, so signing in to on
 
 | Path | Contents |
 | --- | --- |
-| `~/.rayline/bin` | The `raydock` command, `rayline` alias, `rld`, and `rayline-core`. |
+| `~/.rayline/bin` | Default location for the `raydock` command, `rayline` alias, `rld`, and `rayline-core`; installer overrides can change it. |
 | `~/.rayline/rld` | Local runtime state and logs. |
 | `~/.rayline/cc` | Claude Code configuration for `--isolated` sessions. |
 | `~/.rayline/codex-app-home` | The isolated Codex home used by `raydock codex app`. |

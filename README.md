@@ -19,7 +19,7 @@ Run validation before starting the preview; both use the CLI's shared generated 
 From the parent monorepo:
 
 ```sh
-bun scripts/rayline-docs-rates.ts
+bun scripts/rayline-docs-rates.ts --api-origin https://api.rayline.ai
 bun run node scripts/check-rayline-docs.mjs
 bun run node scripts/rayline-docs-smoke.mjs
 bun run node scripts/rayline-docs-navigation.mjs
@@ -29,13 +29,13 @@ The last two commands require the running preview and installed Playwright brows
 
 ## Content ownership
 
-- `arc/`: generation, Decisions, open source, compatibility, and launch pricing.
+- `arc/`: generation, Decisions, open source, compatibility, and pricing.
 - `raydock/`: on-device setup, CLI, menu bar companion, and troubleshooting.
 - `tools/`: harness integration guides.
 - `legacy/rules-router/`: existing saved routing policies and billing.
 - `workshop/`: migrated Workshop articles, including Cloud and Desktop sidebar sections.
 - `platform/`: shared Rayline workspace keys and usage.
-- `snippets/arc-rates.mdx`: generated launch-price snapshot. In the parent, generate a patch with `bun scripts/rayline-docs-rates.ts --patch`, review it, and apply it.
+- `snippets/arc-rates.mdx`: generated effective-price snapshot. In the parent, generate a patch with `bun scripts/rayline-docs-rates.ts --api-origin https://api.rayline.ai --patch`, review it, and apply it.
 
 Existing Rayline paths redirect inside this site's `docs.json`. Workshop's old domain needs host-level redirects; the parent repository contains their manifest at `docs/rayline-docs-workshop-redirects.json`.
 
@@ -47,7 +47,7 @@ This is an implementation preview, not a billing or API launch.
 2. Test the hosted Mintlify preview, including real search indexing and old-domain redirects. Search is unavailable in the local CLI preview.
    The local CLI also drops query strings on configured redirects. Verify query preservation on the hosted deployment; implement host-level forwarding if needed. Do not treat the local path-redirect check as evidence that query forwarding works.
 3. Confirm ARC production contracts, live inference, and supported features before removing preview notices or publishing executable production examples.
-4. Coordinate the 0% hosted routing commission and ARC rate card with actual billing enforcement and an effective date. The current docs do not change charges.
+4. Coordinate the 0% hosted routing commission and ARC rate card with actual billing enforcement and an effective date. The current docs do not change charges. Verify ARC Dynamic pass-through billing independently of serving readiness: a served model does not establish that billing is enabled. The public price projection must mark pass-through billing available before publishing a fee claim.
 5. Release the matching Raydock CLI, app bundle, installers, and Homebrew formula before publishing the new install and upgrade instructions. The app bundle must preserve its `bin/rayline` alias so existing command-line links and Claude Desktop login services survive an upgrade.
 6. Publish the documentation repository and update the parent submodule pointer together. Verify in-app documentation links through the redirects before retiring the old Workshop publishing source.
 

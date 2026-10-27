@@ -16,7 +16,7 @@ raydock claude --isolated
 raydock claude --local
 ```
 
-Without `--local`, the session uses hosted routing. If you have not signed in, `raydock claude` starts the sign-in flow on a terminal and then creates a router key for you; in a non-interactive shell, run `raydock auth login` first.
+By default, `raydock claude` requests `rayline-router`, the hosted Legacy Rules Router on Rayline Platform. It does not select an ARC tier automatically; see [Use ARC Sage or Swift](/tools/claude-code#use-arc-sage-or-swift) for that setup. If you have not signed in, `raydock claude` starts the sign-in flow on a terminal and then creates a router key for you; in a non-interactive shell, run `raydock auth login` first.
 
 <span id="options" />
 
@@ -62,11 +62,11 @@ To run Claude Code on ARC, see [Use ARC Sage or Swift](/tools/claude-code#use-ar
 
 | Command | Who decides the route | How Claude Code connects | What goes through the router |
 | --- | --- | --- | --- |
-| `raydock claude` | Hosted | Proxy | Everything |
-| `raydock claude --via env` | Hosted | Environment | Everything |
-| `raydock claude --route subagents` | Hosted | Proxy | Subagents only |
-| `raydock claude --local` | Local | Proxy | Subagents only |
-| `raydock claude --local --route all` | Local | Proxy | Everything; the main agent still reaches cloud Claude by default |
+| `raydock claude` | Hosted Legacy Rules Router | Proxy | Everything |
+| `raydock claude --via env` | Hosted Legacy Rules Router | Environment | Everything |
+| `raydock claude --route subagents` | Hosted Legacy Rules Router | Proxy | Subagents only |
+| `raydock claude --local` | On-device static router | Proxy | Subagents only |
+| `raydock claude --local --route all` | On-device static router | Proxy | Everything; the main agent still reaches cloud Claude by default |
 
 `--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Raydock rejects it with `--local` or `--route subagents`. `raydock claude --local --route all` sends every subagent to your local model, but the main agent still goes to cloud Claude, because the local router's built-in config routes the main agent to Anthropic. A fully local session also needs a router config; see [fully local sessions](/raydock/local-models#fully-local-sessions).
 
