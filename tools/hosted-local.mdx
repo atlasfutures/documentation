@@ -84,6 +84,8 @@ Install [Rayline](/rules-router/cli#install). Save this configuration as `router
 }
 ```
 
+The endpoint's `protocol` is what the gateway speaks *to Rayline*; your tool can still send it Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. `anthropic_messages` is the one value that serves all three, which is why it is the one shown. (`openai_responses` only serves tools that already send Responses, and `openai_chat` cannot carry hosted tools.)
+
 Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 
 ```bash
