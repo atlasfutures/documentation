@@ -87,7 +87,7 @@ On Windows, delete `raydock.exe`, `rayline.exe`, `rld.exe`, `rayline-core.exe`, 
 - `.rayline.exe.old-*`, `.raydock.exe.old-*`, `.rld.exe.old-*`, `.rayline-core.exe.old-*`, and `.rayline-core-LICENSE.old-*`
 - `rayline.exe.old-*`, `raydock.exe.old-*`, `rld.exe.old-*`, `rayline-core.exe.old-*`, and `rayline-core-LICENSE.old-*`
 
-New completed replacements mark retired backups with a leading dot and an `.old-<pid>-<nonce>` suffix. For unmanaged installs, cleanup is deferred to a later `raydock update` or installer run; files still in use are kept. Ordinary CLI commands, `update --check`, and `update --dry-run` do not perform this cleanup. Historical `.tmp-*` files and non-dot backups such as `rayline.exe.old-<guid>` remain manual-only because they can be part of an unfinished replacement. Remove them only after all sessions, runtimes, installers, and updaters have finished.
+New completed replacements mark retired backups with a leading dot and an `.old-<pid>-<nonce>` suffix. For unmanaged installs, cleanup is deferred to a later `raydock update` that installs a release, or an installer run; files still in use are kept. Ordinary CLI commands, `update --check`, `update --dry-run`, and an update that finds Raydock already current without installing anything do not perform this cleanup. Historical `.tmp-*` files and non-dot backups such as `rayline.exe.old-<guid>` remain manual-only because they can be part of an unfinished replacement. Remove them only after all sessions, runtimes, installers, and updaters have finished.
 
 Leave other files alone. Then remove the `PATH` entry you added for the install directory.
 
