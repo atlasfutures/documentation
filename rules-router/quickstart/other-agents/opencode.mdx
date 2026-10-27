@@ -51,14 +51,14 @@ Save this in `$OPENCODE_CONFIG`:
       "models": {
         "arc-sage-1.0": {
           "name": "ARC Sage",
-          "limit": { "context": 200000, "output": 32000 },
+          "limit": { "context": 200000, "output": 128000 },
           "cost": { "input": 1, "output": 5, "cache_read": 0.05, "cache_write": 1.25 },
           "reasoning": true,
           "tool_call": true
         },
         "arc-swift-1.0": {
           "name": "ARC Swift",
-          "limit": { "context": 200000, "output": 32000 },
+          "limit": { "context": 200000, "output": 128000 },
           "cost": { "input": 0.05, "output": 0.25, "cache_read": 0.005, "cache_write": 0.0625 },
           "reasoning": true,
           "tool_call": true
@@ -69,7 +69,7 @@ Save this in `$OPENCODE_CONFIG`:
 }
 ```
 
-OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 32,000 tokens.
+OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 128,000 tokens, the maximum ARC accepts as published at `GET /v1/models`.
 
 `cost` gives OpenCode each tier's fixed rate card, in US dollars per million tokens, so its session cost display matches what Rayline bills. The rates come from [ARC pricing](/arc/pricing); update them if the card changes.
 
