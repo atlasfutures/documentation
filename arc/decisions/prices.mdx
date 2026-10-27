@@ -18,7 +18,7 @@ Add `routing.prices` to the decision request: a map from model ID to four prices
   "messages": [{"role": "user", "content": "Refactor the billing module."}],
   "routing": {
     "prices": {
-      "deepseek/deepseek-v4-pro": {"input": 0.3, "cache_read": 0.03, "cache_write": 0.3, "output": 0.7},
+      "deepseek/deepseek-v4-pro-0813": {"input": 0.3, "cache_read": 0.03, "cache_write": 0.3, "output": 0.7},
       "qwen/qwen3.8-27b": {"input": 0, "cache_read": 0, "cache_write": 0, "output": 0}
     },
     "exclusive": true
@@ -27,7 +27,7 @@ Add `routing.prices` to the decision request: a map from model ID to four prices
 ```
 
 - **All four legs are required:** `input`, `cache_read`, `cache_write`, `output`. 0 is a valid price, for example for a model on your own hardware; a missing or blank leg is refused. If your provider does not price cache reads or writes separately, use its input price for both.
-- **Up to 256 models.** A model ID that ARC cannot select is refused with `unknown_price_model`.
+- **Up to 256 models.** Use the model IDs a decision returns in `model` and `alternatives[].model`, such as `deepseek/deepseek-v4-pro-0813`. A model ID that ARC cannot select is refused with `unknown_price_model`.
 - **`exclusive: true`** limits the candidates to the models you priced. Without it, models you did not price keep their catalog prices.
 
 ARC never substitutes a catalog price for a malformed entry: an invalid request is refused with a `400` naming the problem.
