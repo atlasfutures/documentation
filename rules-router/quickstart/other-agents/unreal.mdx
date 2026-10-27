@@ -50,20 +50,19 @@ View the model ARC selected and the request’s cost in [Rayline Usage](/platfor
 
 ## Rayline Local
 
-Use the **Anthropic provider** for Rayline Local. Start a
+Use Rayline Local **0.2.12 or later**. Keep the same OpenAI provider as the
+direct setup; only the base URL and the key change, because the gateway holds
+your real Rayline key and the runner gets a placeholder. Start a
 [gateway forwarding to hosted Rayline](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
 then set:
 
 ```bash
-export UNREAL_HARNESS_LLM_PROVIDER=anthropic
+export UNREAL_HARNESS_LLM_PROVIDER=openai
 export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
 export UNREAL_HARNESS_LLM_API_KEY=local-client
 export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
 ```
 
-Use your gateway's actual port and authentication. The placeholder above is for
-the gateway described above; its environment holds the real upstream key. Unreal's
-Anthropic provider expects `/v1` here. This path forwards cloud inference; it
-does not run the inference model or ARC locally.
-
-Use the Anthropic provider with Rayline Local 0.2.10. Its OpenAI provider can return an empty answer through that gateway version; the cloud connection above uses the OpenAI provider directly.
+Use your gateway's actual port. The placeholder key is for the gateway
+described above; its environment holds the real upstream key. This path
+forwards cloud inference; it does not run the inference model or ARC locally.
