@@ -33,19 +33,11 @@ for the others. Open **Cline → Settings → API Configuration** and enter:
 
 If ARC is absent from the model list, enter its ID in **Custom Model ID**.
 
-You do not need to set a conversation ID. Rayline recognises a task from the
-request itself, so a task holds together on its own. If you want to decide
-where one conversation ends and the next begins — for example to keep two
-unrelated tasks apart — add `x-conversation-id` under **Custom Headers** and
-change its value between them.
-
 <Note>
 Cline's CLI (install exactly `cline` with `npm install -g cline`; the package
 named `@cline/cli` is a different, stale tool) reaches ARC with the same
 provider, model and base URL via
-`cline auth -p openai-compatible -k <key> -m arc-sage-1.0 -b https://api.rayline.ai/v1`.
-It has no custom-header setting, so the optional `x-conversation-id` above is
-extension-only; a CLI task still holds together on its own. The desktop app's
+`cline auth -p openai-compatible -k <key> -m arc-sage-1.0 -b https://api.rayline.ai/v1`. The desktop app's
 settings have not been checked against ARC.
 </Note>
 
