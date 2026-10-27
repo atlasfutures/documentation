@@ -16,6 +16,8 @@ Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a f
 | Direct API | OpenCode → hosted Rayline | Cloud |
 | Rayline Local gateway | OpenCode → your gateway → hosted Rayline | Cloud |
 
+Both reach the same hosted ARC, so pick by where you want your Rayline API key to live. **Direct** is the simpler setup: OpenCode holds the key and talks to Rayline itself. **Rayline Local** puts a small gateway on your machine that holds the key instead; OpenCode gets a placeholder and never sees the real one, so nothing OpenCode runs can leak it. Choose Local when you would rather not hand the key to the agent or to the tools it executes.
+
 A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Rayline Local](/tools/hosted-local).
 
 ## Install
@@ -24,7 +26,7 @@ Install [OpenCode](https://opencode.ai/docs/#install). Create a [Rayline API key
 
 ## Connect directly
 
-Use a separate configuration directory. These environment settings apply to the current shell:
+This path reads your key from `RAYLINE_API_KEY`, set in the [Install](#install) step. Use a separate configuration directory. These environment settings apply to the current shell:
 
 ```bash
 mkdir -p "$HOME/.config/opencode-rayline"
@@ -99,14 +101,14 @@ Start a new session and open the model picker below the prompt. Choose **arc-sag
 
 ## Use a Rayline Local gateway
 
-First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+First [start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway); that is where your real Rayline key now lives. Keep the provider configuration above unchanged. Only two settings differ from the direct setup:
 
-| Setting | Rayline platform | Rayline Local |
+| Setting | Direct | Rayline Local |
 | --- | --- | --- |
 | `baseURL` | `https://api.rayline.ai/v1` | `http://127.0.0.1:23811/v1` |
-| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` |
 
-Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+`23811` is the port the linked gateway setup uses; if you started yours on a different port, use that one.
 
 ## Try your first task
 
