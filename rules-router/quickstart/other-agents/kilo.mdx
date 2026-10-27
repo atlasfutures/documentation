@@ -80,9 +80,11 @@ Create a configuration outside your project, for example
 For Local, change only `baseURL` to the loopback URL above. The `/v1` suffix is
 required by this provider configuration.
 
-`limit.output` is the most tokens a reply may contain. Kilo sends it with each
-request and Rayline respects it. The value above is the maximum ARC accepts;
-a lower value cuts off long edits and tool transcripts.
+`limit.output` is the most tokens a single reply may contain. Kilo sends it
+with each request and Rayline respects it. The value above is the maximum ARC
+accepts. You can set a lower value if you want each turn's response kept
+short, but a long edit or a tool transcript that needs more room will be cut
+off at that limit.
 
 Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
 `RAYLINE_API_KEY=local-client` for Local. Then start Kilo with the explicit config:
