@@ -68,7 +68,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
   `memory` is a top-level key, OpenClaw's global memory configuration. `heartbeat` and `compaction` go under `agents.defaults`.
 
-To keep a session in one conversation across relaunches, give it a session ID:
+To resume OpenClaw's own session history across launches, give it a session ID:
 
 ```bash
 openclaw agent --local --session-id my-task --message "Reply with the word ready."
@@ -160,12 +160,17 @@ OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and the
 
 ## Conversations
 
-The default Messages provider sends a conversation ID on every request:
+With the manual Messages configuration above, OpenClaw sends no session
+identifier of its own; Rayline recognises the conversation from the request
+itself, so a task holds together without any setup. `--session-id` names a
+session for OpenClaw's own history and does not change what reaches Rayline.
 
-- With `--session-id <id>`, the conversation ID is derived from that session ID, so relaunching the same session keeps its conversation.
-- Without it, each launch is a new conversation.
+Under `rayline openclaw`, the launcher sends a conversation ID on every
+request: stable across relaunches when you pass `--session-id <id>`, and
+fresh per launch otherwise.
 
-The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
+The Responses provider sends OpenClaw's session as `prompt_cache_key`, which
+Rayline also recognises.
 
 ## Known limitations
 
