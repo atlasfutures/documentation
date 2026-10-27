@@ -22,7 +22,13 @@ The port is configurable; use the same port in both configurations.
 
 ## Configure Kilo
 
-Install Kilo using its [official instructions](https://kilo.ai/docs/getting-started/install). The CLI is the scoped npm package `@kilocode/cli`; the unscoped `kilocode` on npm is an unrelated placeholder and not Kilo.
+Install Kilo using its [official instructions](https://kilo.ai/docs/getting-started/install).
+
+<Warning>
+Install exactly `@kilocode/cli`. The npm package named `kilocode` is a different
+tool, not Kilo.
+</Warning>
+
 Create a configuration outside your project, for example
 `~/.config/kilo/rayline.json`, with this content:
 
