@@ -1,12 +1,12 @@
 ---
 title: "More agent harnesses"
 sidebarTitle: "Overview"
-description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Rules Router."
+description: "Connect your agent harness to Rayline Platform or use the Raydock launchers."
 ---
 
 <span id="planned-integrations" />
 
-Install or update Rayline through the [official installer](/raydock/cli). The launcher commands below require Rayline 0.2.8 or later.
+Install or update Raydock through the [official installer](/raydock/cli). The launcher commands below require Rayline 0.2.8 or later.
 
 <span id="choose-a-connection" />
 
@@ -14,9 +14,11 @@ Install or update Rayline through the [official installer](/raydock/cli). The la
 
 ## Use ARC with your agent harness
 
-Follow your tool’s guide to connect to the Rayline platform. Each guide also explains its Raydock option. Both paths can use cloud inference; see [hosted and local connections](/raydock/connections).
+Follow your tool’s guide to connect to the Rayline Platform. Each guide also explains its Raydock option. Both paths can use cloud inference; see [Rayline Platform and Raydock](/raydock/connections).
 
-Rayline can launch these agent harnesses against hosted Rules Router, the same way `raydock claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
+## Raydock launchers
+
+The launcher defaults below use [Legacy Rules Router](/legacy/rules-router). To use ARC, follow the ARC configuration in your tool’s guide. Install the agent first; Raydock configures the route but does not bundle the agent.
 
 | Command | Agent | Install | Guide |
 | --- | --- | --- | --- |
@@ -34,26 +36,26 @@ raydock opencode run --standalone "summarize this repo"
 
 ## Launcher options
 
-Everything after the agent's name goes to the agent unchanged, including `--help`. Rayline reads only two options, and only when they come directly after the agent's name, before any of the agent's own arguments:
+Everything after the agent's name goes to the agent unchanged, including `--help`. Raydock reads only two options, and only when they come directly after the agent's name, before any of the agent's own arguments:
 
 | Option | Purpose |
 | --- | --- |
 | `--env <name>` | Use another [hosted environment](/raydock/cli#hosted-environment). You can also put it before the agent's name. |
 | `--auth-token <token>` | Use this account token instead of your stored sign-in. |
 
-Use `--` to pass an argument that would otherwise be read as a Rayline option.
+Use `--` to pass an argument that would otherwise be read as a Raydock option.
 
 ## What the launcher does
 
 1. Signs you in and creates a router key if you have none, as `raydock claude` does. In a non-interactive shell, run `raydock auth login` first.
-2. Writes a Rayline config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
+2. Writes a Raydock config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
 3. Starts the agent with model `rayline-router` over the Anthropic Messages API, so Rules Router chooses the model for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
 
-Each launch prints the router URL, the conversation ID, and the config directory. Rayline rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Rayline's; each agent's guide lists which files those are.
+Each launch prints the router URL, the conversation ID, and the config directory. Raydock rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Raydock's; each agent's guide lists which files those are.
 
 ## How your key is handled
 
-Since Rayline 0.2.12, the launcher writes the router key only into the Rayline-owned config directory, readable only by you, and removes `RAYLINE_KEY` and `RAYLINE_ROUTER_API_KEY` from the agent's environment, so the agent's tools never see the key. Each agent's guide says how its config refers to the key. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
+Since Rayline 0.2.12, the launcher writes the router key only into the Raydock-owned config directory, readable only by you, and removes `RAYLINE_KEY` and `RAYLINE_ROUTER_API_KEY` from the agent's environment, so the agent's tools never see the key. Each agent's guide says how its config refers to the key. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
 
 ## Conversations
 
@@ -61,11 +63,11 @@ Rules Router groups requests into conversations. Each launch gets a new conversa
 
 ## Manual setup (without the launcher)
 
-You can connect each agent to Rules Router yourself, with the configuration `rayline <agent>` writes. The manual configs read your key from the `RAYLINE_API_KEY` environment variable, the variable used across the Rayline docs; the launcher instead keeps the key in its own config files. Each agent's guide has a copy-paste config. They all rely on two environment variables.
+Each tool’s guide includes a manual ARC configuration. Those configurations read your key from `RAYLINE_API_KEY`; the launcher instead keeps it in its own config files. For an existing Legacy Rules Router integration, select `rayline-router` instead of an ARC model ID. Set the following environment variables before starting the tool.
 
 ### The API key
 
-Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_API_KEY` in the shell that starts the agent, for example from your secrets manager:
+Create a key in **API Keys** on the [Rayline Platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_API_KEY` in the shell that starts the agent, for example from your secrets manager:
 
 ```bash
 export RAYLINE_API_KEY="<your Rayline API key>"

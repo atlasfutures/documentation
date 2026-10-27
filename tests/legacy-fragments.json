@@ -373,5 +373,630 @@
       "make-the-call",
       "next-steps"
     ]
+  },
+  {
+    "source": "/rules-router/index",
+    "destination": "/raydock/index",
+    "fragments": [
+      "agent-gateway-versus-arc",
+      "agents-and-subagents",
+      "choose-your-gateway"
+    ]
+  },
+  {
+    "source": "/rules-router/policies",
+    "destination": "/legacy/rules-router/index",
+    "fragments": [
+      "a-practical-configuration",
+      "architecture-at-a-glance",
+      "failures-and-scope",
+      "fallback-behavior",
+      "how-classification-maps-to-slots",
+      "key-concepts",
+      "latency-impact",
+      "local-model-port",
+      "main-agent-pinning",
+      "main-model-pin",
+      "ml-routing-default",
+      "model-pinning",
+      "overriding-a-slot",
+      "resetting-to-defaults",
+      "routing-strategies",
+      "rules-based-routing",
+      "slots",
+      "step-1-classify-the-task",
+      "step-2-select-the-model",
+      "step-3-dispatch",
+      "stickiness",
+      "subagent-detection",
+      "the-problem",
+      "the-solution",
+      "tips",
+      "what-about-vision",
+      "what-rayline-routes"
+    ]
+  },
+  {
+    "source": "/rules-router/pricing/index",
+    "destination": "/legacy/rules-router/pricing",
+    "fragments": [
+      "adding-funds",
+      "auto-top-up",
+      "check-an-example",
+      "checking-your-balance",
+      "cost-tracking",
+      "during-onboarding",
+      "enterprise",
+      "from-the-dashboard",
+      "getting-started",
+      "how-rayline-pricing-works",
+      "not-arc-decisions",
+      "plans",
+      "pricing-model",
+      "what-counts-as-usage",
+      "what-you-pay-for",
+      "why-it-still-saves-money"
+    ]
+  },
+  {
+    "source": "/rules-router/reference",
+    "destination": "/tools/connections",
+    "fragments": [
+      "connecting-another-client",
+      "start-with-the-connection",
+      "what-rayline-local-can-handle",
+      "what-the-provider-setting-means"
+    ]
+  },
+  {
+    "source": "/rules-router/how-it-works/models",
+    "destination": "/platform/models",
+    "fragments": [
+      "anthropic",
+      "cost-estimation",
+      "deepseek",
+      "frontier-models",
+      "google",
+      "google-models",
+      "how-to-read-this-table",
+      "minimax",
+      "model-catalog-updates",
+      "moonshot",
+      "on-device",
+      "on-device-models",
+      "open-source-models",
+      "openai",
+      "provider-routing",
+      "using-a-specific-model",
+      "zhipu-zai"
+    ]
+  },
+  {
+    "source": "/arc/gateway-routing",
+    "destination": "/arc/dynamic",
+    "fragments": [
+      "data-and-exploration",
+      "when-to-use-which"
+    ]
+  },
+  {
+    "source": "/tools/hosted-local",
+    "destination": "/raydock/connections",
+    "fragments": [
+      "choose-your-connection",
+      "configure-a-cloud-forwarding-gateway",
+      "connect-directly-to-rayline",
+      "connect-through-rayline-local",
+      "connect-through-the-cloud-or-rayline-local",
+      "on-device-inference",
+      "run-arc-locally",
+      "subscription-billing",
+      "two-ways-to-connect",
+      "where-the-work-runs",
+      "who-bills-the-requests"
+    ]
+  },
+  {
+    "source": "/rules-router/cli/claude",
+    "destination": "/raydock/cli/claude",
+    "fragments": [
+      "common-combinations",
+      "how-your-key-is-handled",
+      "older-flags",
+      "options",
+      "passing-arguments-to-claude-code",
+      "rayline-claude",
+      "rayline-claude-hooks-install",
+      "rayline-claude-hooks-status",
+      "rayline-claude-hooks-uninstall",
+      "rayline-claude-key",
+      "rayline-claude-login",
+      "rayline-claude-logout",
+      "rayline-claude-setup",
+      "rl-claude",
+      "rl-claude-hooks-install",
+      "rl-claude-hooks-status",
+      "rl-claude-hooks-uninstall",
+      "rl-claude-key",
+      "rl-claude-login",
+      "rl-claude-logout",
+      "rl-claude-setup",
+      "setup-subcommands",
+      "telemetry",
+      "verify-the-route",
+      "what-it-does"
+    ]
+  },
+  {
+    "source": "/rules-router/cli/index",
+    "destination": "/raydock/cli/index",
+    "fragments": [
+      "--env",
+      "command-overview",
+      "commands",
+      "configuration",
+      "environment-variables",
+      "files",
+      "global-options",
+      "hosted-environment",
+      "install",
+      "next-steps",
+      "ports",
+      "update"
+    ]
+  },
+  {
+    "source": "/rules-router/cli/auth",
+    "destination": "/raydock/cli/auth",
+    "fragments": [
+      "credential-storage",
+      "example",
+      "example-1",
+      "options",
+      "options-1",
+      "options-2",
+      "rayline-auth-login",
+      "rayline-auth-logout",
+      "rayline-auth-token",
+      "rl-auth-login",
+      "rl-auth-logout",
+      "rl-auth-token",
+      "scripting",
+      "sign-out"
+    ]
+  },
+  {
+    "source": "/rules-router/cli/router",
+    "destination": "/raydock/cli/router",
+    "fragments": [
+      "example-output",
+      "examples",
+      "health-checks",
+      "logs",
+      "options",
+      "rayline-router-logs",
+      "rayline-router-start",
+      "rayline-router-status",
+      "rayline-router-stop",
+      "rl-router-logs",
+      "rl-router-start",
+      "rl-router-status",
+      "rl-router-stop",
+      "start-a-runtime-separately",
+      "stop",
+      "what-starts"
+    ]
+  },
+  {
+    "source": "/rules-router/cli/uninstall",
+    "destination": "/raydock/cli/uninstall",
+    "fragments": [
+      "1-stop-the-runtime-and-sign-out",
+      "2-remove-downloaded-models",
+      "3-undo-client-changes",
+      "4-delete-the-files"
+    ]
+  },
+  {
+    "source": "/rules-router/guides/local-models",
+    "destination": "/raydock/local-models",
+    "fragments": [
+      "adapter-port-20808",
+      "all-local-commands",
+      "architecture",
+      "check-status",
+      "choose-which-subagents-run-locally",
+      "choosing-a-local-model",
+      "combining-cloud-and-local",
+      "custom-models",
+      "default-model",
+      "fully-local-sessions",
+      "how-it-works",
+      "hybrid-by-default",
+      "injector-port-20809",
+      "llama-server-port-8081",
+      "llama-server-wont-start",
+      "managing-the-daemon",
+      "model-download-is-slow",
+      "next-steps",
+      "operational-checks",
+      "option-1--rayline-runs-the-model",
+      "option-2--you-run-the-model",
+      "out-of-memory",
+      "port-conflicts",
+      "quick-start",
+      "requirements",
+      "requirements-for-custom-models",
+      "setup",
+      "stop",
+      "troubleshooting",
+      "view-logs",
+      "what-routes-locally",
+      "what-starts"
+    ]
+  },
+  {
+    "source": "/rules-router/guides/menubar",
+    "destination": "/raydock/menubar",
+    "fragments": [
+      "account",
+      "authentication",
+      "auto-start",
+      "automatic-recommended",
+      "check-a-routed-session",
+      "cost-savings",
+      "installation",
+      "launch-claude-code",
+      "manual",
+      "opting-out",
+      "opting-out-of-auto-install",
+      "rayline-menubar-install",
+      "rayline-menubar-start",
+      "rayline-menubar-status",
+      "rayline-menubar-stop",
+      "requirements",
+      "rl-menubar-install",
+      "rl-menubar-start",
+      "rl-menubar-status",
+      "rl-menubar-stop",
+      "routing-controls",
+      "starting-and-stopping",
+      "what-it-shows"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/agents",
+    "destination": "/tools/custom-agents",
+    "fragments": [
+      "cloud",
+      "local",
+      "make-the-call",
+      "next-steps",
+      "set-the-local-model",
+      "trust-the-proxy-ca"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/codex",
+    "destination": "/tools/codex",
+    "fragments": [
+      "arc",
+      "choose-who-serves-the-requests",
+      "codex-cli",
+      "codex-desktop",
+      "connect-to-the-rayline-platform",
+      "explicit-routes",
+      "how-your-key-is-handled",
+      "launch-with-rayline-local",
+      "manual-setup-without-the-launcher",
+      "reusable-profile",
+      "try-your-first-task",
+      "use-arc-through-rayline-local",
+      "verify"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/claude-code",
+    "destination": "/tools/claude-code",
+    "fragments": [
+      "advanced-manual-environment-variables",
+      "choose-a-connection",
+      "connect-directly",
+      "connect-through-rayline-local",
+      "disabling-rayline-temporarily",
+      "even-easier-the-rayline-app",
+      "install-rayline",
+      "manual-setup-without-the-launcher",
+      "next-steps",
+      "on-device-inference",
+      "return-to-your-usual-setup",
+      "run-on-device-with---local",
+      "the-easy-way-rayline-claude",
+      "the-easy-way-rl-claude",
+      "troubleshooting",
+      "try-local-routing",
+      "try-your-first-task",
+      "two-ways-to-use-arc-with-claude-code",
+      "use-arc-sage-or-swift",
+      "verify-its-working",
+      "verify-the-route"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents",
+    "destination": "/tools/more-tools",
+    "fragments": [
+      "check-the-connection",
+      "choose-a-connection",
+      "conversations",
+      "how-your-key-is-handled",
+      "launcher-options",
+      "legacy-integrations",
+      "manual-setup-without-the-launcher",
+      "planned-integrations",
+      "the-api-key",
+      "the-conversation-id",
+      "troubleshooting",
+      "use-arc",
+      "use-arc-with-your-agent-harness",
+      "use-arc-with-your-coding-agent",
+      "what-the-launcher-does"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/pi",
+    "destination": "/tools/pi",
+    "fragments": [
+      "choose-a-connection",
+      "configurable-arc",
+      "connect-directly",
+      "conversations",
+      "install",
+      "key-handling",
+      "known-limitations",
+      "launcher-and-session-behavior",
+      "launcher-availability",
+      "manual-setup-without-the-launcher",
+      "run",
+      "send-your-own-routing-value",
+      "troubleshooting",
+      "try-your-first-task",
+      "two-ways-to-use-arc-with-pi",
+      "use-a-rayline-local-gateway",
+      "use-arc-directly",
+      "verify-the-route",
+      "verify-your-setup",
+      "what-rayline-writes"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/cline",
+    "destination": "/tools/cline",
+    "fragments": [
+      "direct-api",
+      "rayline-local",
+      "troubleshooting",
+      "try-your-first-task",
+      "verify-two-tasks"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/omp",
+    "destination": "/tools/omp",
+    "fragments": [
+      "choose-a-connection",
+      "connect-directly",
+      "conversations",
+      "install",
+      "key-handling",
+      "known-limitations",
+      "launcher-and-session-behavior",
+      "launcher-availability",
+      "manual-setup-without-the-launcher",
+      "run",
+      "troubleshooting",
+      "try-your-first-task",
+      "two-ways-to-use-arc-with-oh-my-pi",
+      "use-a-rayline-local-gateway",
+      "use-arc-directly",
+      "verify-the-route",
+      "verify-your-setup",
+      "what-rayline-writes"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/openclaw",
+    "destination": "/tools/openclaw",
+    "fragments": [
+      "connect-to-the-rayline-platform",
+      "conversations",
+      "install",
+      "key-handling",
+      "known-limitations",
+      "launcher-availability",
+      "manual-setup-without-the-launcher",
+      "run",
+      "troubleshooting",
+      "try-your-first-task",
+      "use-a-rayline-local-gateway",
+      "use-arc-directly",
+      "use-the-openclaw-control-ui",
+      "verify-the-route",
+      "what-rayline-writes"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/kilo",
+    "destination": "/tools/kilo",
+    "fragments": [
+      "choose-your-connection",
+      "configure-kilo",
+      "troubleshooting",
+      "try-your-first-task",
+      "verify-two-requests",
+      "vs-code-extension"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/opencode",
+    "destination": "/tools/opencode",
+    "fragments": [
+      "choose-a-connection",
+      "choose-arc-in-the-web-interface",
+      "configurable-arc",
+      "connect-directly",
+      "conversations",
+      "install",
+      "key-handling",
+      "known-limitations",
+      "launcher-and-session-behavior",
+      "launcher-availability",
+      "manual-setup-without-the-launcher",
+      "run",
+      "troubleshooting",
+      "try-your-first-task",
+      "two-ways-to-use-arc-with-opencode",
+      "use-a-rayline-local-gateway",
+      "use-arc-directly",
+      "verify-the-route",
+      "verify-your-setup",
+      "what-rayline-writes"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/hermes",
+    "destination": "/tools/hermes",
+    "fragments": [
+      "connect-to-the-rayline-platform",
+      "conversations",
+      "install",
+      "key-handling",
+      "known-limitations",
+      "launcher-availability",
+      "manual-setup-without-the-launcher",
+      "run",
+      "troubleshooting",
+      "try-your-first-task",
+      "use-a-rayline-local-gateway",
+      "use-arc-directly",
+      "verify-the-route",
+      "what-rayline-writes"
+    ]
+  },
+  {
+    "source": "/rules-router/quickstart/other-agents/unreal",
+    "destination": "/tools/unreal",
+    "fragments": [
+      "direct-api",
+      "rayline-local",
+      "try-another-arc-model",
+      "verify-both-tiers"
+    ]
+  },
+  {
+    "source": "/rules-router/troubleshooting/connectivity",
+    "destination": "/raydock/troubleshooting/connectivity",
+    "fragments": [
+      "ca-certificate-location",
+      "cant-reach-apiraylineai",
+      "certificate-errors",
+      "check-if-its-already-running",
+      "check-the-client-path",
+      "check-the-logs",
+      "check-the-runtime",
+      "common-proxy-errors",
+      "health-check-timeout",
+      "https-proxy-issues",
+      "nodejs-trust",
+      "port-conflicts",
+      "provider-errors",
+      "rayline-app-wont-connect",
+      "router-daemon-wont-start",
+      "ssltls-errors",
+      "still-stuck",
+      "test-connectivity"
+    ]
+  },
+  {
+    "source": "/rules-router/troubleshooting/index",
+    "destination": "/raydock/troubleshooting/index",
+    "fragments": [
+      "common-issues",
+      "getting-help",
+      "quick-diagnostics",
+      "specific-areas"
+    ]
+  },
+  {
+    "source": "/rules-router/troubleshooting/billing-issues",
+    "destination": "/raydock/troubleshooting/billing-issues",
+    "fragments": [
+      "cost-per-session",
+      "enable-auto-top-up",
+      "enterprise-billing",
+      "payment-failed",
+      "refunds",
+      "unexpected-charges",
+      "zero-balance--requests-failing"
+    ]
+  },
+  {
+    "source": "/rules-router",
+    "destination": "/raydock",
+    "fragments": [
+      "agent-gateway-versus-arc",
+      "agents-and-subagents",
+      "choose-your-gateway"
+    ]
+  },
+  {
+    "source": "/rules-router/pricing",
+    "destination": "/legacy/rules-router/pricing",
+    "fragments": [
+      "adding-funds",
+      "auto-top-up",
+      "check-an-example",
+      "checking-your-balance",
+      "cost-tracking",
+      "during-onboarding",
+      "enterprise",
+      "from-the-dashboard",
+      "getting-started",
+      "how-rayline-pricing-works",
+      "not-arc-decisions",
+      "plans",
+      "pricing-model",
+      "what-counts-as-usage",
+      "what-you-pay-for",
+      "why-it-still-saves-money"
+    ]
+  },
+  {
+    "source": "/rules-router/cli",
+    "destination": "/raydock/cli",
+    "fragments": [
+      "--env",
+      "command-overview",
+      "commands",
+      "configuration",
+      "environment-variables",
+      "files",
+      "global-options",
+      "hosted-environment",
+      "install",
+      "next-steps",
+      "ports",
+      "update"
+    ]
+  },
+  {
+    "source": "/rules-router/troubleshooting",
+    "destination": "/raydock/troubleshooting",
+    "fragments": [
+      "common-issues",
+      "getting-help",
+      "quick-diagnostics",
+      "specific-areas"
+    ]
   }
 ]

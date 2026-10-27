@@ -62,6 +62,8 @@ The migration notice is written to stderr. Both command names then use the same 
 
 For Homebrew, run `brew update` and `brew upgrade raydock`. The tap’s formula rename migrates existing `rayline` installations. New installs use `brew install rayline-ai/tap/raydock`.
 
+For the menu bar app, update the `rayline-app` cask or replace `Rayline.app` in Applications. The app includes both command names, so existing command-line links and Claude Desktop login services keep working after the upgrade. Its application name, bundle identity, and configuration paths stay the same.
+
 <span id="command-overview" />
 
 ## Commands
@@ -126,8 +128,8 @@ The local runtime listens on `127.0.0.1` only.
 | 20813 | Request metrics for `raydock top` | `RAYLINE_METRICS_PORT` |
 | 20814 | Request metrics for `--isolated` sessions | `RAYLINE_ISOLATED_METRICS_PORT` |
 
-From Rayline 0.2.8, if port 20813 is already taken when `raydock codex` starts its router, Rayline picks a free port instead, and `raydock top` still finds it. If another program already uses one of the other ports, see [port conflicts](/raydock/troubleshooting/connectivity#port-conflicts).
+From Rayline 0.2.8, if port 20813 is already taken when `raydock codex` starts its router, Raydock picks a free port instead, and `raydock top` still finds it. If another program already uses one of the other ports, see [port conflicts](/raydock/troubleshooting/connectivity#port-conflicts).
 
 <span id="next-steps" />
 
-To remove Rayline, see [Uninstall](/raydock/cli/uninstall). For the router configuration file format, see the [source guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md).
+To remove Raydock, see [Uninstall](/raydock/cli/uninstall). For the router configuration file format, see the [source guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md).

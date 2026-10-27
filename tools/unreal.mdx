@@ -1,13 +1,13 @@
 ---
 title: "Unreal Agent"
-description: "Connect Unreal Agent to ARC directly or through a Local Messages gateway."
+description: "Connect Unreal Agent to ARC through a Raydock Messages gateway."
 ---
 
 <span id="verify-both-tiers" />
 
-Use [Unreal Agent](https://github.com/unreallabsai/unreal-agent) with ARC through the Rayline platform. Choose **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks.
+Use [Unreal Agent](https://github.com/unreallabsai/unreal-agent) with ARC through Raydock and Rayline Platform. Choose **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks.
 
-## Direct API
+## Install
 
 Install the official runner:
 
@@ -15,15 +15,26 @@ Install the official runner:
 brew install unreallabsai/tap/unreal-agent
 ```
 
-Load your Rayline key into `UNREAL_HARNESS_LLM_API_KEY` from your secrets manager;
-see [API keys](/platform/api-keys). Then configure the Responses provider:
+<span id="rayline-local" />
+
+## Raydock
+
+Use Unreal’s **Anthropic provider** with a
+[cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
+Start that gateway in its own shell with your real Rayline API key. In a
+**different shell**, configure Unreal:
 
 ```bash
-export UNREAL_HARNESS_LLM_PROVIDER=openai
-export UNREAL_HARNESS_LLM_BASE_URL=https://api.rayline.ai/v1
+export UNREAL_HARNESS_LLM_PROVIDER=anthropic
+export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
+export UNREAL_HARNESS_LLM_API_KEY=local-client
 export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
 ```
 
+Use your gateway’s actual port. Unreal’s Anthropic provider expects `/v1` here.
+The `local-client` placeholder is for this loopback gateway; only the gateway
+process receives the real upstream key. ARC selection and inference run on
+Rayline Platform.
 
 Run the agent from a project directory:
 
@@ -31,8 +42,7 @@ Run the agent from a project directory:
 unreal-agent-runner -workspace "$PWD" -p 'Read the README and explain how to run this project.'
 ```
 
-The runner writes JSONL events to stdout. The `openai` provider selects the
-Responses wire protocol; it does not mean the request is billed by OpenAI.
+The runner writes JSONL events to stdout.
 
 ## Try another ARC model
 
@@ -46,22 +56,10 @@ UNREAL_HARNESS_LLM_MODEL=arc-swift-1.0 unreal-agent-runner \
 
 View the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
 
-## Raydock
+<span id="direct-api" />
 
-Use the **Anthropic provider** for Raydock. Start a
-[gateway forwarding to hosted Rayline](/raydock/connections#configure-a-cloud-forwarding-gateway),
-then set:
+## Direct API availability
 
-```bash
-export UNREAL_HARNESS_LLM_PROVIDER=anthropic
-export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
-export UNREAL_HARNESS_LLM_API_KEY=local-client
-export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
-```
+Unreal’s `openai` provider sends Responses requests. ARC is [not yet available](/arc/availability) on Rayline Platform’s direct `/v1/responses` endpoint, so use the Anthropic provider and Raydock setup above for ARC.
 
-Use your gateway's actual port and authentication. The placeholder above is for
-the gateway described above; its environment holds the real upstream key. Unreal's
-Anthropic provider expects `/v1` here. This path forwards cloud inference; it
-does not run the inference model or ARC locally.
-
-Use the Anthropic provider with Raydock 0.2.10. Its OpenAI provider can return an empty answer through that gateway version; the cloud connection above uses the OpenAI provider directly.
+Use the Anthropic provider with Raydock 0.2.10. Its OpenAI provider can return an empty answer through that gateway version.

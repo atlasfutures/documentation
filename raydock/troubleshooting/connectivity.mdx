@@ -47,7 +47,7 @@ An Anthropic SDK client that you point at the proxy yourself must trust this fil
 
 ## Port conflicts
 
-The local runtime uses ports 20808 to 20814 on `127.0.0.1`; the [CLI reference](/raydock/cli#ports) lists each one. If another program holds a port, check what is listening, then either stop that program or move Rayline:
+The local runtime uses ports 20808 to 20814 on `127.0.0.1`; the [CLI reference](/raydock/cli#ports) lists each one. If another program holds a port, check what is listening, then either stop that program or move Raydock:
 
 ```bash
 lsof -nP -iTCP:20810 -sTCP:LISTEN

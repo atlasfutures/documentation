@@ -19,12 +19,12 @@ terminal environment variables.
 
 | Connection | Request path | Use it when |
 | --- | --- | --- |
-| Direct API | Claude Code → hosted Rayline | You want the simplest setup, without a local gateway. |
-| Raydock gateway | Claude Code → gateway on your machine → hosted Rayline | You want the gateway to hold your Rayline key or manage routing. |
+| Direct API | Claude Code → Rayline Platform | You want the simplest setup, without a local gateway. |
+| Raydock gateway | Claude Code → gateway on your machine → Rayline Platform | You want the gateway to hold your Rayline key or manage routing. |
 
 Both paths use **cloud inference**. Running a local gateway does not run the
 answering model or ARC's routing model on your computer. See
-[Hosted and Raydock](/raydock/connections).
+[Rayline Platform and Raydock](/raydock/connections).
 
 <span id="advanced-manual-environment-variables" />
 
@@ -66,6 +66,8 @@ Claude Code supplies its session ID; no extra conversation header is needed.
 <span id="even-easier-the-rayline-app" />
 <span id="install-rayline" />
 
+<span id="connect-through-rayline-local" />
+
 ## Connect through Raydock
 
 Install the [Raydock CLI](/raydock/cli#install), then sign in:
@@ -81,7 +83,7 @@ The proxy connection keeps the Rayline key in the local gateway:
 raydock claude --via proxy -m arc-sage-1.0 --auto-compact-window 180000
 ```
 
-Use `-m arc-swift-1.0` for Swift. The gateway forwards inference to hosted Rayline;
+Use `-m arc-swift-1.0` for Swift. The gateway forwards inference to Rayline Platform;
 this command does not download an inference model.
 
 

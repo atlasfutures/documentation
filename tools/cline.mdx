@@ -30,12 +30,14 @@ If ARC is absent from the model list, enter its bare ID in **Custom Model ID**.
 Under **Custom Headers**, add `x-conversation-id` with a new UUID for each
 unrelated task. Keep the same value while continuing a task.
 
-![Cline API Configuration with the Rayline platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
+![Cline API Configuration with the Rayline Platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
 
 Enter your own Rayline API key in the API key field.
 
 Click **Done**, then start a **New Task**. Existing tasks can retain their
 previous provider configuration.
+
+<span id="rayline-local" />
 
 ## Raydock
 
@@ -102,11 +104,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 ## Troubleshooting
 
 - **Old provider still used:** start a new task after changing API settings.
-- **Local authentication error:** confirm the explicit model mapping and the
+- **Raydock authentication error:** confirm the explicit model mapping and the
   gateway's real API key; `local-client` is only a loopback placeholder.
 - **Repeated 503 with Anthropic:** disable **Web Search** and start a new task.
-- **404 on the Local Chat Completions path:** this gateway build accepts Messages
-  and Responses, not inbound Chat Completions. Use the Local configuration above.
+- **404 on the Raydock Chat Completions path:** this gateway build accepts Messages
+  and Responses, not inbound Chat Completions. Use the Raydock configuration above.
 
 See Cline's [OpenAI-compatible provider reference](https://docs.cline.bot/provider-config/openai-compatible)
 for its custom endpoint and model fields.

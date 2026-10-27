@@ -6,15 +6,15 @@ description: "Understand the settings that let an agent harness use Rayline."
 
 To use Rayline, your agent harness needs a way to send model requests to it. Most setup guides ask you to choose an API provider, enter a base URL and API key, and select a model. This page explains what those settings mean and why some tools use Raydock.
 
-If your tool has a [setup guide](/tools), follow that first. For a comparison of the two connection paths, see [Rayline cloud and Raydock](/raydock/connections).
+If your tool has a [setup guide](/tools), follow that first. For a comparison of the two connection paths, see [Rayline Platform and Raydock](/raydock/connections).
 
 ## Start with the connection
 
-**A direct connection** sends requests from your tool to Rayline in the cloud. It works when the tool lets you configure the required endpoint, credentials, model ID, and request format.
+**A direct connection** sends requests from your tool to Rayline Platform. It works when the tool lets you configure the required endpoint, credentials, model ID, and request format.
 
-**A Raydock connection** sends requests to a gateway on your computer first. Use it when your tool's guide requires that setup, or when you want to manage routing and upstream destinations locally. Local then forwards requests to the endpoints you configure.
+**A Raydock connection** sends requests to a gateway on your computer first. Use it when your tool's guide requires that setup, or when you want to manage routing and upstream destinations locally. Raydock then forwards requests to the endpoints you configure.
 
-A tool may support both paths. For example, Claude Code can connect directly or through Local. Cline's direct setup uses its OpenAI Compatible provider, while its Local setup uses the Anthropic provider with explicit model mapping. Follow the [Cline guide](/tools/cline) when switching: changing the URL alone is not enough.
+A tool may support both paths. For example, Claude Code can connect directly or through Raydock. Cline's direct setup uses its OpenAI Compatible provider, while its Raydock setup uses the Anthropic provider with explicit model mapping. Follow the [Cline guide](/tools/cline) when switching: changing the URL alone is not enough.
 
 ## What the provider setting means
 
@@ -30,18 +30,20 @@ The tool's provider setting must match the endpoint it calls. An “OpenAI Compa
 
 **ARC is the model-selection service, not a request format.** You request an ARC model such as `arc-swift-1.0` or `arc-sage-1.0` using the format supported by your connection. See [using ARC models](/arc/reference/generation) for endpoints and [API compatibility](/arc/reference/compatibility) for capability details.
 
+<span id="what-rayline-local-can-handle" />
+
 ## What Raydock can handle
 
-Local can hold upstream credentials, map a tool's model labels to configured models, and route requests to supported destinations. These features can make a tool usable with a setup it cannot express directly.
+Raydock can hold upstream credentials, map a tool's model labels to configured models, and route requests to supported destinations. These features can make a tool usable with a setup it cannot express directly.
 
-Support depends on the particular client and gateway configuration. Protocol conversion, streaming, tool calls, images, and provider-native features must work along the complete request path. Local does not automatically make every feature of every provider available.
+Support depends on the particular client and gateway configuration. Protocol conversion, streaming, tool calls, images, and provider-native features must work along the complete request path. Raydock does not automatically make every feature of every provider available.
 
 ## Connecting another client
 
 For a harness without a dedicated guide:
 
 1. Find its custom-provider or API settings. Check whether you can set the base URL, API key, and model ID.
-2. Identify its request format. Match it to a supported Rayline endpoint, or a documented Local configuration.
+2. Identify its request format. Match it to a supported Rayline endpoint, or a documented Raydock configuration.
 3. Check the features your workflow needs, especially streaming, tool calls, and input types.
 4. Send a small representative task before moving a full workflow. If the harness uses tools, include a tool call in that task.
 

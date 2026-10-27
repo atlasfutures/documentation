@@ -68,11 +68,11 @@ To run Claude Code on ARC, see [Use ARC Sage or Swift](/tools/claude-code#use-ar
 | `raydock claude --local` | Local | Proxy | Subagents only |
 | `raydock claude --local --route all` | Local | Proxy | Everything; the main agent still reaches cloud Claude by default |
 
-`--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Rayline rejects it with `--local` or `--route subagents`. `raydock claude --local --route all` sends every subagent to your local model, but the main agent still goes to cloud Claude, because the local router's built-in config routes the main agent to Anthropic. A fully local session also needs a router config; see [fully local sessions](/raydock/local-models#fully-local-sessions).
+`--via env` points Claude Code at the hosted router through `ANTHROPIC_BASE_URL` with no background process. It cannot reach local inference or route selectively, so Raydock rejects it with `--local` or `--route subagents`. `raydock claude --local --route all` sends every subagent to your local model, but the main agent still goes to cloud Claude, because the local router's built-in config routes the main agent to Anthropic. A fully local session also needs a router config; see [fully local sessions](/raydock/local-models#fully-local-sessions).
 
 ## How your key is handled
 
-In proxy mode, the local proxy holds your router key and adds it to hosted requests. Rayline removes `RAYLINE_ROUTER_API_KEY`, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, and `ANTHROPIC_BASE_URL` from Claude Code's environment, so Claude Code never sees the key.
+In proxy mode, the local proxy holds your router key and adds it to hosted requests. Raydock removes `RAYLINE_ROUTER_API_KEY`, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, and `ANTHROPIC_BASE_URL` from Claude Code's environment, so Claude Code never sees the key.
 
 With `--via env`, Claude Code calls the hosted router directly, so it receives the router key as `ANTHROPIC_AUTH_TOKEN` for that session.
 

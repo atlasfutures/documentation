@@ -41,14 +41,16 @@ The quickest setup is the interactive wizard, which `raydock claude --local` als
 raydock local onboard
 ```
 
-### Option 1 — Rayline runs the model
+<span id="option-1--rayline-runs-the-model" />
+
+### Option 1 — Raydock runs the model
 
 ```bash
 raydock local models
 raydock local use <number|model-id>
 ```
 
-`raydock local models` lists recommended models with how well each fits your hardware, plus models from local servers it detects. Rayline downloads the selected model on first use and serves it through its bundled runtime.
+`raydock local models` lists recommended models with how well each fits your hardware, plus models from local servers it detects. Raydock downloads the selected model on first use and serves it through its bundled runtime.
 
 ### Option 2 — you run the model
 
@@ -59,7 +61,7 @@ raydock local test --url http://127.0.0.1:11434 --model <model-id>
 raydock local custom --url http://127.0.0.1:11434 --model <model-id>
 ```
 
-Check the server's protocol and model capabilities against the current Rayline configuration. See [Rayline for agents](/tools/custom-agents) for SDK examples.
+Check the server's protocol and model capabilities against the current Raydock configuration. See [Rayline for agents](/tools/custom-agents) for SDK examples.
 
 ### All local commands
 
@@ -120,6 +122,6 @@ Only model requests go through the router. Claude Code's other network traffic, 
 
 Allow time and disk space for the first model download. Check available memory, endpoint health, and the configured model before starting a large session. Local inference has hardware and electricity costs even when there is no hosted token charge.
 
-In proxy mode, Rayline creates a local certificate authority so its proxy can read Claude Code's HTTPS traffic, and gives that certificate to Claude Code through `NODE_EXTRA_CA_CERTS`. It does not add the certificate to your system trust store. Read the [security and responsibility notes](https://github.com/rayline-ai/rayline#disclaimers) before using it on a managed machine.
+In proxy mode, Raydock creates a local certificate authority so its proxy can read Claude Code's HTTPS traffic, and gives that certificate to Claude Code through `NODE_EXTRA_CA_CERTS`. It does not add the certificate to your system trust store. Read the [security and responsibility notes](https://github.com/rayline-ai/rayline#disclaimers) before using it on a managed machine.
 
 Local config is distinct from the hosted platform's Rules Router slots. See [routing policies](/legacy/rules-router/index).

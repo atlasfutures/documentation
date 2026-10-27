@@ -6,7 +6,9 @@ icon: "terminal"
 
 Raydock is Rayline’s open-source CLI and optional macOS menu bar companion. It connects agents and compatible apps on your computer to local models and cloud services.
 
-Use a local model server, Rayline, or another supported provider. Where inference runs depends on the destination you configure. Hosted ARC selection requires a cloud connection; installing Raydock does not install ARC weights.
+Use a local model server, Rayline Platform, or another supported provider. Where inference runs depends on the destination you configure. Hosted ARC selection requires a cloud connection; installing Raydock does not install ARC weights.
+
+<span id="choose-your-gateway" />
 
 <CardGroup cols={2}>
 <Card title="Install Raydock" icon="terminal" href="/raydock/cli">Install the CLI and connect your first tool.</Card>
@@ -15,9 +17,13 @@ Use a local model server, Rayline, or another supported provider. Where inferenc
 <Card title="Menu bar companion" icon="window" href="/raydock/menubar">Inspect local activity on macOS.</Card>
 </CardGroup>
 
+<span id="agent-gateway-versus-arc" />
+
 ## Raydock and ARC
 
 [ARC Swift and Sage](/arc/models) combine model selection with generation at fixed token rates. [ARC Dynamic](/arc/dynamic) lets you set routing value and temperature. [ARC Decisions](/arc/decisions) returns a selection for an integration to execute.
+
+<span id="agents-and-subagents" />
 
 Raydock connects your tools to these services or to other configured destinations. Start with your [tool’s setup guide](/tools) for the supported path.
 

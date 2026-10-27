@@ -17,7 +17,7 @@ Raydock is optional for this CLI configuration.
 | Where the real key lives | Kilo process environment | Gateway process environment |
 | ARC and inference | Cloud | Cloud in this configuration |
 
-For Local, first start the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
+For Raydock, first start the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
 The port is configurable; use the same port in both configurations.
 
 ## Configure Kilo
@@ -71,11 +71,11 @@ Create a configuration outside your project, for example
 }
 ```
 
-For Local, change only `baseURL` to the loopback URL above. The `/v1` suffix is
+For Raydock, change only `baseURL` to the loopback URL above. The `/v1` suffix is
 required by this provider configuration.
 
 Export your Rayline key as `RAYLINE_API_KEY` for direct access, or set
-`RAYLINE_API_KEY=local-client` for Local. Then start Kilo with the explicit config:
+`RAYLINE_API_KEY=local-client` for Raydock. Then start Kilo with the explicit config:
 
 ```bash
 export KILO_CONFIG="$HOME/.config/kilo/rayline.json"
@@ -109,9 +109,9 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
   use `KILO_CONFIG`.
 - **Another provider is selected:** check the explicit config path and use
   `--model rayline/arc-sage-1.0` or `rayline/arc-swift-1.0`.
-- **Local connection refused:** start the gateway and match its port.
+- **Raydock connection refused:** start the gateway and match its port.
 - **Authentication failure:** check the key in the process that makes the
-  upstream request: Kilo for direct access, the gateway for Local.
+  upstream request: Kilo for direct access, the gateway for Raydock.
 
 See Kilo's [custom provider reference](https://kilo.ai/docs/code-with-ai/agents/custom-models)
 for configuration scope and environment references.
@@ -124,7 +124,7 @@ and `KILO_CONFIG` pointing to the configuration file above. Environment variable
 set after an editor starts do not update that running process.
 
 Open **Kilo Code**, start a **New Session**, and select **arc-sage-1.0** or
-**arc-swift-1.0** under **Rayline**. Try a task using the selected model. Keep your real API key in the environment; use the `local-client` placeholder only with the Local configuration above.
+**arc-swift-1.0** under **Rayline**. Try a task using the selected model. Keep your real API key in the environment; use the `local-client` placeholder only with the Raydock configuration above.
 
 To keep ARC selected for new sessions, open **Kilo Settings → Models → Default Model**, search for **Rayline**, and choose **arc-sage-1.0** or **arc-swift-1.0**.
 

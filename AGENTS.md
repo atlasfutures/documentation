@@ -18,7 +18,8 @@ This Mintlify site has four top-level tabs: Use in your tools, Build with ARC, A
 
 ## Customer-facing integration guides
 
-- Lead with the cloud Rayline platform setup; present Raydock as an optional connection or explain when a tool requires it. Use protocol names only where they explain a configuration field.
+- Call the hosted service **Rayline Platform**, not Rayline Cloud. Use **Raydock** for the on-device product; reserve lowercase cloud/local for where routing or inference runs.
+- Lead with the Rayline Platform setup; present Raydock as an optional connection or explain when a tool requires it. Use protocol names only where they explain a configuration field.
 - ARC Sage suits challenging coding and agent tasks; ARC Swift is a fast workhorse for everyday tasks. Both support coding and agent workflows.
 - Keep test dates, source revisions, validation matrices, release coordination, and agent-session details in private engineering records, not published guides. Describe actionable product limits without recounting the test that found them.
 - Place screenshots beside the setup steps they explain (provider settings, model selection, connection controls). Do not use test-result screenshots as proof of agent work. Use actual tool brand marks on tool cards.

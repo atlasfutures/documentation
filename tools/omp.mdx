@@ -13,10 +13,10 @@ Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a f
 
 | Path | Request path | Inference |
 | --- | --- | --- |
-| Direct API | oh-my-pi → hosted Rayline | Cloud |
-| Raydock gateway | oh-my-pi → your gateway → hosted Rayline | Cloud |
+| Direct API | oh-my-pi → Rayline Platform | Cloud |
+| Raydock gateway | oh-my-pi → your gateway → Rayline Platform | Cloud |
 
-A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Raydock](/raydock/connections).
+A local gateway does not imply on-device inference or locally running ARC. See [Rayline Platform and Raydock](/raydock/connections).
 
 ## Install
 
@@ -69,11 +69,13 @@ omp --model rayline/arc-sage-1.0
 
 For Swift, use `omp --model rayline/arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
 
+<span id="use-a-rayline-local-gateway" />
+
 ## Use a Raydock gateway
 
 First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
-| Setting | Rayline platform | Raydock |
+| Setting | Rayline Platform | Raydock |
 | --- | --- | --- |
 | `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
 | `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |

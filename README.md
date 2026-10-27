@@ -29,7 +29,7 @@ The last two commands require the running preview and installed Playwright brows
 
 ## Content ownership
 
-- `arc/`: Responses, Decisions, open source, compatibility, and launch pricing.
+- `arc/`: generation, Decisions, open source, compatibility, and launch pricing.
 - `raydock/`: on-device setup, CLI, menu bar companion, and troubleshooting.
 - `tools/`: harness integration guides.
 - `legacy/rules-router/`: existing saved routing policies and billing.
@@ -48,10 +48,11 @@ This is an implementation preview, not a billing or API launch.
    The local CLI also drops query strings on configured redirects. Verify query preservation on the hosted deployment; implement host-level forwarding if needed. Do not treat the local path-redirect check as evidence that query forwarding works.
 3. Confirm ARC production contracts, live inference, and supported features before removing preview notices or publishing executable production examples.
 4. Coordinate the 0% hosted routing commission and ARC rate card with actual billing enforcement and an effective date. The current docs do not change charges.
-5. Publish the documentation repository and update the parent submodule pointer together. Verify in-app documentation links through the redirects before retiring the old Workshop publishing source.
+5. Release the matching Raydock CLI, app bundle, installers, and Homebrew formula before publishing the new install and upgrade instructions. The app bundle must preserve its `bin/rayline` alias so existing command-line links and Claude Desktop login services survive an upgrade.
+6. Publish the documentation repository and update the parent submodule pointer together. Verify in-app documentation links through the redirects before retiring the old Workshop publishing source.
 
 The original Workshop `docs-site/` remains intact during this transition. Do not run the one-time migration over edited consolidated content. Before cutover, reconcile changes made to the still-published old source.
 
-Import provenance: the 64 Workshop articles and three local SVG assets came from `atlasfutures/memex-desktop/docs-site` at parent revision `55382d8d67996f794d5e33e4eb88060bd9b993cc`. Existing Rayline articles came from documentation revision `c09bb732544d9f2a225d3f24dc493cf7f325685a`. Consult those repositories for original author history. Current CLI guidance was checked against `rayline-ai/rayline` revision `941e45901b98` (Rayline 0.2.9). The `rayline claude-desktop` guidance follows the unreleased rayline-ai/rayline#94.
+Import provenance: the 64 Workshop articles and three local SVG assets came from `atlasfutures/memex-desktop/docs-site` at parent revision `55382d8d67996f794d5e33e4eb88060bd9b993cc`. Existing Rayline articles came from documentation revision `c09bb732544d9f2a225d3f24dc493cf7f325685a`. Consult those repositories for original author history. The Raydock command migration is coordinated with rayline-ai/rayline#136, atlasfutures/memex-desktop#7808, and rayline-ai/homebrew-tap#1. The previous published command is `rayline` (0.2.14); keep the publication gate above until the matching Raydock release is available.
 
 The design and migration rationale is in the parent repository's `docs/rayline-docs-evolution.md`.

@@ -1,6 +1,6 @@
 # Rayline
 
-> Rayline connects coding agents and applications to models. ARC chooses the model and reasoning effort for every request; Raydock connects tools on your device to local models and cloud services. ARC Dynamic exposes routing value and temperature. ARC is in beta: fields marked `x-status: proposed` in the OpenAPI may change before launch.
+> Rayline connects coding agents and applications to models. ARC chooses the model and reasoning effort for every request; Raydock connects tools on your device to local models and cloud services. Rayline Platform is the hosted service at platform.rayline.ai. ARC Dynamic exposes routing value and temperature. ARC is in beta: fields marked `x-status: proposed` in the OpenAPI may change before launch.
 
 ## Start here
 
