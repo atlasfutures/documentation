@@ -72,8 +72,8 @@ Install [Rayline](/rules-router/cli#install). Save this configuration as `router
 {
   "endpoints": [{
     "id": "rayline",
-    "protocol": "anthropic_messages",
-    "base_url": "https://api.rayline.ai",
+    "protocol": "openai_chat",
+    "base_url": "https://api.rayline.ai/v1",
     "api_key_env": "RAYLINE_API_KEY",
     "models": ["arc-sage-1.0", "arc-swift-1.0", "arc-1.0", "rayline-router"]
   }],
@@ -84,7 +84,7 @@ Install [Rayline](/rules-router/cli#install). Save this configuration as `router
 }
 ```
 
-The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it: your tool can send Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. For hosted Rayline use `anthropic_messages`, which serves all three. The other values are for other upstreams — `openai_chat` is what a local model server (Ollama, llama.cpp, LM Studio) speaks, and `openai_responses` only serves tools that already send Responses.
+The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it: your tool can send Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. `openai_chat` serves all three and is the same protocol a local model server speaks, so one endpoint shape covers hosted Rayline and a local model alike. Use Rayline Local 0.2.12 or later.
 
 Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 

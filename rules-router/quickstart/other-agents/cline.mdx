@@ -5,10 +5,9 @@ description: "Use ARC in Cline through the direct API or a Rayline Local gateway
 
 <span id="verify-two-tasks" />
 
-Cline can call ARC directly with its **OpenAI Compatible** provider. Its
-**Anthropic** provider can use ARC through Rayline Local with an explicit model
-mapping. These are different configurations; changing only the base URL is not
-enough to switch between them.
+Cline reaches ARC through its **OpenAI Compatible** provider, either directly
+or through a Rayline Local gateway on your machine. The two differ only in the
+base URL and the API key.
 
 ## Direct API
 
@@ -53,58 +52,28 @@ previous provider configuration.
 
 ## Rayline Local
 
-This path uses **Anthropic Messages** between Cline and the gateway. ARC
-selection and inference remain in the cloud. It does not run an inference model
-or ARC itself on your device.
+Use Rayline Local **0.2.12 or later**. The settings are the same as Direct;
+only the base URL and the key change, because the gateway holds your real
+Rayline key and Cline gets a placeholder. ARC selection and inference remain in
+the cloud; nothing runs on your device.
 
 1. Configure the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
-2. Add the following `model_routes` inside its existing `routes` object, then
-   restart that gateway with the updated configuration:
-
-```json
-"model_routes": {
-  "claude-sonnet-5": {
-    "endpoint": "rayline",
-    "model": "arc-sage-1.0"
-  },
-  "claude-haiku-5-5": {
-    "endpoint": "rayline",
-    "model": "arc-swift-1.0"
-  }
-}
-```
-
-The endpoint ID must match the endpoint in your gateway configuration. This
-example matches the gateway linked above.
-
-3. In Cline's **API Configuration**, use:
+2. In Cline's **API Configuration**, keep **OpenAI Compatible** and the ARC
+   model ID from the Direct setup, and change:
 
 | Setting | Value |
 | --- | --- |
-| API Provider | **Anthropic** |
-| Use custom base URL | On |
-| Base URL | `http://127.0.0.1:23811` (use your gateway's port) |
+| Base URL | `http://127.0.0.1:23811/v1` (use your gateway's port) |
 | API Key | `local-client` (a non-secret placeholder) |
-| Model for Sage | `claude-sonnet-5` |
-| Model for Swift | `claude-haiku-5-5` |
-| Reasoning Effort | **None** |
 
-![Cline Anthropic provider configured with a Rayline Local URL and the model label mapped to ARC Sage](/images/tools/setup/cline-local-settings.webp)
-
-Cline's Anthropic selector does not accept arbitrary ARC IDs. The gateway maps
-these two client labels to the ARC tiers; they are **not** claims about which
-inference model ARC serves. Without the explicit mapping, a recognized Claude
-ID can take the gateway's direct-model route instead of its default ARC route.
-The real Rayline key belongs in the gateway process, not in Cline.
-
-4. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
+3. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
    start a **New Task**.
 
 ![Cline Features settings with Web Search turned off](/images/tools/setup/cline-web-search.webp)
 
 <Warning>
 Keep **Web Search** off for this configuration. Cline's provider-native
-Anthropic search tool is unsupported by ARC. Ordinary file tools work with search disabled. The setting applies to new tasks.
+search tool is unsupported by ARC. Ordinary file tools work with search disabled. The setting applies to new tasks.
 </Warning>
 
 ## Try your first task
@@ -119,8 +88,8 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 - **Local authentication error:** confirm the explicit model mapping and the
   gateway's real API key; `local-client` is only a loopback placeholder.
 - **Repeated 503 with Anthropic:** disable **Web Search** and start a new task.
-- **404 on the Local Chat Completions path:** this gateway build accepts Messages
-  and Responses, not inbound Chat Completions. Use the Local configuration above.
+- **404 on the Local Chat Completions path:** your gateway is older than
+  0.2.12, which added inbound Chat Completions. Update Rayline Local.
 
 See Cline's [OpenAI-compatible provider reference](https://docs.cline.bot/provider-config/openai-compatible)
 for its custom endpoint and model fields.
