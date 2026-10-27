@@ -1,0 +1,112 @@
+---
+title: "oh-my-pi"
+description: "Connect oh-my-pi to ARC directly or through a Raydock gateway."
+---
+
+<span id="verify-the-route" />
+
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
+
+<span id="choose-a-connection" />
+
+## Two ways to use ARC with oh-my-pi
+
+| Path | Request path | Inference |
+| --- | --- | --- |
+| Direct API | oh-my-pi → hosted Rayline | Cloud |
+| Raydock gateway | oh-my-pi → your gateway → hosted Rayline | Cloud |
+
+A local gateway does not imply on-device inference or locally running ARC. See [Hosted and Raydock](/raydock/connections).
+
+## Install
+
+Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run the tool. Keep it out of project files.
+
+## Connect directly
+
+Use a separate configuration directory. These environment settings apply to the current shell:
+
+```bash
+unset OMP_PROFILE PI_PROFILE CLAUDE_CONFIG_DIR
+export PI_CODING_AGENT_DIR="$HOME/.config/omp-rayline"
+mkdir -p "$PI_CODING_AGENT_DIR"
+export RAYLINE_CONV_ID="$(uuidgen)"
+```
+
+Save this in `$PI_CODING_AGENT_DIR/models.yml`:
+
+```yaml
+providers:
+  rayline:
+    baseUrl: "https://api.rayline.ai"
+    api: "anthropic-messages"
+    auth: "apiKey"
+    apiKey: "RAYLINE_API_KEY"
+    headers:
+      x-conversation-id: "RAYLINE_CONV_ID"
+    models:
+      - id: "arc-sage-1.0"
+        name: "ARC Sage"
+        reasoning: false
+        input: ["text"]
+        contextWindow: 200000
+        maxTokens: 2048
+      - id: "arc-swift-1.0"
+        name: "ARC Swift"
+        reasoning: false
+        input: ["text"]
+        contextWindow: 200000
+        maxTokens: 2048
+```
+
+oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+
+Start with Sage:
+
+```bash
+omp --model rayline/arc-sage-1.0
+```
+
+For Swift, use `omp --model rayline/arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
+
+## Use a Raydock gateway
+
+First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+
+| Setting | Rayline platform | Raydock |
+| --- | --- | --- |
+| `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
+
+Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+
+## Try your first task
+
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
+
+<span id="use-arc-directly" />
+<span id="verify-your-setup" />
+<span id="launcher-availability" />
+<span id="run" />
+<span id="what-rayline-writes" />
+<span id="key-handling" />
+<span id="conversations" />
+<span id="manual-setup-without-the-launcher" />
+<span id="known-limitations" />
+
+## Launcher and session behavior
+
+`raydock omp` uses Rules Router’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+
+The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/tools/more-tools#launcher-options).
+
+Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
+
+## Troubleshooting
+
+- **Another provider or model is used:** check project overrides and the active configuration directory.
+- **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
+- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- See [shared troubleshooting](/tools/more-tools#troubleshooting).

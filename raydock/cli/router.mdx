@@ -1,0 +1,76 @@
+---
+title: "raydock router"
+description: "Inspect and control the local routing runtime."
+---
+
+<span id="rl-router-status" />
+<span id="rayline-router-status" />
+<span id="example-output" />
+<span id="rl-router-logs" />
+<span id="rayline-router-logs" />
+<span id="health-checks" />
+
+
+Client launch commands start the runtime for you. To inspect it:
+
+```bash
+raydock router status
+raydock router logs --lines 120
+raydock top
+raydock top --json
+```
+
+`raydock top` shows live request metrics. `--json` prints one snapshot, and `--all` includes Claude Code's background traffic that the proxy passes through. `raydock router top` is the same command.
+
+Logs can include sensitive request information. Review and redact them before sharing.
+
+<span id="rl-router-start" />
+<span id="rayline-router-start" />
+<span id="options" />
+<span id="examples" />
+<span id="what-starts" />
+
+## Start a runtime separately
+
+Start the runtime without launching a client when you want to drive it from your own code:
+
+```bash
+raydock router start
+raydock router start --route subagents
+raydock router start --mode codex --auth subscription
+```
+
+| Option | Purpose |
+| --- | --- |
+| `--mode anthropic\|codex` | Choose the inbound API. `anthropic`, the default, serves the transparent proxy on `http://127.0.0.1:20810`. `codex` serves OpenAI Responses on `http://127.0.0.1:20811/v1`. |
+| `--route all\|subagents` | Choose what goes through the router. The default is `all`; request model `rayline-local` to reach the on-device model. |
+| `--config <path>` | Supply endpoints and routes. Overrides `--route`. |
+| `--auth auto\|subscription\|none` | With `--mode codex`, choose the Codex auth source. `--subscription` is short for `--auth subscription`. |
+
+The on-device model comes from your [`raydock local`](/raydock/local-models) configuration; `raydock router start` fails until you choose one. A client that uses the Anthropic proxy must trust the proxy's certificate. See [Rayline for agents](/tools/custom-agents) for SDK examples.
+
+Starting a runtime does not reconfigure a client that is already running.
+
+## Logs
+
+Runtime state lives in `~/.rayline/rld`. `raydock router logs` prints the combined log; read the others with `tail -f`.
+
+| Log | Path |
+| --- | --- |
+| Router, adapter, and injector | `~/.rayline/rld/rl-rld.log` |
+| Bundled llama.cpp server | `~/.rayline/rld/llama-server.log` |
+| Transparent proxy | `~/.rayline/rld/rl-rld-proxy.log` |
+| Proxy for `--isolated` sessions | `~/.rayline/rld/cc/rl-rld-proxy.log` |
+
+The llama.cpp log exists only when Rayline runs the local model for you.
+
+<span id="rl-router-stop" />
+<span id="rayline-router-stop" />
+
+## Stop
+
+```bash
+raydock router stop
+```
+
+Stop only when sessions using that runtime can be interrupted. Clients still pointing to it will fail until it is restarted or their configuration changes.

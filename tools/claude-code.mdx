@@ -1,0 +1,135 @@
+---
+title: "Claude Code"
+description: "Connect Claude Code to ARC directly or through a Raydock gateway."
+---
+
+<span id="verify-the-route" />
+
+Use Claude Code with **ARC Sage** (`arc-sage-1.0`) or **ARC Swift** (`arc-swift-1.0`).
+Sage prioritizes quality; Swift prioritizes lower cost and faster turns. Both
+choose the model and reasoning effort for your request.
+
+For Code sessions inside the Claude desktop app, use the separate
+[Claude Desktop guide](/tools/claude-desktop). Desktop does not read these
+terminal environment variables.
+
+<span id="choose-a-connection" />
+
+## Two ways to use ARC with Claude Code
+
+| Connection | Request path | Use it when |
+| --- | --- | --- |
+| Direct API | Claude Code → hosted Rayline | You want the simplest setup, without a local gateway. |
+| Raydock gateway | Claude Code → gateway on your machine → hosted Rayline | You want the gateway to hold your Rayline key or manage routing. |
+
+Both paths use **cloud inference**. Running a local gateway does not run the
+answering model or ARC's routing model on your computer. See
+[Hosted and Raydock](/raydock/connections).
+
+<span id="advanced-manual-environment-variables" />
+
+## Connect directly
+
+Install the current [Claude Code release](https://code.claude.com/docs/en/setup).
+An older 2.1.273 client was rejected by a Sage-selected upstream model that
+required 2.1.280 or later; updating to 2.1.307 resolved that error. Create a
+[Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell
+where you will start Claude. Keep the key out of project files and source control.
+
+Run Claude in a subshell so these settings apply only to this session:
+
+```bash
+(
+  export ANTHROPIC_BASE_URL=https://api.rayline.ai
+  export ANTHROPIC_AUTH_TOKEN="$RAYLINE_API_KEY"
+  export ANTHROPIC_MODEL=arc-sage-1.0
+  export ANTHROPIC_DEFAULT_HAIKU_MODEL=arc-sage-1.0
+  export CLAUDE_CODE_AUTO_COMPACT_WINDOW=180000
+  unset ANTHROPIC_API_KEY
+  claude
+)
+```
+
+- Use the base URL **without `/v1`**. Claude Code adds `/v1/messages`.
+- Unset `ANTHROPIC_API_KEY` so an existing Anthropic key does not override your Rayline authentication.
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL` sends background calls, such as titles and summaries, to the same ARC tier.
+- The compaction setting gives Claude Code an explicit context threshold for the custom model ID.
+
+To use Swift, set both model variables to `arc-swift-1.0`. To use your
+[legacy Rules Router settings](/legacy/rules-router/index), set them to `rayline-router`.
+Claude Code supplies its session ID; no extra conversation header is needed.
+
+<span id="manual-setup-without-the-launcher" />
+<span id="use-arc-sage-or-swift" />
+<span id="the-easy-way-rl-claude" />
+<span id="the-easy-way-rayline-claude" />
+<span id="even-easier-the-rayline-app" />
+<span id="install-rayline" />
+
+## Connect through Raydock
+
+Install the [Raydock CLI](/raydock/cli#install), then sign in:
+
+```bash
+raydock --version
+raydock auth login
+```
+
+The proxy connection keeps the Rayline key in the local gateway:
+
+```bash
+raydock claude --via proxy -m arc-sage-1.0 --auto-compact-window 180000
+```
+
+Use `-m arc-swift-1.0` for Swift. The gateway forwards inference to hosted Rayline;
+this command does not download an inference model.
+
+
+For an existing local gateway configured to forward to Rayline, use the direct
+setup with its local base URL and the authentication that gateway requires.
+The Rayline key belongs in the gateway's endpoint configuration environment,
+not in the client configuration. Do not send a production key to an unfamiliar
+local listener.
+
+<span id="verify-its-working" />
+
+## Try your first task
+
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
+
+## Troubleshooting
+
+- **Authentication error:** check that `RAYLINE_API_KEY` is available in the shell
+  starting Claude and that `ANTHROPIC_API_KEY` is unset.
+- **“Couldn’t read the auto-compact window” with `sonnet`:** Rayline 0.2.10
+  cannot look up Claude’s bare alias inherited from `ANTHROPIC_MODEL`. Pass `--model arc-sage-1.0` or
+  `--auto-compact-window 180000` to set the model or context window explicitly.
+- **`unrecognized_model` in debug output:** Claude can emit this message for custom model IDs. Check the final request result before
+  treating the message as a failure.
+- **Another model is requested:** inspect project settings, model overrides,
+  and background model settings. Start in a small test folder to isolate them.
+
+<span id="disabling-rayline-temporarily" />
+
+## Return to your usual setup
+
+Exit Claude. If you used the subshell above, start `claude` from your normal
+shell to use your previous configuration. A launcher applies its routing to the
+session it starts; follow its shutdown instructions for any gateway it leaves
+running. Do not stop a gateway used by another active session.
+
+<span id="run-on-device-with---local" />
+<span id="try-local-routing" />
+
+## On-device inference
+
+`raydock claude --local` selects local static routing. This is a different path
+from the cloud-forwarding gateway above: by default, the main agent remains on
+cloud Claude while eligible subagents can use an on-device model. It needs its
+own model setup and verification. See [local models](/raydock/local-models).
+
+<span id="next-steps" />
+
+[Configure routing policies](/legacy/rules-router/index) · [Usage and costs](/legacy/rules-router/pricing)

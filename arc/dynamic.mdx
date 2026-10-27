@@ -1,0 +1,28 @@
+---
+title: "ARC Dynamic"
+description: "Set routing value and temperature for hosted ARC model selection."
+icon: "sliders"
+---
+
+[Open ARC Dynamic](https://platform.rayline.ai/arc/dynamic) to configure a request or continue in Playground. Availability and supported controls depend on the current service.
+
+ARC Swift and ARC Sage use settings Rayline fixes for each tier. ARC Dynamic, `arc-1.0`, lets you set them yourself:
+
+- **Value (V)** is how many US dollars a successful result is worth to you. ARC weighs each candidate model's expected quality against its expected cost at that value. V is not a spending limit. Swift uses V 0.1 and Sage uses V 4.5; `arc-1.0` accepts V within the range the current ARC release supports.
+- **Routing temperature** sets how much ARC explores other candidates instead of always taking its top choice. It is a softmax temperature on ARC's normalized scores; 0 always takes the top choice. It is separate from the model's generation `temperature`.
+
+Requests to `arc-1.0` are billed at the **served model's catalog price**, with no ARC fee. A Swift or Sage request is billed at its tier's fixed rate card instead. Changing V never turns a Swift or Sage request into `arc-1.0`; a tier request that sets a different V is rejected.
+
+## When to use which
+
+| You want | Use |
+| --- | --- |
+| A fixed price per token and no tuning | [`arc-swift-1.0` or `arc-sage-1.0`](/arc/models) |
+| Your own cost/quality trade-off, billed at what the chosen model costs | `arc-1.0` |
+| A model choice to run in your own stack, with your own prices | [Decisions](/arc/decisions) |
+
+## Data and exploration
+
+On hosted inference, ARC explores a small share of requests (about 5%) so it keeps learning which models work, and may use eligible requests to improve ARC. Exploration is 0 and no request is used for training when your organization has privacy mode or zero data retention. A hosted routing temperature you set is capped. Decisions requests are never used for training. See [data and privacy](/platform/data-privacy).
+
+Send these as `routing.value_usd` and `routing.temperature` on a [generation request](/arc/reference/generation#routing-extension) to `arc-1.0`, or on a [decision](/arc/reference/decisions#routing-controls).

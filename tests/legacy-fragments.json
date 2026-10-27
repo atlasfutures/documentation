@@ -12,7 +12,7 @@
   },
   {
     "source": "/cli/auth",
-    "destination": "/rules-router/cli/auth",
+    "destination": "/raydock/cli/auth",
     "fragments": [
       "rl-auth-login",
       "options",
@@ -30,7 +30,7 @@
   },
   {
     "source": "/cli/claude",
-    "destination": "/rules-router/cli/claude",
+    "destination": "/raydock/cli/claude",
     "fragments": [
       "rl-claude",
       "what-it-does",
@@ -57,7 +57,7 @@
   },
   {
     "source": "/cli",
-    "destination": "/rules-router/cli",
+    "destination": "/raydock/cli",
     "fragments": [
       "install",
       "update",
@@ -71,7 +71,7 @@
   },
   {
     "source": "/cli/menubar",
-    "destination": "/rules-router/guides/menubar",
+    "destination": "/raydock/menubar",
     "fragments": [
       "rl-menubar-install",
       "rl-menubar-start",
@@ -86,7 +86,7 @@
   },
   {
     "source": "/cli/router",
-    "destination": "/rules-router/cli/router",
+    "destination": "/raydock/cli/router",
     "fragments": [
       "rl-router-start",
       "options",
@@ -105,7 +105,7 @@
   },
   {
     "source": "/guides/billing",
-    "destination": "/rules-router/pricing",
+    "destination": "/legacy/rules-router/pricing",
     "fragments": [
       "pricing-model",
       "adding-funds",
@@ -137,7 +137,7 @@
   },
   {
     "source": "/guides/local-models",
-    "destination": "/rules-router/guides/local-models",
+    "destination": "/raydock/local-models",
     "fragments": [
       "requirements",
       "quick-start",
@@ -161,7 +161,7 @@
   },
   {
     "source": "/guides/menubar",
-    "destination": "/rules-router/guides/menubar",
+    "destination": "/raydock/menubar",
     "fragments": [
       "installation",
       "automatic-recommended",
@@ -180,7 +180,7 @@
   },
   {
     "source": "/guides/routing-settings",
-    "destination": "/rules-router/policies",
+    "destination": "/legacy/rules-router/index",
     "fragments": [
       "routing-strategies",
       "ml-routing-default",
@@ -196,7 +196,7 @@
   },
   {
     "source": "/how-it-works",
-    "destination": "/rules-router/policies",
+    "destination": "/legacy/rules-router/index",
     "fragments": [
       "the-problem",
       "the-solution",
@@ -207,7 +207,7 @@
   },
   {
     "source": "/how-it-works/models",
-    "destination": "/rules-router/how-it-works/models",
+    "destination": "/platform/models",
     "fragments": [
       "frontier-models",
       "open-source-models",
@@ -220,7 +220,7 @@
   },
   {
     "source": "/how-it-works/on-device",
-    "destination": "/rules-router/guides/local-models",
+    "destination": "/raydock/local-models",
     "fragments": [
       "how-it-works",
       "what-routes-locally",
@@ -238,7 +238,7 @@
   },
   {
     "source": "/how-it-works/routing",
-    "destination": "/rules-router/policies",
+    "destination": "/legacy/rules-router/index",
     "fragments": [
       "step-1-classify-the-task",
       "subagent-detection",
@@ -255,7 +255,7 @@
   },
   {
     "source": "/pricing",
-    "destination": "/rules-router/pricing",
+    "destination": "/legacy/rules-router/pricing",
     "fragments": [
       "how-rayline-pricing-works",
       "why-it-still-saves-money",
@@ -265,7 +265,7 @@
   },
   {
     "source": "/pricing/model-pricing",
-    "destination": "/rules-router/how-it-works/models",
+    "destination": "/platform/models",
     "fragments": [
       "anthropic",
       "openai",
@@ -292,7 +292,7 @@
   },
   {
     "source": "/quickstart/claude-code",
-    "destination": "/rules-router/quickstart/claude-code",
+    "destination": "/tools/claude-code",
     "fragments": [
       "the-easy-way-rl-claude",
       "even-easier-the-rayline-app",
@@ -306,7 +306,7 @@
   },
   {
     "source": "/quickstart/codex",
-    "destination": "/rules-router/quickstart/codex",
+    "destination": "/tools/codex",
     "fragments": []
   },
   {
@@ -322,7 +322,7 @@
   },
   {
     "source": "/troubleshooting/billing-issues",
-    "destination": "/rules-router/troubleshooting/billing-issues",
+    "destination": "/raydock/troubleshooting/billing-issues",
     "fragments": [
       "zero-balance--requests-failing",
       "enable-auto-top-up",
@@ -335,7 +335,7 @@
   },
   {
     "source": "/troubleshooting/connectivity",
-    "destination": "/rules-router/troubleshooting/connectivity",
+    "destination": "/raydock/troubleshooting/connectivity",
     "fragments": [
       "router-daemon-wont-start",
       "check-if-its-already-running",
@@ -354,7 +354,7 @@
   },
   {
     "source": "/troubleshooting",
-    "destination": "/rules-router/troubleshooting",
+    "destination": "/raydock/troubleshooting",
     "fragments": [
       "quick-diagnostics",
       "common-issues",
@@ -364,7 +364,7 @@
   },
   {
     "source": "/quickstart/agents",
-    "destination": "/rules-router/quickstart/agents",
+    "destination": "/tools/custom-agents",
     "fragments": [
       "cloud",
       "local",

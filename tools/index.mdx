@@ -18,35 +18,35 @@ icon: "screwdriver-wrench"
 Rayline connects the agent harness you already use to models. Pick what decides the model for each request, then follow the guide for your tool.
 
 - **ARC** chooses the model and reasoning effort for every request. Use **ARC Sage** (`arc-sage-1.0`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift-1.0`) as a fast workhorse for everyday tasks. See [Swift and Sage](/arc/models).
-- **Your routing rules** pin the main agent and assign models to subagents. See [routing policies](/rules-router/policies).
+- **Your routing rules** pin the main agent and assign models to subagents. See [routing policies](/legacy/rules-router/index).
 
 ## Tool guides
 
 <CardGroup cols={2}>
-<Card title="OpenCode" icon="/images/tools/logos/opencode.svg" href="/rules-router/quickstart/other-agents/opencode">Choose ARC in OpenCode’s model picker.</Card>
-<Card title="Hermes Agent" icon="/images/tools/logos/hermes.svg" href="/rules-router/quickstart/other-agents/hermes">Use ARC for your Hermes agent tasks.</Card>
-<Card title="OpenClaw" icon="/images/tools/logos/openclaw.svg" href="/rules-router/quickstart/other-agents/openclaw">Connect OpenClaw’s agents to ARC.</Card>
-<Card title="Claude Code (terminal)" icon="/images/tools/logos/claude.svg" href="/rules-router/quickstart/claude-code">Use ARC from your terminal.</Card>
+<Card title="OpenCode" icon="/images/tools/logos/opencode.svg" href="/tools/opencode">Choose ARC in OpenCode’s model picker.</Card>
+<Card title="Hermes Agent" icon="/images/tools/logos/hermes.svg" href="/tools/hermes">Use ARC for your Hermes agent tasks.</Card>
+<Card title="OpenClaw" icon="/images/tools/logos/openclaw.svg" href="/tools/openclaw">Connect OpenClaw’s agents to ARC.</Card>
+<Card title="Claude Code (terminal)" icon="/images/tools/logos/claude.svg" href="/tools/claude-code">Use ARC from your terminal.</Card>
 <Card title="Claude Desktop (Code)" icon="/images/tools/logos/claude.svg" href="/tools/claude-desktop">Use ARC in Desktop’s Code workspace.</Card>
-<Card title="Codex (terminal and app)" icon="/images/tools/logos/openai.svg" href="/rules-router/quickstart/codex">Connect Codex to the Rayline platform or Rayline Local.</Card>
+<Card title="Codex (terminal and app)" icon="/images/tools/logos/openai.svg" href="/tools/codex">Connect Codex to the Rayline platform or Raydock.</Card>
 
 </CardGroup>
 
-Find [pi](/rules-router/quickstart/other-agents/pi), [oh-my-pi](/rules-router/quickstart/other-agents/omp), [Kilo Code](/rules-router/quickstart/other-agents/kilo), [Cline](/rules-router/quickstart/other-agents/cline), and [Unreal Agent](/rules-router/quickstart/other-agents/unreal) under **More tools**.
+Find [pi](/tools/pi), [oh-my-pi](/tools/omp), [Kilo Code](/tools/kilo), [Cline](/tools/cline), and [Unreal Agent](/tools/unreal) under **More tools**.
 
-Each guide states the connection, the protocol, the key handling, and how to undo the setup. [Tool compatibility](/rules-router/reference) explains the connection requirements.
+Each guide states the connection, the protocol, the key handling, and how to undo the setup. [Tool compatibility](/tools/connections) explains the connection requirements.
 
 <span id="what-happens-next" />
 <span id="background-reading" />
 
 ## Before you start
 
-1. Create a [Rayline API key](/platform/api-keys). Follow your tool’s guide to connect to the Rayline platform. Install the [Rayline CLI](/rules-router/cli#install) if you want to use a launcher or Rayline Local.
-2. Decide where the requests go. [Hosted and Rayline Local](/tools/hosted-local) explains which requests leave your machine and how each path is billed.
+1. Create a [Rayline API key](/platform/api-keys). Follow your tool’s guide to connect to the Rayline platform. Install the [Raydock CLI](/raydock/cli#install) if you want to use a launcher or Raydock.
+2. Decide where the requests go. [Hosted and Raydock](/raydock/connections) explains which requests leave your machine and how each path is billed.
 3. Check the request in [usage](/platform/usage) after your first task: the requested model, the model that served it, and the charge.
 
 <span id="prefer-to-set-environment-variables-yourself" />
 
 ## Other agents and apps
 
-Use Agent Gateway and ARC with agent harnesses for coding, research, automation, and other tasks. Before connecting another client, check its request protocol, authentication, model identifiers, and required features against [tool compatibility](/rules-router/reference) and [API compatibility](/arc/reference/compatibility). A configurable API base URL alone does not guarantee compatibility. To build your own agent, see [custom agents and SDKs](/rules-router/quickstart/agents).
+Use ARC and Raydock with agent harnesses for coding, research, automation, and other tasks. Before connecting another client, check its request protocol, authentication, model identifiers, and required features against [tool compatibility](/tools/connections) and [API compatibility](/arc/reference/compatibility). A configurable API base URL alone does not guarantee compatibility. To build your own agent, see [custom agents and SDKs](/tools/custom-agents).

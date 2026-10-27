@@ -1,0 +1,110 @@
+---
+title: "More agent harnesses"
+sidebarTitle: "Overview"
+description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through hosted Rules Router."
+---
+
+<span id="planned-integrations" />
+
+Install or update Rayline through the [official installer](/raydock/cli). The launcher commands below require Rayline 0.2.8 or later.
+
+<span id="choose-a-connection" />
+
+<span id="use-arc-with-your-coding-agent" />
+
+## Use ARC with your agent harness
+
+Follow your tool’s guide to connect to the Rayline platform. Each guide also explains its Raydock option. Both paths can use cloud inference; see [hosted and local connections](/raydock/connections).
+
+Rayline can launch these agent harnesses against hosted Rules Router, the same way `raydock claude` does. Install the agent first; Rayline configures the route but does not bundle the agent.
+
+| Command | Agent | Install | Guide |
+| --- | --- | --- | --- |
+| `raydock opencode` | [opencode](https://opencode.ai) | [opencode install docs](https://opencode.ai/docs/#install) | [opencode](/tools/opencode) |
+| `raydock pi` | [pi](https://pi.dev) | [pi install docs](https://github.com/earendil-works/pi#getting-started) | [pi](/tools/pi) |
+| `raydock omp` | [oh-my-pi](https://omp.sh) | [oh-my-pi install docs](https://github.com/can1357/oh-my-pi#install) | [oh-my-pi](/tools/omp) |
+| `raydock hermes` | [Hermes Agent](https://hermes-agent.nousresearch.com) | [Hermes Agent install docs](https://hermes-agent.nousresearch.com/docs/getting-started/installation) | [Hermes Agent](/tools/hermes) |
+| `raydock openclaw` | [OpenClaw](https://openclaw.ai) | [OpenClaw install docs](https://docs.openclaw.ai/install) | [OpenClaw](/tools/openclaw) |
+
+```bash
+raydock auth login
+raydock pi
+raydock opencode run --standalone "summarize this repo"
+```
+
+## Launcher options
+
+Everything after the agent's name goes to the agent unchanged, including `--help`. Rayline reads only two options, and only when they come directly after the agent's name, before any of the agent's own arguments:
+
+| Option | Purpose |
+| --- | --- |
+| `--env <name>` | Use another [hosted environment](/raydock/cli#hosted-environment). You can also put it before the agent's name. |
+| `--auth-token <token>` | Use this account token instead of your stored sign-in. |
+
+Use `--` to pass an argument that would otherwise be read as a Rayline option.
+
+## What the launcher does
+
+1. Signs you in and creates a router key if you have none, as `raydock claude` does. In a non-interactive shell, run `raydock auth login` first.
+2. Writes a Rayline config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
+3. Starts the agent with model `rayline-router` over the Anthropic Messages API, so Rules Router chooses the model for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
+
+Each launch prints the router URL, the conversation ID, and the config directory. Rayline rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Rayline's; each agent's guide lists which files those are.
+
+## How your key is handled
+
+Since Rayline 0.2.12, the launcher writes the router key only into the Rayline-owned config directory, readable only by you, and removes `RAYLINE_KEY` and `RAYLINE_ROUTER_API_KEY` from the agent's environment, so the agent's tools never see the key. Each agent's guide says how its config refers to the key. To use a specific workspace key instead of the stored one, export `RAYLINE_ROUTER_API_KEY` before launching.
+
+## Conversations
+
+Rules Router groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+
+## Manual setup (without the launcher)
+
+You can connect each agent to Rules Router yourself, with the configuration `rayline <agent>` writes. The manual configs read your key from the `RAYLINE_API_KEY` environment variable, the variable used across the Rayline docs; the launcher instead keeps the key in its own config files. Each agent's guide has a copy-paste config. They all rely on two environment variables.
+
+### The API key
+
+Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys); see [API keys](/platform/api-keys). Export it as `RAYLINE_API_KEY` in the shell that starts the agent, for example from your secrets manager:
+
+```bash
+export RAYLINE_API_KEY="<your Rayline API key>"
+```
+
+Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own environment-variable syntax, so the key is never written into a config file. Do not paste the key into the config itself.
+
+### The conversation ID
+
+The launcher gives each launch a new conversation ID and sends it as the `x-conversation-id` header on every request. Rules Router uses it to treat the session's requests as one conversation. Do the same by setting `RAYLINE_CONV_ID` before each session; the configs below send it as that header:
+
+```bash
+export RAYLINE_CONV_ID="$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
+```
+
+This uses `uuidgen` on macOS and the kernel's UUID generator on Linux, where `uuidgen` is often not installed. In PowerShell, use `$env:RAYLINE_CONV_ID = [guid]::NewGuid().ToString()`.
+
+Use a new ID for each session. Reusing one ID across unrelated sessions merges them into one conversation.
+
+Without a conversation ID, Rules Router treats every request as its own conversation:
+
+- requests from one session are not grouped for routing;
+- consecutive requests are not pinned to the same provider backend where a provider supports that, so prompt-cache reuse can drop and cached input is billed at the lower cache rate less often;
+- usage is not grouped by session.
+
+The agent still works.
+
+### Check the connection
+
+After setting up an agent, send a short prompt such as `Reply with the word ready.` You should get a reply, and the request should appear with its selected model in [Inspect routed requests](/platform/usage). An authentication error usually means `RAYLINE_API_KEY` is missing from the agent's environment or holds the wrong key.
+
+## Troubleshooting
+
+- **`<agent>` not found on PATH.** Install the agent and make sure its binary is on your `PATH`; the error includes an install hint. On Windows, Rayline also finds `.exe`, `.cmd`, `.bat`, and `.com` files.
+- **Sign-in errors in scripts.** Run `raydock auth login` once on a terminal, then check `raydock status`.
+- **The agent uses another model.** Check whether a project-level config for that agent overrides the provider or model.
+
+## Use ARC
+
+These launchers always select `rayline-router`, so they route through your legacy Rules Router settings and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks, on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Check [usage](/platform/usage) after your first task.
+
+<span id="legacy-integrations" />

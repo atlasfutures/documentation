@@ -1,0 +1,184 @@
+---
+title: "OpenClaw"
+description: "Connect OpenClaw to ARC directly or through a Raydock gateway."
+---
+
+<span id="verify-the-route" />
+
+Use **ARC Sage** (`arc-sage-1.0`) for challenging coding and agent tasks, or **ARC Swift** (`arc-swift-1.0`) as a fast workhorse for everyday tasks. Connect to the Rayline platform with the configuration below.
+
+Install the tool using its [installation guide](https://docs.openclaw.ai/install) before you begin.
+
+<span id="use-arc-directly" />
+
+<span id="manual-setup-without-the-launcher" />
+
+## Connect to the Rayline platform
+
+Set `RAYLINE_API_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/tools/more-tools#manual-setup-without-the-launcher).
+
+Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make it the default model:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "model": { "primary": "rayline/arc-sage-1.0" }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "rayline": {
+        "baseUrl": "https://api.rayline.ai",
+        "api": "anthropic-messages",
+        "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" },
+        "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
+        "models": [
+          {
+            "id": "arc-sage-1.0",
+            "name": "ARC Sage",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+- Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
+- Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Rules Router does not serve.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
+- The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rules Router:
+
+  ```json
+  {
+    "memory": { "search": { "provider": "none" } },
+    "agents": {
+      "defaults": {
+        "heartbeat": { "every": "0m" },
+        "compaction": { "memoryFlush": { "enabled": false } }
+      }
+    }
+  }
+  ```
+
+  `memory` is a top-level key, OpenClaw's global memory configuration. `heartbeat` and `compaction` go under `agents.defaults`.
+
+To keep a session in one conversation across relaunches, as the launcher does with `--session-id`, derive the ID from the session ID:
+
+```bash
+export RAYLINE_CONV_ID="oc-$(printf %s "my-task" | shasum -a 256 | cut -c1-32)"
+openclaw agent --local --session-id my-task --message "Reply with the word ready."
+```
+
+`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
+
+## Use a Raydock gateway
+
+[Start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
+
+Inside Docker, use `http://host.docker.internal:23811` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
+
+```json
+"request": { "allowPrivateNetwork": true }
+```
+
+Place this under `models.providers.rayline`, alongside `baseUrl`. Keep it scoped to the provider that needs private-network access. Without it, OpenClaw rejects the private host address before making a request. See OpenClaw’s [host-provider networking guide](https://docs.openclaw.ai/install/docker/networking-and-storage).
+
+## Try your first task
+
+From your project directory, run:
+
+```bash
+openclaw agent --local --model rayline/arc-sage-1.0 --message "Read the README and explain how to run this project."
+```
+
+To use Swift, add `arc-swift-1.0` to the provider’s models using the same settings as Sage, then select it in your command. View requests and the model ARC selected in [Rayline Usage](/platform/usage).
+
+## Use the OpenClaw control UI
+
+Start OpenClaw’s own gateway with the same provider configuration, then open its
+control UI and connect with its gateway token. This is a separate gateway from
+Raydock: OpenClaw hosts your agent session, while Raydock forwards
+model requests.
+
+Select **arc-sage-1.0** or **arc-swift-1.0** in the chat model picker, then start a task in your project.
+
+![Select ARC Sage or ARC Swift when starting an OpenClaw session](/images/tools/setup/openclaw-model-picker.webp)
+
+Use a current Node release supported by OpenClaw. Node 24.5.0 has a SQLite defect that prevents gateway startup; use Node 24.22.1 or a supported newer release.
+
+## Launcher availability
+
+The launcher instructions below require Rayline 0.2.8 or later. Version 0.2.10 is available through the official installer.
+
+## Install
+
+Install OpenClaw from its [install docs](https://docs.openclaw.ai/install), then sign in to Rayline:
+
+```bash
+raydock auth login
+```
+
+## Run
+
+```bash
+raydock openclaw agent --message "summarize this repo"
+raydock openclaw agent --session-id my-task --message "continue"
+raydock --env <name> openclaw
+```
+
+Everything after `openclaw` goes to OpenClaw unchanged, with one addition: for an `openclaw agent` turn, Rayline adds `--local` unless you already passed it or used `openclaw agent exec`. That makes the turn use the Rayline config instead of a running OpenClaw Gateway's. See [launcher options](/tools/more-tools#launcher-options).
+
+## What Rayline writes
+
+Rayline sets `OPENCLAW_CONFIG_PATH` to `~/.config/rayline/harness/openclaw/<env>/openclaw.json` and rewrites that file on every launch. OpenClaw's own state stays in `~/.openclaw`.
+
+The config defines two providers, both with model `rayline-router`:
+
+| Model reference | API | Use |
+| --- | --- | --- |
+| `rayline/rayline-router` | Anthropic Messages | The default |
+| `rayline-resp/rayline-router` | OpenAI Responses | Select it as the model |
+
+It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
+
+## Key handling
+
+The launcher writes the key to a `router-key` file in its config directory, readable only by you, and both providers refer to it with a file SecretRef. The key is not in OpenClaw's environment.
+
+If you write an OpenClaw config by hand, use an environment SecretRef, not the `${RAYLINE_API_KEY}` shorthand:
+
+```json
+"apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" }
+```
+
+OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and then writes the resolved key in plain text to its agent model cache, `~/.openclaw/agents/<agent>/agent/models.json`. For a SecretRef it writes only the variable's name.
+
+## Conversations
+
+The default Messages provider sends a conversation ID on every request:
+
+- With `--session-id <id>`, the conversation ID is derived from that session ID, so relaunching the same session keeps its conversation.
+- Without it, each launch is a new conversation.
+
+The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
+
+## Known limitations
+
+- OpenClaw reads Rayline's config file instead of your own `openclaw.json` while it runs under Rayline.
+- Container mode, through `--container` or `OPENCLAW_CONTAINER`, runs inside a container that cannot see the Rayline config or key. Rayline prints a warning and does not add `--local`.
+- With an OpenClaw Gateway running, stop it with `openclaw gateway stop`, or use `openclaw agent exec`.
+- Memory search and the heartbeat are off under `raydock openclaw`.
+
+## Troubleshooting
+
+- **`openclaw` not found on PATH.** Install OpenClaw and check `which openclaw`.
+- **The turn uses another model.** A running Gateway may be serving it; stop the Gateway or keep `--local` on the turn.
+- **Your key appears in `models.json`.** The config used a `${...}` shorthand for the key. Switch to the SecretRef form and delete the cached `models.json`. Treat the key as exposed: revoke it in [API keys](/platform/api-keys), then run `raydock auth logout` and `raydock auth login` so the next launch creates a new one.
+- See also [shared troubleshooting](/tools/more-tools#troubleshooting).

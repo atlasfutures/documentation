@@ -1,11 +1,11 @@
 # Rayline
 
-> Rayline connects coding agents and applications to models. ARC chooses the model and reasoning effort for every request; Agent Gateway routes by rules you set. ARC is in beta: fields marked `x-status: proposed` in the OpenAPI may change before launch.
+> Rayline connects coding agents and applications to models. ARC chooses the model and reasoning effort for every request; Raydock connects tools on your device to local models and cloud services. ARC Dynamic exposes routing value and temperature. ARC is in beta: fields marked `x-status: proposed` in the OpenAPI may change before launch.
 
 ## Start here
 
 - [Use Rayline in your tools](https://docs.rayline.ai/tools): connect OpenCode, Hermes Agent, OpenClaw, Claude Code, Claude Desktop, Codex, pi and oh-my-pi.
-- [ARC Swift and ARC Sage](https://docs.rayline.ai/arc/models): model IDs `arc-swift-1.0`, `arc-sage-1.0`, and configurable `arc-1.0`.
+- [ARC Swift and ARC Sage](https://docs.rayline.ai/arc/models): model IDs `arc-swift-1.0`, `arc-sage-1.0`, and ARC Dynamic `arc-1.0`.
 - [API quickstart](https://docs.rayline.ai/arc/quickstart): a first Messages request and a first decision.
 
 ## API reference
@@ -18,7 +18,7 @@
 ## Guides
 
 - [Decisions](https://docs.rayline.ai/arc/decisions), [bring your own prices](https://docs.rayline.ai/arc/decisions/prices), [applying effort](https://docs.rayline.ai/arc/decisions/applying-effort), [build an agent with Claude Code](https://docs.rayline.ai/arc/decisions/claude-code-agent).
-- [Configure ARC routing](https://docs.rayline.ai/arc/gateway-routing), [Agent Gateway rules](https://docs.rayline.ai/rules-router/policies).
+- [ARC Dynamic](https://docs.rayline.ai/arc/dynamic): set routing value and temperature.
 - [Funding and billing](https://docs.rayline.ai/platform/billing), [API keys](https://docs.rayline.ai/platform/api-keys), [data and privacy](https://docs.rayline.ai/platform/data-privacy).
 
 ## Limits for agents
@@ -26,3 +26,7 @@
 - Authenticate with a Rayline API key (`rlk-...`) from the environment, in `x-api-key` or `Authorization: Bearer`. Never write a key into code or config.
 - The base URL is `https://api.rayline.ai`. Do not append `/v1` for Claude Code; OpenAI-style clients use `/v1`.
 - A decision executes nothing: run the chosen model yourself. Treat `routing` members echoed `unsupported` as not applied.
+
+## Legacy
+
+- [Rules Router](https://docs.rayline.ai/legacy/rules-router): existing saved routing policies, available under Settings → Legacy.

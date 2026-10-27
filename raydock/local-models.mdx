@@ -1,0 +1,125 @@
+---
+title: "Local models"
+description: "Keep selected work on your machine without confusing hybrid routing with offline execution."
+---
+
+<span id="requirements" />
+<span id="default-model" />
+<span id="custom-models" />
+<span id="requirements-for-custom-models" />
+
+
+Raydock runs an open-source router and a local inference path. Start with the [current installation and hardware guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md); model memory and runtime requirements depend on your configuration.
+
+<span id="quick-start" />
+<span id="managing-the-daemon" />
+<span id="setup" />
+<span id="what-starts" />
+<span id="check-status" />
+<span id="view-logs" />
+<span id="stop" />
+
+```bash
+raydock claude --local
+raydock router status
+raydock router logs --lines 120
+```
+
+<span id="architecture" />
+<span id="injector-port-20809" />
+<span id="adapter-port-20808" />
+<span id="llama-server-port-8081" />
+<span id="how-it-works" />
+<span id="what-routes-locally" />
+<span id="combining-cloud-and-local" />
+
+## Choosing a local model
+
+The quickest setup is the interactive wizard, which `raydock claude --local` also runs on first use:
+
+```bash
+raydock local onboard
+```
+
+### Option 1 — Rayline runs the model
+
+```bash
+raydock local models
+raydock local use <number|model-id>
+```
+
+`raydock local models` lists recommended models with how well each fits your hardware, plus models from local servers it detects. Rayline downloads the selected model on first use and serves it through its bundled runtime.
+
+### Option 2 — you run the model
+
+For a server you manage, test it and then configure the endpoint and model explicitly:
+
+```bash
+raydock local test --url http://127.0.0.1:11434 --model <model-id>
+raydock local custom --url http://127.0.0.1:11434 --model <model-id>
+```
+
+Check the server's protocol and model capabilities against the current Rayline configuration. See [Rayline for agents](/tools/custom-agents) for SDK examples.
+
+### All local commands
+
+| Command | Purpose |
+| --- | --- |
+| `raydock local onboard [--reset]` | Set up or re-pick the model for `raydock claude --local`. |
+| `raydock local models [--json]` | List recommended and detected models with hardware fit. |
+| `raydock local download <model-id>` | Download a recommended model without selecting it. |
+| `raydock local use <number\|model-id>` | Select a model, downloading it first if needed. |
+| `raydock local remove <model-id>` | Delete a downloaded model from disk. |
+| `raydock local custom --url <url> --model <name>` | Use a model server you run. |
+| `raydock local test --url <url> --model <name>` | Check that a server answers in a compatible format. |
+| `raydock local show` | Show the configured mode, endpoint, and account routing state. |
+| `raydock local clear` | Remove the local model configuration. |
+| `raydock local on`, `raydock local off` | Turn local routing on or off for your signed-in account. |
+| `raydock local subagents [--json] [--all]` | Choose which of your Claude Code subagents run locally. |
+
+### Choose which subagents run locally
+
+`raydock local subagents` scans your Claude Code history for the subagents you use and lets you send each one to the local model or the cloud. Read-only agents start out selected for local. Your choices are saved to `~/.config/rayline/settings.json` and apply on the next `raydock claude --local` launch. `--json` prints the list without prompting.
+
+## Hybrid by default
+
+By default, `raydock claude --local` sends read-only subagents such as Explore to your local model and keeps the main agent and every other subagent on cloud Claude. To choose which subagents run locally, use `raydock local subagents`. “Local router” does not mean all prompts remain on-device.
+
+`--route all` sends every subagent to the local model. It does **not** move the main agent: the local router's built-in config still sends main-agent requests to cloud Claude.
+
+If the local model is unavailable, a subagent request that would have gone to it falls back to the main agent's route, which is cloud Claude unless you change it.
+
+Local routing itself needs no Rayline account. Your main-agent cloud provider may still need credentials and charge for inference.
+
+### Fully local sessions
+
+To keep the main agent on your machine as well, give the router a config that sends the main route to the local model. Save this as `~/.config/rayline/fully-local.json`:
+
+```json
+{ "routes": { "main": { "endpoint": "local" } } }
+```
+
+Then launch with it:
+
+```bash
+raydock claude --local --route all --router-config-path ~/.config/rayline/fully-local.json
+```
+
+Your local model then serves the main agent's whole workload, including tool use and long context, so choose one that can. Confirm the route with `raydock top`: main-agent rows should show the local target.
+
+Only model requests go through the router. Claude Code's other network traffic, such as its other Anthropic API calls, MCP servers, and web requests, still goes to its usual destinations.
+
+<span id="troubleshooting" />
+<span id="model-download-is-slow" />
+<span id="out-of-memory" />
+<span id="port-conflicts" />
+<span id="llama-server-wont-start" />
+<span id="next-steps" />
+
+## Operational checks
+
+Allow time and disk space for the first model download. Check available memory, endpoint health, and the configured model before starting a large session. Local inference has hardware and electricity costs even when there is no hosted token charge.
+
+In proxy mode, Rayline creates a local certificate authority so its proxy can read Claude Code's HTTPS traffic, and gives that certificate to Claude Code through `NODE_EXTRA_CA_CERTS`. It does not add the certificate to your system trust store. Read the [security and responsibility notes](https://github.com/rayline-ai/rayline#disclaimers) before using it on a managed machine.
+
+Local config is distinct from the hosted platform's Rules Router slots. See [routing policies](/legacy/rules-router/index).

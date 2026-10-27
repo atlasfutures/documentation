@@ -1,10 +1,10 @@
 ---
 title: "Claude Code in Claude Desktop"
 sidebarTitle: "Claude Desktop"
-description: "Run Claude Desktop's Code sessions on ARC with rayline claude-desktop."
+description: "Run Claude Desktop's Code sessions on ARC with raydock claude-desktop."
 ---
 
-`rayline claude-desktop` runs a small local router for Desktop on `http://127.0.0.1:20831` and gives you a configuration file to import. The import adds two models to Desktop's model picker, **arc-sage** and **arc-swift**. Your Rayline key stays in the router. Desktop gets a random token that only unlocks this router on your machine; the router refuses requests without it, as well as requests from web pages.
+`raydock claude-desktop` runs a small local router for Desktop on `http://127.0.0.1:20831` and gives you a configuration file to import. The import adds two models to Desktop's model picker, **arc-sage** and **arc-swift**. Your Rayline key stays in the router. Desktop gets a random token that only unlocks this router on your machine; the router refuses requests without it, as well as requests from web pages.
 
 ARC is not a Claude model, and Rayline isn't affiliated with Anthropic. Desktop requires Claude-style model IDs, so the import uses `claude-arc-sage` and `claude-arc-swift` internally; you never type them.
 
@@ -13,19 +13,19 @@ The `claude-desktop` launcher is not included in the current Rayline release.
 ## Start the router
 
 ```bash
-rayline auth login
-rayline claude-desktop
+raydock auth login
+raydock claude-desktop
 ```
 
-The command starts the router and prints the path of a configuration file for Desktop, `~/.rayline/claude-desktop/claude-desktop-import.json`. This router is separate from the one `rayline claude` and `rayline codex` use, so both can run at once.
+The command starts the router and prints the path of a configuration file for Desktop, `~/.rayline/claude-desktop/claude-desktop-import.json`. This router is separate from the one `raydock claude` and `raydock codex` use, so both can run at once.
 
 To keep the router running after you log out or restart, install it as a login service:
 
 ```bash
-rayline claude-desktop install-service
+raydock claude-desktop install-service
 ```
 
-Without the service, run `rayline claude-desktop` again after a restart.
+Without the service, run `raydock claude-desktop` again after a restart.
 
 ## Connect the desktop app
 
@@ -62,11 +62,11 @@ Open **Code** and choose **arc-sage** for challenging tasks or **arc-swift** as 
 ## Check the setup
 
 ```bash
-rayline claude-desktop status
-rayline claude-desktop validate
+raydock claude-desktop status
+raydock claude-desktop validate
 ```
 
-`status` shows whether the router is healthy and how many requests it has served. `validate` compares Desktop's applied configuration with the router and names any setting that differs; it never prints the key. If Desktop reports that it cannot reach the gateway, run `rayline claude-desktop` to start the router.
+`status` shows whether the router is healthy and how many requests it has served. `validate` compares Desktop's applied configuration with the router and names any setting that differs; it never prints the key. If Desktop reports that it cannot reach the gateway, run `raydock claude-desktop` to start the router.
 
 ## Switch back to your subscription
 
@@ -74,12 +74,12 @@ rayline claude-desktop validate
 2. On the sign-in screen, sign in with your Anthropic account.
 
 
-Your claude.ai conversations and settings return. The imported configuration stays in **Developer → Configure Third-Party Inference…**, so you can switch to ARC again by signing out and continuing with the gateway. `rayline claude-desktop off` prints these steps and stops the router.
+Your claude.ai conversations and settings return. The imported configuration stays in **Developer → Configure Third-Party Inference…**, so you can switch to ARC again by signing out and continuing with the gateway. `raydock claude-desktop off` prints these steps and stops the router.
 
 ## Remove it
 
 ```bash
-rayline claude-desktop uninstall
+raydock claude-desktop uninstall
 ```
 
 This stops the router, removes the login service and deletes `~/.rayline/claude-desktop`. It does not change Desktop's own settings; delete the gateway configuration in **Developer → Configure Third-Party Inference…** if you no longer want it.
@@ -91,17 +91,17 @@ Third-party inference mode uses Rayline for Code sessions. To return to your Cla
 ## Limits
 
 - Chat and Cowork are off while Desktop uses the gateway.
-- Desktop shows the tier, **arc-sage** or **arc-swift**, not the model ARC chose. To see which model served a request, use [usage](/platform/usage) or `rayline claude-desktop status`.
+- Desktop shows the tier, **arc-sage** or **arc-swift**, not the model ARC chose. To see which model served a request, use [usage](/platform/usage) or `raydock claude-desktop status`.
 - Desktop's effort setting and Claude Code's context-window assumptions are those of a Claude model. ARC chooses the model and effort for each request, and Desktop compacts conversations at its default threshold.
 - Anthropic does not support routing Claude Desktop to non-Claude models. A Desktop update can change this behavior.
 
 | Command | Purpose |
 | --- | --- |
-| `rayline claude-desktop` | Start or reuse the router and print the setup steps |
-| `rayline claude-desktop status` | Router health, request totals, and the Desktop check |
-| `rayline claude-desktop validate` | Compare Desktop's applied configuration with the router |
-| `rayline claude-desktop stop` | Stop the router |
-| `rayline claude-desktop install-service` | Start the router at login (macOS) |
-| `rayline claude-desktop uninstall-service` | Remove the login service |
-| `rayline claude-desktop off` | Print the switch-back steps and stop the router |
-| `rayline claude-desktop uninstall` | Remove the service and the router's files |
+| `raydock claude-desktop` | Start or reuse the router and print the setup steps |
+| `raydock claude-desktop status` | Router health, request totals, and the Desktop check |
+| `raydock claude-desktop validate` | Compare Desktop's applied configuration with the router |
+| `raydock claude-desktop stop` | Stop the router |
+| `raydock claude-desktop install-service` | Start the router at login (macOS) |
+| `raydock claude-desktop uninstall-service` | Remove the login service |
+| `raydock claude-desktop off` | Print the switch-back steps and stop the router |
+| `raydock claude-desktop uninstall` | Remove the service and the router's files |

@@ -1,0 +1,28 @@
+---
+title: "Raydock"
+description: "Connect your tools to local models and cloud services from your own device."
+icon: "terminal"
+---
+
+Raydock is Rayline’s open-source CLI and optional macOS menu bar companion. It connects agents and compatible apps on your computer to local models and cloud services.
+
+Use a local model server, Rayline, or another supported provider. Where inference runs depends on the destination you configure. Hosted ARC selection requires a cloud connection; installing Raydock does not install ARC weights.
+
+<CardGroup cols={2}>
+<Card title="Install Raydock" icon="terminal" href="/raydock/cli">Install the CLI and connect your first tool.</Card>
+<Card title="Local models" icon="laptop" href="/raydock/local-models">Use your own compute with a supported runtime.</Card>
+<Card title="Connection options" icon="plug" href="/raydock/connections">Choose a direct cloud connection or an on-device connection.</Card>
+<Card title="Menu bar companion" icon="window" href="/raydock/menubar">Inspect local activity on macOS.</Card>
+</CardGroup>
+
+## Raydock and ARC
+
+[ARC Swift and Sage](/arc/models) combine model selection with generation at fixed token rates. [ARC Dynamic](/arc/dynamic) lets you set routing value and temperature. [ARC Decisions](/arc/decisions) returns a selection for an integration to execute.
+
+Raydock connects your tools to these services or to other configured destinations. Start with your [tool’s setup guide](/tools) for the supported path.
+
+## Existing installations
+
+Raydock was previously called Rayline Local. The primary terminal command is `raydock`; `rayline` remains a supported alias. The Homebrew formula is `raydock`, the optional app cask is `rayline-app`, and the installed macOS application remains `Rayline.app`. Existing configuration and credentials stay in place.
+
+Raydock’s CLI source is Apache-2.0 licensed; bundled components retain their own licenses. [View the source](https://github.com/rayline-ai/rayline).

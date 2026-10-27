@@ -1,0 +1,64 @@
+---
+title: "Uninstall Raydock"
+description: "Stop the runtime, sign out, and remove the CLI and its files."
+---
+
+Raydock has no uninstall command. Remove it in this order, so nothing keeps running and no credentials stay behind.
+
+## 1. Stop the runtime and sign out
+
+```bash
+raydock router stop
+raydock auth logout
+```
+
+`raydock auth logout` revokes your CLI session and deletes the stored router key. Workspace API keys you created yourself stay active; revoke them in [API keys](/platform/api-keys). If you used `--env`, sign out of each environment with `raydock --env <name> auth logout`.
+
+## 2. Remove downloaded models
+
+Models that Raydock downloads live in the shared Hugging Face cache, not in Raydock’s own directories, so deleting Raydock does not remove them. List and delete them first:
+
+```bash
+raydock local models
+raydock local remove <model-id>
+```
+
+## 3. Undo client changes
+
+- **Claude Code status line.** `raydock claude` adds a status line that runs `rld statusline` to `~/.claude/settings.json`, or to `~/.rayline/cc/settings.json` for `--isolated` sessions. It never replaces a status line you set yourself. Remove the `statusLine` entry if it points at `rld`.
+- **Codex profile.** If you ran `raydock codex configure`, delete `rayline.config.toml` from `$CODEX_HOME` or `~/.codex`.
+- **Harness configs** are inside `~/.config/rayline` and go away in the next step.
+
+## 4. Delete the files
+
+On macOS:
+
+```bash
+rm -rf ~/.rayline ~/.config/rayline "$HOME/Library/Application Support/rayline"
+```
+
+On Linux:
+
+```bash
+rm -rf ~/.rayline ~/.config/rayline "${XDG_CONFIG_HOME:-$HOME/.config}/rayline"
+```
+
+On Windows, in PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force "$HOME\.rayline", "$HOME\.config\rayline", "$env:APPDATA\rayline"
+```
+
+This removes the binaries, runtime state and logs, the bundled llama.cpp server, the isolated Claude Code and Codex homes, your settings and credentials, and the proxy's certificate authority. Raydock never adds that certificate to your system trust store, so there is nothing to remove there.
+
+Finally, take `~/.rayline/bin` off your `PATH`. On macOS and Linux, delete the lines the installer added to `~/.zshrc`, `~/.bash_profile`, or `~/.bashrc`: the comment `# Added by Raydock CLI installer` (or `# Added by Rayline CLI installer` on an older installation) and the `export PATH="$HOME/.rayline/bin:$PATH"` line after it. On Windows, remove the directory from your user `PATH` in **Environment Variables**.
+
+If you installed into another directory with `RAYLINE_INSTALL_DIR`, the steps above leave the binaries there. Delete just the two binaries, not the whole directory, which may hold other tools:
+
+```bash
+rm "<install dir>/raydock" "<install dir>/rayline" "<install dir>/rld" "<install dir>/rayline-core" "<install dir>/rayline-core-LICENSE"
+```
+
+On Windows, delete `raydock.exe`, `rayline.exe`, `rld.exe`, `rayline-core.exe`, and `rayline-core-LICENSE` from that directory. Then remove the `PATH` entry you added for it.
+
+For a Homebrew installation, run `brew uninstall raydock` before removing configuration and downloaded models. The optional menu bar cask still uses `brew uninstall --cask rayline-app`.
