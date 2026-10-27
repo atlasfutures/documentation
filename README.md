@@ -35,7 +35,7 @@ The last two commands require the running preview and installed Playwright brows
 - `legacy/rules-router/`: existing saved routing policies and billing.
 - `workshop/`: migrated Workshop articles, including Cloud and Desktop sidebar sections.
 - `platform/`: shared Rayline workspace keys and usage.
-- `snippets/arc-rates.mdx`: generated effective-price snapshot. In the parent, generate a patch with `bun scripts/rayline-docs-rates.ts --api-origin https://api.rayline.ai --patch`, review it, and apply it.
+- `snippets/arc-rates.mdx`: generated effective-price snapshot for Swift, Sage, and Decisions. In the parent, generate a patch with `bun scripts/rayline-docs-rates.ts --api-origin https://api.rayline.ai --patch`, review it, and apply it. ARC Dynamic's pricing policy is authored separately in `arc/pricing.mdx`.
 
 Existing Rayline paths redirect inside this site's `docs.json`. Workshop's old domain needs host-level redirects; the parent repository contains their manifest at `docs/rayline-docs-workshop-redirects.json`.
 

@@ -7,8 +7,16 @@ import Rates from '/snippets/arc-rates.mdx';
 
 <Rates />
 
+<span id="agent-gateway" />
+
+## ARC Dynamic
+
+Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee.
+
+## How requests are billed
+
 - **ARC Swift and ARC Sage** bill every request at the tier's fixed card, whichever model serves it. See [Swift and Sage](/arc/models).
 - **ARC Dynamic (`arc-1.0`)** bills at the served model's Rayline catalog price, with no ARC fee. See [configure ARC routing](/arc/dynamic).
 - **Decisions** bills the tokens ARC reads to decide, once per request, however many results it returns. Decisions does not yet reuse a cached prefix between requests, so every token a decision reads is billed at the encoded-input rate and `usage.cache_read_tokens` is 0. The cache-read rate will apply once Decisions reuses a conversation's prefix, and `cache_read_tokens` will then report those tokens. Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Decisions](/arc/decisions).
 
-The rates above come from Rayline's effective price card; the card version and date are shown with them. Each request records the rate it was billed at. See [funding and billing](/platform/billing). [Rules Router](/legacy/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).
+The Swift, Sage, and Decisions rates come from Rayline's effective price card; the card version and date are shown with them. Each request records the rate it was billed at. See [funding and billing](/platform/billing). [Rules Router](/legacy/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).
