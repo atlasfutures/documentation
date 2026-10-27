@@ -14,9 +14,9 @@ each path gives you.
 
 ## Direct API
 
-Cline installs three ways: as a native desktop app, as an extension inside an
-IDE (VS Code, Cursor, JetBrains, Windsurf and others), or as a CLI. This guide
-configures the **IDE extension**, shown in VS Code; see the
+Cline offers three ways to install it: a native desktop app, an extension
+inside an IDE (VS Code, Cursor, JetBrains, Windsurf and others), or a CLI. This
+guide configures the **IDE extension**, shown in VS Code; see the
 [Cline install page](https://docs.cline.bot/getting-started/installing-cline)
 for the others. Open **Cline → Settings → API Configuration** and enter:
 
@@ -33,14 +33,6 @@ for the others. Open **Cline → Settings → API Configuration** and enter:
 
 If ARC is absent from the model list, enter its ID in **Custom Model ID**.
 
-<Note>
-Cline's CLI (install exactly `cline` with `npm install -g cline`; the package
-named `@cline/cli` is a different, stale tool) reaches ARC with the same
-provider, model and base URL via
-`cline auth -p openai-compatible -k <key> -m arc-sage-1.0 -b https://api.rayline.ai/v1`. The desktop app's
-settings have not been checked against ARC.
-</Note>
-
 ![Cline API Configuration with the Rayline platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
 
 Enter your own Rayline API key in the API key field.
@@ -48,12 +40,37 @@ Enter your own Rayline API key in the API key field.
 Click **Done**, then start a **New Task**. Existing tasks can retain their
 previous provider configuration.
 
+## Cline CLI
+
+Install the CLI with npm:
+
+```bash
+npm install -g cline
+```
+
+<Note>
+Install exactly `cline`. The package named `@cline/cli` is a different, stale
+tool.
+</Note>
+
+Point it at ARC with the same provider, model and base URL as the extension
+above, then run it:
+
+```bash
+cline auth -p openai-compatible -k <your Rayline API key> -m arc-sage-1.0 -b https://api.rayline.ai/v1
+cline "Read the README and explain how to run this project."
+```
+
 ## Rayline Local
 
-Use Rayline Local **0.2.12 or later**. The settings are the same as Direct;
-only the base URL and the key change, because the gateway holds your real
-Rayline key and Cline gets a placeholder. ARC selection and inference remain in
-the cloud; nothing runs on your device.
+The settings are the same as Direct; only the base URL and the key change,
+because the gateway on your machine holds your real Rayline key and Cline gets
+a placeholder. The gateway forwards each request to Rayline in the cloud, where
+ARC chooses the model and the model generates the answer.
+
+<Note>
+Use Rayline Local **0.2.12 or later**.
+</Note>
 
 1. Configure the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway).
 2. In Cline's **API Configuration**, keep **OpenAI Compatible** and the ARC
@@ -61,7 +78,7 @@ the cloud; nothing runs on your device.
 
 | Setting | Value |
 | --- | --- |
-| Base URL | `http://127.0.0.1:23811/v1` (use your gateway's port) |
+| Base URL | `http://127.0.0.1:23811` (use your gateway's port) |
 | API Key | `local-client` (a non-secret placeholder) |
 
 3. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
