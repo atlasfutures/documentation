@@ -97,7 +97,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`raydock omp` uses Rules Router’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
+From Raydock **0.3.0**, `raydock omp` runs on ARC: Sage for the main agent and Swift for subagents. To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
 
 The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/tools/more-tools#launcher-options).
 

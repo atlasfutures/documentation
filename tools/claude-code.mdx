@@ -80,11 +80,15 @@ raydock auth login
 The proxy connection keeps the Rayline key in the local gateway:
 
 ```bash
-raydock claude --via proxy -m arc-sage-1.0 --auto-compact-window 180000
+raydock claude
 ```
 
-Use `-m arc-swift-1.0` for Swift. The gateway forwards inference to Rayline Platform;
-this command does not download an inference model.
+From Raydock 0.3.0, `raydock claude` uses ARC by default: Sage for the main
+agent, and Swift for subagents and background tasks. To use one tier for
+everything, name it, for example `-m arc-swift-1.0`; subagents then use the same
+model. To use your [legacy Rules Router settings](/legacy/rules-router/index)
+instead, pass `-m rayline-router`. The gateway forwards inference to Rayline
+Platform; this command does not download an inference model.
 
 
 For an existing local gateway configured to forward to Rayline, use the direct

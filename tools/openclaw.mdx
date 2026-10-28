@@ -54,7 +54,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 - On a direct Chat Completions connection, `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
 - For an existing Legacy Rules Router integration, use `"api": "anthropic-messages"`, `"baseUrl": "https://api.rayline.ai"`, and model `rayline-router`. Chat Completions does not serve Legacy Rules Router. Through Raydock, also use the gateway's `anthropic_messages` upstream and add `rayline-router` to its model list.
 - For the Responses API, add a second provider, `rayline-resp`, with `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Set `baseUrl` to your API origin plus `/v1`. Use it with ARC only where that environment [advertises Responses support](/arc/availability#check-protocol-support); otherwise, keep the Chat Completions provider above.
-- The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rules Router:
+- The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rayline:
 
   ```json
   {
@@ -143,12 +143,14 @@ Everything after `openclaw` goes to OpenClaw unchanged, with one addition: for a
 
 Raydock sets `OPENCLAW_CONFIG_PATH` to `~/.config/rayline/harness/openclaw/<env>/openclaw.json` and rewrites that file on every launch. OpenClaw's own state stays in `~/.openclaw`.
 
-The config defines two providers, both with model `rayline-router`:
+From Raydock 0.3.0, the config defines two providers on ARC, with ARC Sage for the main agent and ARC Swift for subagents:
 
-| Model reference | API | Use |
+| Provider | API | Use |
 | --- | --- | --- |
-| `rayline/rayline-router` | Anthropic Messages | The default |
-| `rayline-resp/rayline-router` | OpenAI Responses | Select it as the model |
+| `rayline` | Anthropic Messages | The default |
+| `rayline-resp` | OpenAI Responses | Select one of its models |
+
+To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
 
 It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
 

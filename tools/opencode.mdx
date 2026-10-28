@@ -128,7 +128,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`raydock opencode` uses Rules Router’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
+From Raydock **0.3.0**, `raydock opencode` runs on ARC: Sage for the main agent and Swift for subagents. To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/tools/more-tools#launcher-options).
 

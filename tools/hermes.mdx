@@ -81,7 +81,7 @@ raydock auth login
 
 ```bash
 raydock hermes
-raydock hermes --provider rayline-resp --model rayline-router
+raydock hermes --provider rayline-resp
 raydock --env <name> hermes
 ```
 
@@ -91,12 +91,14 @@ Everything after `hermes` goes to Hermes unchanged. See [launcher options](/tool
 
 ## What Raydock writes
 
-Raydock sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. It defines two providers, both with model `rayline-router`:
+Raydock sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. From Raydock 0.3.0, it defines two providers on ARC, with ARC Sage for the main agent and ARC Swift for subagents:
 
 | Provider | API | Use |
 | --- | --- | --- |
 | `rayline-anth` | Anthropic Messages | The default |
-| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp --model rayline-router` |
+| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp` |
+
+To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
 
 Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
 
@@ -106,7 +108,7 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 ## Conversations
 
-Each launch is one Rules Router conversation; the launcher sends a per-launch conversation ID. Hermes v2026.9.21 or later is needed for that launcher-supplied header on Messages.
+Each launch is one Rayline conversation; the launcher sends a per-launch conversation ID. Hermes v2026.9.21 or later is needed for that launcher-supplied header on Messages.
 
 Manual Messages connections send no session identifier. Rayline derives the conversation from the opening messages, both directly and through the gateway. Separate sessions with identical openings can be grouped together; see [conversation grouping](/tools/more-tools#the-conversation-id).
 

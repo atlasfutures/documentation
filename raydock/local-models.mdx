@@ -9,7 +9,7 @@ description: "Keep selected work on your machine without confusing hybrid routin
 <span id="requirements-for-custom-models" />
 
 
-Raydock runs an open-source router and a local inference path. Start with the [current installation and hardware guide](https://github.com/rayline-ai/rayline/blob/main/docs/getting-started.md); model memory and runtime requirements depend on your configuration.
+Raydock runs an open-source router and a local inference path. Start with the [current installation and hardware guide](https://github.com/rayline-ai/raydock/blob/main/docs/getting-started.md); model memory and runtime requirements depend on your configuration.
 
 <span id="quick-start" />
 <span id="managing-the-daemon" />
@@ -122,6 +122,6 @@ Only model requests go through the router. Claude Code's other network traffic, 
 
 Allow time and disk space for the first model download. Check available memory, endpoint health, and the configured model before starting a large session. Local inference has hardware and electricity costs even when there is no hosted token charge.
 
-In proxy mode, Raydock creates a local certificate authority so its proxy can read Claude Code's HTTPS traffic, and gives that certificate to Claude Code through `NODE_EXTRA_CA_CERTS`. It does not add the certificate to your system trust store. Read the [security and responsibility notes](https://github.com/rayline-ai/rayline#disclaimers) before using it on a managed machine.
+In proxy mode, Raydock creates a local certificate authority so its proxy can read Claude Code's HTTPS traffic, and gives that certificate to Claude Code through `NODE_EXTRA_CA_CERTS`. It does not add the certificate to your system trust store. Read the [security and responsibility notes](https://github.com/rayline-ai/raydock#disclaimers) before using it on a managed machine.
 
 Raydock's local configuration controls the destinations on your device. See [connection options](/raydock/connections) for how it connects to local models and cloud services.

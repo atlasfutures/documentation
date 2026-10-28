@@ -18,7 +18,7 @@ Follow your tool’s guide to connect to the Rayline Platform. Each guide also e
 
 ## Raydock launchers
 
-The launcher defaults below use [Legacy Rules Router](/legacy/rules-router). To use ARC, follow the ARC configuration in your tool’s guide. Install the agent first; Raydock configures the route but does not bundle the agent.
+From Raydock 0.3.0, the launchers below run on ARC by default: ARC Sage (`arc-sage-1.0`) for the main agent and ARC Swift (`arc-swift-1.0`) for subagents. [Legacy Rules Router](/legacy/rules-router) is used only when you choose it; see [Use Legacy Rules Router](#use-legacy-rules-router). Install the agent first; Raydock configures the route but does not bundle the agent.
 
 | Command | Agent | Install | Guide |
 | --- | --- | --- | --- |
@@ -49,7 +49,7 @@ Use `--` to pass an argument that would otherwise be read as a Raydock option.
 
 1. Signs you in and creates a router key if you have none, as `raydock claude` does. In a non-interactive shell, run `raydock auth login` first.
 2. Writes a Raydock config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
-3. Starts the agent with model `rayline-router` over the Anthropic Messages API, so Rules Router chooses the model for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
+3. Starts the agent on ARC over the Anthropic Messages API: Sage for the main agent and Swift for subagents, so ARC chooses the model and reasoning effort for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
 
 Each launch prints the router URL, the conversation ID, and the config directory. Raydock rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Raydock's; each agent's guide lists which files those are.
 
@@ -59,7 +59,7 @@ Since Rayline 0.2.12, the launcher writes the router key only into the Raydock-o
 
 ## Conversations
 
-Rules Router groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+Rayline groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
 
 ## Manual setup (without the launcher)
 
@@ -104,8 +104,10 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 - **Sign-in errors in scripts.** Run `raydock auth login` once on a terminal, then check `raydock status`.
 - **The agent uses another model.** Check whether a project-level config for that agent overrides the provider or model.
 
-## Use ARC
+<span id="use-arc" />
 
-These launchers always select `rayline-router`, so they route through your legacy Rules Router settings and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks. Use the protocol and base URL in each tool’s guide. Check [usage](/platform/usage) after your first task.
+## Use Legacy Rules Router
+
+The launchers use ARC unless you choose otherwise. To route one of these agents through your legacy Rules Router settings, follow its manual setup and request `rayline-router` instead of an ARC model ID, as described in [Manual setup](#manual-setup-without-the-launcher). Use the protocol and base URL in each tool’s guide. Check [usage](/platform/usage) after your first task.
 
 <span id="legacy-integrations" />

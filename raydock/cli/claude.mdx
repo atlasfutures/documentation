@@ -1,6 +1,6 @@
 ---
 title: "raydock claude"
-description: "Launch Claude Code with hosted or local routing."
+description: "Launch Claude Code on ARC, or with local routing."
 ---
 
 <span id="rl-claude" />
@@ -16,7 +16,7 @@ raydock claude --isolated
 raydock claude --local
 ```
 
-By default, `raydock claude` requests `rayline-router`, the hosted Legacy Rules Router on Rayline Platform. It does not select an ARC tier automatically; see [Use ARC Sage or Swift](/tools/claude-code#use-arc-sage-or-swift) for that setup. If you have not signed in, `raydock claude` starts the sign-in flow on a terminal and then creates a router key for you; in a non-interactive shell, run `raydock auth login` first.
+By default, `raydock claude` runs Claude Code on ARC: the main agent uses **ARC Sage** (`arc-sage-1.0`), and subagents and background tasks use **ARC Swift** (`arc-swift-1.0`). Legacy Rules Router is used only when you choose it, for example with `--model rayline-router`. If you have not signed in, `raydock claude` starts the sign-in flow on a terminal and then creates a router key for you; in a non-interactive shell, run `raydock auth login` first.
 
 <span id="options" />
 
@@ -26,7 +26,7 @@ By default, `raydock claude` requests `rayline-router`, the hosted Legacy Rules 
 | `--route all\|subagents` | Choose what goes through the router. The default is `all` for hosted routing and `subagents` for `--local`. |
 | `--via proxy\|env` | Choose how Claude Code reaches the router. The default is `proxy`. `env` is hosted-only. |
 | `--isolated` | Use a separate Claude Code configuration directory, so this session can run beside your other Claude Code sessions. |
-| `-m`, `--model <model>` | Request a specific model. Check the current catalog first. |
+| `-m`, `--model <model>` | Request a specific model for the main agent, such as `arc-swift-1.0`, or `rayline-router` for Legacy Rules Router. Subagents then use the same model. Check the current catalog first. |
 | `--config <path>` | Supply endpoints and routes for both the main agent and subagents. |
 | `--router-config-path <path>` | Refine which subagents `--local` sends to the local model. |
 | `--local-provider ollama\|lmstudio\|llamacpp` | Use a local model server you already run for subagents. |
@@ -56,15 +56,16 @@ By default, `raydock claude` requests `rayline-router`, the hosted Legacy Rules 
 
 Pass Claude Code's own arguments after `--`, for example `raydock claude -- --resume`. Run `raydock claude --help` for the options your installed version supports.
 
-To run Claude Code on ARC, see [Use ARC Sage or Swift](/tools/claude-code#use-arc-sage-or-swift). For Code sessions in the Claude desktop app, `raydock claude-desktop` runs a separate router for Desktop; see [Claude Desktop](/tools/claude-desktop).
+To choose an ARC tier explicitly, see [Use ARC Sage or Swift](/tools/claude-code#use-arc-sage-or-swift). For Code sessions in the Claude desktop app, `raydock claude-desktop` runs a separate router for Desktop; see [Claude Desktop](/tools/claude-desktop).
 
 ## Common combinations
 
 | Command | Who decides the route | How Claude Code connects | What goes through the router |
 | --- | --- | --- | --- |
-| `raydock claude` | Hosted Legacy Rules Router | Proxy | Everything |
-| `raydock claude --via env` | Hosted Legacy Rules Router | Environment | Everything |
-| `raydock claude --route subagents` | Hosted Legacy Rules Router | Proxy | Subagents only |
+| `raydock claude` | ARC: Sage for the main agent, Swift for subagents | Proxy | Everything |
+| `raydock claude --via env` | ARC: Sage for the main agent, Swift for subagents | Environment | Everything |
+| `raydock claude --route subagents` | ARC Swift for subagents; the main agent stays on cloud Claude | Proxy | Subagents only |
+| `raydock claude --model rayline-router` | Hosted Legacy Rules Router | Proxy | Everything |
 | `raydock claude --local` | On-device static router | Proxy | Subagents only |
 | `raydock claude --local --route all` | On-device static router | Proxy | Everything; the main agent still reaches cloud Claude by default |
 
