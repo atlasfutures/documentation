@@ -1,6 +1,6 @@
 ---
 title: "Supported models"
-description: "Use the live catalog instead of a frozen model list."
+description: "Choose an ARC model or connect Raydock to a model provider."
 ---
 
 <span id="frontier-models" />
@@ -21,9 +21,19 @@ description: "Use the live catalog instead of a frozen model list."
 <span id="how-to-read-this-table" />
 <span id="cost-estimation" />
 
+## ARC models
 
-Open [Rules Router settings](https://platform.rayline.ai/legacy/rules-router) for the model catalog and current slot defaults. Select a supported model ID for each assignment; do not substitute a display name into API requests.
+With ARC, your tool requests an ARC model ID and ARC chooses the inference model and reasoning effort for each turn.
 
-Model availability, context windows, vision support, and serving providers can change. Check the selected model's requirements before sending large contexts or image content.
+- [ARC Swift and Sage](/arc/models) are fixed-rate presets. Use `arc-swift-1.0` for everyday work or `arc-sage-1.0` for challenging tasks.
+- [ARC Dynamic](/arc/dynamic) uses `arc-1.0` and lets you set routing value and, where supported, routing temperature.
 
-[Routing policies](/legacy/rules-router/index) explains compatibility guards and fallbacks. The catalog does not guarantee every model will be available for every request, and it is not ARC's checkpoint model basket.
+The [Models page in Rayline Platform](https://platform.rayline.ai/models) shows current Swift and Sage availability, supported interfaces, and token rates. Check [ARC Dynamic](https://platform.rayline.ai/arc/dynamic) for its availability and controls. Use the exact model ID in API requests, rather than its display name.
+
+An ARC model ID does not pin a particular inference model. See [checkpoints](/arc/concepts/checkpoints) for how ARC's routing configuration is versioned, and [API compatibility](/arc/reference/compatibility) for supported capabilities.
+
+## Models through Raydock
+
+Raydock can connect your tools to Rayline Platform, other cloud providers, or a model server on your own hardware. The available models and their IDs come from the destination you configure. See [connection options](/raydock/connections) and [local models](/raydock/local-models).
+
+Check the model's context window, image and tool support, and your [agent harness's setup guide](/tools) before using it. A model being available from a provider does not mean every harness can use all of its capabilities.
