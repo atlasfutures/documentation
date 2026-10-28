@@ -64,7 +64,7 @@ Reference the profile with `routing.price_profile_id`, shown in the profile's ve
 }
 ```
 
-Send a profile or inline `routing.prices`, not both: a request with both is refused with `price_profile_conflict`. `exclusive` is optional with either. Set `"exclusive": true` to limit the candidates to the models the profile prices; without it, other models keep their catalog prices.
+Send a profile or inline `routing.prices`, not both: a request with both is refused with `price_profile_conflict`. `exclusive` is optional with either. Set `"exclusive": true` to limit the candidates to the models the profile prices; without it, other models keep their catalog prices. The Playground leaves `exclusive` off for a saved profile; select **Only route to models this profile prices** to turn it on.
 
 ### Check the profile that was applied
 
@@ -85,6 +85,7 @@ The response's `routing.price_profile` reports the profile and the prices it res
       },
       "unpriced": [],
       "ineligible": [],
+      "not_offered": [],
       "card_version": 42
     }
   }
@@ -94,6 +95,7 @@ The response's `routing.price_profile` reports the profile and the prices it res
 - **`status`** is `applied` or `unsupported`, as for inline prices.
 - **`prices`** is the table ARC used, exactly as if you had sent it as `routing.prices`. The `routing.prices` echo and its `price_sha256` are reported as well.
 - **`unpriced`** lists covered models with no catalog rate for a leg you did not override; **`ineligible`** lists overrides of models ARC no longer routes to. Both are left out of `prices`.
+- **`not_offered`** lists priced models that the ARC release answering the decision does not offer; a tier or pinned release can offer fewer models than the profile prices. They are dropped from `prices` and the decision goes ahead without them. A profile saved before rules existed is handled like inline `routing.prices`: a model the release does not offer fails the request with `unknown_price_model`, and its `not_offered` is always empty.
 - **`content_hash`** identifies the saved rules, and **`card_version`** the catalog rates they were resolved against. A profile saved before rules existed reports `schema: "legacy"` and `card_version: null`. `content_hash` and `price_sha256` hash different things; do not compare them.
 
 ARC never substitutes catalog prices for a profile it cannot resolve:
@@ -104,7 +106,7 @@ ARC never substitutes catalog prices for a profile it cannot resolve:
 | `403` | `price_profile_forbidden` | You are not an active member of the key's organization |
 | `404` | `price_profile_not_found` | No such profile or version in your organization |
 | `409` | `price_profile_archived` | The profile is archived; restore it on the Platform first |
-| `409` | `price_profile_unpriced` | The profile resolves to no priced model |
+| `409` | `price_profile_unpriced` | The profile resolves to no priced model, or the answering ARC release offers none of the models it prices |
 | `503` | `price_profile_unavailable` | Profiles or catalog rates are temporarily unavailable |
 
 ### Decisions only
