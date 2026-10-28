@@ -10,20 +10,20 @@ icon: "wallet"
 | --- | --- | --- |
 | `arc-swift-1.0` or `arc-sage-1.0` | The tier's fixed rate card for input, cache-read, cache-write, and output tokens, whichever model serves it | Included in the card |
 | `arc-1.0` | The served model's Rayline catalog price | None |
-| A model through Agent Gateway rules | The served model's Rayline catalog price | 0% commission |
+| A model through legacy Rules Router settings | The served model's Rayline catalog price | 0% commission |
 | A decision (`/v1/routes`) | The tokens ARC reads to decide, once per request | The Decisions rate; your inference is billed by your own provider |
-| A subscription path, such as `rayline codex --subscription` | Your subscription provider | None from Rayline |
-| Local inference through Rayline Local | Your hardware or endpoint | None |
+| A subscription path, such as `raydock codex --subscription` | Your subscription provider | None from Rayline |
+| Local inference through Raydock | Your hardware or endpoint | None |
 
-Rates are on [ARC pricing](/arc/pricing) and [Agent Gateway pricing](/rules-router/pricing). A rate is recorded with each request, so a later price change does not alter what an earlier request cost.
+Rates are on [ARC pricing](/arc/pricing) and [Rules Router pricing](/legacy/rules-router/pricing). A rate is recorded with each request, so a later price change does not alter what an earlier request cost.
 
 ## Which balance pays
 
-Hosted requests are paid from the prepaid balance of the workspace that owns the API key. Add funds in the [Rayline platform](https://platform.rayline.ai). Fund the workspace before its first request: a new workspace has no balance. A request the workspace cannot pay for is refused with `402` and `error.type` `billing_error`, whose message links to the top-up page; Rayline does not substitute a cheaper model. See [errors and limits](/arc/reference/errors).
+Hosted requests are paid from the prepaid balance of the workspace that owns the API key. Add funds in the [Rayline Platform](https://platform.rayline.ai). Fund the workspace before its first request: a new workspace has no balance. A request the workspace cannot pay for is refused with `402` and `error.type` `billing_error`, whose message links to the top-up page; Rayline does not substitute a cheaper model. See [errors and limits](/arc/reference/errors).
 
 A workspace linked to a Workshop organization uses that organization's Workshop credits instead. Workshop plans and credits are documented in [Workshop pricing](/workshop/pricing/plans).
 
-The Playground on the Rayline platform bills the workspace you select, after checking that you are a member of it.
+The Playground on the Rayline Platform bills the workspace you select, after checking that you are a member of it.
 
 ## Check a charge
 

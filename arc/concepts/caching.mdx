@@ -9,11 +9,11 @@ ARC's decision context and a provider's generation context are different things.
 
 ## ARC models
 
-The proposed launch rate card separates uncached input, cache reads, and output. The routing fee is waived for ARC models. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
+The effective Swift and Sage rate cards separate uncached input, cache reads, cache writes, and output. ARC Dynamic uses the served model's catalog inference price with no additional ARC fee. A cache hit must be reported by the actual service; do not infer it solely from repeated prompts.
 
 ## Decisions
 
-The launch rate card has input and cache-read categories only. Your inference provider meters its own input, caches, and output separately.
+The effective Decisions rate card lists encoded input and cache-read rates, with no charge for cache writes or output. Your inference provider meters its own input, caches, and output separately.
 
 Today ARC reads every Decisions request in full, with or without `x-conversation-id`: each response reports all of it in `usage.encoded_input_tokens`, and `usage.cache_read_tokens` is 0. Re-using a conversation's already-read context, reported as `cache_read_tokens` and billed at the cache-read rate, is planned; this page will say when it applies.
 
@@ -22,4 +22,4 @@ ARC also weighs your provider's cache when it decides. Moving a conversation to 
 Generated output may become input on a later turn. Count each actual metered event once; do not add an extra copy merely because the same text has appeared before.
 
 
-Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the launch token categories.
+Use [usage and billing](/platform/usage) to distinguish estimates from charges, and [ARC pricing](/arc/pricing) for the effective token rates and categories.

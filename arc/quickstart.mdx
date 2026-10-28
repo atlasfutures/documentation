@@ -17,14 +17,14 @@ Both tiers choose a model and reasoning effort for every request. Tier IDs may c
 
 <Steps>
 <Step title="Get a key">
-Create a key in **API Keys** on the [Rayline platform](https://platform.rayline.ai/keys), or run `rayline auth login` with the [Rayline CLI](/rules-router/cli#install). See [API keys](/platform/api-keys). Keep the key in `RAYLINE_API_KEY`, outside your source code:
+Create a key in **API Keys** on the [Rayline Platform](https://platform.rayline.ai/keys), or run `raydock auth login` with the [Raydock CLI](/raydock/cli#install). See [API keys](/platform/api-keys). Keep the key in `RAYLINE_API_KEY`, outside your source code:
 
 ```bash
 export RAYLINE_API_KEY="<your Rayline API key>"
 ```
 </Step>
 <Step title="Add funds">
-Add funds to the workspace on the [Rayline platform](https://platform.rayline.ai) before your first request. Requests and decisions are paid from the workspace's prepaid balance; without one, they return `402` (`billing_error`). See [funding and billing](/platform/billing).
+Add funds to the workspace on the [Rayline Platform](https://platform.rayline.ai) before your first request. Requests and decisions are paid from the workspace's prepaid balance; without one, they return `402` (`billing_error`). See [funding and billing](/platform/billing).
 </Step>
 <Step title="Send a request">
 
@@ -37,7 +37,7 @@ curl --fail-with-body https://api.rayline.ai/v1/messages \
   -d '{"model":"arc-swift-1.0","max_tokens":512,"messages":[{"role":"user","content":"Summarize the purpose of a regression test."}]}'
 ```
 
-This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. ARC also answers on OpenAI Chat Completions (`/v1/chat/completions`). The OpenAI Responses API (`/v1/responses`) does not serve ARC yet.
+This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. ARC also answers on OpenAI Chat Completions (`/v1/chat/completions`). Direct OpenAI Responses (`/v1/responses`) requires an environment that [advertises Responses support](/arc/availability#check-protocol-support).
 </Step>
 <Step title="Try a decision">
 

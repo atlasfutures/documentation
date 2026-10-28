@@ -1,0 +1,110 @@
+---
+title: "Cline"
+description: "Use ARC in Cline through the direct API or a Raydock gateway."
+---
+
+<span id="verify-two-tasks" />
+
+Cline reaches ARC through its **OpenAI Compatible** provider, either directly
+or through a Raydock gateway on your machine. The two setups differ only
+in the base URL and the API key. Start with the direct connection. Use Raydock when you want
+Rayline's local features: routing rules, provider configuration, or an
+on-device model. See [Rayline Platform and Raydock](/raydock/connections) for what
+each path gives you.
+
+## Direct API
+
+Cline offers three ways to install it: a native desktop app, an extension
+inside an IDE (VS Code, Cursor, JetBrains, Windsurf and others), or a CLI. This
+guide configures the **IDE extension**, shown in VS Code; see the
+[Cline install page](https://docs.cline.bot/getting-started/installing-cline)
+for the others. Open **Cline → Settings → API Configuration** and enter:
+
+| Setting | Value |
+| --- | --- |
+| API Provider | **OpenAI Compatible** |
+| Base URL | `https://api.rayline.ai/v1` |
+| API Key | Your [Rayline API key](/platform/api-keys) |
+| Custom Model ID | `arc-sage-1.0`, or `arc-swift-1.0` |
+| Context Window Size | `200000` for this configuration |
+| Max Output Tokens | `2048`; increase for longer responses |
+| Supports Images | Off for text-only tasks |
+| Reasoning Effort | **None** |
+
+If ARC is absent from the model list, enter its ID in **Custom Model ID**.
+
+![Cline API Configuration with the Rayline Platform URL and ARC Sage custom model ID](/images/tools/setup/cline-direct-settings.webp)
+
+Enter your own Rayline API key in the API key field.
+
+Click **Done**, then start a **New Task**. Existing tasks can retain their
+previous provider configuration.
+
+## Cline CLI
+
+Install the CLI with npm:
+
+```bash
+npm install -g cline
+```
+
+<Note>
+Install exactly `cline`. The package named `@cline/cli` is a different, stale
+tool.
+</Note>
+
+Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`. Point the CLI at ARC with the same provider, model and base URL as the extension above, then run it:
+
+```bash
+cline auth -p openai-compatible -k "$RAYLINE_API_KEY" -m arc-sage-1.0 -b https://api.rayline.ai/v1
+cline "Read the README and explain how to run this project."
+```
+
+<span id="rayline-local" />
+
+## Raydock
+
+The settings are the same as Direct; only the base URL and the key change,
+because the gateway on your machine holds your real Rayline key and Cline gets
+a placeholder. The gateway forwards each request to Rayline in the cloud, where
+ARC chooses the model and the model generates the answer.
+
+<Note>
+Use version **0.2.12 or later**.
+</Note>
+
+1. Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
+2. In Cline's **API Configuration**, keep **OpenAI Compatible** and the ARC
+   model ID from the Direct setup, and change:
+
+| Setting | Value |
+| --- | --- |
+| Base URL | `http://127.0.0.1:23811` (use your gateway's port) |
+| API Key | `local-client` (a non-secret placeholder) |
+
+3. Open **Settings → Features**, turn **Web Search** off, click **Done**, and
+   start a **New Task**.
+
+![Cline Features settings with Web Search turned off](/images/tools/setup/cline-web-search.webp)
+
+<Warning>
+Keep **Web Search** off for this configuration. Cline's provider-native
+search tool is unsupported by ARC. Ordinary file tools work with search disabled. The setting applies to new tasks.
+</Warning>
+
+## Try your first task
+
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
+
+## Troubleshooting
+
+- **Old provider still used:** start a new task after changing API settings.
+- **Raydock authentication error:** confirm the gateway's real API key; `local-client` is only a loopback placeholder.
+- **Search tool error:** disable **Web Search** and start a new task.
+- **404 on the Raydock Chat Completions path:** your gateway is older than
+  0.2.12, which added inbound Chat Completions. Update Raydock.
+
+See Cline's [OpenAI-compatible provider reference](https://docs.cline.bot/provider-config/openai-compatible)
+for its custom endpoint and model fields.

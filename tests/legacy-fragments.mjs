@@ -5,19 +5,24 @@ import { resolve } from 'node:path';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const redirects = JSON.parse(readFileSync(resolve(root, 'docs.json'))).redirects;
-// Heading snapshots from the previously published Rayline docs (c09bb73 and 7068df9).
+// Heading snapshots from published Rayline docs (c09bb73, 7068df9, and c735e96).
 const legacy = JSON.parse(readFileSync(new URL('./legacy-fragments.json', import.meta.url)));
 const slug = (heading) => heading.toLowerCase().replace(/<[^>]*>/g, '')
   .replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');
 let checked = 0;
 
 for (const { source, destination, fragments } of legacy) {
-  assert.equal(redirects.find((redirect) => redirect.source === source)?.destination, destination,
-    `Legacy route ${source} must retain its destination`);
+  if (source !== destination) {
+    assert.equal(redirects.find((redirect) => redirect.source === source)?.destination, destination,
+      `Legacy route ${source} must retain its destination`);
+  }
   const path = destination.slice(1);
   const file = [`${path}.mdx`, `${path}/index.mdx`].map((name) => resolve(root, name)).find(existsSync);
   assert.ok(file, `Missing destination ${destination}`);
-  const content = readFileSync(file, 'utf8');
+  const content = readFileSync(file, 'utf8').replace(
+    /^import \w+ from ['"](\/snippets\/[^'"]+\.mdx)['"];?$/gm,
+    (_, snippet) => readFileSync(resolve(root, snippet.slice(1)), 'utf8'),
+  );
   const ids = [...content.matchAll(/<span id="([^"]+)"\s*\/>/g)].map((match) => match[1]);
   const counts = new Map();
   for (const match of content.matchAll(/^#{2,6} (.+)$/gm)) {
@@ -33,4 +38,4 @@ for (const { source, destination, fragments } of legacy) {
   }
 }
 
-console.log(`Preserved ${checked} legacy fragment links across ${legacy.length} redirects.`);
+console.log(`Preserved ${checked} legacy fragment links across ${legacy.length} current and redirected pages.`);

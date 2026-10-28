@@ -1,0 +1,124 @@
+---
+title: "Rayline Platform and Raydock"
+sidebarTitle: "Platform or Raydock"
+description: "Choose where your agent harness connects, then choose where its requests go."
+icon: "server"
+---
+
+Your agent harness sends requests to an API endpoint to get answers and tool calls. You can connect it directly to **Rayline Platform**, or send its requests through **Raydock**, a gateway running on your computer.
+
+Start with the direct connection in your [tool's guide](/tools). Use Raydock when the guide requires it, or when you want to manage the destinations and routing on your own machine.
+
+<span id="choose-your-connection" />
+<span id="connect-through-the-cloud-or-rayline-local" />
+
+## Two ways to connect
+
+<span id="connect-directly-to-rayline" />
+
+### Connect directly to Rayline Platform
+
+**Your agent harness → Rayline Platform → inference model**
+
+Configure your tool with the Rayline API URL, your Rayline API key, and an ARC model ID. Rayline receives the request, ARC chooses the model and reasoning effort, and the selected model generates the answer. You do not need to install a gateway.
+
+Choose Swift or Sage for a fixed-rate preset, or [ARC Dynamic](/arc/dynamic) to set routing value and temperature.
+
+<span id="connect-through-rayline-local" />
+
+### Connect through Raydock
+
+**Your agent harness → Raydock on your computer → configured destination**
+
+Your tool connects to a local address, such as `http://127.0.0.1:23811`. Raydock receives the request and forwards it according to your configuration. It can keep upstream API keys in the gateway and apply local routing rules.
+
+Raydock can forward requests to Rayline Platform or other services. You can configure other cloud providers, gateways such as **OpenRouter**, or a model server running on your own hardware. Each destination needs a supported protocol and the appropriate credentials. See [endpoint configuration](https://github.com/rayline-ai/raydock/blob/main/docs/getting-started.md) for supported combinations.
+
+```mermaid
+flowchart LR
+  Harness[Agent harness] --> Raydock[Raydock]
+  Raydock --> Rayline[Rayline Platform]
+  Raydock --> Cloud[Other providers or OpenRouter]
+  Raydock --> Device[On-device model server]
+```
+
+These are destinations you configure. Installing Raydock does not automatically enable ARC to choose between all of them.
+
+## Where the work runs
+
+Connecting through a local gateway does not mean the model runs on your device. For example, **your tool → Raydock → ARC Sage on Rayline Platform** still uses cloud routing and cloud inference.
+
+There are three separate components you can consider running locally:
+
+| Component | Its job | What local means |
+| --- | --- | --- |
+| Raydock gateway | Receive requests and forward them to configured endpoints | The gateway runs on your computer; the destination can still be in the cloud. |
+| Inference model | Generate answers and tool calls | A model runs on your hardware through a compatible model server. |
+| ARC routing model | Choose the inference model and reasoning effort | ARC makes the routing decision on your hardware; the selected inference model can be local or cloud-hosted. |
+
+## On-device inference
+
+Models such as [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) and [Recursive Flint](https://huggingface.co/RecursiveSI/flint) are examples of open-weight inference models. Running one locally requires enough memory and a runtime that supports that model, such as llama.cpp or another compatible server. Follow the model's installation instructions for its supported runtimes.
+
+Configure Raydock to reach that server, or combine it with cloud endpoints in your routing rules. See [local models](/raydock/local-models) for setup. A model's availability as open weights does not by itself establish compatibility with every agent harness or Raydock runtime.
+
+## Run ARC locally
+
+Running ARC on-device means running the **routing model**, separately from the inference models that generate answers. A local ARC routing model could select cloud-hosted inference, on-device inference, or a mix of the two.
+
+Raydock does not currently include ARC weights. See [open weights and self-hosting](/arc/open-source) for source and artifact availability.
+
+## Configure a cloud-forwarding gateway
+
+Install [Raydock](/raydock/cli#install). Save this configuration as `router.json`:
+
+```json
+{
+  "endpoints": [{
+    "id": "rayline",
+    "protocol": "openai_chat",
+    "base_url": "https://api.rayline.ai/v1",
+    "api_key_env": "RAYLINE_API_KEY",
+    "models": ["arc-sage-1.0", "arc-swift-1.0", "arc-1.0"]
+  }],
+  "routes": {
+    "main": { "endpoint": "rayline", "model": "arc-sage-1.0" },
+    "subagent": { "endpoint": "rayline", "model": "arc-sage-1.0" }
+  }
+}
+```
+
+The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it. Raydock accepts Anthropic Messages, OpenAI Chat Completions and OpenAI Responses, but conversion does not preserve every feature. Use version 0.2.12 or later and choose the upstream before starting the gateway:
+
+| Tool or route | Upstream configuration |
+| --- | --- |
+| Cline, OpenClaw or Unreal with ARC | Keep the `openai_chat` configuration above. It also uses the protocol supported by many local model servers. |
+| Kilo, OpenCode, pi, omp or Hermes Messages | Set `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`. This preserves Messages-body fields such as ARC's `routing` extension and session metadata. |
+| Codex with ARC | Use the same `anthropic_messages` settings to support [Codex sub-agent tools](/tools/codex#use-arc-through-raydock). |
+| Existing Legacy Rules Router integration | Use `anthropic_messages` with `https://api.rayline.ai`, add `rayline-router` to the endpoint's `models`, and request that model. Chat Completions does not serve Legacy Rules Router. |
+
+Messages-to-Chat conversion drops the `routing` extension and `metadata.user_id`. The gateway also does not forward clients' session-affinity headers; see [conversation grouping](/tools/more-tools#the-conversation-id) for the difference from a direct connection.
+
+Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
+
+```bash
+RAYLINE_METRICS_PORT=23812 rld serve \
+  --no-local-model \
+  --local-router-port 23811 \
+  --adapter-port 23808 \
+  --injector-port 23809 \
+  --router-config-path "$PWD/router.json" \
+  --data-dir "$PWD/rayline-gateway-data"
+```
+
+Leave this process running. In a **different shell**, configure the client with base URL `http://127.0.0.1:23811` (add `/v1` where your tool's guide specifies it) and placeholder client key `local-client`. This gateway holds the real upstream key and forwards cloud requests; it does not download a local model.
+
+Check requests in [Rayline Usage](/platform/usage) to see the selected ARC tier, served model, and charge. Stop this gateway with Ctrl+C when finished.
+
+## Who bills the requests?
+
+When Raydock forwards a request to Rayline Platform, it is billed to your Rayline workspace just like a direct request. When you configure a different provider or gateway, that service bills usage under the account associated with its API key. Running inference on your own hardware uses your local compute resources.
+
+<span id="subscription-billing" />
+
+Subscription paths, such as `raydock codex --subscription`, send the main agent to your existing subscription. That subscription bills those requests rather than Rayline. Consult the tool guide before mixing subscription and API paths.

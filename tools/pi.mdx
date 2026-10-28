@@ -1,0 +1,153 @@
+---
+title: "pi"
+description: "Connect pi to ARC directly or through a Raydock gateway."
+---
+
+<span id="verify-the-route" />
+
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
+
+<span id="choose-a-connection" />
+
+## Two ways to use ARC with pi
+
+| Path | Request path | Inference |
+| --- | --- | --- |
+| Direct API | pi → Rayline Platform | Cloud |
+| Raydock gateway | pi → your gateway → Rayline Platform | Cloud |
+
+A local gateway does not imply on-device inference or locally running ARC. See [Rayline Platform and Raydock](/raydock/connections).
+
+## Install
+
+Install [pi](https://github.com/earendil-works/pi#getting-started). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run the tool. Keep it out of project files.
+
+## Connect directly
+
+Use a separate configuration directory. These environment settings apply to the current shell:
+
+```bash
+export PI_CODING_AGENT_DIR="$HOME/.config/pi-rayline"
+mkdir -p "$PI_CODING_AGENT_DIR"
+```
+
+Save this in `$PI_CODING_AGENT_DIR/models.json`:
+
+```json
+{
+  "providers": {
+    "rayline": {
+      "baseUrl": "https://api.rayline.ai",
+      "api": "anthropic-messages",
+      "apiKey": "$RAYLINE_API_KEY",
+      "compat": { "sendSessionAffinityHeaders": true },
+      "models": [
+        { "id": "arc-sage-1.0", "name": "ARC Sage", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 },
+        { "id": "arc-swift-1.0", "name": "ARC Swift", "reasoning": false, "input": ["text"], "contextWindow": 200000, "maxTokens": 2048 }
+      ]
+    }
+  }
+}
+```
+
+pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The session-affinity setting sends pi’s session ID on direct requests. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+
+Start with Sage:
+
+```bash
+pi --provider rayline --model arc-sage-1.0
+```
+
+For Swift, use `pi --provider rayline --model arc-swift-1.0`. The provider prefix `rayline/`, where required by the tool, identifies your configured provider; the API IDs are `arc-sage-1.0` and `arc-swift-1.0`.
+
+<span id="use-a-rayline-local-gateway" />
+
+## Use a Raydock gateway
+
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) with `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`, then start it. The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+
+| Setting | Rayline Platform | Raydock |
+| --- | --- | --- |
+| `baseUrl` | `https://api.rayline.ai` | `http://127.0.0.1:23811` |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
+
+`23811` is the port the linked gateway setup uses; if yours is on another port, use that one. The gateway forwards each request to Rayline in the cloud, where ARC chooses the model and the model generates the answer.
+
+## Try your first task
+
+Open your project and ask: **Read the README and explain how to run this project.**
+Choose **ARC Sage** for a challenging task or switch to **ARC Swift** for everyday work.
+You can see the model ARC selected and the request’s cost in [Rayline Usage](/platform/usage).
+
+<span id="use-arc-directly" />
+<span id="verify-your-setup" />
+<span id="launcher-availability" />
+<span id="run" />
+<span id="what-rayline-writes" />
+<span id="key-handling" />
+<span id="conversations" />
+<span id="manual-setup-without-the-launcher" />
+<span id="known-limitations" />
+
+## Launcher and session behavior
+
+From Raydock **0.3.0**, `raydock pi` runs on ARC Sage. To use Legacy Rules Router, pass `--model rayline/rayline-router` or choose it in pi's model picker; pi saves your choice for later launches. You can also use the manual configuration above with model `rayline-router`.
+
+The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/tools/more-tools#launcher-options).
+
+Each launcher invocation is one conversation. In manual direct connections, `sendSessionAffinityHeaders` makes pi send its session ID on every request, which Rayline uses to keep a conversation together. The gateway does not forward that session header; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
+
+## Troubleshooting
+
+- **Another provider or model is used:** check project overrides and the active configuration directory.
+- **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
+- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- See [shared troubleshooting](/tools/more-tools#troubleshooting).
+
+<span id="configurable-arc" />
+
+## ARC Dynamic
+
+To use ARC Dynamic, add a model entry named `arc-1.0` alongside the Sage and Swift
+entries above, then select it with `--model arc-1.0`.
+For Raydock, include `arc-1.0` in the gateway endpoint’s model list as well.
+
+ARC Dynamic uses the served model’s catalog price rather than a fixed tier
+rate; see [ARC Dynamic](/arc/dynamic).
+
+### Send your own routing value
+
+Use the direct Messages connection above or Raydock with an `anthropic_messages`
+upstream. A gateway configured as `openai_chat` drops the hook's `routing` field
+when translating pi's Messages request.
+
+pi 0.80.2 supports a `before_provider_request` extension hook. Save this as
+`arc-routing.ts`:
+
+```typescript
+export default function (pi) {
+  pi.on("before_provider_request", (event, ctx) => {
+    if (ctx.model?.provider !== "rayline" || ctx.model?.id !== "arc-1.0") return;
+    const value = Number(process.env.RAYLINE_VALUE_USD);
+    if (!Number.isFinite(value) || value < 0.1 || value > 5) {
+      throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 5");
+    }
+    return { ...event.payload, routing: { value_usd: value, temperature: 0 } };
+  });
+  pi.on("after_provider_response", (event) => {
+    console.error("ARC routing:", event.headers["x-rayline-routing"] ?? "not exposed");
+  });
+}
+```
+
+Start pi with the extension explicitly loaded:
+
+```bash
+RAYLINE_VALUE_USD=0.5 pi --extension ./arc-routing.ts --provider rayline --model arc-1.0
+```
+
+The guard leaves other providers and ARC tiers unchanged. This routing
+`temperature` controls ARC exploration, not the answer model’s temperature.
+Check the response echo rather than assuming the setting took effect.
+
+The `x-rayline-routing` response header reports whether each setting was applied. A workspace privacy policy can override exploration settings; check `status` and `reason` in that header.

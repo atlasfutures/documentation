@@ -1,0 +1,94 @@
+---
+title: "Uninstall Raydock"
+description: "Stop the runtime, sign out, and remove the CLI and its files."
+---
+
+Raydock has no top-level uninstall command. Stop its separate runtimes and undo client setup before deleting the files.
+
+## 1. Stop the runtime and sign out
+
+Close any agent sessions you started through Raydock. If you used Claude Desktop, first run:
+
+```bash
+raydock claude-desktop uninstall
+```
+
+This restores Desktop’s saved profile before removing the login service and its runtime state. Do this **before** deleting `~/.rayline`; that directory contains the recovery state. See [Claude Desktop removal](/tools/claude-desktop#remove-it).
+
+If you used ARC hybrid routing, stop its separate runtime too:
+
+```bash
+raydock hybrid stop
+```
+
+For an instance started with `--state-dir`, run `raydock hybrid --state-dir <path> stop` for that same directory. Stop any model server you launched separately if you no longer need it.
+
+Then stop the shared router and sign out:
+
+```bash
+raydock router stop
+raydock auth logout
+```
+
+`raydock auth logout` revokes your CLI session and deletes the stored router key. Workspace API keys you created yourself stay active; revoke them in [API keys](/platform/api-keys). If you used `--env`, sign out of each environment with `raydock --env <name> auth logout`.
+
+## 2. Remove downloaded models
+
+Models that Raydock downloads live in the shared Hugging Face cache, not in Raydock’s own directories, so deleting Raydock does not remove them. List and delete them first:
+
+```bash
+raydock local models
+raydock local remove <model-id>
+```
+
+## 3. Undo client changes
+
+- **Claude Code status line.** `raydock claude` adds a status line that runs `rld statusline` to `~/.claude/settings.json`, or to `~/.rayline/cc/settings.json` for `--isolated` sessions. It never replaces a status line you set yourself. Remove the `statusLine` entry if it points at `rld`.
+- **Codex profile.** If you ran `raydock codex configure`, delete `rayline.config.toml` from `$CODEX_HOME` or `~/.codex`.
+- **Harness configs** are inside `~/.config/rayline` and go away in the next step.
+
+## 4. Delete the files
+
+On macOS:
+
+```bash
+rm -rf ~/.rayline ~/.config/rayline "$HOME/Library/Application Support/rayline"
+```
+
+On Linux:
+
+```bash
+rm -rf ~/.rayline ~/.config/rayline "${XDG_CONFIG_HOME:-$HOME/.config}/rayline"
+```
+
+On Windows, in PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force "$HOME\.rayline", "$HOME\.config\rayline", "$env:APPDATA\rayline"
+```
+
+If you used custom runtime state directories, remove those after stopping their instances.
+
+This removes the binaries, runtime state and logs, the bundled llama.cpp server, the isolated Claude Code and Codex homes, your settings and credentials, and the proxy's certificate authority. Raydock never adds that certificate to your system trust store, so there is nothing to remove there.
+
+Finally, take `~/.rayline/bin` off your `PATH`. On macOS and Linux, delete the lines the installer added to `~/.zshrc`, `~/.bash_profile`, or `~/.bashrc`: the comment `# Added by Raydock CLI installer` (or `# Added by Rayline CLI installer` on an older installation) and the `export PATH="$HOME/.rayline/bin:$PATH"` line after it. On Windows, remove the directory from your user `PATH` in **Environment Variables**.
+
+If you installed into another directory with `RAYLINE_INSTALL_DIR`, the steps above leave the binaries there. Delete the Raydock binaries, alias, and bundled license listed below. Keep the directory itself if it holds other tools:
+
+```bash
+rm "<install dir>/raydock" "<install dir>/rayline" "<install dir>/rld" "<install dir>/rayline-core" "<install dir>/rayline-core-LICENSE"
+```
+
+If you set `RAYLINE_DAEMON_DIR` on macOS or Linux, remove `rld` from that separate directory instead.
+
+On Windows, delete `raydock.exe`, `rayline.exe`, `rld.exe`, `rayline-core.exe`, and `rayline-core-LICENSE` from the install directory. After closing all Raydock sessions, stopping its runtimes, and letting any installer or updater finish, also remove these leftovers from that directory if present:
+
+- `.rayline.exe.tmp-*`, `.raydock.exe.tmp-*`, `.rld.exe.tmp-*`, `.rayline-core.exe.tmp-*`, and `.rayline-core-LICENSE.tmp-*`
+- `.rayline.exe.old-*`, `.raydock.exe.old-*`, `.rld.exe.old-*`, `.rayline-core.exe.old-*`, and `.rayline-core-LICENSE.old-*`
+- `rayline.exe.old-*`, `raydock.exe.old-*`, `rld.exe.old-*`, `rayline-core.exe.old-*`, and `rayline-core-LICENSE.old-*`
+
+New completed replacements mark retired backups with a leading dot and an `.old-<pid>-<nonce>` suffix. For unmanaged installs, cleanup is deferred to a later `raydock update` that installs a release, or an installer run; files still in use are kept. Ordinary CLI commands, `update --check`, `update --dry-run`, and an update that finds Raydock already current without installing anything do not perform this cleanup. Historical `.tmp-*` files and non-dot backups such as `rayline.exe.old-<guid>` remain manual-only because they can be part of an unfinished replacement. Remove them only after all sessions, runtimes, installers, and updaters have finished.
+
+Leave other files alone. Then remove the `PATH` entry you added for the install directory.
+
+For a Homebrew installation, run `brew uninstall raydock` before removing configuration and downloaded models.

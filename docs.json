@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Rayline",
-  "description": "ARC, Agent Gateway, and Workshop: API integration, explicit routing, and building with AI.",
+  "description": "Use ARC for model selection, Raydock for on-device connections, and Workshop to build with AI.",
   "colors": {
     "primary": "#B33100",
     "light": "#FB923C",
@@ -57,34 +57,35 @@
           {
             "group": "Start here",
             "pages": [
-              "tools/index"
+              "tools/index",
+              "raydock/index"
             ]
           },
           {
             "group": "Connection options",
             "pages": [
-              "tools/hosted-local",
-              "rules-router/reference"
+              "raydock/connections",
+              "tools/connections"
             ]
           },
           {
             "group": "Tool guides",
             "pages": [
-              "rules-router/quickstart/other-agents/opencode",
-              "rules-router/quickstart/other-agents/hermes",
-              "rules-router/quickstart/other-agents/openclaw",
-              "rules-router/quickstart/claude-code",
+              "tools/opencode",
+              "tools/hermes",
+              "tools/openclaw",
+              "tools/claude-code",
               "tools/claude-desktop",
-              "rules-router/quickstart/codex",
+              "tools/codex",
               {
                 "group": "More tools",
                 "pages": [
-                  "rules-router/quickstart/other-agents",
-                  "rules-router/quickstart/other-agents/pi",
-                  "rules-router/quickstart/other-agents/omp",
-                  "rules-router/quickstart/other-agents/kilo",
-                  "rules-router/quickstart/other-agents/cline",
-                  "rules-router/quickstart/other-agents/unreal"
+                  "tools/more-tools",
+                  "tools/pi",
+                  "tools/omp",
+                  "tools/kilo",
+                  "tools/cline",
+                  "tools/unreal"
                 ]
               }
             ]
@@ -92,28 +93,26 @@
           {
             "group": "Connect and operate",
             "pages": [
-              "rules-router/policies",
-              "rules-router/how-it-works/models",
-              "rules-router/guides/local-models",
-              "rules-router/guides/menubar"
+              "platform/models",
+              "raydock/local-models"
             ]
           },
           {
             "group": "CLI reference",
             "pages": [
-              "rules-router/cli/index",
-              "rules-router/cli/auth",
-              "rules-router/cli/claude",
-              "rules-router/cli/router",
-              "rules-router/cli/uninstall"
+              "raydock/cli/index",
+              "raydock/cli/auth",
+              "raydock/cli/claude",
+              "raydock/cli/router",
+              "raydock/cli/uninstall"
             ]
           },
           {
             "group": "Troubleshooting",
             "pages": [
-              "rules-router/troubleshooting/index",
-              "rules-router/troubleshooting/connectivity",
-              "rules-router/troubleshooting/billing-issues"
+              "raydock/troubleshooting/index",
+              "raydock/troubleshooting/connectivity",
+              "raydock/troubleshooting/billing-issues"
             ]
           }
         ]
@@ -133,13 +132,12 @@
           {
             "group": "Routing and decisions",
             "pages": [
-              "rules-router/index",
-              "arc/gateway-routing",
+              "arc/dynamic",
               "arc/decisions/index",
               "arc/decisions/prices",
               "arc/decisions/applying-effort",
               "arc/decisions/claude-code-agent",
-              "rules-router/quickstart/agents"
+              "tools/custom-agents"
             ]
           },
           {
@@ -156,7 +154,6 @@
               "platform/usage",
               "platform/billing",
               "arc/pricing",
-              "rules-router/pricing/index",
               "platform/data-privacy"
             ]
           },
@@ -189,6 +186,18 @@
               "POST /v1/messages",
               "POST /v1/chat/completions",
               "POST /v1/responses"
+            ]
+          },
+          {
+            "group": "Legacy",
+            "pages": [
+              {
+                "group": "Rules Router",
+                "pages": [
+                  "legacy/rules-router/index",
+                  "legacy/rules-router/pricing"
+                ]
+              }
             ]
           }
         ]
@@ -391,32 +400,32 @@
     },
     {
       "source": "/cli/auth",
-      "destination": "/rules-router/cli/auth",
+      "destination": "/raydock/cli/auth",
       "permanent": true
     },
     {
       "source": "/cli/claude",
-      "destination": "/rules-router/cli/claude",
+      "destination": "/raydock/cli/claude",
       "permanent": true
     },
     {
       "source": "/cli",
-      "destination": "/rules-router/cli",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
       "source": "/cli/menubar",
-      "destination": "/rules-router/guides/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
       "source": "/cli/router",
-      "destination": "/rules-router/cli/router",
+      "destination": "/raydock/cli/router",
       "permanent": true
     },
     {
       "source": "/guides/billing",
-      "destination": "/rules-router/pricing",
+      "destination": "/legacy/rules-router/pricing",
       "permanent": true
     },
     {
@@ -426,47 +435,47 @@
     },
     {
       "source": "/guides/local-models",
-      "destination": "/rules-router/guides/local-models",
+      "destination": "/raydock/local-models",
       "permanent": true
     },
     {
       "source": "/guides/menubar",
-      "destination": "/rules-router/guides/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
       "source": "/guides/routing-settings",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/how-it-works",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/how-it-works/models",
-      "destination": "/rules-router/how-it-works/models",
+      "destination": "/platform/models",
       "permanent": true
     },
     {
       "source": "/how-it-works/on-device",
-      "destination": "/rules-router/guides/local-models",
+      "destination": "/raydock/local-models",
       "permanent": true
     },
     {
       "source": "/how-it-works/routing",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/pricing",
-      "destination": "/rules-router/pricing",
+      "destination": "/legacy/rules-router/pricing",
       "permanent": true
     },
     {
       "source": "/pricing/model-pricing",
-      "destination": "/rules-router/how-it-works/models",
+      "destination": "/platform/models",
       "permanent": true
     },
     {
@@ -476,12 +485,12 @@
     },
     {
       "source": "/quickstart/claude-code",
-      "destination": "/rules-router/quickstart/claude-code",
+      "destination": "/tools/claude-code",
       "permanent": true
     },
     {
       "source": "/quickstart/codex",
-      "destination": "/rules-router/quickstart/codex",
+      "destination": "/tools/codex",
       "permanent": true
     },
     {
@@ -491,37 +500,37 @@
     },
     {
       "source": "/troubleshooting/billing-issues",
-      "destination": "/rules-router/troubleshooting/billing-issues",
+      "destination": "/raydock/troubleshooting/billing-issues",
       "permanent": true
     },
     {
       "source": "/troubleshooting/connectivity",
-      "destination": "/rules-router/troubleshooting/connectivity",
+      "destination": "/raydock/troubleshooting/connectivity",
       "permanent": true
     },
     {
       "source": "/troubleshooting",
-      "destination": "/rules-router/troubleshooting",
+      "destination": "/raydock/troubleshooting",
       "permanent": true
     },
     {
       "source": "/rules-router/how-it-works",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/rules-router/how-it-works/routing",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/rules-router/guides/routing-settings",
-      "destination": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index",
       "permanent": true
     },
     {
       "source": "/rules-router/how-it-works/on-device",
-      "destination": "/rules-router/guides/local-models",
+      "destination": "/raydock/local-models",
       "permanent": true
     },
     {
@@ -531,22 +540,22 @@
     },
     {
       "source": "/rules-router/guides/billing",
-      "destination": "/rules-router/pricing",
+      "destination": "/legacy/rules-router/pricing",
       "permanent": true
     },
     {
       "source": "/rules-router/pricing/model-pricing",
-      "destination": "/rules-router/how-it-works/models",
+      "destination": "/platform/models",
       "permanent": true
     },
     {
       "source": "/rules-router/cli/menubar",
-      "destination": "/rules-router/guides/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
       "source": "/quickstart/agents",
-      "destination": "/rules-router/quickstart/agents",
+      "destination": "/tools/custom-agents",
       "permanent": true
     },
     {
@@ -563,7 +572,7 @@
     },
     {
       "source": "/arc/coding-tools/claude-code",
-      "destination": "/rules-router/quickstart/claude-code"
+      "destination": "/tools/claude-code"
     },
     {
       "source": "/arc/coding-tools/claude-desktop",
@@ -571,11 +580,11 @@
     },
     {
       "source": "/arc/coding-tools/codex",
-      "destination": "/rules-router/quickstart/codex"
+      "destination": "/tools/codex"
     },
     {
       "source": "/arc/coding-tools/other-agents",
-      "destination": "/rules-router/quickstart/other-agents"
+      "destination": "/tools/more-tools"
     },
     {
       "source": "/arc/responses",
@@ -601,6 +610,142 @@
       "source": "/arc/concepts/evaluation",
       "destination": "/arc/models",
       "permanent": true
+    },
+    {
+      "source": "/rules-router/index",
+      "destination": "/raydock/index"
+    },
+    {
+      "source": "/rules-router/policies",
+      "destination": "/legacy/rules-router/index"
+    },
+    {
+      "source": "/rules-router/pricing/index",
+      "destination": "/legacy/rules-router/pricing"
+    },
+    {
+      "source": "/rules-router/reference",
+      "destination": "/tools/connections"
+    },
+    {
+      "source": "/rules-router/how-it-works/models",
+      "destination": "/platform/models"
+    },
+    {
+      "source": "/arc/gateway-routing",
+      "destination": "/arc/dynamic"
+    },
+    {
+      "source": "/tools/hosted-local",
+      "destination": "/raydock/connections"
+    },
+    {
+      "source": "/rules-router/cli/claude",
+      "destination": "/raydock/cli/claude"
+    },
+    {
+      "source": "/rules-router/cli/index",
+      "destination": "/raydock/cli/index"
+    },
+    {
+      "source": "/rules-router/cli/auth",
+      "destination": "/raydock/cli/auth"
+    },
+    {
+      "source": "/rules-router/cli/router",
+      "destination": "/raydock/cli/router"
+    },
+    {
+      "source": "/rules-router/cli/uninstall",
+      "destination": "/raydock/cli/uninstall"
+    },
+    {
+      "source": "/rules-router/guides/local-models",
+      "destination": "/raydock/local-models"
+    },
+    {
+      "source": "/rules-router/guides/menubar",
+      "destination": "/raydock/cli"
+    },
+    {
+      "source": "/rules-router/quickstart/agents",
+      "destination": "/tools/custom-agents"
+    },
+    {
+      "source": "/rules-router/quickstart/codex",
+      "destination": "/tools/codex"
+    },
+    {
+      "source": "/rules-router/quickstart/claude-code",
+      "destination": "/tools/claude-code"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents",
+      "destination": "/tools/more-tools"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/pi",
+      "destination": "/tools/pi"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/cline",
+      "destination": "/tools/cline"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/omp",
+      "destination": "/tools/omp"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/openclaw",
+      "destination": "/tools/openclaw"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/kilo",
+      "destination": "/tools/kilo"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/opencode",
+      "destination": "/tools/opencode"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/hermes",
+      "destination": "/tools/hermes"
+    },
+    {
+      "source": "/rules-router/quickstart/other-agents/unreal",
+      "destination": "/tools/unreal"
+    },
+    {
+      "source": "/rules-router/troubleshooting/connectivity",
+      "destination": "/raydock/troubleshooting/connectivity"
+    },
+    {
+      "source": "/rules-router/troubleshooting/index",
+      "destination": "/raydock/troubleshooting/index"
+    },
+    {
+      "source": "/rules-router/troubleshooting/billing-issues",
+      "destination": "/raydock/troubleshooting/billing-issues"
+    },
+    {
+      "source": "/rules-router",
+      "destination": "/raydock"
+    },
+    {
+      "source": "/rules-router/pricing",
+      "destination": "/legacy/rules-router/pricing"
+    },
+    {
+      "source": "/rules-router/cli",
+      "destination": "/raydock/cli"
+    },
+    {
+      "source": "/rules-router/troubleshooting",
+      "destination": "/raydock/troubleshooting"
+    },
+    {
+      "source": "/raydock/menubar",
+      "destination": "/raydock/cli"
     }
   ],
   "api": {

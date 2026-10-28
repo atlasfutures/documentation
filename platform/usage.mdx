@@ -15,7 +15,7 @@ description: "Separate actual charges, estimates, and routing decisions."
 <span id="settings" />
 <span id="setup" />
 
-Rayline's platform is where you inspect requests, selected models, and usage. Read each value according to its source.
+Rayline Platform is where you inspect requests, selected models, and usage. Read each value according to its source.
 
 | Value | How to interpret it |
 | --- | --- |
@@ -26,13 +26,15 @@ Rayline's platform is where you inspect requests, selected models, and usage. Re
 
 ## ARC token categories
 
-Responses launch pricing has input, cache-read, and output rates. Decisions has input and cache-read rates only; inference executed by your application is separate. Decisions does not yet reuse cached prefixes, so its cache-read count is 0 and every token it reads is billed as input. See [ARC pricing](/arc/pricing).
+ARC Swift and Sage have effective input, cache-read, cache-write, and output rates. ARC Dynamic uses the served model's catalog inference price with no additional ARC fee. Decisions lists encoded input and cache-read rates, with no charge for cache writes or output; inference executed by your application is separate. Decisions does not yet reuse cached prefixes, so its cache-read count is 0 and every token it reads is billed as input. See [ARC pricing](/arc/pricing).
 
-Do not add a Decisions charge to a Responses call. Do not infer cache-read counts from repeated text when the API or platform has not reported those counters.
+Do not add a separate Decisions charge to an ARC generation request. Do not infer cache-read counts from repeated text when the API or platform has not reported those counters.
 
-## Agent Gateway
+<span id="agent-gateway" />
 
-The launch policy is **0% routing commission**. Hosted model inference is still chargeable. See [Agent Gateway pricing](/rules-router/pricing) for rollout status.
+## Rules Router
+
+The launch policy is **0% routing commission**. Hosted model inference is still chargeable. See [Rules Router pricing](/legacy/rules-router/pricing) for rollout status.
 
 ## Workshop
 
@@ -40,11 +42,11 @@ Workshop's AI credits, Cloud credits, subscriptions, and credit packs are docume
 
 ## Inspect routed requests
 
-Open the [Rayline platform](https://platform.rayline.ai) and select the workspace that owns your key. For each request, check:
+Open the [Rayline Platform](https://platform.rayline.ai) and select the workspace that owns your key. For each request, check:
 
 - Was the request executed, or did it fail?
 - Which model was requested, and which model and provider served it?
-- Did the request follow an ARC tier, configurable ARC, a main-agent pin, or a subagent route?
+- Did the request follow an ARC tier, ARC Dynamic, a main-agent pin, or a subagent route?
 - Which token categories and actual costs are recorded?
 
 Compare a representative task before and after changing a policy. A cheaper model or a positive savings estimate is not proof that the task completed correctly.

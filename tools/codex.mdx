@@ -1,0 +1,160 @@
+---
+title: "Codex"
+description: "Use the Raydock CLI with Codex CLI or desktop."
+---
+
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Use Raydock to forward Codex’s Responses requests to the hosted Messages API, or connect directly to an environment that [advertises Responses support](/arc/availability#check-protocol-support).
+
+Install Codex before you begin.
+
+<span id="manual-setup-without-the-launcher" />
+<span id="arc" />
+<span id="use-arc-through-rayline-local" />
+
+## Use ARC through Raydock
+
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). For Codex, change its endpoint to `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"` before starting it. Start the gateway in its own shell with your real Rayline API key. That gateway sends requests to Rayline Platform; inference remains in the cloud.
+
+In a **different shell**, give Codex the non-secret key `local-client`:
+
+```bash
+export RAYLINE_API_KEY=local-client
+```
+
+Add this provider to `~/.codex/config.toml`:
+
+```toml
+[model_providers.rayline]
+name = "Rayline"
+base_url = "http://127.0.0.1:23811/v1"
+env_key = "RAYLINE_API_KEY"
+wire_api = "responses"
+```
+
+Create a profile that selects it, `~/.codex/rayline.config.toml`:
+
+```toml
+model_provider = "rayline"
+model = "arc-sage-1.0"
+web_search = "disabled"
+```
+
+Keep the API key out of tool-shell environments and saved shell snapshots:
+
+```toml
+# Add these sections to config.toml.
+[features]
+shell_snapshot = false
+
+[shell_environment_policy]
+exclude = ["RAYLINE_API_KEY"]
+```
+
+Start Codex with the profile:
+
+```bash
+codex --profile rayline exec "Reply with the word ready."
+```
+
+- `env_key` names the variable containing the placeholder. The gateway holds your real Rayline key and adds it to the upstream request.
+- `wire_api = "responses"` makes Codex call `/v1/responses`.
+- Current Codex releases read profiles from `<name>.config.toml` in the Codex home and reject a `[profiles.<name>]` table in `config.toml`. If you set `CODEX_HOME`, put both files there.
+- This setup uses hosted ARC inference. For subscription mode or local models, see the launcher options below.
+
+Then find the request in [Inspect routed requests](/platform/usage).
+
+Keep built-in web search disabled (`web_search = "disabled"`) when using ARC.
+
+Codex's sub-agent tools (the `multi_agent_v1` namespace) are forwarded to
+Anthropic Messages endpoints, including ARC, so multi-agent tasks work on this
+path. A gateway endpoint configured as Chat Completions or a local model
+refuses them with a `400 unsupported_tool`; use single-agent tasks there.
+
+Codex warns that it has no built-in metadata for the ARC model IDs and uses
+fallback metadata. Set context limits to match the models you use.
+
+<span id="connect-to-the-rayline-platform" />
+
+## Direct Responses connections
+
+Check [protocol support](/arc/availability#check-protocol-support) for your environment and ARC model. If it advertises `responses`, set the provider's `base_url` to that API origin plus `/v1` and load your real Rayline API key into `RAYLINE_API_KEY`. Keep the ARC model and `wire_api = "responses"` settings above. If Responses is not advertised, use the Raydock setup.
+
+Existing [Legacy Rules Router](/legacy/rules-router) integrations can use `https://api.rayline.ai/v1` with `model = "rayline-router"` and their real Rayline API key.
+
+<span id="launch-with-rayline-local" />
+
+## Launch with Raydock
+
+Install the [Raydock CLI](/raydock/cli). The launcher starts a local gateway at `http://127.0.0.1:20811/v1` and configures Codex for you.
+
+## Codex CLI
+
+```bash
+raydock codex -- exec "summarize this repo"
+```
+
+Raydock starts the router, points Codex at it for this run, and passes everything after `--` to Codex. Put Raydock options before `--`.
+
+## Choose who serves the requests
+
+`--auth` controls Codex subscription authentication. Without a custom config, it also selects the default route:
+
+| Option | Requests go to | Billed through |
+| --- | --- | --- |
+| `--auth auto` (default) | ARC on Rayline Platform: Sage for the `main` route, Swift for the `subagent` route | Your Rayline workspace |
+| `--auth subscription`, or `--subscription` | Your existing ChatGPT/Codex login for the main agent; subagents go to your local model when one is configured | Your ChatGPT plan |
+| `--auth none` | No Codex subscription auth; uses the local default or endpoints in `--config` | The configured provider, if any |
+
+The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model, such as `arc-swift-1.0`; without it, the routes decide. `--model rayline-router` does not select [Legacy Rules Router](/legacy/rules-router) for Codex. To use Legacy Rules Router, set the route models in `~/.config/rayline/router.json` to `rayline-router`.
+
+```bash
+raydock codex --subscription -- exec "summarize this repo"
+```
+
+## Codex desktop
+
+
+```bash
+raydock codex app
+raydock codex app ~/projects/app
+raydock codex app --subscription
+```
+
+`raydock codex app` takes the same options as `raydock codex`, plus an optional workspace path. It runs the app on an isolated Codex home, `~/.rayline/codex-app-home`, so your normal Codex configuration is untouched. The first launch copies your existing Codex settings; later launches update only the Rayline routing. The desktop app is single-instance: if it is already running with different routing, the launcher asks before restarting it.
+
+## Reusable profile
+
+To configure Codex yourself instead of launching it through Raydock, write a profile and start the router separately:
+
+```bash
+raydock codex configure
+raydock router start --mode codex --auth subscription
+```
+
+`raydock codex configure` writes `rayline.config.toml` to `$CODEX_HOME`, or to `~/.codex` when `CODEX_HOME` is not set. It accepts `--model`, `--base-url`, and `--auth subscription|none`.
+
+## How your key is handled
+
+From Rayline 0.2.8, Codex never receives your router key. Its provider points at the local router, which holds the key and adds it to hosted requests; subscription mode uses your ChatGPT login. Raydock removes `RAYLINE_ROUTER_API_KEY` from Codex's environment, so the key cannot reach the shell snapshots Codex saves to disk.
+
+If the Codex desktop app was already running before you updated Raydock, quit and relaunch it once. `raydock codex app` reuses a running app whose routing is current, and a running process keeps the environment it started with.
+
+## Explicit routes
+
+Custom configurations can select local or API endpoints, or hosted Rules Router routes. See the [CLI configuration guide](https://github.com/rayline-ai/raydock/blob/main/docs/getting-started.md) for the schema.
+
+Codex uses `/v1/responses`. The requested model determines whether it uses an ARC tier or another configured route; the protocol alone does not establish that.
+
+<span id="verify" />
+
+## Try your first task
+
+From a project directory, ask Codex to explain the project:
+
+```bash
+codex --profile rayline exec "Read the README and summarize how to run this project."
+```
+
+Use `--model arc-swift-1.0` to switch to Swift. View the request and selected model in [Rayline Usage](/platform/usage).
+
+For a launcher-managed gateway, check its status with `raydock router status`.

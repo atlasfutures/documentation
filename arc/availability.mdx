@@ -5,15 +5,28 @@ description: "What you can use today, and what is still coming."
 
 | Surface | Status |
 | --- | --- |
-| ARC models (Anthropic Messages) and Decisions | Beta, open to any Rayline API key, with tier IDs `arc-swift-1.0` and `arc-sage-1.0` |
-| ARC on the OpenAI Responses API (`/v1/responses`) | Not yet available |
+| ARC models (Anthropic Messages and OpenAI Chat Completions) and Decisions | Beta, open to any Rayline API key, with tier IDs `arc-swift-1.0` and `arc-sage-1.0` |
+| ARC on the OpenAI Responses API (`/v1/responses`) | Environment-dependent; check the model's advertised protocols below |
 | Decisions request and response contract | [Documented](/arc/reference/decisions), including multi-turn conversations |
 | Responses streaming, tool calls, images, structured output | Confirm availability with the Rayline team before integrating |
 | Semantic Router source | [Public fork available](https://github.com/atlasfutures/semantic-router) |
 | ARC weights and model-specific self-hosting instructions | Coming soon |
-| ARC token rates | Launch proposal; not active billing |
-| Agent Gateway commission | Confirmed 0% launch policy; coordinate the billing cutover |
+| ARC Swift, Sage, and Decisions token rates | See the [effective rate card](/arc/pricing) and its date |
+| ARC Dynamic pricing | Served-model catalog inference price, with 0% ARC commission and no additional routing fee; see [pricing](/arc/pricing#arc-dynamic) |
+| Rules Router commission | Confirmed 0% launch policy; coordinate the billing cutover |
 
-See [compatibility](/arc/reference/compatibility) before integrating. Production host details, validated SDK examples, checkpoint release notes, and an effective billing date will be published when those releases are ready.
+See [compatibility](/arc/reference/compatibility) before integrating, and [pricing](/arc/pricing) for the rates and fees of each ARC product.
+
+## Check protocol support
+
+Read `GET /v1/arc/prices` on the API origin you will use. For each model, `serving[modelId].available` reports availability and `serving[modelId].protocols` lists `messages`, `chat`, or `responses`. For example:
+
+```bash
+curl -fsS https://api.rayline.ai/v1/arc/prices | jq '.serving["arc-sage-1.0"]'
+```
+
+Use direct Responses only when the model is available and its protocol list includes `responses`. Production currently advertises `messages` and `chat`. For an environment without Responses support, use Messages or Chat Completions directly, or [Raydock](/raydock/connections#configure-a-cloud-forwarding-gateway) to connect a Responses client to a supported upstream.
+
+Production host details, validated SDK examples, and checkpoint release notes for unreleased features will be published when those releases are ready.
 
 This page is an availability record, not a claim that the unreleased features are already enabled.
