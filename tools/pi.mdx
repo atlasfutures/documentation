@@ -50,7 +50,7 @@ Save this in `$PI_CODING_AGENT_DIR/models.json`:
 }
 ```
 
-pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The optional session-affinity setting sends pi’s session ID alongside the conversation header. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+pi expands `$NAME` in keys and headers. Its `baseUrl` has **no `/v1`**. The session-affinity setting sends pi’s session ID on direct requests. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
 Start with Sage:
 
@@ -64,7 +64,7 @@ For Swift, use `pi --provider rayline --model arc-swift-1.0`. The provider prefi
 
 ## Use a Raydock gateway
 
-First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) with `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`, then start it. The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
 | Setting | Rayline Platform | Raydock |
 | --- | --- | --- |
@@ -95,7 +95,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, `sendSessionAffinityHeaders` makes pi send its session id on every request, which Rayline uses to keep a conversation together, so nothing else is needed.
+Each launcher invocation is one conversation. In manual direct connections, `sendSessionAffinityHeaders` makes pi send its session ID on every request, which Rayline uses to keep a conversation together. The gateway does not forward that session header; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
 
 ## Troubleshooting
 
@@ -116,6 +116,10 @@ ARC Dynamic uses the served model’s catalog price rather than a fixed tier
 rate; see [ARC Dynamic](/arc/dynamic).
 
 ### Send your own routing value
+
+Use the direct Messages connection above or Raydock with an `anthropic_messages`
+upstream. A gateway configured as `openai_chat` drops the hook's `routing` field
+when translating pi's Messages request.
 
 pi 0.80.2 supports a `before_provider_request` extension hook. Save this as
 `arc-routing.ts`:

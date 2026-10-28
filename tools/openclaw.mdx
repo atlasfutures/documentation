@@ -51,8 +51,9 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 ```
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
-- `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline Platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
+- On a direct Chat Completions connection, `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
+- For an existing Legacy Rules Router integration, use `"api": "anthropic-messages"`, `"baseUrl": "https://api.rayline.ai"`, and model `rayline-router`. Chat Completions does not serve Legacy Rules Router. Through Raydock, also use the gateway's `anthropic_messages` upstream and add `rayline-router` to its model list.
+- For the Responses API, add a second provider, `rayline-resp`, with `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Set `baseUrl` to your API origin plus `/v1`. Use it with ARC only where that environment [advertises Responses support](/arc/availability#check-protocol-support); otherwise, keep the Chat Completions provider above.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rules Router:
 
   ```json
@@ -165,10 +166,12 @@ OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and the
 
 ## Conversations
 
-With the configuration above, OpenClaw sends its session ID on every
+On a direct Chat Completions connection, OpenClaw sends its session ID on every
 request (that is what `sendSessionAffinityHeaders` is for), and Rayline uses
 it to keep a session's requests in one conversation. Relaunching with
 `--session-id <id>` resumes that conversation.
+
+Manual Messages connections send no session identifier, so Rayline derives the conversation from the opening messages. The Raydock gateway does not forward session headers either; see [conversation grouping](/tools/more-tools#the-conversation-id).
 
 Under `raydock openclaw`, the launcher sends a conversation ID on every
 request: stable across relaunches when you pass `--session-id <id>`, and

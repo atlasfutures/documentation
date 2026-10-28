@@ -70,7 +70,7 @@ For Swift, use `omp --model rayline/arc-swift-1.0`. The provider prefix `rayline
 
 ## Use a Raydock gateway
 
-First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) with `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`, then start it. This preserves omp's session metadata. The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
 
 | Setting | Rayline Platform | Raydock |
 | --- | --- | --- |

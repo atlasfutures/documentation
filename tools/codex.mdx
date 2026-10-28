@@ -3,7 +3,7 @@ title: "Codex"
 description: "Use the Raydock CLI with Codex CLI or desktop."
 ---
 
-Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Use Raydock to forward Codex’s Responses requests to the hosted Messages API. ARC on the direct Responses API is [not yet available](/arc/availability).
+Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Use Raydock to forward Codex’s Responses requests to the hosted Messages API, or connect directly to an environment that [advertises Responses support](/arc/availability#check-protocol-support).
 
 Install Codex before you begin.
 
@@ -77,7 +77,9 @@ fallback metadata. Set context limits to match the models you use.
 
 ## Direct Responses connections
 
-The direct endpoint `https://api.rayline.ai/v1` does not yet serve ARC on the Responses API. Existing [Legacy Rules Router](/legacy/rules-router) integrations can use that endpoint with `model = "rayline-router"` and their real Rayline API key. Do not point an ARC profile at it until [Responses support](/arc/availability) is available.
+Check [protocol support](/arc/availability#check-protocol-support) for your environment and ARC model. If it advertises `responses`, set the provider's `base_url` to that API origin plus `/v1` and load your real Rayline API key into `RAYLINE_API_KEY`. Keep the ARC model and `wire_api = "responses"` settings above. If Responses is not advertised, use the Raydock setup.
+
+Existing [Legacy Rules Router](/legacy/rules-router) integrations can use `https://api.rayline.ai/v1` with `model = "rayline-router"` and their real Rayline API key.
 
 <span id="launch-with-rayline-local" />
 

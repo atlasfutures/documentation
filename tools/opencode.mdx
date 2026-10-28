@@ -101,7 +101,7 @@ Start a new session and open the model picker below the prompt. Choose **arc-sag
 
 ## Use a Raydock gateway
 
-First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway); that is where your real Rayline key now lives. Keep the provider configuration above unchanged. Only two settings differ from the direct setup:
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) with `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`, then start it; that is where your real Rayline key now lives. Keep the OpenCode provider configuration above unchanged. Only two client settings differ from the direct setup:
 
 | Setting | Direct | Raydock |
 | --- | --- | --- |
@@ -132,7 +132,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, Rayline recognises the session identifiers OpenCode already sends on every request, so a conversation holds together on its own.
+Each launcher invocation is one conversation. In manual direct connections, Rayline recognises the session identifiers OpenCode sends on every request. The gateway does not forward those session headers; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
 
 ## Troubleshooting
 

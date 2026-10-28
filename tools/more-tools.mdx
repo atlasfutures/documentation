@@ -63,7 +63,9 @@ Rules Router groups requests into conversations. Each launch gets a new conversa
 
 ## Manual setup (without the launcher)
 
-Each tool’s guide includes a manual ARC configuration. Those configurations read your key from `RAYLINE_API_KEY`; the launcher instead keeps it in its own config files. For an existing Legacy Rules Router integration, select `rayline-router` instead of an ARC model ID. Set the following environment variables before starting the tool.
+Each tool’s guide includes a manual ARC configuration. Those configurations read your key from `RAYLINE_API_KEY`; the launcher instead keeps it in its own config files.
+
+For an existing Legacy Rules Router integration, the Kilo, OpenCode, pi, omp and Hermes Messages configurations can use `rayline-router` instead of an ARC model ID. OpenClaw needs the [Messages provider settings](/tools/openclaw#connect-to-the-rayline-platform) described in its guide. Chat Completions does not serve Legacy Rules Router. Through Raydock, use an `anthropic_messages` upstream and include `rayline-router` in its model list; see [gateway configuration](/raydock/connections#configure-a-cloud-forwarding-gateway).
 
 ### The API key
 
@@ -77,13 +79,20 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 ### The conversation ID
 
-The launcher gives each launch a conversation ID and sends it as the
-`x-conversation-id` header, so one launch is one conversation. In manual
-setup you do not need to do this yourself: Rayline recognises the session
-identifiers these agents already send on every request, and groups a session's
-requests into one conversation from those. Requests grouped this way are routed
-together, pinned to the same provider backend where a provider supports that
-(so prompt-cache reuse holds), and counted together in usage.
+The launcher supplies `x-conversation-id`. In manual direct connections, Rayline
+recognises the native session identifiers sent by OpenCode, pi, omp and OpenClaw's
+Chat Completions provider with their documented settings. Hermes on Messages sends no session identifier;
+Rayline instead derives a conversation from the opening messages.
+
+The Raydock gateway does not forward session-affinity headers. A Messages
+upstream preserves session metadata in the body, such as omp's `metadata.user_id`.
+When no session identifier reaches Rayline, it groups requests by their opening
+messages. Separate sessions with identical openings can be grouped together.
+Use the direct connection when you need the harness's session headers to reach
+Rayline. You do not need to generate a conversation ID by hand for these setups.
+
+Requests in one conversation are routed together, pinned to the same provider
+backend where supported to help prompt-cache reuse, and grouped in usage.
 
 ### Check the connection
 

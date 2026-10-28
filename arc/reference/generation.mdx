@@ -10,7 +10,7 @@ ARC generates through the API your client already speaks. Set `model` to an ARC 
 | --- | --- | --- |
 | `POST https://api.rayline.ai/v1/messages` | Anthropic Messages | Yes |
 | `POST https://api.rayline.ai/v1/chat/completions` | OpenAI Chat Completions | Yes |
-| `POST https://api.rayline.ai/v1/responses` | OpenAI Responses | Not yet; see [availability](/arc/availability) |
+| `POST <api-origin>/v1/responses` | OpenAI Responses | Where the model advertises `responses`; check [protocol support](/arc/availability#check-protocol-support) for your environment |
 
 Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. See [API keys](/platform/api-keys).
 
@@ -49,13 +49,12 @@ Send the same `x-conversation-id` on every turn of a conversation so ARC decides
 
 ## Conversation identity
 
-An ARC request takes its conversation ID from the first of these that is present:
+Send the same `x-conversation-id` on every turn you intend to group, and a new ID for a new conversation. This header takes precedence over automatic session recognition.
 
-1. The `x-conversation-id` header.
-2. The body field `prompt_cache_key`, on a request from Codex.
+On Responses requests, Rayline recognises Codex by its `originator` header and reads its `prompt_cache_key` as the root conversation ID. Spawned subagents can share that root key; their `thread-id` identifies the parallel branch, rather than a separate conversation.
 
-With neither, the turn is stateless.
+Where automatic harness session recognition is enabled, Rayline also reads native session headers, the session ID in Messages `metadata.user_id`, and Responses `prompt_cache_key` from other clients. When no identifier reaches it, Rayline can derive a conversation from the opening messages. Separate sessions with identical openings can then be grouped together. See [agent harness conversation grouping](/tools/more-tools#the-conversation-id).
 
-Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is not read; send `x-conversation-id`.
+Deployments without that automatic recognition treat requests without a supported conversation identifier as stateless. For explicit conversation boundaries across deployments, send `x-conversation-id`; do not reuse a `prompt_cache_key` across unrelated conversations and expect it to distinguish them.
 
 See [API compatibility](/arc/reference/compatibility) and [errors and limits](/arc/reference/errors).

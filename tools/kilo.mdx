@@ -17,7 +17,7 @@ Raydock is optional for this CLI configuration.
 | Where the real key lives | Kilo process environment | Gateway process environment |
 | ARC and inference | Cloud | Cloud in this configuration |
 
-For Raydock, first start the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
+For Raydock, configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) with `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`, then start it.
 The port is configurable; use the same port in both configurations.
 
 ## Configure Kilo

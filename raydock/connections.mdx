@@ -79,7 +79,7 @@ Install [Raydock](/raydock/cli#install). Save this configuration as `router.json
     "protocol": "openai_chat",
     "base_url": "https://api.rayline.ai/v1",
     "api_key_env": "RAYLINE_API_KEY",
-    "models": ["arc-sage-1.0", "arc-swift-1.0", "arc-1.0", "rayline-router"]
+    "models": ["arc-sage-1.0", "arc-swift-1.0", "arc-1.0"]
   }],
   "routes": {
     "main": { "endpoint": "rayline", "model": "arc-sage-1.0" },
@@ -88,7 +88,16 @@ Install [Raydock](/raydock/cli#install). Save this configuration as `router.json
 }
 ```
 
-The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it: your tool can send Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. `openai_chat` serves all three and is the same protocol a local model server speaks, so one endpoint shape covers hosted Rayline and a local model alike. Use version 0.2.12 or later. For Codex sub-agent tools, use an `anthropic_messages` endpoint instead, as shown in the [Codex guide](/tools/codex#use-arc-through-raydock).
+The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it. Raydock accepts Anthropic Messages, OpenAI Chat Completions and OpenAI Responses, but conversion does not preserve every feature. Use version 0.2.12 or later and choose the upstream before starting the gateway:
+
+| Tool or route | Upstream configuration |
+| --- | --- |
+| Cline, OpenClaw or Unreal with ARC | Keep the `openai_chat` configuration above. It also uses the protocol supported by many local model servers. |
+| Kilo, OpenCode, pi, omp or Hermes Messages | Set `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"`. This preserves Messages-body fields such as ARC's `routing` extension and session metadata. |
+| Codex with ARC | Use the same `anthropic_messages` settings to support [Codex sub-agent tools](/tools/codex#use-arc-through-raydock). |
+| Existing Legacy Rules Router integration | Use `anthropic_messages` with `https://api.rayline.ai`, add `rayline-router` to the endpoint's `models`, and request that model. Chat Completions does not serve Legacy Rules Router. |
+
+Messages-to-Chat conversion drops the `routing` extension and `metadata.user_id`. The gateway also does not forward clients' session-affinity headers; see [conversation grouping](/tools/more-tools#the-conversation-id) for the difference from a direct connection.
 
 Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 
@@ -102,7 +111,7 @@ RAYLINE_METRICS_PORT=23812 rld serve \
   --data-dir "$PWD/rayline-gateway-data"
 ```
 
-Leave this process running. In a **different shell**, configure the client with base URL `http://127.0.0.1:23811` (OpenCode adds `/v1`) and placeholder client key `local-client`. This gateway holds the real upstream key and forwards cloud requests; it does not download a local model.
+Leave this process running. In a **different shell**, configure the client with base URL `http://127.0.0.1:23811` (add `/v1` where your tool's guide specifies it) and placeholder client key `local-client`. This gateway holds the real upstream key and forwards cloud requests; it does not download a local model.
 
 Check requests in [Rayline Usage](/platform/usage) to see the selected ARC tier, served model, and charge. Stop this gateway with Ctrl+C when finished.
 

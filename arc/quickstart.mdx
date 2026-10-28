@@ -37,7 +37,7 @@ curl --fail-with-body https://api.rayline.ai/v1/messages \
   -d '{"model":"arc-swift-1.0","max_tokens":512,"messages":[{"role":"user","content":"Summarize the purpose of a regression test."}]}'
 ```
 
-This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. ARC also answers on OpenAI Chat Completions (`/v1/chat/completions`). The OpenAI Responses API (`/v1/responses`) does not serve ARC yet.
+This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. ARC also answers on OpenAI Chat Completions (`/v1/chat/completions`). Direct OpenAI Responses (`/v1/responses`) requires an environment that [advertises Responses support](/arc/availability#check-protocol-support).
 </Step>
 <Step title="Try a decision">
 
