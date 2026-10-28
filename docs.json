@@ -94,8 +94,7 @@
             "group": "Connect and operate",
             "pages": [
               "platform/models",
-              "raydock/local-models",
-              "raydock/menubar"
+              "raydock/local-models"
             ]
           },
           {
@@ -416,7 +415,7 @@
     },
     {
       "source": "/cli/menubar",
-      "destination": "/raydock/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
@@ -441,7 +440,7 @@
     },
     {
       "source": "/guides/menubar",
-      "destination": "/raydock/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
@@ -551,7 +550,7 @@
     },
     {
       "source": "/rules-router/cli/menubar",
-      "destination": "/raydock/menubar",
+      "destination": "/raydock/cli",
       "permanent": true
     },
     {
@@ -666,7 +665,7 @@
     },
     {
       "source": "/rules-router/guides/menubar",
-      "destination": "/raydock/menubar"
+      "destination": "/raydock/cli"
     },
     {
       "source": "/rules-router/quickstart/agents",
@@ -743,6 +742,10 @@
     {
       "source": "/rules-router/troubleshooting",
       "destination": "/raydock/troubleshooting"
+    },
+    {
+      "source": "/raydock/menubar",
+      "destination": "/raydock/cli"
     }
   ],
   "api": {

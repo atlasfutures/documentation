@@ -71,7 +71,7 @@
   },
   {
     "source": "/cli/menubar",
-    "destination": "/raydock/menubar",
+    "destination": "/raydock/cli",
     "fragments": [
       "rl-menubar-install",
       "rl-menubar-start",
@@ -161,7 +161,7 @@
   },
   {
     "source": "/guides/menubar",
-    "destination": "/raydock/menubar",
+    "destination": "/raydock/cli",
     "fragments": [
       "installation",
       "automatic-recommended",
@@ -637,7 +637,7 @@
   },
   {
     "source": "/rules-router/guides/menubar",
-    "destination": "/raydock/menubar",
+    "destination": "/raydock/cli",
     "fragments": [
       "account",
       "authentication",
@@ -1025,6 +1025,35 @@
     "destination": "/tools/claude-desktop",
     "fragments": [
       "connect-the-desktop-app"
+    ]
+  },
+  {
+    "source": "/raydock/menubar",
+    "destination": "/raydock/cli",
+    "fragments": [
+      "account",
+      "authentication",
+      "auto-start",
+      "automatic-recommended",
+      "check-a-routed-session",
+      "cost-savings",
+      "installation",
+      "launch-claude-code",
+      "manual",
+      "opting-out",
+      "opting-out-of-auto-install",
+      "rayline-menubar-install",
+      "rayline-menubar-start",
+      "rayline-menubar-status",
+      "rayline-menubar-stop",
+      "requirements",
+      "rl-menubar-install",
+      "rl-menubar-start",
+      "rl-menubar-status",
+      "rl-menubar-stop",
+      "routing-controls",
+      "starting-and-stopping",
+      "what-it-shows"
     ]
   }
 ]
