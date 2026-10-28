@@ -46,7 +46,9 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 | `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on Decisions. Separate from the model's generation `temperature`. |
 | `prices` | object | Your inference prices: up to 256 model IDs, each with `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. All four are required; 0 is a price, a missing leg is an error. They change which model ARC selects, never what the decision costs. See [bring your own prices](/arc/decisions/prices). |
-| `exclusive` | boolean | `true` limits the candidates to the models in `prices`. Requires `prices`. |
+| `price_profile_id` | string | A saved [price profile](/arc/decisions/prices#price-profiles) to use instead of `prices`. Sending both is refused with `price_profile_conflict`. |
+| `price_profile_version` | integer | The profile version to use. Requires `price_profile_id`; defaults to the current version. |
+| `exclusive` | boolean | `true` limits the candidates to the models in `prices` or the profile. Requires `prices` or `price_profile_id`. |
 
 ```json
 {

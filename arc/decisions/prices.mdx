@@ -40,4 +40,73 @@ If `status` is `unsupported`, the decision was made at catalog prices.
 
 ## Price profiles
 
-The Rayline platform lets you save named price profiles and test them in the Decisions Playground. A profile is sent as `routing.prices` with `exclusive: true`; its name is not part of the API.
+A price profile saves your prices on the Rayline Platform so you can reference them by ID instead of sending a table with every decision. Owners and billing members create and edit profiles under **Price profiles**; any active member of the organization can use them. Test a profile in the Decisions Playground before you use it from code.
+
+A profile holds rules rather than a fixed table:
+
+- **Provider discounts:** a `discount_percent` from 0 to 100 for a provider, applied to all four legs of every eligible model from that provider.
+- **Model overrides:** a price for any of `input`, `cache_read`, `cache_write`, or `output` on one model. An override wins over the provider discount; a leg you do not override follows the discount, or the catalog rate when the provider has none.
+
+ARC resolves the rules at decision time against the current catalog rates, so a provider discount also covers models from that provider added later. Rules apply only to eligible models, the models an ARC checkpoint routes to.
+
+### Use a profile
+
+Reference the profile with `routing.price_profile_id`, shown in the profile's version details. Add `routing.price_profile_version` to pin a version for reproducible runs; without it, the profile's current version is used. A version without an ID is refused.
+
+```json
+{
+  "model": "arc-1.0",
+  "messages": [{"role": "user", "content": "Refactor the billing module."}],
+  "routing": {
+    "price_profile_id": "YOUR_PROFILE_ID",
+    "price_profile_version": 3
+  }
+}
+```
+
+Send a profile or inline `routing.prices`, not both: a request with both is refused with `price_profile_conflict`. `exclusive` is optional with either. Set `"exclusive": true` to limit the candidates to the models the profile prices; without it, other models keep their catalog prices.
+
+### Check the profile that was applied
+
+The response's `routing.price_profile` reports the profile and the prices it resolved to. Suppose version 3 of the profile above gives Anthropic models 20% off and overrides the input and output prices of `openai/gpt-6-luna` (abridged):
+
+```json
+{
+  "routing": {
+    "price_profile": {
+      "status": "applied",
+      "id": "YOUR_PROFILE_ID",
+      "version": 3,
+      "content_hash": "sha256:<64 hexadecimal characters>",
+      "schema": "price-profile-rules.v1",
+      "prices": {
+        "anthropic/claude-sonnet-5.5": {"input": 1.6, "cache_read": 0.08, "cache_write": 2, "output": 8},
+        "openai/gpt-6-luna": {"input": 0.08, "cache_read": 0.01, "cache_write": 0.125, "output": 0.4}
+      },
+      "unpriced": [],
+      "ineligible": [],
+      "card_version": 42
+    }
+  }
+}
+```
+
+- **`status`** is `applied` or `unsupported`, as for inline prices.
+- **`prices`** is the table ARC used, exactly as if you had sent it as `routing.prices`. The `routing.prices` echo and its `price_sha256` are reported as well.
+- **`unpriced`** lists covered models with no catalog rate for a leg you did not override; **`ineligible`** lists overrides of models ARC no longer routes to. Both are left out of `prices`.
+- **`content_hash`** identifies the saved rules, and **`card_version`** the catalog rates they were resolved against. A profile saved before rules existed reports `schema: "legacy"` and `card_version: null`. `content_hash` and `price_sha256` hash different things; do not compare them.
+
+ARC never substitutes catalog prices for a profile it cannot resolve:
+
+| Status | `error.code` | Meaning |
+| --- | --- | --- |
+| `400` | `price_profile_invalid`, `price_profile_conflict` | The ID or version is malformed, a version was sent without an ID, or both a profile and `routing.prices` were sent |
+| `403` | `price_profile_forbidden` | You are not an active member of the key's organization |
+| `404` | `price_profile_not_found` | No such profile or version in your organization |
+| `409` | `price_profile_archived` | The profile is archived; restore it on the Platform first |
+| `409` | `price_profile_unpriced` | The profile resolves to no priced model |
+| `503` | `price_profile_unavailable` | Profiles or catalog rates are temporarily unavailable |
+
+### Decisions only
+
+Prices and price profiles are accepted only on Decisions: `/v1/decisions` and its `/v1/routes` alias. Generation endpoints such as `/v1/chat/completions` and `/v1/messages` refuse `routing.prices`, `routing.price_profile_id`, `routing.price_profile_version`, and `routing.exclusive` with `400` `prices_not_supported`. Profiles never change how ARC Swift, ARC Sage, or `arc-1.0` serve or bill generation requests.
