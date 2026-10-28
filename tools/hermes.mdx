@@ -15,7 +15,7 @@ Install the tool using its [installation guide](https://hermes-agent.nousresearc
 
 ## Connect to the Rayline Platform
 
-Set `RAYLINE_API_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/tools/more-tools#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
+Set `RAYLINE_API_KEY` first, as described in [manual setup](/tools/more-tools#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
 
 Add these providers to `~/.hermes/config.yaml`, and point `model` at the first one:
 
@@ -29,8 +29,6 @@ providers:
     api_mode: "anthropic_messages"
     base_url: "https://api.rayline.ai"
     key_env: "RAYLINE_API_KEY"
-    extra_headers:
-      x-conversation-id: "${RAYLINE_CONV_ID}"
     models:
       arc-sage-1.0:
         context_length: 200000
@@ -38,8 +36,6 @@ providers:
     api_mode: "codex_responses"
     base_url: "https://api.rayline.ai/v1"
     key_env: "RAYLINE_API_KEY"
-    extra_headers:
-      x-conversation-id: "${RAYLINE_CONV_ID}"
     models:
       arc-sage-1.0:
         context_length: 200000
@@ -71,7 +67,7 @@ To use Swift, add `arc-swift-1.0` to the provider’s models using the same sett
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.8 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
+The launcher instructions below require version 0.2.12 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
 
 ## Install
 
@@ -110,7 +106,7 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 ## Conversations
 
-Each launch is one Rules Router conversation: both providers send a per-launch `x-conversation-id` header. Resuming with `--continue` or `--resume` in a new launch starts a new conversation.
+Each launch is one Rules Router conversation; the launcher sends a per-launch conversation id. In manual setup, Rayline recognises the session id Hermes sends on every request, so a conversation holds together on its own.
 
 Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade to v2026.9.21 or later.
 

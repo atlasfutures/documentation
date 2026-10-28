@@ -16,6 +16,8 @@ Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a f
 | Direct API | OpenCode → Rayline Platform | Cloud |
 | Raydock gateway | OpenCode → your gateway → Rayline Platform | Cloud |
 
+Both reach the same hosted ARC. Start with **Direct**, the simpler setup. Use **Raydock** when you want Rayline's local features: routing rules, provider configuration, or an on-device model. See [Rayline Platform and Raydock](/raydock/connections) for what each path gives you.
+
 A local gateway does not imply on-device inference or locally running ARC. See [Rayline Platform and Raydock](/raydock/connections).
 
 ## Install
@@ -24,12 +26,11 @@ Install [OpenCode](https://opencode.ai/docs/#install). Create a [Rayline API key
 
 ## Connect directly
 
-Use a separate configuration directory. These environment settings apply to the current shell:
+This path reads your key from `RAYLINE_API_KEY`, set in the [Install](#install) step. Use a separate configuration directory. These environment settings apply to the current shell:
 
 ```bash
 mkdir -p "$HOME/.config/opencode-rayline"
 export OPENCODE_CONFIG="$HOME/.config/opencode-rayline/opencode.json"
-export RAYLINE_CONV_ID="$(uuidgen)"
 ```
 
 Save this in `$OPENCODE_CONFIG`:
@@ -45,20 +46,19 @@ Save this in `$OPENCODE_CONFIG`:
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.rayline.ai/v1",
-        "apiKey": "{env:RAYLINE_API_KEY}",
-        "headers": { "x-conversation-id": "{env:RAYLINE_CONV_ID}" }
+        "apiKey": "{env:RAYLINE_API_KEY}"
       },
       "models": {
         "arc-sage-1.0": {
           "name": "ARC Sage",
-          "limit": { "context": 200000, "output": 32000 },
+          "limit": { "context": 200000, "output": 128000 },
           "cost": { "input": 1, "output": 5, "cache_read": 0.05, "cache_write": 1.25 },
           "reasoning": true,
           "tool_call": true
         },
         "arc-swift-1.0": {
           "name": "ARC Swift",
-          "limit": { "context": 200000, "output": 32000 },
+          "limit": { "context": 200000, "output": 128000 },
           "cost": { "input": 0.05, "output": 0.25, "cache_read": 0.005, "cache_write": 0.0625 },
           "reasoning": true,
           "tool_call": true
@@ -69,7 +69,7 @@ Save this in `$OPENCODE_CONFIG`:
 }
 ```
 
-OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 32,000 tokens.
+OpenCode expands `{env:NAME}` in keys and headers. Its `baseURL` **includes `/v1`**. `--standalone` is required with OpenCode 2 so the process uses your current configuration and environment. Project settings can still override `OPENCODE_CONFIG`. The configuration allows responses of up to 128,000 tokens, the maximum ARC accepts.
 
 `cost` gives OpenCode each tier's fixed rate card, in US dollars per million tokens, so its session cost display matches what Rayline bills. The rates come from [ARC pricing](/arc/pricing); update them if the card changes.
 
@@ -101,14 +101,14 @@ Start a new session and open the model picker below the prompt. Choose **arc-sag
 
 ## Use a Raydock gateway
 
-First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). The gateway holds the upstream Rayline key. Keep the same provider configuration above and change:
+First [start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway); that is where your real Rayline key now lives. Keep the provider configuration above unchanged. Only two settings differ from the direct setup:
 
-| Setting | Rayline Platform | Raydock |
+| Setting | Direct | Raydock |
 | --- | --- | --- |
 | `baseURL` | `https://api.rayline.ai/v1` | `http://127.0.0.1:23811/v1` |
-| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` for the gateway below |
+| `RAYLINE_API_KEY` | Your Rayline API key | `local-client` |
 
-Use the port configured for your gateway. The linked setup uses port **23811** and keeps your Rayline key in the gateway process.
+`23811` is the port the linked gateway setup uses; if you started yours on a different port, use that one.
 
 ## Try your first task
 
@@ -128,11 +128,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`raydock opencode` uses Rules Router’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.8 or later**; 0.2.10 is available through the official installer.
+`raydock opencode` uses Rules Router’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation generates a conversation ID. In manual setup, generate a new `RAYLINE_CONV_ID` for a new conversation; keep it when deliberately continuing the same one. The tool’s session ID and the gateway conversation ID are distinct.
+Each launcher invocation is one conversation. In manual setup, Rayline recognises the session identifiers OpenCode already sends on every request, so a conversation holds together on its own.
 
 ## Troubleshooting
 

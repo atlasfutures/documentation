@@ -77,23 +77,13 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 ### The conversation ID
 
-The launcher gives each launch a new conversation ID and sends it as the `x-conversation-id` header on every request. Rules Router uses it to treat the session's requests as one conversation. Do the same by setting `RAYLINE_CONV_ID` before each session; the configs below send it as that header:
-
-```bash
-export RAYLINE_CONV_ID="$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
-```
-
-This uses `uuidgen` on macOS and the kernel's UUID generator on Linux, where `uuidgen` is often not installed. In PowerShell, use `$env:RAYLINE_CONV_ID = [guid]::NewGuid().ToString()`.
-
-Use a new ID for each session. Reusing one ID across unrelated sessions merges them into one conversation.
-
-Without a conversation ID, Rules Router treats every request as its own conversation:
-
-- requests from one session are not grouped for routing;
-- consecutive requests are not pinned to the same provider backend where a provider supports that, so prompt-cache reuse can drop and cached input is billed at the lower cache rate less often;
-- usage is not grouped by session.
-
-The agent still works.
+The launcher gives each launch a conversation ID and sends it as the
+`x-conversation-id` header, so one launch is one conversation. In manual
+setup you do not need to do this yourself: Rayline recognises the session
+identifiers these agents already send on every request, and groups a session's
+requests into one conversation from those. Requests grouped this way are routed
+together, pinned to the same provider backend where a provider supports that
+(so prompt-cache reuse holds), and counted together in usage.
 
 ### Check the connection
 
@@ -107,6 +97,6 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Use ARC
 
-These launchers always select `rayline-router`, so they route through your legacy Rules Router settings and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks, on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Check [usage](/platform/usage) after your first task.
+These launchers always select `rayline-router`, so they route through your legacy Rules Router settings and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks. Use the protocol and base URL in each tool’s guide. Check [usage](/platform/usage) after your first task.
 
 <span id="legacy-integrations" />

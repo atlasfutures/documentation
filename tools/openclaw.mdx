@@ -15,7 +15,7 @@ Install the tool using its [installation guide](https://docs.openclaw.ai/install
 
 ## Connect to the Rayline Platform
 
-Set `RAYLINE_API_KEY` and `RAYLINE_CONV_ID` first, as described in [manual setup](/tools/more-tools#manual-setup-without-the-launcher).
+Set `RAYLINE_API_KEY` first, as described in [manual setup](/tools/more-tools#manual-setup-without-the-launcher).
 
 Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make it the default model:
 
@@ -30,10 +30,9 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
     "mode": "merge",
     "providers": {
       "rayline": {
-        "baseUrl": "https://api.rayline.ai",
-        "api": "anthropic-messages",
+        "baseUrl": "https://api.rayline.ai/v1",
+        "api": "openai-completions",
         "apiKey": { "source": "env", "provider": "default", "id": "RAYLINE_API_KEY" },
-        "headers": { "x-conversation-id": "${RAYLINE_CONV_ID}" },
         "models": [
           {
             "id": "arc-sage-1.0",
@@ -41,7 +40,8 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
             "reasoning": true,
             "input": ["text", "image"],
             "contextWindow": 200000,
-            "maxTokens": 32000
+            "maxTokens": 128000,
+            "compat": { "sendSessionAffinityHeaders": true }
           }
         ]
       }
@@ -51,8 +51,8 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 ```
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
-- Set `api` explicitly. OpenClaw's default for a custom provider is chat completions, which Rules Router does not serve.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline Platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
+- `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline Platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rules Router:
 
   ```json
@@ -69,20 +69,19 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
   `memory` is a top-level key, OpenClaw's global memory configuration. `heartbeat` and `compaction` go under `agents.defaults`.
 
-To keep a session in one conversation across relaunches, as the launcher does with `--session-id`, derive the ID from the session ID:
+To resume OpenClaw's own session history across launches, give it a session ID:
 
 ```bash
-export RAYLINE_CONV_ID="oc-$(printf %s "my-task" | shasum -a 256 | cut -c1-32)"
 openclaw agent --local --session-id my-task --message "Reply with the word ready."
 ```
 
-`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there. A single `RAYLINE_CONV_ID` in the Gateway's environment would put all of its turns in one conversation, so prefer `--local` for routed sessions.
+`--local` runs the turn in your shell, with this config and your shell's environment. A running OpenClaw Gateway serves turns from its own process and environment, so it needs `RAYLINE_API_KEY` there.
 
 <span id="use-a-rayline-local-gateway" />
 
 ## Use a Raydock gateway
 
-[Start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). In the Messages provider configuration, replace the base URL with your gateway’s URL, without `/v1`. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
+[Start a cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). In the provider configuration above, replace the base URL with your gateway’s URL. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
 
 Inside Docker, use `http://host.docker.internal:23811` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
 
@@ -117,7 +116,7 @@ Use a current Node release supported by OpenClaw. Node 24.5.0 has a SQLite defec
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.8 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
+The launcher instructions below require version 0.2.12 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
 
 ## Install
 
@@ -166,12 +165,17 @@ OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and the
 
 ## Conversations
 
-The default Messages provider sends a conversation ID on every request:
+With the configuration above, OpenClaw sends its session ID on every
+request (that is what `sendSessionAffinityHeaders` is for), and Rayline uses
+it to keep a session's requests in one conversation. Relaunching with
+`--session-id <id>` resumes that conversation.
 
-- With `--session-id <id>`, the conversation ID is derived from that session ID, so relaunching the same session keeps its conversation.
-- Without it, each launch is a new conversation.
+Under `raydock openclaw`, the launcher sends a conversation ID on every
+request: stable across relaunches when you pass `--session-id <id>`, and
+fresh per launch otherwise.
 
-The Responses provider also sends OpenClaw's session as `prompt_cache_key`.
+The Responses provider sends OpenClaw's session as `prompt_cache_key`, which
+Rayline also recognises.
 
 ## Known limitations
 

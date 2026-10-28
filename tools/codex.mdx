@@ -13,7 +13,7 @@ Install Codex before you begin.
 
 ## Use ARC through Raydock
 
-Start the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway) in its own shell with your real Rayline API key. That gateway sends requests to Rayline Platform; inference remains in the cloud.
+Configure the [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway). For Codex, change its endpoint to `"protocol": "anthropic_messages"` and `"base_url": "https://api.rayline.ai"` before starting it. Start the gateway in its own shell with your real Rayline API key. That gateway sends requests to Rayline Platform; inference remains in the cloud.
 
 In a **different shell**, give Codex the non-secret key `local-client`:
 
@@ -65,7 +65,10 @@ Then find the request in [Inspect routed requests](/platform/usage).
 
 Keep built-in web search disabled (`web_search = "disabled"`) when using ARC.
 
-Rayline 0.2.10 does not forward Codex’s namespaced subagent tools to Anthropic endpoints. Use single-agent tasks with that version.
+Codex's sub-agent tools (the `multi_agent_v1` namespace) are forwarded to
+Anthropic Messages endpoints, including ARC, so multi-agent tasks work on this
+path. A gateway endpoint configured as Chat Completions or a local model
+refuses them with a `400 unsupported_tool`; use single-agent tasks there.
 
 Codex warns that it has no built-in metadata for the ARC model IDs and uses
 fallback metadata. Set context limits to match the models you use.

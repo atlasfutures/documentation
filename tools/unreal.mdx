@@ -1,6 +1,6 @@
 ---
 title: "Unreal Agent"
-description: "Connect Unreal Agent to ARC through a Raydock Messages gateway."
+description: "Connect Unreal Agent to ARC through a Raydock gateway."
 ---
 
 <span id="verify-both-tiers" />
@@ -15,23 +15,25 @@ Install the official runner:
 brew install unreallabsai/tap/unreal-agent
 ```
 
+The GitHub organisation is `unreallabsai`, spelled with the letter *l*. Check that spelling before pulling any container image or tap for it from elsewhere.
+
 <span id="rayline-local" />
 
 ## Raydock
 
-Use Unreal’s **Anthropic provider** with a
+Use version **0.2.12 or later** and Unreal’s **OpenAI provider** with a
 [cloud-forwarding gateway](/raydock/connections#configure-a-cloud-forwarding-gateway).
 Start that gateway in its own shell with your real Rayline API key. In a
 **different shell**, configure Unreal:
 
 ```bash
-export UNREAL_HARNESS_LLM_PROVIDER=anthropic
+export UNREAL_HARNESS_LLM_PROVIDER=openai
 export UNREAL_HARNESS_LLM_BASE_URL=http://127.0.0.1:23811/v1
 export UNREAL_HARNESS_LLM_API_KEY=local-client
 export UNREAL_HARNESS_LLM_MODEL=arc-sage-1.0
 ```
 
-Use your gateway’s actual port. Unreal’s Anthropic provider expects `/v1` here.
+Use your gateway’s actual port. Unreal’s OpenAI provider expects `/v1` here.
 The `local-client` placeholder is for this loopback gateway; only the gateway
 process receives the real upstream key. ARC selection and inference run on
 Rayline Platform.
@@ -60,6 +62,4 @@ View the model ARC selected and the request’s cost in [Rayline Usage](/platfor
 
 ## Direct API availability
 
-Unreal’s `openai` provider sends Responses requests. ARC is [not yet available](/arc/availability) on Rayline Platform’s direct `/v1/responses` endpoint, so use the Anthropic provider and Raydock setup above for ARC.
-
-Use the Anthropic provider with Rayline 0.2.10. Its OpenAI provider can return an empty answer through that gateway version.
+Unreal’s `openai` provider sends Responses requests. ARC is [not yet available](/arc/availability) on Rayline Platform’s direct `/v1/responses` endpoint, so use the Raydock setup above for ARC.
