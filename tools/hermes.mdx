@@ -82,6 +82,7 @@ raydock auth login
 ```bash
 raydock hermes
 raydock hermes --provider rayline-resp
+raydock hermes --model rayline-router
 raydock --env <name> hermes
 ```
 
@@ -91,14 +92,14 @@ Everything after `hermes` goes to Hermes unchanged. See [launcher options](/tool
 
 ## What Raydock writes
 
-Raydock sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. From Raydock 0.3.0, it defines two providers on ARC, with ARC Sage for the main agent and ARC Swift for subagents:
+Raydock sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. From Raydock 0.3.0, the main model is ARC Sage. It defines two providers, each listing `arc-sage-1.0`, `arc-swift-1.0`, and `rayline-router`:
 
 | Provider | API | Use |
 | --- | --- | --- |
 | `rayline-anth` | Anthropic Messages | The default |
 | `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp` |
 
-To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
+To use Legacy Rules Router, pass `--model rayline-router`. Raydock rewrites `config.yaml` on every launch, so choose Legacy on each run. You can also use the manual configuration above with model `rayline-router`.
 
 Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
 

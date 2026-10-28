@@ -143,14 +143,14 @@ Everything after `openclaw` goes to OpenClaw unchanged, with one addition: for a
 
 Raydock sets `OPENCLAW_CONFIG_PATH` to `~/.config/rayline/harness/openclaw/<env>/openclaw.json` and rewrites that file on every launch. OpenClaw's own state stays in `~/.openclaw`.
 
-From Raydock 0.3.0, the config defines two providers on ARC, with ARC Sage for the main agent and ARC Swift for subagents:
+From Raydock 0.3.0, the main model is ARC Sage. The config defines two providers, each listing `arc-sage-1.0`, `arc-swift-1.0`, and `rayline-router`:
 
 | Provider | API | Use |
 | --- | --- | --- |
 | `rayline` | Anthropic Messages | The default |
 | `rayline-resp` | OpenAI Responses | Select one of its models |
 
-To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
+To use Legacy Rules Router, switch the session's model to `rayline/rayline-router`. Raydock rewrites the config on every launch, so choose Legacy on each run. You can also use the manual configuration above with model `rayline-router`.
 
 It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
 

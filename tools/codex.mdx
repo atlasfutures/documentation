@@ -101,11 +101,11 @@ Raydock starts the router, points Codex at it for this run, and passes everythin
 
 | Option | Requests go to | Billed through |
 | --- | --- | --- |
-| `--auth auto` (default) | ARC on Rayline Platform: Sage for the main agent, Swift for subagents | Your Rayline workspace |
+| `--auth auto` (default) | ARC on Rayline Platform: Sage for the `main` route, Swift for the `subagent` route | Your Rayline workspace |
 | `--auth subscription`, or `--subscription` | Your existing ChatGPT/Codex login for the main agent; subagents go to your local model when one is configured | Your ChatGPT plan |
 | `--auth none` | No Codex subscription auth; uses the local default or endpoints in `--config` | The configured provider, if any |
 
-The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model, such as `arc-swift-1.0`, or `rayline-router` for [Legacy Rules Router](/legacy/rules-router); without it, ARC chooses per request.
+The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model, such as `arc-swift-1.0`; without it, the routes decide. `--model rayline-router` does not select [Legacy Rules Router](/legacy/rules-router) for Codex. To use Legacy Rules Router, set the route models in `~/.config/rayline/router.json` to `rayline-router`.
 
 ```bash
 raydock codex --subscription -- exec "summarize this repo"

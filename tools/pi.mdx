@@ -91,7 +91,7 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-From Raydock **0.3.0**, `raydock pi` runs on ARC: Sage for the main agent and Swift for subagents. To use Legacy Rules Router, use the manual configuration above with model `rayline-router`.
+From Raydock **0.3.0**, `raydock pi` runs on ARC Sage. To use Legacy Rules Router, pass `--model rayline/rayline-router` or choose it in pi's model picker; pi saves your choice for later launches. You can also use the manual configuration above with model `rayline-router`.
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/tools/more-tools#launcher-options).
 

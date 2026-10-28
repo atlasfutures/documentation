@@ -18,7 +18,7 @@ Follow your tool’s guide to connect to the Rayline Platform. Each guide also e
 
 ## Raydock launchers
 
-From Raydock 0.3.0, the launchers below run on ARC by default: ARC Sage (`arc-sage-1.0`) for the main agent and ARC Swift (`arc-swift-1.0`) for subagents. [Legacy Rules Router](/legacy/rules-router) is used only when you choose it; see [Use Legacy Rules Router](#use-legacy-rules-router). Install the agent first; Raydock configures the route but does not bundle the agent.
+From Raydock 0.3.0, the launchers below run on ARC by default; see [Which model runs](#which-model-runs). [Legacy Rules Router](/legacy/rules-router) is used only when you choose it. Install the agent first; Raydock configures the route but does not bundle the agent.
 
 | Command | Agent | Install | Guide |
 | --- | --- | --- | --- |
@@ -49,7 +49,7 @@ Use `--` to pass an argument that would otherwise be read as a Raydock option.
 
 1. Signs you in and creates a router key if you have none, as `raydock claude` does. In a non-interactive shell, run `raydock auth login` first.
 2. Writes a Raydock config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
-3. Starts the agent on ARC over the Anthropic Messages API: Sage for the main agent and Swift for subagents, so ARC chooses the model and reasoning effort for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
+3. Starts the agent on ARC over the Anthropic Messages API, so ARC chooses the model and reasoning effort for each request; see [Which model runs](#which-model-runs). The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
 
 Each launch prints the router URL, the conversation ID, and the config directory. Raydock rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Raydock's; each agent's guide lists which files those are.
 
@@ -106,8 +106,22 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 <span id="use-arc" />
 
-## Use Legacy Rules Router
+<span id="use-legacy-rules-router" />
 
-The launchers use ARC unless you choose otherwise. To route one of these agents through your legacy Rules Router settings, follow its manual setup and request `rayline-router` instead of an ARC model ID, as described in [Manual setup](#manual-setup-without-the-launcher). Use the protocol and base URL in each tool’s guide. Check [usage](/platform/usage) after your first task.
+## Which model runs
+
+Each launcher gives the main agent ARC Sage (`arc-sage-1.0`). Where the agent has a separate setting for small or background work, that setting gets ARC Swift (`arc-swift-1.0`). Every generated config also lists Legacy Rules Router (`rayline-router`), so you can choose it with the agent's own model flag or picker:
+
+| Launcher | ARC Sage | ARC Swift | Use Legacy Rules Router |
+| --- | --- | --- | --- |
+| `raydock opencode` | `model` | `small_model` | `-m rayline/rayline-router` |
+| `raydock pi` | Main model | Not used | `--model rayline/rayline-router`, or pi's model picker |
+| `raydock omp` | `default`, `slow`, and `plan` roles | `smol` role | Choose `rayline/rayline-router` for a role |
+| `raydock hermes` | Main model | Not used | `--model rayline-router`, for that run |
+| `raydock openclaw` | Main model | Not used | Switch the session's model to `rayline/rayline-router`, for that run |
+
+A model you pick in pi or omp is saved and kept on later launches. Raydock rewrites the model settings in its Hermes and OpenClaw configs on every launch, so choose Legacy there on each run. For Claude Code and Codex, see [raydock claude](/raydock/cli/claude) and [Codex](/tools/codex#choose-who-serves-the-requests).
+
+You can also follow an agent's manual setup and request `rayline-router` instead of an ARC model ID, as described in [Manual setup](#manual-setup-without-the-launcher). Check [usage](/platform/usage) after your first task.
 
 <span id="legacy-integrations" />

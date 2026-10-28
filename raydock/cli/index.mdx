@@ -110,7 +110,7 @@ For Homebrew, run `brew update` and `brew upgrade raydock`. The tap’s formula 
 
 Every command accepts `--help`. Run `raydock --help` for the list your installed version supports.
 
-From Raydock 0.3.0, the Claude Code, Codex, OpenCode, pi, omp, Hermes, and OpenClaw launchers run on ARC by default: **ARC Sage** (`arc-sage-1.0`) for the main agent and **ARC Swift** (`arc-swift-1.0`) for subagents. Legacy Rules Router (`rayline-router`) is used only when you choose it; each [tool guide](/tools) explains how.
+From Raydock 0.3.0, the Claude Code, Codex, OpenCode, pi, omp, Hermes, and OpenClaw launchers run on ARC by default. The main agent uses **ARC Sage** (`arc-sage-1.0`). Where the agent has a separate setting for subagents or background work, that setting uses **ARC Swift** (`arc-swift-1.0`): Claude Code's subagents and background tasks, Codex's `subagent` route, OpenCode's `small_model`, and omp's `smol` role. pi, Hermes, and OpenClaw run on Sage only. Legacy Rules Router (`rayline-router`) is used only when you choose it; see [which model runs](/tools/more-tools#which-model-runs) and each [tool guide](/tools).
 
 `raydock hybrid` uses ARC selection and is separate from the static routing in `raydock claude --local`. It requires macOS 13 or later, or Linux. **Hybrid routing is a development preview:** configure the development environment and start with `--env dev` using the current cell and setup steps in the [hybrid setup guide](https://github.com/rayline-ai/raydock/blob/main/docs/hybrid-local-setup.md#three-steps). A default production start is not supported yet.
 
