@@ -227,7 +227,7 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–5, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
 | `400` | `prices_invalid`, `price_leg_missing`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, misses a leg, has a negative or non-finite price, or names a model ARC cannot select | No |
-| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has no `prices` | No |
+| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has neither `prices` nor `price_profile_id` | No |
 | `401` | | Missing or invalid API key | No |
 | `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the decision. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |
