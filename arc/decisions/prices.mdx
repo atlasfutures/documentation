@@ -51,6 +51,10 @@ ARC resolves the rules at decision time against the current catalog rates, so a 
 
 ### Use a profile
 
+<Note>
+Saved price profiles are not yet enabled on the production API: a request that names one returns `503` `price_profile_unavailable`. Until they are, send your prices inline with [`routing.prices`](#send-prices).
+</Note>
+
 Reference the profile with `routing.price_profile_id`, shown in the profile's version details. Add `routing.price_profile_version` to pin a version for reproducible runs; without it, the profile's current version is used. A version without an ID is refused.
 
 ```json
@@ -107,7 +111,7 @@ ARC never substitutes catalog prices for a profile it cannot resolve:
 | `404` | `price_profile_not_found` | No such profile or version in your organization |
 | `409` | `price_profile_archived` | The profile is archived; restore it on the Platform first |
 | `409` | `price_profile_unpriced` | The profile resolves to no priced model, or the answering ARC release offers none of the models it prices |
-| `503` | `price_profile_unavailable` | Profiles or catalog rates are temporarily unavailable |
+| `503` | `price_profile_unavailable` | Profiles are not enabled in this environment, or profile storage or catalog rates are temporarily unavailable |
 
 ### Decisions only
 
