@@ -101,7 +101,7 @@ From Raydock **0.3.0**, `raydock omp` runs on ARC: the `default`, `slow`, and `p
 
 The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, Rayline recognises the session id omp already sends on every request, so a conversation holds together on its own.
+Rayline recognises the session ID omp sends on every request, so a conversation holds together on its own, under the launcher and in manual direct connections alike. The gateway does not forward that session header; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
 
 ## Troubleshooting
 

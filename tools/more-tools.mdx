@@ -82,9 +82,9 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 Rayline recognises the native session identifiers sent by OpenCode, pi, omp and
 OpenClaw's Chat Completions provider with their documented settings, under the
 launcher and in manual direct connections alike. Hermes sends one only when its
-provider entry sets `session_affinity_header`; without it, Hermes on Messages
-sends no session identifier and Rayline derives a conversation from the opening
-messages. The launcher does not set that option.
+provider entry sets `session_affinity_header`. Without that setting, Hermes
+sends no session identifier and Rayline groups requests by their opening
+messages instead. The launcher does not set it.
 
 The Raydock gateway does not forward session-affinity headers. A Messages
 upstream preserves session metadata in the body, such as omp's `metadata.user_id`.
