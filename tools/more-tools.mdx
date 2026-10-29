@@ -6,7 +6,7 @@ description: "Connect your agent harness to Rayline Platform or use the Raydock 
 
 <span id="planned-integrations" />
 
-Install or update Raydock through the [official installer](/raydock/cli). The launcher commands below require Rayline 0.2.8 or later.
+Install or update Raydock through the [official installer](/raydock/cli). The launcher commands below require Raydock 0.3.0 or later.
 
 <span id="choose-a-connection" />
 
@@ -84,7 +84,7 @@ OpenClaw's Chat Completions provider with their documented settings, under the
 launcher and in manual direct connections alike. Hermes sends one only when its
 provider entry sets `session_affinity_header`; without it, Hermes on Messages
 sends no session identifier and Rayline derives a conversation from the opening
-messages.
+messages. The launcher does not set that option.
 
 The Raydock gateway does not forward session-affinity headers. A Messages
 upstream preserves session metadata in the body, such as omp's `metadata.user_id`.

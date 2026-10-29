@@ -70,7 +70,7 @@ To use Swift, add `arc-swift-1.0` to the provider’s models using the same sett
 
 ## Launcher availability
 
-The launcher instructions below require version 0.2.12 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
+The launcher instructions below require version 0.3.0 or later. Install the current version from the [Raydock install guide](/raydock/cli#install).
 
 ## Install
 
@@ -112,9 +112,9 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 ## Conversations
 
-With `session_affinity_header` set, as in the configuration above, Hermes sends its session ID on every request on both providers. Rayline keeps a session's requests in one conversation, and a `delegate_task` subagent gets its own. Resuming with `-c` or `--resume` continues the conversation.
+With `session_affinity_header` set, as in the configuration above, Rayline keeps each Hermes session in one conversation, and `-c` or `--resume` continues it. Without it, Rayline groups requests by their opening messages, so separate sessions that start identically can be merged; see [conversation grouping](/tools/more-tools#the-conversation-id).
 
-Without it, Hermes sends no session identifier on Messages, and Rayline derives the conversation from the opening messages, both directly and through the gateway. Separate sessions with identical openings can be grouped together; see [conversation grouping](/tools/more-tools#the-conversation-id). On Responses, Hermes sends a per-session `prompt_cache_key`, which Rayline reads as the conversation ID.
+`raydock hermes` does not set the option yet ([#7851](https://github.com/atlasfutures/memex-desktop/issues/7851)), so the second case applies under the launcher.
 
 ## Known limitations
 
