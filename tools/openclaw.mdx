@@ -175,9 +175,8 @@ it to keep a session's requests in one conversation. Relaunching with
 
 Manual Messages connections send no session identifier, so Rayline derives the conversation from the opening messages. The Raydock gateway does not forward session headers either; see [conversation grouping](/tools/more-tools#the-conversation-id).
 
-Under `raydock openclaw`, the launcher sends a conversation ID on every
-request: stable across relaunches when you pass `--session-id <id>`, and
-fresh per launch otherwise.
+Under `raydock openclaw`, the launcher writes that same Chat Completions
+provider, so OpenClaw keys its own conversation there too.
 
 The Responses provider sends OpenClaw's session as `prompt_cache_key`, which
 Rayline also recognises.

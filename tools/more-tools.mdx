@@ -59,7 +59,7 @@ Since Rayline 0.2.12, the launcher writes the router key only into the Raydock-o
 
 ## Conversations
 
-Rayline groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+Rayline groups requests into conversations. From Raydock 0.3.0 the launchers do not send a conversation ID of their own: Rayline keys each conversation on the session identifier the agent sends, so resuming a session in a new launch keeps its conversation. Where an agent sends no session identifier, Rayline derives one from the opening messages. Each agent's guide says which applies.
 
 ## Manual setup (without the launcher)
 
@@ -79,10 +79,12 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 ### The conversation ID
 
-The launcher supplies `x-conversation-id`. In manual direct connections, Rayline
-recognises the native session identifiers sent by OpenCode, pi, omp and OpenClaw's
-Chat Completions provider with their documented settings. Hermes on Messages sends no session identifier;
-Rayline instead derives a conversation from the opening messages.
+Rayline recognises the native session identifiers sent by OpenCode, pi, omp and
+OpenClaw's Chat Completions provider with their documented settings, under the
+launcher and in manual direct connections alike. Hermes sends one only when its
+provider entry sets `session_affinity_header`; without it, Hermes on Messages
+sends no session identifier and Rayline derives a conversation from the opening
+messages.
 
 The Raydock gateway does not forward session-affinity headers. A Messages
 upstream preserves session metadata in the body, such as omp's `metadata.user_id`.

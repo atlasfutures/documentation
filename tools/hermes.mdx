@@ -29,6 +29,7 @@ providers:
     api_mode: "anthropic_messages"
     base_url: "https://api.rayline.ai"
     key_env: "RAYLINE_API_KEY"
+    session_affinity_header: "x-session-affinity"
     models:
       arc-sage-1.0:
         context_length: 200000
@@ -36,12 +37,14 @@ providers:
     api_mode: "codex_responses"
     base_url: "https://api.rayline.ai/v1"
     key_env: "RAYLINE_API_KEY"
+    session_affinity_header: "x-session-affinity"
     models:
       arc-sage-1.0:
         context_length: 200000
 ```
 
 - `key_env` names the variable that holds the key; Hermes expands `${NAME}` in other values.
+- `session_affinity_header` makes Hermes send its session ID in that header on every request, so Rayline keeps each session in one conversation and gives a `delegate_task` subagent its own. It needs Hermes v2026.9.21 or later.
 - `rayline-anth` uses the Messages API at `/v1/messages`, so its `base_url` has no `/v1`. `rayline-resp` uses the Responses API at `/v1/responses`, so its `base_url` ends in `/v1`. Use `rayline-resp` with ARC only in an environment that [advertises Responses support](/arc/availability#check-protocol-support), and set its base URL to that environment. Otherwise, use `rayline-anth` for ARC Sage and ARC Swift.
 - The launcher also sets `fallback_providers: []`, so a failed request is not retried against another provider. Add it if you want the same behaviour.
 
@@ -109,9 +112,9 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 ## Conversations
 
-Each launch is one Rayline conversation; the launcher sends a per-launch conversation ID. Hermes v2026.9.21 or later is needed for that launcher-supplied header on Messages.
+With `session_affinity_header` set, as in the configuration above, Hermes sends its session ID on every request on both providers. Rayline keeps a session's requests in one conversation, and a `delegate_task` subagent gets its own. Resuming with `-c` or `--resume` continues the conversation.
 
-Manual Messages connections send no session identifier. Rayline derives the conversation from the opening messages, both directly and through the gateway. Separate sessions with identical openings can be grouped together; see [conversation grouping](/tools/more-tools#the-conversation-id).
+Without it, Hermes sends no session identifier on Messages, and Rayline derives the conversation from the opening messages, both directly and through the gateway. Separate sessions with identical openings can be grouped together; see [conversation grouping](/tools/more-tools#the-conversation-id). On Responses, Hermes sends a per-session `prompt_cache_key`, which Rayline reads as the conversation ID.
 
 ## Known limitations
 
@@ -121,5 +124,4 @@ Manual Messages connections send no session identifier. Rayline derives the conv
 ## Troubleshooting
 
 - **`hermes` not found on PATH.** Install Hermes Agent and check `which hermes`.
-- **The launcher's conversation ID is ignored.** Upgrade to Hermes v2026.9.21 or later so its Messages provider accepts the launcher-supplied header.
 - See also [shared troubleshooting](/tools/more-tools#troubleshooting).
