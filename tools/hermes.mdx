@@ -114,7 +114,7 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 With `session_affinity_header` set, as in the configuration above, Rayline keeps each Hermes session in one conversation, and `-c` or `--resume` continues it. Without it, Rayline groups requests by their opening messages, so separate sessions that start identically can be merged; see [conversation grouping](/tools/more-tools#the-conversation-id).
 
-`raydock hermes` does not set the option yet ([#7851](https://github.com/atlasfutures/memex-desktop/issues/7851)), so the second case applies under the launcher.
+`raydock hermes` does not set the option, so the launcher uses the opening-messages grouping.
 
 ## Known limitations
 
