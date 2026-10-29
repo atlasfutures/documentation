@@ -84,7 +84,7 @@ Install [Rayline](/rules-router/cli#install). Save this configuration as `router
 }
 ```
 
-The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it: your tool can send Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. `openai_chat` serves all three and is the same protocol a local model server speaks, so one endpoint shape covers hosted Rayline and a local model alike. Use Rayline Local 0.2.12 or later.
+The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what your tool sends it: your tool can send Anthropic Messages, OpenAI Chat Completions or OpenAI Responses, and the gateway translates. `openai_chat` serves all three and is the same protocol a local model server speaks, so one endpoint shape covers hosted Rayline and a local model alike. Use Rayline Local 0.2.12 or later. The exception is Codex's sub-agent tools, which need an `anthropic_messages` endpoint; see [Codex through Rayline Local](/rules-router/quickstart/codex#use-arc-through-rayline-local).
 
 Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 

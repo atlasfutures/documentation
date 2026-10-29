@@ -52,10 +52,9 @@ Send the same `x-conversation-id` on every turn of a conversation so ARC decides
 An ARC request takes its conversation ID from the first of these that is present:
 
 1. The `x-conversation-id` header.
-2. The body field `prompt_cache_key`, on a request from Codex.
+2. The session identifiers common agent harnesses send on every request, such as `X-Claude-Code-Session-Id`, Codex's `prompt_cache_key`, and `x-session-affinity` or `x-session-id`.
+3. An ID derived from the conversation's content, so a turn is never stateless.
 
-With neither, the turn is stateless.
-
-Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is not read; send `x-conversation-id`.
+Codex sets `prompt_cache_key` to its thread ID on every request, and each spawned subagent thread sends its own, so Codex gets multi-turn decisions and separate subagent conversations without any configuration. For any other client the field is a cache-grouping hint that may legitimately be shared across conversations, so it is read only after the session headers above. Send `x-conversation-id` when you want to choose the grouping yourself.
 
 See [API compatibility](/arc/reference/compatibility) and [errors and limits](/arc/reference/errors).

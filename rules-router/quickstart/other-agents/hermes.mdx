@@ -15,7 +15,7 @@ Install the tool using its [installation guide](https://hermes-agent.nousresearc
 
 ## Connect to the Rayline platform
 
-Set `RAYLINE_API_KEY` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher). Use Hermes v2026.9.21 or later; earlier releases do not send the conversation header.
+Set `RAYLINE_API_KEY` first, as described in [manual setup](/rules-router/quickstart/other-agents#manual-setup-without-the-launcher).
 
 Add these providers to `~/.hermes/config.yaml`, and point `model` at the first one:
 
@@ -29,6 +29,7 @@ providers:
     api_mode: "anthropic_messages"
     base_url: "https://api.rayline.ai"
     key_env: "RAYLINE_API_KEY"
+    session_affinity_header: "x-session-affinity"
     models:
       arc-sage-1.0:
         context_length: 200000
@@ -36,12 +37,14 @@ providers:
     api_mode: "codex_responses"
     base_url: "https://api.rayline.ai/v1"
     key_env: "RAYLINE_API_KEY"
+    session_affinity_header: "x-session-affinity"
     models:
       arc-sage-1.0:
         context_length: 200000
 ```
 
 - `key_env` names the variable that holds the key; Hermes expands `${NAME}` in other values.
+- `session_affinity_header` makes Hermes send its session ID in that header on every request, so Rayline keeps each session in one conversation. It needs Hermes v2026.9.21 or later.
 - `rayline-anth` uses the Messages API at `/v1/messages`, so its `base_url` has no `/v1`. `rayline-resp` uses the Responses API at `/v1/responses`, so its `base_url` ends in `/v1`. The Rayline platform does not yet serve ARC on the Responses API, so use `rayline-anth` for ARC Sage and ARC Swift; keep `rayline-resp` for when [Responses support](/arc/availability) arrives.
 - The launcher also sets `fallback_providers: []`, so a failed request is not retried against another provider. Add it if you want the same behaviour.
 
@@ -65,11 +68,11 @@ To use Swift, add `arc-swift-1.0` to the provider’s models using the same sett
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.12 or later.
+The launcher instructions below require Rayline 0.3.0 or later.
 
 ## Install
 
-Install Hermes Agent from its [install docs](https://hermes-agent.nousresearch.com/docs/getting-started/installation). Use v2026.9.21 or later. Then sign in to Rayline:
+Install Hermes Agent from its [install docs](https://hermes-agent.nousresearch.com/docs/getting-started/installation), then sign in to Rayline:
 
 ```bash
 rayline auth login
@@ -79,7 +82,7 @@ rayline auth login
 
 ```bash
 rayline hermes
-rayline hermes --provider rayline-resp --model rayline-router
+rayline hermes --provider rayline-resp --model arc-sage-1.0
 rayline --env <name> hermes
 ```
 
@@ -87,12 +90,12 @@ Everything after `hermes` goes to Hermes unchanged. See [launcher options](/rule
 
 ## What Rayline writes
 
-Rayline sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. It defines two providers, both with model `rayline-router`:
+Rayline sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writes `config.yaml` there on every launch. It defines two providers, each listing `arc-sage-1.0`, `arc-swift-1.0`, and `rayline-router`, with `arc-sage-1.0` on `rayline-anth` as the default:
 
 | Provider | API | Use |
 | --- | --- | --- |
 | `rayline-anth` | Anthropic Messages | The default |
-| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp --model rayline-router` |
+| `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp --model arc-sage-1.0` |
 
 Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
 
@@ -102,9 +105,9 @@ The launcher writes the key as each provider's `api_key` in the Rayline-owned `c
 
 ## Conversations
 
-Each launch is one Agent Gateway conversation; the launcher sends a per-launch conversation id. In manual setup, Rayline recognises the session id Hermes sends on every request, so a conversation holds together on its own.
+With `session_affinity_header` in the manual configuration, Hermes sends its session ID on every request on both providers, and Rayline keeps a session's requests in one conversation. Resuming with `-c` or `--resume` continues that conversation.
 
-Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With those releases, every turn on the default provider is a separate conversation. Upgrade to v2026.9.21 or later.
+Without it, as under `rayline hermes`, Hermes sends no session ID. Rayline then derives a conversation ID from the request content, so a session's turns, including a resumed one, stay in one conversation, while a `delegate_task` subagent and the title side call each get their own.
 
 ## Known limitations
 
@@ -114,5 +117,4 @@ Hermes releases before v2026.9.21 ignore extra headers on the Messages API. With
 ## Troubleshooting
 
 - **`hermes` not found on PATH.** Install Hermes Agent and check `which hermes`.
-- **Every turn is a separate conversation.** On a Hermes release before v2026.9.21, upgrade to v2026.9.21 or later.
 - See also [shared troubleshooting](/rules-router/quickstart/other-agents#troubleshooting).

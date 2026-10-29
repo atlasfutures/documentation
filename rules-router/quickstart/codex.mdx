@@ -68,13 +68,16 @@ Select `arc-sage-1.0` or `arc-swift-1.0` in the profile above.
 For the local-gateway path, start the [cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway),
 change the provider's `base_url` to `http://127.0.0.1:23811/v1`, and give Codex a
 placeholder `RAYLINE_API_KEY=local-client`. The gateway alone receives your real
-upstream key. Codex still speaks Responses; the gateway forwards to the
-hosted Messages endpoint. Inference remains in the cloud.
+upstream key. Inference remains in the cloud.
 
-Codex's sub-agent tools (the `multi_agent_v1` namespace) are forwarded to
-Anthropic Messages endpoints, including ARC, so multi-agent tasks work on this
-path. A gateway endpoint configured as Chat Completions or a local model
-refuses them with a `400 unsupported_tool`; use single-agent tasks there.
+Codex still speaks Responses, and the gateway translates to its endpoint's
+protocol. In `router.json`, give the endpoint `"protocol": "anthropic_messages"`
+and `"base_url": "https://api.rayline.ai"` instead of the Chat Completions
+endpoint the gateway guide shows. Codex's sub-agent tools (the `multi_agent_v1`
+namespace) are forwarded to Anthropic Messages endpoints, including ARC, so
+multi-agent tasks work on this path. A gateway endpoint configured as Chat
+Completions or a local model refuses them with a `400 unsupported_tool`; use
+single-agent tasks there.
 
 Codex warns that it has no built-in metadata for the ARC model IDs and uses
 fallback metadata. Set context limits to match the models you use.

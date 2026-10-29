@@ -89,11 +89,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline pi` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
+`rayline pi` starts pi on `arc-sage-1.0` and also offers `arc-swift-1.0` and `rayline-router` in pi’s model picker. The launcher needs Rayline **0.3.0 or later**.
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, `sendSessionAffinityHeaders` makes pi send its session id on every request, which Rayline uses to keep a conversation together, so nothing else is needed.
+`sendSessionAffinityHeaders` makes pi send its session id on every request, which Rayline uses to keep a conversation together, under the launcher and in manual setup alike. Nothing else is needed.
 
 ## Troubleshooting
 

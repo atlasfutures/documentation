@@ -6,7 +6,7 @@ description: "Run opencode, pi, oh-my-pi, Hermes Agent, or OpenClaw through host
 
 <span id="planned-integrations" />
 
-Install or update Rayline through the [official installer](/rules-router/cli). The launcher commands below require Rayline 0.2.8 or later.
+Install or update Rayline through the [official installer](/rules-router/cli). The launcher commands below require Rayline 0.3.0 or later. From 0.3.0 the CLI is named `raydock`; `rayline` remains a supported alias, and these pages use it.
 
 <span id="choose-a-connection" />
 
@@ -47,9 +47,9 @@ Use `--` to pass an argument that would otherwise be read as a Rayline option.
 
 1. Signs you in and creates a router key if you have none, as `rayline claude` does. In a non-interactive shell, run `rayline auth login` first.
 2. Writes a Rayline config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
-3. Starts the agent with model `rayline-router` over the Anthropic Messages API, so Agent Gateway chooses the model for each request. The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
+3. Starts the agent with `arc-sage-1.0` as its main model and `arc-swift-1.0` for its background roles, where the agent has them. The provider also lists `rayline-router`, which routes through your Agent Gateway rules; select it through the agent's own model option or picker. The agent is told each model has a 200,000-token context window and up to 32,000 output tokens.
 
-Each launch prints the router URL, the conversation ID, and the config directory. Rayline rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Rayline's; each agent's guide lists which files those are.
+Each launch prints the router URL, the environment, and the config directory. Rayline rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Rayline's; each agent's guide lists which files those are.
 
 ## How your key is handled
 
@@ -57,7 +57,7 @@ Since Rayline 0.2.12, the launcher writes the router key only into the Rayline-o
 
 ## Conversations
 
-Agent Gateway groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+Agent Gateway groups requests into conversations. Rayline recognises the session identifiers these agents send on every request, and groups a session's requests into one conversation from those, so a session resumed in a new launch keeps its conversation. Where an agent sends no session identifier, Rayline derives one from the conversation's content. Each agent's guide says which applies.
 
 ## Manual setup (without the launcher)
 
@@ -75,11 +75,10 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 ### The conversation ID
 
-The launcher gives each launch a conversation ID and sends it as the
-`x-conversation-id` header, so one launch is one conversation. In manual
-setup you do not need to do this yourself: Rayline recognises the session
-identifiers these agents already send on every request, and groups a session's
-requests into one conversation from those. Requests grouped this way are routed
+You do not need to send a conversation ID yourself. Rayline recognises the
+session identifiers these agents already send on every request, and groups a
+session's requests into one conversation from those; where an agent sends none,
+Rayline derives an ID from the conversation's content. Requests grouped this way are routed
 together, pinned to the same provider backend where a provider supports that
 (so prompt-cache reuse holds), and counted together in usage.
 
@@ -95,6 +94,6 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Use ARC
 
-These launchers always select `rayline-router`, so they route through your Agent Gateway rules and do not accept a model option. To use ARC with one of these agents, follow its manual setup and request an ARC tier: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks, on the Anthropic Messages API with the base URL each guide gives. opencode needs its `/v1` base URL. Check [usage](/platform/usage) after your first task.
+The launchers start each agent on `arc-sage-1.0`, with `arc-swift-1.0` for background roles, and offer `rayline-router` as well. In manual setup, request an ARC tier by model ID: `arc-sage-1.0` for challenging coding and agent tasks, or `arc-swift-1.0` as a fast workhorse for everyday tasks, with the base URL each guide gives. opencode needs its `/v1` base URL. Check [usage](/platform/usage) after your first task.
 
 <span id="legacy-integrations" />

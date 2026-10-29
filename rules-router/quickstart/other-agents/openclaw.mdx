@@ -52,7 +52,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey` and `headers`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway:
 
   ```json
@@ -79,9 +79,9 @@ openclaw agent --local --session-id my-task --message "Reply with the word ready
 
 ## Use a Rayline Local gateway
 
-[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the provider configuration above, replace the base URL with your gateway’s URL. Use `http://127.0.0.1:23811` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
+[Start a cloud-forwarding gateway](/tools/hosted-local#configure-a-cloud-forwarding-gateway). In the provider configuration above, replace the base URL with your gateway’s URL. Use `http://127.0.0.1:23811/v1` for the linked gateway setup and `RAYLINE_API_KEY=local-client` in the client. The gateway holds your Rayline API key.
 
-Inside Docker, use `http://host.docker.internal:23811` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
+Inside Docker, use `http://host.docker.internal:23811/v1` to reach a gateway on the host. The container’s `127.0.0.1` points to the container itself. For this explicitly configured local provider, OpenClaw also required:
 
 ```json
 "request": { "allowPrivateNetwork": true }
@@ -114,7 +114,7 @@ Use a current Node release supported by OpenClaw. Node 24.5.0 has a SQLite defec
 
 ## Launcher availability
 
-The launcher instructions below require Rayline 0.2.12 or later.
+The launcher instructions below require Rayline 0.3.0 or later.
 
 ## Install
 
@@ -138,12 +138,12 @@ Everything after `openclaw` goes to OpenClaw unchanged, with one addition: for a
 
 Rayline sets `OPENCLAW_CONFIG_PATH` to `~/.config/rayline/harness/openclaw/<env>/openclaw.json` and rewrites that file on every launch. OpenClaw's own state stays in `~/.openclaw`.
 
-The config defines two providers, both with model `rayline-router`:
+The config defines two providers. Each lists `arc-sage-1.0`, `arc-swift-1.0`, and `rayline-router`, and the default model is `rayline/arc-sage-1.0`:
 
 | Model reference | API | Use |
 | --- | --- | --- |
-| `rayline/rayline-router` | Anthropic Messages | The default |
-| `rayline-resp/rayline-router` | OpenAI Responses | Select it as the model |
+| `rayline/<model>` | OpenAI Chat Completions | The default; every model has `sendSessionAffinityHeaders` |
+| `rayline-resp/<model>` | OpenAI Responses | Select it as the model; every model has `supportsPromptCacheKey` |
 
 It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
 
@@ -161,14 +161,10 @@ OpenClaw resolves a `${RAYLINE_API_KEY}` string when it loads the config and the
 
 ## Conversations
 
-With the configuration above, OpenClaw sends its session ID on every
-request (that is what `sendSessionAffinityHeaders` is for), and Rayline uses
-it to keep a session's requests in one conversation. Relaunching with
-`--session-id <id>` resumes that conversation.
-
-Under `rayline openclaw`, the launcher sends a conversation ID on every
-request: stable across relaunches when you pass `--session-id <id>`, and
-fresh per launch otherwise.
+With the configuration above, and under `rayline openclaw`, OpenClaw sends
+its session ID on every request (that is what `sendSessionAffinityHeaders` is
+for), and Rayline uses it to keep a session's requests in one conversation.
+Relaunching with `--session-id <id>` resumes that conversation.
 
 The Responses provider sends OpenClaw's session as `prompt_cache_key`, which
 Rayline also recognises.

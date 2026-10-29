@@ -126,11 +126,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline opencode` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
+`rayline opencode` starts OpenCode on `arc-sage-1.0`, with `arc-swift-1.0` as its small model, and also offers `rayline-router`. The launcher needs Rayline **0.3.0 or later**.
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, Rayline recognises the session identifiers OpenCode already sends on every request, so a conversation holds together on its own.
+Rayline recognises the session identifiers OpenCode sends on every request, so a conversation holds together on its own, under the launcher and in manual setup alike.
 
 ## Troubleshooting
 

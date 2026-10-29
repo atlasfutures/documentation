@@ -95,11 +95,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-`rayline omp` uses Agent Gateway’s `rayline-router` configuration. It does not select the ARC tiers in the manual configuration above. The launcher needs Rayline **0.2.12 or later**.
+`rayline omp` starts oh-my-pi on `arc-sage-1.0` for the default, slow, and plan roles and `arc-swift-1.0` for the smol role, and also offers `rayline-router`. The launcher needs Rayline **0.3.0 or later**.
 
-The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
+The launcher rewrites `models.yml` and creates `config.yml` once, assigning those models to the default, smol, slow, and plan roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/rules-router/quickstart/other-agents#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, Rayline recognises the session id omp already sends on every request, so a conversation holds together on its own.
+Rayline recognises the session id omp sends on every request, so a conversation holds together on its own, under the launcher and in manual setup alike.
 
 ## Troubleshooting
 
