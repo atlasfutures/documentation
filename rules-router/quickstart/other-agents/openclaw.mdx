@@ -52,7 +52,7 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
-- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. The Rayline platform does not yet serve ARC on the Responses API, so keep using `rayline/arc-sage-1.0` for ARC until [Responses support](/arc/availability) arrives.
+- For the Responses API, add a second provider, `rayline-resp`, with `"baseUrl": "https://api.rayline.ai/v1"`, `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. See [ARC availability](/arc/availability) for the status of ARC on the Responses API.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Agent Gateway:
 
   ```json
