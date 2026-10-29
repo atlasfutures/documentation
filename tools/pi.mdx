@@ -95,7 +95,7 @@ From Raydock **0.3.0**, `raydock pi` runs on ARC Sage. To use Legacy Rules Route
 
 The launcher rewrites `models.json` and creates `settings.json` once. It keeps auth and sessions in its own directory. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual direct connections, `sendSessionAffinityHeaders` makes pi send its session ID on every request, which Rayline uses to keep a conversation together. The gateway does not forward that session header; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
+`sendSessionAffinityHeaders` makes pi send its session ID on every request, which Rayline uses to keep a conversation together, under the launcher and in manual direct connections alike. The gateway does not forward that session header; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
 
 ## Troubleshooting
 

@@ -132,7 +132,7 @@ From Raydock **0.3.0**, `raydock opencode` runs on ARC: `model` is ARC Sage and 
 
 The launcher rewrites its `opencode.json` and supplies it through `OPENCODE_CONFIG`. OpenCode merges it with your global configuration; project settings take precedence. Use `--standalone` with the launcher too. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual direct connections, Rayline recognises the session identifiers OpenCode sends on every request. The gateway does not forward those session headers; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
+Rayline recognises the session identifiers OpenCode sends on every request, under the launcher and in manual direct connections alike. The gateway does not forward those session headers; see [conversation grouping through Raydock](/tools/more-tools#the-conversation-id).
 
 ## Troubleshooting
 
