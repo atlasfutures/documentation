@@ -1,12 +1,20 @@
 ---
 title: "Data and privacy"
-description: "When ARC uses requests to improve, and how to turn it off."
+description: "When ARC uses requests to improve, and how to choose."
 icon: "shield"
 ---
 
+Each organization has a data setting, which its owners change under **Organization** > **Data use** in the platform:
+
+| Setting | What it means |
+| --- | --- |
+| Standard (default) | Requests aren't stored by Rayline and aren't used for training. Only models whose providers keep request data for 30 days or less, and never train on it, serve the request. |
+| Contributor | Requests may be used to improve ARC routing. Every model is available. |
+| Zero data retention | Requests are served only by providers that store nothing. |
+
 | Surface | Used to improve ARC | Exploration |
 | --- | --- | --- |
-| ARC Swift, ARC Sage, `arc-1.0` (hosted inference) | Only when your organization's data setting allows it; never with privacy mode or zero data retention | About 5% of requests by default; 0 with privacy mode or zero data retention |
+| ARC Swift, ARC Sage, `arc-1.0` (hosted inference) | Only with Contributor | About 5% of requests with Contributor; 0 with Standard or zero data retention |
 | legacy Rules Router settings | Follows the same organization data setting | None: your rules choose the model |
 | Decisions | Never | None by default; only the routing temperature you set |
 | Raydock and self-hosted routing | Not covered by this hosted policy | Set by your own configuration |
@@ -14,5 +22,7 @@ icon: "shield"
 A local connector that forwards to hosted inference follows the hosted rows.
 
 When ARC cannot confirm your organization's data setting for a request, it treats the request as private: no exploration and no training use.
+
+A model that Standard or zero data retention doesn't allow is refused with a `privacy_mode_model_unavailable` error rather than swapped for another model. Choose another model, or switch the organization to Contributor.
 
 The organization-level data setting is rolling out. Until it is available for your organization, contact [hello@rayline.ai](mailto:hello@rayline.ai) to confirm how your requests are handled. Workshop data is governed by [Workshop's terms](/workshop).
