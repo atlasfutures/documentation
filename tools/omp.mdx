@@ -1,6 +1,6 @@
 ---
 title: "oh-my-pi"
-description: "Connect oh-my-pi to ARC directly or through a Raydock gateway."
+description: "Use ARC in oh-my-pi with automatic Raydock setup or your own provider configuration."
 ---
 
 <span id="verify-the-route" />
@@ -8,21 +8,63 @@ description: "Connect oh-my-pi to ARC directly or through a Raydock gateway."
 Use **ARC Sage** for challenging coding and agent tasks, or **ARC Swift** as a fast workhorse for everyday tasks. Both choose the model and reasoning effort for each request.
 
 <span id="choose-a-connection" />
+<span id="two-ways-to-use-arc-with-oh-my-pi" />
 
-## Two ways to use ARC with oh-my-pi
+## Connect to Rayline Platform
 
 | Path | Request path | Inference |
 | --- | --- | --- |
-| Direct API | oh-my-pi → Rayline Platform | Cloud |
+| Raydock launcher | oh-my-pi → Rayline Platform | Cloud |
+| Manual direct API | oh-my-pi → Rayline Platform | Cloud |
 | Raydock gateway | oh-my-pi → your gateway → Rayline Platform | Cloud |
 
 A local gateway does not imply on-device inference or locally running ARC. See [Rayline Platform and Raydock](/raydock/connections).
 
 ## Install
 
-Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run the tool. Keep it out of project files.
+Install [oh-my-pi](https://github.com/can1357/oh-my-pi#install). Use **18.1.10 or newer** so API-key requests carry omp's native session ID.
 
-## Connect directly
+## Recommended: let Raydock configure omp
+
+Install [Raydock](/raydock/cli#install), then run:
+
+```bash
+raydock omp
+```
+
+Raydock signs you into Rayline if needed, creates the router key, and registers a custom **Rayline provider** in an isolated omp configuration. You do not need to create YAML, export a key, start a gateway, or configure an Anthropic account. Requests go to Rayline Platform and are billed to your Rayline account, not an Anthropic subscription.
+
+From Raydock **0.3.0**, `default`, `slow`, and `plan` use **ARC Sage**; `smol` uses **ARC Swift**. Choose a model with omp's picker, or select Swift for a launch:
+
+```bash
+raydock omp --model rayline/arc-swift-1.0
+```
+
+Role choices you save in omp survive relaunches. Continue the previous session with:
+
+```bash
+raydock omp --continue
+```
+
+### Check the model metadata
+
+The launcher supplies ARC's fixed input, output, cache-read, and cache-write rates. Check the registered models without sending an inference request:
+
+```bash
+raydock omp models rayline --json --no-extensions
+```
+
+ARC entries should have nonzero `cost` fields matching [ARC pricing](/arc/pricing). omp estimates costs using the rate card bundled with your Raydock release; check [Rayline Usage](/platform/usage) for actual charges.
+
+ARC chooses the model and reasoning effort itself, so the provider does not expose omp-controlled thinking. Hosted ARC entries advertise text input, a 200,000-token context window, and the launcher's existing 32,000-token output budget. That output setting is not a guarantee that every routed model can generate that many tokens.
+
+The `default`, `slow`, `plan`, and `smol` badges are **roles**, not benchmark results. Intelligence and speed columns may be empty; Raydock does not supply benchmark scores or invented throughput.
+
+<span id="connect-directly" />
+
+## Alternative: configure the provider yourself
+
+Create a [Rayline API key](/platform/api-keys) and load it into `RAYLINE_API_KEY` in the shell where you will run omp. Keep it out of project files.
 
 Use a separate configuration directory. These environment settings apply to the current shell:
 
@@ -57,6 +99,10 @@ providers:
 ```
 
 oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
+
+<Warning>
+This minimal manual configuration does not include a fixed rate card. Some omp versions display missing prices as **free**; ARC inference is not free. For accurate ARC price metadata without maintaining your own rates, use the Raydock launcher. If you manage rates yourself, set each model's `cost.input`, `cost.output`, `cost.cacheRead`, and `cost.cacheWrite` from [ARC pricing](/arc/pricing), in USD per million tokens.
+</Warning>
 
 Start with Sage:
 
@@ -97,15 +143,18 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-From Raydock **0.3.0**, `raydock omp` runs on ARC: the `default`, `slow`, and `plan` roles use ARC Sage and the `smol` role uses ARC Swift. To use Legacy Rules Router, choose `rayline/rayline-router` for a role; omp saves your choice for later launches. You can also use the manual configuration above with model `rayline-router`.
+Raydock rewrites `models.yml` in `~/.config/rayline/harness/omp/<environment>/` on each launch (`prod` by default). Do not edit that managed file for persistent customizations. It seeds `config.yml` once with the ARC role assignments above, preserves your saved choices, and migrates only an untouched old Legacy-only seed.
 
-The launcher rewrites `models.yml` and creates `config.yml` once, assigning the router to the default, smol, slow, and plan model roles. It removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR`. See [launcher options](/tools/more-tools#launcher-options).
+The key is stored in owner-only generated configuration, not exported to omp's tool subprocesses. Do not share that file. Raydock removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR` from the launched child's environment so another profile does not override its setup; your calling shell and normal omp configuration are unchanged. See [launcher options](/tools/more-tools#launcher-options).
 
-Each launcher invocation is one conversation. In manual setup, Rayline recognises the session id omp already sends on every request, so a conversation holds together on its own.
+With omp 18.1.10 or newer, Rayline recognises omp's native session ID in launcher and manual connections. Resuming the same session keeps its routing episode; you do not need to generate a conversation ID. `RAYLINE_HARNESS_CONV_ID_FALLBACK=1` overrides this behavior with a fresh per-launch ID.
+
+The hosted omp picker offers only **ARC Sage** and **ARC Swift**. The old `rayline-router` Legacy model is no longer listed. Hybrid routing is separate: its execution core still uses `rayline-router` as an active virtual model. Hybrid has no single ARC tier rate; if omp labels it **free**, use upstream billing records rather than that label. Hybrid runtime capabilities are unchanged.
 
 ## Troubleshooting
 
+- **ARC appears free or the old Legacy model is still listed:** update Raydock and restart through `raydock omp` to refresh managed metadata. Editing its `models.yml` is temporary; the launcher rewrites it. With manual configuration, supply your own rates or use the launcher.
 - **Another provider or model is used:** check project overrides and the active configuration directory.
 - **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
-- **You want your usual setup back:** open a fresh shell without these environment overrides. Your normal configuration has not been replaced.
+- **You want your usual setup back:** after a launcher session, run `omp` normally outside the Raydock-managed environment. After manual setup, open a fresh shell without its environment overrides.
 - See [shared troubleshooting](/tools/more-tools#troubleshooting).
