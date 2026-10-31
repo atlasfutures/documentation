@@ -51,7 +51,7 @@ Use `--` to pass an argument that would otherwise be read as a Raydock option.
 2. Writes a Raydock config for the agent to `~/.config/rayline/harness/<agent>/<env>/`, readable only by you on macOS and Linux, and points the agent at it through the agent's own config variable. Your normal configuration for that agent is not changed.
 3. Starts the agent on ARC over the Anthropic Messages API, so ARC chooses the model and reasoning effort for each request; see [Which model runs](#which-model-runs). The agent is told the model has a 200,000-token context window and up to 32,000 output tokens.
 
-Each launch prints the router URL, the conversation ID, and the config directory. Raydock rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Raydock's; each agent's guide lists which files those are.
+Each launch prints the router URL, how the routing episode is keyed, and the config directory. Raydock rewrites the files it owns on every launch, so edit the agent's settings through its own files, not Raydock's; each agent's guide lists which files those are. For omp's one-command setup, pricing metadata, and saved roles, see [oh-my-pi](/tools/omp#recommended-let-raydock-configure-omp).
 
 ## How your key is handled
 
@@ -59,7 +59,9 @@ Since Rayline 0.2.12, the launcher writes the router key only into the Raydock-o
 
 ## Conversations
 
-Rayline groups requests into conversations. Each launch gets a new conversation ID, which every request carries in the `x-conversation-id` header, so one launch is one conversation. Resuming an earlier session in a new launch starts a new conversation. OpenClaw is the exception: with `--session-id`, relaunching the same session keeps its conversation.
+By default, current Raydock launchers let Rayline recognise the harness's native session ID where available. Resuming that session in a new launch keeps its routing episode. omp sends its native ID in API-key mode from version 18.1.10. Hermes on Messages sends no session ID; Rayline derives its episode from the opening messages. See each tool's guide for its protocol settings.
+
+`RAYLINE_HARNESS_CONV_ID_FALLBACK=1` forces a new `x-conversation-id` on each launch instead. With that override, resuming in a new launch starts a new routing episode.
 
 ## Manual setup (without the launcher)
 
@@ -79,10 +81,10 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 ### The conversation ID
 
-The launcher supplies `x-conversation-id`. In manual direct connections, Rayline
-recognises the native session identifiers sent by OpenCode, pi, omp and OpenClaw's
-Chat Completions provider with their documented settings. Hermes on Messages sends no session identifier;
-Rayline instead derives a conversation from the opening messages.
+By default, the launcher relies on the native session identifiers sent by
+OpenCode, pi, omp and OpenClaw with their configured protocols. Manual direct
+connections use those identifiers too. Hermes on Messages sends no session
+identifier; Rayline instead derives a conversation from the opening messages.
 
 The Raydock gateway does not forward session-affinity headers. A Messages
 upstream preserves session metadata in the body, such as omp's `metadata.user_id`.
@@ -110,13 +112,13 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Which model runs
 
-Each launcher gives the main agent ARC Sage (`arc-sage-1.0`). Where the agent has a separate setting for small or background work, that setting gets ARC Swift (`arc-swift-1.0`). Every generated config also lists Legacy Rules Router (`rayline-router`), so you can choose it with the agent's own model flag or picker:
+Each launcher gives the main agent ARC Sage (`arc-sage-1.0`). Where the agent has a separate setting for small or background work, that setting gets ARC Swift (`arc-swift-1.0`). Hosted omp lists only these two ARC tiers. The other generated configs also list Legacy Rules Router (`rayline-router`), selectable with the agent's own model flag or picker:
 
 | Launcher | ARC Sage | ARC Swift | Use Legacy Rules Router |
 | --- | --- | --- | --- |
 | `raydock opencode` | `model` | `small_model` | `-m rayline/rayline-router` |
 | `raydock pi` | Main model | Not used | `--model rayline/rayline-router`, or pi's model picker |
-| `raydock omp` | `default`, `slow`, and `plan` roles | `smol` role | Choose `rayline/rayline-router` for a role |
+| `raydock omp` | `default`, `slow`, and `plan` roles | `smol` role | Not offered |
 | `raydock hermes` | Main model | Not used | `--model rayline-router`, for that run |
 | `raydock openclaw` | Main model | Not used | Switch the session's model to `rayline/rayline-router`, for that run |
 
