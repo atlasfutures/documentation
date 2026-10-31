@@ -23,6 +23,14 @@ A local connector that forwards to hosted inference follows the hosted rows.
 
 When ARC cannot confirm your organization's data setting for a request, it treats the request as private: no exploration and no training use.
 
+## Contributor models
+
+A request to `arc-swift-contributor`, `arc-sage-contributor` or `arc-contributor` runs in Contributor, whatever your organization's data setting or your own privacy setting. Every other request keeps the organization's setting.
+
+- When ARC cannot confirm your organization's data setting, a request to a Contributor model stays private too.
+- Owners can turn Contributor models off for the organization with **Allow Contributor models** under **Organization** > **Data use**. They start off for organizations on zero data retention. A request to a Contributor model is then refused before it reaches any model.
+- Your usage lists these requests under the Contributor model you named.
+
 A model that Standard or zero data retention doesn't allow is refused with a `privacy_mode_model_unavailable` error rather than swapped for another model. Choose another model, or switch the organization to Contributor.
 
 The organization-level data setting is rolling out. Until it is available for your organization, contact [hello@rayline.ai](mailto:hello@rayline.ai) to confirm how your requests are handled. Workshop data is governed by [Workshop's terms](/workshop).
