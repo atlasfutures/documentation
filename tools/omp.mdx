@@ -143,7 +143,11 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 ## Launcher and session behavior
 
-Raydock rewrites `models.yml` in `~/.config/rayline/harness/omp/<environment>/` on each launch (`prod` by default). Do not edit that managed file for persistent customizations. It seeds `config.yml` once with the ARC role assignments above, preserves your saved choices, and migrates only an untouched old Legacy-only seed.
+Raydock rewrites `models.yml` in `~/.config/rayline/harness/omp/<environment>/` on each launch (`prod` by default). Do not edit that managed file for persistent customizations. It seeds `config.yml` once with the ARC role assignments above. On later hosted launches, retired `rayline/rayline-router` role choices migrate to ARC Sage (`smol` to ARC Swift); other saved choices, comments and settings are preserved.
+
+Saved sessions also migrate their Legacy model selections so `--continue --print` and `--resume` can resolve the model without an interactive fallback. Historical messages, usage and served-model labels are not rewritten. Journal modification times are preserved so `--continue` does not select an older conversation just because it migrated. Explicit `--session-dir`, `--resume` and `--restore` paths are included. This cutover does not run on hybrid launches.
+
+Close any process saving settings or holding session write ownership before migrating. Raydock cooperates with omp's settings lock and refuses active writers, concurrent edits, symlinks and malformed targeted state rather than risk losing history.
 
 The key is stored in owner-only generated configuration, not exported to omp's tool subprocesses. Do not share that file. Raydock removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR` from the launched child's environment so another profile does not override its setup; your calling shell and normal omp configuration are unchanged. See [launcher options](/tools/more-tools#launcher-options).
 
@@ -154,6 +158,7 @@ The hosted omp picker offers only **ARC Sage** and **ARC Swift**. The old `rayli
 ## Troubleshooting
 
 - **ARC appears free or the old Legacy model is still listed:** update Raydock and restart through `raydock omp` to refresh managed metadata. Editing its `models.yml` is temporary; the launcher rewrites it. With manual configuration, supply your own rates or use the launcher.
+- **Migration is blocked:** close the omp process writing that session and retry. If the error names unsupported settings syntax or a damaged journal, repair or restore that file; Raydock will not discard it or overwrite unrelated settings.
 - **Another provider or model is used:** check project overrides and the active configuration directory.
 - **Authentication fails:** check the key in the process environment and confirm whether the request is direct or going to your gateway.
 - **You want your usual setup back:** after a launcher session, run `omp` normally outside the Raydock-managed environment. After manual setup, open a fresh shell without its environment overrides.
