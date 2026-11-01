@@ -145,9 +145,9 @@ You can see the model ARC selected and the request’s cost in [Rayline Usage](/
 
 Raydock rewrites `models.yml` in `~/.config/rayline/harness/omp/<environment>/` on each launch (`prod` by default). Do not edit that managed file for persistent customizations. It seeds `config.yml` once with the ARC role assignments above. On later hosted launches, retired `rayline/rayline-router` role choices migrate to ARC Sage (`smol` to ARC Swift); other saved choices, comments and settings are preserved.
 
-Saved sessions also migrate their Legacy model selections so `--continue --print` and `--resume` can resolve the model without an interactive fallback. Historical messages, usage and served-model labels are not rewritten. Explicit `--session-dir`, `--resume` and `--restore` paths are included. This cutover does not run on hybrid launches.
+Saved sessions also migrate their Legacy model selections so `--continue --print` and `--resume` can resolve the model without an interactive fallback. Historical messages, usage and served-model labels are not rewritten. Journal modification times are preserved so `--continue` does not select an older conversation just because it migrated. Explicit `--session-dir`, `--resume` and `--restore` paths are included. This cutover does not run on hybrid launches.
 
-Close any session that holds write ownership before migrating. Raydock refuses active writers, concurrent edits, symlinks and malformed targeted state rather than risk losing history.
+Close any process saving settings or holding session write ownership before migrating. Raydock cooperates with omp's settings lock and refuses active writers, concurrent edits, symlinks and malformed targeted state rather than risk losing history.
 
 The key is stored in owner-only generated configuration, not exported to omp's tool subprocesses. Do not share that file. Raydock removes `OMP_PROFILE`, `PI_PROFILE`, and `CLAUDE_CONFIG_DIR` from the launched child's environment so another profile does not override its setup; your calling shell and normal omp configuration are unchanged. See [launcher options](/tools/more-tools#launcher-options).
 
