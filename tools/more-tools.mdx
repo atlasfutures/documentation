@@ -6,7 +6,7 @@ description: "Connect your agent harness to Rayline Platform or use the Raydock 
 
 <span id="planned-integrations" />
 
-Install or update Raydock through the [official installer](/raydock/cli). The launcher commands below require Raydock 0.3.0 or later.
+Install or update Raydock through the [official installer](/raydock/cli). The launcher commands below require Rayline 0.2.8 or later.
 
 <span id="choose-a-connection" />
 
@@ -59,7 +59,7 @@ Since Rayline 0.2.12, the launcher writes the router key only into the Raydock-o
 
 ## Conversations
 
-By default, current Raydock launchers let Rayline recognise the harness's native session ID where available. Resuming that session in a new launch keeps its routing episode. omp sends its native ID in API-key mode from version 18.1.10. Hermes sends one only where its provider entry sets `session_affinity_header`, which the launcher does not set; without it, Rayline derives the episode from the opening messages. See each tool's guide for its protocol settings.
+By default, current Raydock launchers let Rayline recognise the harness's native session ID where available. Resuming that session in a new launch keeps its routing episode. omp sends its native ID in API-key mode from version 18.1.10. Hermes on Messages sends no session ID; Rayline derives its episode from the opening messages. See each tool's guide for its protocol settings.
 
 `RAYLINE_HARNESS_CONV_ID_FALLBACK=1` forces a new `x-conversation-id` on each launch instead. With that override, resuming in a new launch starts a new routing episode.
 
@@ -83,9 +83,8 @@ Every config below refers to `RAYLINE_API_KEY` by name, using the agent's own en
 
 By default, the launcher relies on the native session identifiers sent by
 OpenCode, pi, omp and OpenClaw with their configured protocols. Manual direct
-connections use those identifiers too. Hermes sends one only where its provider
-entry sets `session_affinity_header`. Without that setting, Rayline groups
-requests by their opening messages instead; the launcher does not set it.
+connections use those identifiers too. Hermes on Messages sends no session
+identifier; Rayline instead derives a conversation from the opening messages.
 
 The Raydock gateway does not forward session-affinity headers. A Messages
 upstream preserves session metadata in the body, such as omp's `metadata.user_id`.
