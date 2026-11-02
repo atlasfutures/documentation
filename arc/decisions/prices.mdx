@@ -115,4 +115,4 @@ ARC never substitutes catalog prices for a profile it cannot resolve:
 
 ### Decisions only
 
-Prices and price profiles are accepted only on Decisions: `/v1/decisions` and its `/v1/routes` alias. Generation endpoints such as `/v1/chat/completions` and `/v1/messages` refuse `routing.prices`, `routing.price_profile_id`, `routing.price_profile_version`, and `routing.exclusive` with `400` `prices_not_supported`. Profiles never change how ARC Swift, ARC Sage, or `arc-1.0` serve or bill generation requests.
+Prices and price profiles are accepted only on Decisions requests to `POST /v1/routes`. Generation endpoints such as `/v1/chat/completions` and `/v1/messages` refuse `routing.prices`, `routing.price_profile_id`, `routing.price_profile_version`, and `routing.exclusive` with `400` `prices_not_supported`. Profiles never change how ARC Swift, ARC Sage, or `arc-1.0` serve or bill generation requests.
