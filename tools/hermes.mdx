@@ -112,9 +112,11 @@ The launcher writes the key as each provider's `api_key` in the Raydock-owned `c
 
 ## Conversations
 
-With `session_affinity_header` set, as in the configuration above, Rayline keeps each Hermes session in one conversation, and `-c` or `--resume` continues it. Without it, the Messages provider sends no session identifier, so Rayline groups its requests by their opening messages, and separate sessions that start identically can be merged; see [conversation grouping](/tools/more-tools#the-conversation-id). The Responses provider sends the session as `prompt_cache_key`, which Rayline also recognises.
+On a direct connection with `session_affinity_header` set, as in the configuration above, Rayline keeps each Hermes session in one conversation, and `-c` or `--resume` continues it. Without it, the Messages provider sends no session identifier, so Rayline groups its requests by their opening messages, and separate sessions that start identically can be merged; see [conversation grouping](/tools/more-tools#the-conversation-id). The Responses provider sends the session as `prompt_cache_key`, which Rayline also recognises.
 
-`raydock hermes` does not set the option, so its default Messages provider uses the opening-messages grouping. `--provider rayline-resp` keys the conversation on `prompt_cache_key`.
+A Raydock gateway does not forward the session header, so through the gateway setup above the Messages provider gets the opening-messages grouping even with the option set.
+
+`raydock hermes` does not set the option, so its default Messages provider uses the opening-messages grouping. `--provider rayline-resp` keys the conversation on `prompt_cache_key`. With `RAYLINE_HARNESS_CONV_ID_FALLBACK=1`, both launcher providers send a per-launch `x-conversation-id` instead, so resuming in a new launch starts a new conversation; see [launcher conversations](/tools/more-tools#conversations).
 
 ## Known limitations
 
