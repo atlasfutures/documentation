@@ -9,7 +9,7 @@ icon: "triangle-exclamation"
 | 400 | The request body is missing or malformed |
 | 401 | Missing or invalid authentication |
 | 402 | The workspace has no balance to pay for the request (`error.type` `billing_error`); [add funds](/platform/billing#which-balance-pays) |
-| 403 | Access denied for this key or workspace |
+| 403 | Access denied for this key or workspace, or the ARC model ID does not fit the organization's data mode (`zdr_model_required`, `contributor_models_off`); see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode) |
 | 404 | Unsupported method or path |
 | 409 | The request conflicts with the state of a resource it names, such as an archived price profile |
 | 413 | The request body is too large |
