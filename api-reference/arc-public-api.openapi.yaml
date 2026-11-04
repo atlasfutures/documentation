@@ -397,71 +397,53 @@ components:
       description: '``routing`` on ``POST /v1/routes``.'
       properties:
         value_usd:
-          anyOf:
-          - maximum: 30.0
-            minimum: 0.1
-            type: number
-          - type: 'null'
-          default: null
+          maximum: 30.0
+          minimum: 0.1
+          type: number
           description: 'The caller''s V: the USD value of one successful result. Adds the `custom` result. Never clamped.
             On a tier id it must equal the tier''s fixed V.'
           title: Value Usd
           x-status: proposed
         temperature:
-          anyOf:
-          - minimum: 0
-            type: number
-          - type: 'null'
-          default: null
+          minimum: 0
+          type: number
           description: A softmax temperature over each result's normalized Stage-1 scores. Uncapped here; 0 is greedy.
           title: Temperature
           x-status: proposed
         prices:
-          anyOf:
-          - additionalProperties:
-              $ref: '#/components/schemas/PriceLegs'
-            maxProperties: 256
-            minProperties: 1
-            type: object
-          - type: 'null'
-          default: null
+          additionalProperties:
+            $ref: '#/components/schemas/PriceLegs'
+          maxProperties: 256
+          minProperties: 1
+          type: object
           description: BYO prices per exact served model id; each leg is optional and an unset leg keeps its profile or
             catalog price. They change selection only, never the candidates or the Routes API charge. Takes precedence over
             `price_profile`.
           title: Prices
           x-status: proposed
         models:
-          anyOf:
-          - items:
-              minLength: 1
-              type: string
-            maxItems: 256
-            type: array
-          - type: 'null'
-          default: null
+          items:
+            minLength: 1
+            type: string
+          maxItems: 256
+          type: array
           description: 'The candidate models: exact served model ids or patterns where `*` matches any run of characters.
             Case-sensitive. A hard limit: without it every selectable model is a candidate. An entry that matches no model
             is `unknown_model`.'
           title: Models
           x-status: proposed
         excluded_models:
-          anyOf:
-          - items:
-              minLength: 1
-              type: string
-            maxItems: 256
-            type: array
-          - type: 'null'
-          default: null
+          items:
+            minLength: 1
+            type: string
+          maxItems: 256
+          type: array
           description: Exact served model ids or `*` patterns removed from the candidates. Wins over `models`. Nothing left
             is `no_candidate_models`.
           title: Excluded Models
           x-status: proposed
         price_profile:
-          anyOf:
-          - $ref: '#/components/schemas/PriceProfileRef'
-          - type: 'null'
-          default: null
+          $ref: '#/components/schemas/PriceProfileRef'
           description: A saved price profile. Combinable with `prices`, which wins per model and leg.
           title: Price Profile
           x-status: proposed
@@ -569,20 +551,14 @@ components:
       description: '``routing`` on generation requests (``arc-1.0``; tiers accept only their own V).'
       properties:
         value_usd:
-          anyOf:
-          - maximum: 30.0
-            minimum: 0.1
-            type: number
-          - type: 'null'
-          default: null
+          maximum: 30.0
+          minimum: 0.1
+          type: number
           title: Value Usd
           x-status: proposed
         temperature:
-          anyOf:
-          - minimum: 0
-            type: number
-          - type: 'null'
-          default: null
+          minimum: 0
+          type: number
           description: Hosted exploration temperature. Capped by the deployment and applied only when the org's data policy
             allows training; otherwise echoed `unsupported`.
           title: Temperature
