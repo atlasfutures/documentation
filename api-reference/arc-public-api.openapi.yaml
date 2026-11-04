@@ -30,7 +30,7 @@ x-arc-result-names:
 - custom
 x-arc-value-usd-bounds:
 - 0.1
-- 5.0
+- 30.0
 x-arc-error-codes:
   invalid_body:
     status: 400
@@ -83,15 +83,15 @@ x-arc-error-codes:
   price_profile_forbidden:
     status: 403
     type: permission_error
+  model_not_found:
+    status: 404
+    type: not_found_error
   model_not_served:
     status: 404
     type: not_found_error
   price_profile_not_found:
     status: 404
     type: not_found_error
-  non_arc_lookup:
-    status: 409
-    type: invalid_request_error
   price_profile_archived:
     status: 409
     type: invalid_request_error
@@ -162,13 +162,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served, price_profile_not_found.'
+          description: 'Error; `error.code` is one of: model_not_found, model_not_served, price_profile_not_found.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '409':
-          description: 'Error; `error.code` is one of: non_arc_lookup, price_profile_archived, price_profile_unpriced.'
+          description: 'Error; `error.code` is one of: price_profile_archived, price_profile_unpriced.'
           content:
             application/json:
               schema:
@@ -240,7 +240,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served.'
+          description: 'Error; `error.code` is one of: model_not_found, model_not_served.'
           content:
             application/json:
               schema:
@@ -273,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served.'
+          description: 'Error; `error.code` is one of: model_not_found, model_not_served.'
           content:
             application/json:
               schema:
@@ -304,7 +304,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served.'
+          description: 'Error; `error.code` is one of: model_not_found, model_not_served.'
           content:
             application/json:
               schema:
@@ -346,31 +346,31 @@ components:
     Baseline:
       additionalProperties: false
       properties:
-        input_per_mtok:
+        input:
           minimum: 0
-          title: Input Per Mtok
+          title: Input
           type: number
-        output_per_mtok:
+        cache_read:
           minimum: 0
-          title: Output Per Mtok
+          title: Cache Read
           type: number
-        cache_read_per_mtok:
+        cache_write:
           minimum: 0
-          title: Cache Read Per Mtok
+          title: Cache Write
           type: number
-        cache_write_per_mtok:
+        output:
           minimum: 0
-          title: Cache Write Per Mtok
+          title: Output
           type: number
         model:
           minLength: 1
           title: Model
           type: string
       required:
-      - input_per_mtok
-      - output_per_mtok
-      - cache_read_per_mtok
-      - cache_write_per_mtok
+      - input
+      - cache_read
+      - cache_write
+      - output
       - model
       title: Baseline
       type: object
@@ -397,7 +397,7 @@ components:
       properties:
         value_usd:
           anyOf:
-          - maximum: 5.0
+          - maximum: 30.0
             minimum: 0.1
             type: number
           - type: 'null'
@@ -571,7 +571,7 @@ components:
       properties:
         value_usd:
           anyOf:
-          - maximum: 5.0
+          - maximum: 30.0
             minimum: 0.1
             type: number
           - type: 'null'
@@ -859,7 +859,7 @@ components:
           default: null
           title: Policy Action Id
         value_usd:
-          maximum: 5.0
+          maximum: 30.0
           minimum: 0.1
           title: Value Usd
           type: number
@@ -1101,27 +1101,27 @@ components:
     SelectedPricing:
       additionalProperties: false
       properties:
-        input_per_mtok:
+        input:
           minimum: 0
-          title: Input Per Mtok
+          title: Input
           type: number
-        output_per_mtok:
+        cache_read:
           minimum: 0
-          title: Output Per Mtok
+          title: Cache Read
           type: number
-        cache_read_per_mtok:
+        cache_write:
           minimum: 0
-          title: Cache Read Per Mtok
+          title: Cache Write
           type: number
-        cache_write_per_mtok:
+        output:
           minimum: 0
-          title: Cache Write Per Mtok
+          title: Output
           type: number
       required:
-      - input_per_mtok
-      - output_per_mtok
-      - cache_read_per_mtok
-      - cache_write_per_mtok
+      - input
+      - cache_read
+      - cache_write
+      - output
       title: SelectedPricing
       type: object
     Thinking:

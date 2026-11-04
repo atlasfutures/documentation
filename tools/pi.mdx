@@ -115,7 +115,9 @@ For Raydock, include `arc-1.0` in the gateway endpoint’s model list as well.
 ARC Dynamic uses the served model’s catalog price rather than a fixed tier
 rate; see [ARC Dynamic](/arc/dynamic).
 
-### Send your own routing value
+<span id="send-your-own-routing-value" />
+
+### Send your own value (V)
 
 Use the direct Messages connection above or Raydock with an `anthropic_messages`
 upstream. A gateway configured as `openai_chat` drops the hook's `routing` field
@@ -129,8 +131,8 @@ export default function (pi) {
   pi.on("before_provider_request", (event, ctx) => {
     if (ctx.model?.provider !== "rayline" || ctx.model?.id !== "arc-1.0") return;
     const value = Number(process.env.RAYLINE_VALUE_USD);
-    if (!Number.isFinite(value) || value < 0.1 || value > 5) {
-      throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 5");
+    if (!Number.isFinite(value) || value < 0.1 || value > 30) {
+      throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 30");
     }
     return { ...event.payload, routing: { value_usd: value, temperature: 0 } };
   });

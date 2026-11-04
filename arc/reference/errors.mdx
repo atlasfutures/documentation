@@ -11,7 +11,7 @@ icon: "triangle-exclamation"
 | 402 | The workspace has no balance to pay for the request (`error.type` `billing_error`); [add funds](/platform/billing#which-balance-pays) |
 | 403 | Access denied for this key or workspace |
 | 404 | Unsupported method or path |
-| 409 | The request conflicts with how the interface routes it, such as a Routes API request that pins a provider model |
+| 409 | The request conflicts with the state of a resource it names, such as an archived price profile |
 | 413 | The request body is too large |
 | 429 | Rate limit reached, or a conversation already has a request in progress; wait for `Retry-After` |
 | 503 | Temporarily unavailable; retry with backoff |
@@ -24,7 +24,7 @@ Error bodies on the Messages and Routes API endpoints use the Anthropic format, 
 ```
  See the [Routes API reference](/arc/reference/routes#errors-and-limits) for causes and limits specific to the Routes API.
 
-A `404` naming the model means the model ID is not one ARC serves; check the [tier IDs](/arc/quickstart#choose-a-tier).
+A `404` with `model_not_found` means the model ID is not an ARC model; check the [tier IDs](/arc/quickstart#choose-a-tier).
 
 ## Troubleshooting
 
