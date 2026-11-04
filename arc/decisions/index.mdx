@@ -69,7 +69,9 @@ ARC selects at Rayline catalog prices unless you send yours. If your inference c
 
 ## Multi-turn conversations
 
-Decisions does not yet keep conversations: each lookup is decided on its own, ARC reads the whole request every time, and every lookup returns the `episode_not_tracked` warning. Send a stable `x-conversation-id` on every turn anyway, one per conversation and one per parallel subagent; it is harmless today, and when conversation tracking ships it will let ARC decide each turn in light of the turns before it and meter the re-read prefix as cache reads. A lookup that carries an execution envelope (`routing.execution`) stays stateless regardless. See [conversations](/arc/reference/decisions#conversations).
+Each decision is made from the conversation you send. Include the whole conversation so far in every request, exactly as you would send it to the model. ARC keeps no state between lookups, so the metered tokens grow with the conversation.
+
+Send a stable `x-conversation-id` with every turn, one per conversation and one per parallel subagent. It does not change today's decision; it is the identity conversation-aware decisions will use when they ship. See [conversations](/arc/reference/decisions#conversations).
 
 ## What you own
 

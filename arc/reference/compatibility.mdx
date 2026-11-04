@@ -14,7 +14,7 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | --- | --- |
 | Request format | Anthropic Messages, OpenAI Chat Completions, and OpenAI Responses bodies |
 | Format selection | Read from the body; see [request formats](/arc/reference/decisions#request) |
-| Multi-turn conversations | Not yet; every lookup is decided on its own and returns `episode_not_tracked`. Send `x-conversation-id` anyway |
+| Multi-turn conversations | Not yet; each lookup is decided from the conversation in the request body. Send `x-conversation-id` on every turn |
 | Routing policy presets (`routing.policy`) | Accepted; production admits only `arc-policy.package-default.v1` until the hybrid launch |
 | Execution envelope (`routing.execution`) | Accepted; served on the development environment, production after the hybrid launch |
 | Per-candidate predictions (`routing.response_fields`) | Served where `GET /v1/arc/prices` reports `serving.decisions.predictions: true` |
