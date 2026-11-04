@@ -129,12 +129,13 @@ pi 0.80.2 supports a `before_provider_request` extension hook. Save this as
 ```typescript
 export default function (pi) {
   pi.on("before_provider_request", (event, ctx) => {
-    if (ctx.model?.provider !== "rayline" || ctx.model?.id !== "arc-1.0") return;
+    const dynamic = ["arc-1.0", "arc-contributor-1.0", "arc-zdr-1.0"];
+    if (ctx.model?.provider !== "rayline" || !dynamic.includes(ctx.model?.id)) return;
     const value = Number(process.env.RAYLINE_VALUE_USD);
     if (!Number.isFinite(value) || value < 0.1 || value > 30) {
       throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 30");
     }
-    return { ...event.payload, routing: { value_usd: value, temperature: 0 } };
+    return { ...event.payload, routing: { value_usd: value } };
   });
   pi.on("after_provider_response", (event) => {
     console.error("ARC routing:", event.headers["x-rayline-routing"] ?? "not exposed");
@@ -148,8 +149,10 @@ Start pi with the extension explicitly loaded:
 RAYLINE_VALUE_USD=0.5 pi --extension ./arc-routing.ts --provider rayline --model arc-1.0
 ```
 
-The guard leaves other providers and ARC tiers unchanged. This routing
-`temperature` controls ARC exploration, not the answer model’s temperature.
-Check the response echo rather than assuming the setting took effect.
+The guard sends V only for the ARC Dynamic IDs (`arc-1.0`, `arc-contributor-1.0`
+and `arc-zdr-1.0`; add an entry for the one you use) and leaves other providers
+and ARC tiers unchanged. To also set exploration, add `temperature` to `routing`
+with `arc-contributor-1.0`; it is not applied to `arc-1.0` or `arc-zdr-1.0`. See
+[data and exploration](/arc/dynamic#data-and-exploration).
 
-The `x-rayline-routing` response header reports whether each setting was applied. A workspace privacy policy can override exploration settings; check `status` and `reason` in that header.
+The `x-rayline-routing` response header reports whether each setting was applied; check `status` and `reason` there rather than assuming the setting took effect.

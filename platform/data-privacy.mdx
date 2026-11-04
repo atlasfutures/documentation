@@ -8,9 +8,11 @@ Each organization has a data setting, which its owners change under **Organizati
 
 | Setting | What it means |
 | --- | --- |
-| Standard (default) | Requests aren't stored by Rayline and aren't used for training. Only models whose providers keep request data for 30 days or less, and never train on it, serve the request. |
+| Standard (default) | Requests aren't stored by Rayline and aren't used for training, except requests to a [Contributor model](#contributor-models), which owners can turn off with **Allow Contributor models**. Only models whose providers keep request data for 30 days or less, and never train on it, serve the request. |
 | Contributor | Requests may be used to improve ARC routing. Every model is available. |
 | Zero data retention | Requests are served only by providers that store nothing. |
+
+On the Rayline API, an ARC request follows its model ID rather than this setting, as described below.
 
 ## ARC model IDs choose the data mode
 
