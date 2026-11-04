@@ -14,7 +14,7 @@ Both ARC tiers handle coding and agent tasks. ARC Swift is a fast workhorse for 
 | Best suited to | Everyday coding and agent tasks | Challenging coding and agent tasks |
 | Billing | Swift's fixed rate card | Sage's fixed rate card |
 
-Each tier has one fixed rate card for input, cache-read, cache-write, and output tokens, whichever model serves the request. See [ARC pricing](/arc/pricing).
+Each tier has a fixed rate card for each data mode, covering input, cache-read, cache-write, and output tokens, whichever model serves the request. See [ARC pricing](/arc/pricing).
 
 Use the ID wherever a tool or API takes a model:
 
@@ -25,7 +25,9 @@ Gateways that list Rayline models use the prefixed IDs `rayline/arc-swift` and `
 
 ## Contributor models
 
-`arc-swift-contributor`, `arc-sage-contributor` and `arc-contributor` run ARC Swift, ARC Sage and ARC Dynamic in the Contributor data mode, at the same price. See [Contributor models](/platform/data-privacy#contributor-models).
+`arc-swift-contributor-1.0`, `arc-sage-contributor-1.0` and `arc-contributor-1.0` run ARC Swift, ARC Sage and ARC Dynamic in the Contributor data mode. Swift and Sage Contributor have their own rate cards; `arc-contributor-1.0` is billed like `arc-1.0`, at the served model's catalog price. See [ARC pricing](/arc/pricing) and [Contributor models](/platform/data-privacy#contributor-models).
+
+On the Rayline API, the ARC model ID decides the data mode: organizations on zero data retention use `arc-swift-zdr-1.0`, `arc-sage-zdr-1.0` and `arc-zdr-1.0`. See [ARC model IDs choose the data mode](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
 
 <span id="how-it-fits-your-application" />
 <span id="responses-versus-decisions" />
@@ -35,7 +37,7 @@ Gateways that list Rayline models use the prefixed IDs `rayline/arc-swift` and `
 
 ## ARC Dynamic
 
-`arc-1.0` is ARC with your own settings: you choose how much a better result is worth to you and how much ARC explores. It is billed at the served model's catalog price, with no ARC fee. See [configure ARC routing](/arc/dynamic).
+`arc-1.0` is ARC with your own settings: you choose how much a better result is worth to you and, on Contributor requests (`arc-contributor-1.0`), how much ARC explores. It is billed at the served model's catalog price, with no ARC fee. See [configure ARC routing](/arc/dynamic).
 
 
 <span id="quality-claims" />

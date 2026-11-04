@@ -54,7 +54,7 @@ The launcher supplies ARC's fixed input, output, cache-read, and cache-write rat
 raydock omp models rayline --json --no-extensions
 ```
 
-ARC entries should have nonzero `cost` fields matching [ARC pricing](/arc/pricing). omp estimates costs using the rate card bundled with your Raydock release; check [Rayline Usage](/platform/usage) for actual charges.
+ARC entries should have nonzero `cost` fields matching the current rates on [rayline.ai/pricing](https://rayline.ai/pricing). omp estimates costs using the rate card bundled with your Raydock release; check [Rayline Usage](/platform/usage) for actual charges.
 
 ARC chooses the model and reasoning effort itself, so the provider does not expose omp-controlled thinking. Hosted ARC entries advertise text input, a 200,000-token context window, and the launcher's existing 32,000-token output budget. That output setting is not a guarantee that every routed model can generate that many tokens.
 
@@ -101,7 +101,7 @@ providers:
 oh-my-pi expects environment variable **names**, without `$`, in `apiKey` and headers. Its `baseUrl` has **no `/v1`**. Unset named-profile variables so they do not override `PI_CODING_AGENT_DIR`. This configuration allows a 2,048-token response; choose a larger supported output budget for longer coding tasks.
 
 <Warning>
-This minimal manual configuration does not include a fixed rate card. Some omp versions display missing prices as **free**; ARC inference is not free. For accurate ARC price metadata without maintaining your own rates, use the Raydock launcher. If you manage rates yourself, set each model's `cost.input`, `cost.output`, `cost.cacheRead`, and `cost.cacheWrite` from [ARC pricing](/arc/pricing), in USD per million tokens.
+This minimal manual configuration does not include a fixed rate card. Some omp versions display missing prices as **free**; ARC inference is not free. For accurate ARC price metadata without maintaining your own rates, use the Raydock launcher. If you manage rates yourself, set each model's `cost.input`, `cost.output`, `cost.cacheRead`, and `cost.cacheWrite` from [rayline.ai/pricing](https://rayline.ai/pricing), in USD per million tokens.
 </Warning>
 
 Start with Sage:

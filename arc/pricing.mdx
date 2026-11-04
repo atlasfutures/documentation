@@ -1,22 +1,30 @@
 ---
 title: "ARC pricing"
-description: "Fixed rate cards for ARC Swift and ARC Sage, the Routes API fee, and pass-through pricing."
+description: "How ARC Swift, ARC Sage, ARC Dynamic and the Routes API are billed. Current rates are on rayline.ai/pricing."
 ---
 
-import Rates from '/snippets/arc-rates.mdx';
+Current rates for ARC Swift, ARC Sage and the Routes API are on [rayline.ai/pricing](https://rayline.ai/pricing). This page explains how each is billed.
 
-<Rates />
+## ARC Swift and Sage
+
+Each tier has a fixed rate card for each data mode, in US dollars per million tokens, with four legs: input, cache read, cache write, and output. Every request is billed at its tier's card, whichever model serves it. Swift and Sage Contributor have their own cards. See [Swift and Sage](/arc/models).
 
 <span id="agent-gateway" />
 
 ## ARC Dynamic
 
-Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee.
+Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee. This applies to `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0`. See [configure ARC routing](/arc/dynamic).
+
+<span id="arc-decisions" />
+
+## Routes API
+
+The Routes API bills the tokens ARC reads to choose a route, once per request, however many results it returns. Its rate card has an encoded-input rate and a cache-read rate, with no charge for cache writes or output.
+
+The Routes API does not yet reuse a cached prefix between requests. So every token a route reads is billed at the encoded-input rate, and `usage.cache_read_tokens` is 0. Once the Routes API reuses a conversation's prefix, the cache-read rate will apply and `cache_read_tokens` will report those tokens.
+
+Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Routes API](/arc/routes).
 
 ## How requests are billed
 
-- **ARC Swift and ARC Sage** bill every request at the tier's fixed card, whichever model serves it. See [Swift and Sage](/arc/models).
-- **ARC Dynamic (`arc-1.0`)** bills at the served model's Rayline catalog price, with no ARC fee. See [configure ARC routing](/arc/dynamic).
-- **The Routes API** bills the tokens ARC reads to choose a route, once per request, however many results it returns. The Routes API does not yet reuse a cached prefix between requests, so every token a route reads is billed at the encoded-input rate and `usage.cache_read_tokens` is 0. The cache-read rate will apply once the Routes API reuses a conversation's prefix, and `cache_read_tokens` will then report those tokens. Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Routes API](/arc/routes).
-
-The Swift, Sage, and Routes API rates come from Rayline's effective price card; the card version and date are shown with them. Each request records the rate it was billed at. See [funding and billing](/platform/billing). [Rules Router](/legacy/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).
+Each request records the rate it was billed at; see [funding and billing](/platform/billing) and [usage](/platform/usage). [Rules Router](/legacy/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).

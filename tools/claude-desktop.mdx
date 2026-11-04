@@ -10,6 +10,10 @@ ARC is not a Claude model, and Rayline isn't affiliated with Anthropic. Desktop 
 
 Install or update the [Raydock CLI](/raydock/cli) before starting. Automatic profile selection is available on macOS; use `--manual` for the import workflow.
 
+<Note>
+Claude Desktop isn't available to organizations on zero data retention yet. Both the automatic profile and the manual import use the standard ARC Sage and Swift IDs, and those organizations can use only `arc-sage-zdr-1.0` and `arc-swift-zdr-1.0`; other ARC IDs return `403` (`zdr_model_required`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
+</Note>
+
 ## Start the router
 
 ```bash

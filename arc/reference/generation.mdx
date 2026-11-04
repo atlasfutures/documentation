@@ -22,16 +22,18 @@ Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. Se
 | `arc-sage-1.0` | ARC Sage, fixed V 4.5 | Sage's fixed rate card |
 | `arc-1.0` | ARC Dynamic | The served model's catalog price, no ARC fee |
 
+Each ID has a Contributor and a zero data retention ID that behaves the same way and sets the request's data mode: `arc-swift-contributor-1.0`, `arc-sage-contributor-1.0` and `arc-contributor-1.0`, and `arc-swift-zdr-1.0`, `arc-sage-zdr-1.0` and `arc-zdr-1.0`. Swift and Sage bill these at that data mode's rate card; the Dynamic IDs bill like `arc-1.0`. An organization on zero data retention can use only the zero data retention IDs; any other ARC ID returns `403` (`zdr_model_required`). With **Allow Contributor models** off, a Contributor ID returns `403` (`contributor_models_off`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
+
 `arc-1` is also accepted for `arc-1.0`. Prefixed IDs such as `rayline/arc-swift`, and unknown `arc-*` IDs such as `arc-2.0`, return `404` (`not_found_error`, `model_not_found`); a bare `arc` is not an ID.
 
 ## Routing extension
 
-Add a `routing` object to the request body. Only `arc-1.0` takes your own value; the tiers accept only their own.
+Add a `routing` object to the request body. Only `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0` take your own value; the tiers, in every data mode, accept only their own.
 
 | Member | Type | Meaning |
 | --- | --- | --- |
 | `value_usd` | number, 0.1 to 30 | Your value (V), the US-dollar value of one successful result. On `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's V, or the request is refused with `tier_value_immutable`. |
-| `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and your organization's data setting allows ARC to learn from the request. An `unsupported` status means the requested temperature was not applied. |
+| `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and the request runs in Contributor ([data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)). An `unsupported` status means the requested temperature was not applied. |
 
 `routing.models`, `routing.excluded_models`, `routing.prices`, and `routing.price_profile` are accepted on the [Routes API](/arc/reference/routes#routing-controls) only; on generation they return `400` (`routes_only_member`). The model's own `temperature` field is separate and passes to the provider as usual.
 

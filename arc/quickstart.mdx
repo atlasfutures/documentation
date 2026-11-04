@@ -15,6 +15,10 @@ Any Rayline API key can use ARC. You need no separate access request.
 
 Both tiers choose a model and reasoning effort for every request. Tier IDs may change before launch.
 
+<Note>
+If your organization uses zero data retention, use `arc-swift-zdr-1.0` and `arc-sage-zdr-1.0` here and in every example and tool guide: other ARC IDs return `403` (`zdr_model_required`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
+</Note>
+
 <Steps>
 <Step title="Get a key">
 Create a key in **API Keys** on the [Rayline Platform](https://platform.rayline.ai/keys), or run `raydock auth login` with the [Raydock CLI](/raydock/cli#install). See [API keys](/platform/api-keys). Keep the key in `RAYLINE_API_KEY`, outside your source code:
