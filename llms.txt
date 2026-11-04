@@ -17,7 +17,7 @@
 
 ## Guides
 
-- [Decisions](https://docs.rayline.ai/arc/decisions), [bring your own prices](https://docs.rayline.ai/arc/decisions/prices), [applying effort](https://docs.rayline.ai/arc/decisions/applying-effort), [build an agent with Claude Code](https://docs.rayline.ai/arc/decisions/claude-code-agent).
+- [Decisions](https://docs.rayline.ai/arc/decisions), [bring your own prices](https://docs.rayline.ai/arc/decisions/prices), [applying effort](https://docs.rayline.ai/arc/decisions/applying-effort), [build an agent with Claude Code](https://docs.rayline.ai/arc/decisions/claude-code-agent), [hybrid local and cloud routing](https://docs.rayline.ai/arc/decisions/hybrid-local).
 - [ARC Dynamic](https://docs.rayline.ai/arc/dynamic): set routing value and temperature.
 - [Funding and billing](https://docs.rayline.ai/platform/billing), [API keys](https://docs.rayline.ai/platform/api-keys), [data and privacy](https://docs.rayline.ai/platform/data-privacy).
 

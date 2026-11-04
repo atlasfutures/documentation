@@ -136,6 +136,7 @@
               "arc/decisions/index",
               "arc/decisions/prices",
               "arc/decisions/applying-effort",
+              "arc/decisions/hybrid-local",
               "arc/decisions/claude-code-agent",
               "tools/custom-agents"
             ]
