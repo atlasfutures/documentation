@@ -696,23 +696,7 @@ components:
           title: Output
           type: number
         source:
-          additionalProperties: false
-          properties:
-            input:
-              $ref: '#/components/schemas/PriceSource'
-            cache_read:
-              $ref: '#/components/schemas/PriceSource'
-            cache_write:
-              $ref: '#/components/schemas/PriceSource'
-            output:
-              $ref: '#/components/schemas/PriceSource'
-          required:
-          - input
-          - cache_read
-          - cache_write
-          - output
-          title: Source
-          type: object
+          $ref: '#/components/schemas/PriceLegSources'
       required:
       - input
       - cache_read
@@ -720,6 +704,25 @@ components:
       - output
       - source
       title: ResolvedPrice
+      type: object
+    PriceLegSources:
+      additionalProperties: false
+      description: Where each leg of a resolved price came from.
+      properties:
+        input:
+          $ref: '#/components/schemas/PriceSource'
+        cache_read:
+          $ref: '#/components/schemas/PriceSource'
+        cache_write:
+          $ref: '#/components/schemas/PriceSource'
+        output:
+          $ref: '#/components/schemas/PriceSource'
+      required:
+      - input
+      - cache_read
+      - cache_write
+      - output
+      title: PriceLegSources
       type: object
     PriceSource:
       enum:
