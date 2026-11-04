@@ -22,13 +22,13 @@ Rayline Platform is where you inspect requests, selected models, and usage. Read
 | Actual inference cost | The charge recorded for executed hosted model requests |
 | Counterfactual cost | An estimate of what another model or route might have cost |
 | ARC Decisions | One entry per decision, under the Decisions interface, with the selected model, checkpoint, and metered input and cache-read tokens |
-| Local inference | Your hardware/compute usage, not a hosted token charge |
+| Local inference | Your own hardware's compute. In a Raydock hybrid session the local turn still carries its ARC decision charge; only the provider inference is absent |
 
 ## ARC token categories
 
 ARC Swift and Sage have effective input, cache-read, cache-write, and output rates. ARC Dynamic uses the served model's catalog inference price with no additional ARC fee. Decisions lists encoded input and cache-read rates, with no charge for cache writes or output; inference executed by your application is separate. Decisions does not yet reuse cached prefixes, so its cache-read count is 0 and every token it reads is billed as input. See [ARC pricing](/arc/pricing).
 
-Do not add a separate Decisions charge to an ARC generation request. Do not infer cache-read counts from repeated text when the API or platform has not reported those counters.
+Do not add a separate Decisions charge to an ARC generation request. A Raydock hybrid session is the other way round: each turn is a separate decision charge, plus the provider's pass-through price on turns that run in the cloud. Do not infer cache-read counts from repeated text when the API or platform has not reported those counters.
 
 <span id="agent-gateway" />
 

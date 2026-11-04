@@ -20,9 +20,14 @@ Authenticate with your Rayline key in `x-api-key` or `Authorization: Bearer`. Se
 | --- | --- | --- |
 | `arc-swift-1.0` | ARC Swift, fixed V 0.1 | Swift's fixed rate card |
 | `arc-sage-1.0` | ARC Sage, fixed V 4.5 | Sage's fixed rate card |
-| `arc-1.0` | ARC Dynamic | The served model's catalog price, no ARC fee |
+| `arc-1.0` | ARC Dynamic | The served model's catalog price, no ARC fee. `GET /v1/arc/prices` reports `gateway_pass_through_live` for the environment you call |
+| `rayline-router` | The account's default routing strategy | The served model's own catalog row |
 
-`arc-1` is also accepted for `arc-1.0`. Prefixed IDs such as `rayline/arc-swift`, and unknown `arc-*` IDs such as `arc-2.0`, return `404` (`not_found_error`, `Model not found`); a bare `arc` is not an ID.
+`arc-1` is also accepted for `arc-1.0`. Prefixed IDs such as `rayline/arc-swift`, and unknown `arc-*` IDs such as `arc-2.0`, return `404` (`not_found_error`, `Model not found`); a bare `arc` is not an ID. On Decisions the same inputs return `409` (`non_arc_lookup`).
+
+A Swift or Sage request decides and runs the turn in one call, and bills the tier's own card whichever model serves it; there is no separate decision charge. The model that served the turn is reported only in the `x-vsr-served-model` response header.
+
+A request that names a concrete catalog model instead of an ARC ID, for example `anthropic/claude-sonnet-5.5`, is a pin: it goes straight to that provider without a routing decision and bills that entry's own catalog row, with no platform fee and no decision charge.
 
 ## Routing extension
 
@@ -30,10 +35,10 @@ Add a `routing` object to the request body. Only `arc-1.0` takes your own value;
 
 | Member | Type | Meaning |
 | --- | --- | --- |
-| `value_usd` | number, 0.1 to 5 | Your V, the US-dollar value of one successful result. On `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's V, or the request is refused with `tier_value_immutable`. |
+| `value_usd` | number, 0.1 to 30 | Your V, the US-dollar value of one successful result. On `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's V, or the request is refused with `tier_value_immutable`. |
 | `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and your organization's data setting allows ARC to learn from the request. An `unsupported` status means the requested temperature was not applied. |
 
-`routing.prices` and `routing.exclusive` are accepted on [Decisions](/arc/reference/decisions#routing-controls) only; on generation they return `400` (`prices_not_supported`). The model's own `temperature` field is separate and passes to the provider as usual.
+`routing.prices`, `routing.exclusive`, `routing.policy` and `routing.execution` are accepted on [Decisions](/arc/reference/decisions#routing-controls) only; on generation they return `400` (`prices_not_supported`, `policy_not_supported`, `execution_not_supported`). The model's own `temperature` field is separate and passes to the provider as usual.
 
 ```bash
 curl https://api.rayline.ai/v1/messages \

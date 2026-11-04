@@ -4,7 +4,7 @@ description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
 
-Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
+Any Rayline API key can use ARC. Request ARC with an ARC model ID, `arc-swift-1.0`, `arc-sage-1.0` or `arc-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
 
 Do not assume support for streaming, tool calls, structured output, image or audio inputs, or provider SDK compatibility based on an endpoint's protocol name. Confirm these capabilities before building an integration.
 
@@ -14,7 +14,10 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | --- | --- |
 | Request format | Anthropic Messages, OpenAI Chat Completions, and OpenAI Responses bodies |
 | Format selection | Read from the body; see [request formats](/arc/reference/decisions#request) |
-| Multi-turn conversations | Yes, with `x-conversation-id` |
+| Multi-turn conversations | Not yet; every lookup is decided on its own and returns `episode_not_tracked`. Send `x-conversation-id` anyway |
+| Routing policy presets (`routing.policy`) | Accepted; production admits only `arc-policy.package-default.v1` until the hybrid launch |
+| Execution envelope (`routing.execution`) | Accepted; served on the development environment, production after the hybrid launch |
+| Per-candidate predictions (`routing.response_fields`) | Served where `GET /v1/arc/prices` reports `serving.decisions.predictions: true` |
 | Streaming | No; each decision is one JSON response |
 | Tools in the request | Accepted; check the response `warnings` for whether they influenced the decision |
 

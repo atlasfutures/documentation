@@ -5,9 +5,13 @@ description: "What you can use today, and what is still coming."
 
 | Surface | Status |
 | --- | --- |
-| ARC models (Anthropic Messages and OpenAI Chat Completions) and Decisions | Beta, open to any Rayline API key, with tier IDs `arc-swift-1.0` and `arc-sage-1.0` |
+| ARC models (Anthropic Messages and OpenAI Chat Completions) and Decisions | Beta, open to any Rayline API key with a balance, with `arc-swift-1.0`, `arc-sage-1.0` and `arc-1.0`, and their `-contributor` and `-zdr` variants |
 | ARC on the OpenAI Responses API (`/v1/responses`) | Environment-dependent; check the model's advertised protocols below |
-| Decisions request and response contract | [Documented](/arc/reference/decisions), including multi-turn conversations |
+| Decisions request and response contract | [Documented](/arc/reference/decisions); conversation tracking is not yet live, every lookup is decided on its own |
+| Decisions routing policy presets (`arc-policy.hybrid-default.v1`, `arc-policy.prefer-local.v1`) | Accepted by the API; production admits only the package default until the hybrid launch (`policy_preset_not_admitted`) |
+| Decisions execution envelope (`routing.execution`, `arc-execution-context.v2`) | Accepted by the API; served on the development environment, production after the hybrid launch |
+| Decisions per-candidate predictions (`routing.response_fields: ["predictions"]`) | Served where `GET /v1/arc/prices` reports `serving.decisions.predictions: true`; production after the hybrid launch |
+| Raydock hybrid local and cloud routing (`raydock hybrid start`) | Development environment only until the hybrid launch; see the [Raydock CLI](/raydock/cli#hosted-environment) |
 | Responses streaming, tool calls, images, structured output | Confirm availability with the Rayline team before integrating |
 | Semantic Router source | [Public fork available](https://github.com/atlasfutures/semantic-router) |
 | ARC weights and model-specific self-hosting instructions | Coming soon |

@@ -48,7 +48,7 @@ This body is in Anthropic Messages format, which requires `max_tokens`; ARC read
 
 Every decision includes `presets`: what ARC would choose at ARC Swift's value (V 0.1) and at ARC Sage's value (V 4.5), from one read of your request. Use the preset that matches the trade-off you want, or compare them.
 
-To decide at your own value, request `arc-1.0` with `routing.value_usd`, from 0.1 to 5 US dollars per successful result. The response adds a `custom` result at that value:
+To decide at your own value, request `arc-1.0` with `routing.value_usd`, from 0.1 to 30 US dollars per successful result. The response adds a `custom` result at that value:
 
 ```python
 json={
@@ -69,12 +69,7 @@ ARC selects at Rayline catalog prices unless you send yours. If your inference c
 
 ## Multi-turn conversations
 
-ARC decides each turn in the context of the conversation so far. Send a stable `x-conversation-id` on every turn and ARC:
-
-- Accounts for the models already used, including the cost of leaving a model whose prompt cache is warm. Often the right decision is to stay, and `episode.stayed` tells you when it did.
-- Re-uses the context it has already read, so later turns are mostly metered as cache reads.
-
-Use one ID per conversation and one per parallel subagent. A conversation's state expires once it goes idle. See [conversations](/arc/reference/decisions#conversations).
+Decisions does not yet keep conversations: each lookup is decided on its own, ARC reads the whole request every time, and every lookup returns the `episode_not_tracked` warning. Send a stable `x-conversation-id` on every turn anyway, one per conversation and one per parallel subagent; it is harmless today, and when conversation tracking ships it will let ARC decide each turn in light of the turns before it and meter the re-read prefix as cache reads. A lookup that carries an execution envelope (`routing.execution`) stays stateless regardless. See [conversations](/arc/reference/decisions#conversations).
 
 ## What you own
 
@@ -82,6 +77,12 @@ Your application owns provider credentials, execution, provider compatibility, r
 
 Apply `thinking` as returned. ARC scored the model under that reasoning configuration, and the same model with a different configuration is a different choice.
 
+A decision is advice. The response is plain JSON: `model` is a readable catalog ID, nothing is signed or hidden, and nothing enforces that you run it. ARC learns nothing about what you ran afterwards: there is no outcome or report endpoint, and a later lookup carries forward only what you send in it. Decisions requests are never used to train ARC.
+
+## Hybrid local and cloud execution
+
+Raydock's hybrid mode is a Decisions caller: on every turn it sends a lookup that offers your local model and its cloud models as targets, then runs the chosen one itself. A turn that runs on your machine still costs that lookup; a turn that runs in the cloud through Rayline additionally costs the provider's pass-through price. See the [hybrid setup guide](https://github.com/rayline-ai/raydock/blob/main/docs/hybrid-local-setup.md).
+
 ## How billing differs
 
-A decision is billed for the tokens ARC reads to make it, once per request, however many results it returns: the presets, any custom result, and alternatives come from the same read. Decisions has no output-token charge. Your prices change which model ARC selects; they never change what the decision costs. Provider inference is a separate cost, paid through your execution stack. See [ARC pricing](/arc/pricing) and [billing](/platform/billing).
+A decision is billed for the tokens ARC reads to make it, once per request, whether or not you then run the model it names, including when the turn runs on your own hardware. However many results it returns, the presets, any custom result, and alternatives come from the same read. Decisions has no output-token charge. Your prices change which model ARC selects; they never change what the decision costs. Provider inference is a separate cost, paid through your execution stack. See [ARC pricing](/arc/pricing) and [billing](/platform/billing).

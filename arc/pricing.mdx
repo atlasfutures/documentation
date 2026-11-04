@@ -11,12 +11,18 @@ import Rates from '/snippets/arc-rates.mdx';
 
 ## ARC Dynamic
 
-Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee.
+Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee. `GET /v1/arc/prices` reports `gateway_pass_through_live` for the environment you call; the charge follows the catalog's pass-through marking either way.
+
+A request that names a concrete catalog model instead of an ARC ID is a pin: it is dispatched straight to that provider and billed at that entry's own catalog row, with no platform fee and no decision charge.
+
+## Hybrid sessions
+
+Raydock's hybrid mode makes one Decisions call per turn and then runs the turn itself. You pay the Decisions rate on every turn, including the turns that run on your own machine, plus the served model's catalog price on turns that run in the cloud through Rayline. Nothing is charged for the inference your own hardware serves.
 
 ## How requests are billed
 
 - **ARC Swift and ARC Sage** bill every request at the tier's fixed card, whichever model serves it. See [Swift and Sage](/arc/models).
 - **ARC Dynamic (`arc-1.0`)** bills at the served model's Rayline catalog price, with no ARC fee. See [configure ARC routing](/arc/dynamic).
-- **Decisions** bills the tokens ARC reads to decide, once per request, however many results it returns. Decisions does not yet reuse a cached prefix between requests, so every token a decision reads is billed at the encoded-input rate and `usage.cache_read_tokens` is 0. The cache-read rate will apply once Decisions reuses a conversation's prefix, and `cache_read_tokens` will then report those tokens. Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Decisions](/arc/decisions).
+- **Decisions** bills the tokens ARC reads to decide, once per request, whether or not you run the model it names, however many results it returns. The `arc-decisions-contributor-1.0` and `arc-decisions-zdr-1.0` rows are priced identically to `arc-decisions-1.0`. Decisions does not yet reuse a cached prefix between requests, so every token a decision reads is billed at the encoded-input rate and `usage.cache_read_tokens` is 0. The cache-read rate will apply once Decisions reuses a conversation's prefix, and `cache_read_tokens` will then report those tokens. Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Decisions](/arc/decisions).
 
 The Swift, Sage, and Decisions rates come from Rayline's effective price card; the card version and date are shown with them. Each request records the rate it was billed at. See [funding and billing](/platform/billing). [Rules Router](/legacy/rules-router/pricing) has a 0% commission policy, and Workshop has its own [plans and credits](/workshop/pricing/plans).
