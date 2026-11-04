@@ -234,7 +234,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -267,7 +267,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -298,7 +298,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -1039,10 +1039,10 @@ components:
           description: Present when `prices` or `price_profile` was sent.
         price_profile:
           anyOf:
-          - type: object
+          - $ref: '#/components/schemas/PriceProfileEcho'
           - type: 'null'
           default: null
-          description: The profile and the prices it resolved to, including `not_offered`; see the price profiles guide.
+          description: Present when `price_profile` was sent.
         unapplied_keys:
           default: []
           items:
@@ -1052,6 +1052,68 @@ components:
       title: RoutingEcho
       type: object
       x-status: proposed
+    PriceProfileEcho:
+      additionalProperties: false
+      description: The profile and the prices it resolved to.
+      properties:
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+        id:
+          title: Id
+          type: string
+        version:
+          minimum: 1
+          title: Version
+          type: integer
+        content_hash:
+          description: '`sha256:` and 64 hexadecimal characters, identifying the version''s content.'
+          title: Content Hash
+          type: string
+        schema:
+          description: '`price-profile-rules.v1` for provider discounts and model overrides, or `legacy` for a flat price table.'
+          enum:
+          - price-profile-rules.v1
+          - legacy
+          title: Schema
+          type: string
+        prices:
+          additionalProperties:
+            $ref: '#/components/schemas/PriceLegs'
+          description: The table the profile resolved to, by model ID.
+          title: Prices
+          type: object
+        unpriced:
+          description: Covered models with no catalog rate for a leg the profile does not override; left out of `prices`.
+          items:
+            type: string
+          title: Unpriced
+          type: array
+        ineligible:
+          description: Overrides of models ARC no longer routes to; left out of `prices`.
+          items:
+            type: string
+          title: Ineligible
+          type: array
+        not_offered:
+          description: Models the profile prices that the answering ARC release does not offer; left out of `prices`.
+          items:
+            type: string
+          title: Not Offered
+          type: array
+        card_version:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: The pricing card version the catalog rates came from; `null` for a `legacy` profile.
+          title: Card Version
+      required:
+      - status
+      title: PriceProfileEcho
+      type: object
     ModelsEcho:
       additionalProperties: false
       properties:

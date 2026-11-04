@@ -26,7 +26,7 @@ Add `routing.prices` to the Routes API request: a map from model ID to your pric
 }
 ```
 
-- **Each leg is optional:** `input`, `cache_read`, `cache_write`, `output`. A leg you leave out keeps your [price profile's](#price-profiles) price, or the catalog price. 0 is a valid price, for example for a model on your own hardware; a negative or non-finite price is refused with `price_leg_invalid`.
+- **Each leg is optional:** `input`, `cache_read`, `cache_write`, `output`, but each model you price needs at least one; an empty entry is refused with `prices_invalid`. A leg you leave out keeps your [price profile's](#price-profiles) price, or the catalog price. 0 is a valid price, for example for a model on your own hardware; a negative or non-finite price is refused with `price_leg_invalid`.
 - **Up to 256 models, by exact ID.** Use the model IDs a route returns in `model` and `alternatives[].model`, such as `deepseek/deepseek-v4-pro-0813`. Wildcards are not accepted here; use a profile's provider discount to price every model from a provider. A model ID that ARC cannot select is refused with `unknown_price_model`.
 - **Prices do not choose the candidates.** Models you do not price keep their profile or catalog prices. To limit ARC to certain models, list them in `routing.models`, or remove some with `routing.excluded_models`; see [candidate models](/arc/reference/routes#candidate-models). A model you price that is not a candidate is allowed and reported as `unused`.
 

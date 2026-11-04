@@ -47,7 +47,7 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on the Routes API. Separate from the model's generation `temperature`. |
 | `models` | array of strings | The models ARC may choose from: up to 256 model IDs or `*` wildcards. Without it, ARC chooses from every model it can select. See [candidate models](#candidate-models). |
 | `excluded_models` | array of strings | Models ARC must not choose: up to 256 model IDs or `*` wildcards. Wins over `models`. |
-| `prices` | object | Your inference prices: up to 256 exact model IDs, each with any of `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. A leg you leave out is priced by your profile or the catalog. They change which model ARC selects, never what the route costs. See [bring your own prices](/arc/routes/prices). |
+| `prices` | object | Your inference prices: up to 256 exact model IDs, each with at least one of `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. A leg you leave out is priced by your profile or the catalog. They change which model ARC selects, never what the route costs. See [bring your own prices](/arc/routes/prices). |
 | `price_profile` | object | A saved [price profile](/arc/routes/prices#price-profiles): `{"id": "...", "version": 3}`. `version` is optional and defaults to the profile's current version. Can be combined with `prices`. |
 
 ```json
