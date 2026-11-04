@@ -436,7 +436,6 @@ components:
               minLength: 1
               type: string
             maxItems: 256
-            minItems: 1
             type: array
           - type: 'null'
           default: null
@@ -451,7 +450,6 @@ components:
               minLength: 1
               type: string
             maxItems: 256
-            minItems: 1
             type: array
           - type: 'null'
           default: null
@@ -1189,11 +1187,20 @@ components:
           minimum: 0
           title: Output
           type: number
+        pricing_source:
+          enum:
+          - catalog
+          - caller
+          - profile
+          - mixed
+          title: Pricing Source
+          type: string
       required:
       - input
       - cache_read
       - cache_write
       - output
+      - pricing_source
       title: SelectedPricing
       type: object
     Thinking:
