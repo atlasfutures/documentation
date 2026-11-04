@@ -1,6 +1,6 @@
 ---
 title: "Your first ARC request"
-description: "Send your first ARC request and your first decision."
+description: "Send your first ARC request and your first Routes API request."
 icon: "bolt"
 ---
 
@@ -24,7 +24,7 @@ export RAYLINE_API_KEY="<your Rayline API key>"
 ```
 </Step>
 <Step title="Add funds">
-Add funds to the workspace on the [Rayline Platform](https://platform.rayline.ai) before your first request. Requests and decisions are paid from the workspace's prepaid balance; without one, they return `402` (`billing_error`). See [funding and billing](/platform/billing).
+Add funds to the workspace on the [Rayline Platform](https://platform.rayline.ai) before your first request. Generation and Routes API requests are paid from the workspace's prepaid balance; without one, they return `402` (`billing_error`). See [funding and billing](/platform/billing).
 </Step>
 <Step title="Send a request">
 
@@ -39,7 +39,7 @@ curl --fail-with-body https://api.rayline.ai/v1/messages \
 
 This is the [Anthropic Messages](https://docs.anthropic.com/en/api/messages) API: ARC chooses the model, runs the turn, and returns the answer. Send the same `x-conversation-id` on later turns so ARC decides them in context. ARC also answers on OpenAI Chat Completions (`/v1/chat/completions`). Direct OpenAI Responses (`/v1/responses`) requires an environment that [advertises Responses support](/arc/availability#check-protocol-support).
 </Step>
-<Step title="Try a decision">
+<Step title="Try the Routes API">
 
 ```bash
 curl --fail-with-body https://api.rayline.ai/v1/routes \
@@ -49,7 +49,7 @@ curl --fail-with-body https://api.rayline.ai/v1/routes \
   -d '{"model":"arc-swift-1.0","messages":[{"role":"user","content":"Review a database migration for data-loss risks."}]}'
 ```
 
-The response names the `model` and `thinking` configuration to run in your own stack. See [Decisions](/arc/decisions) and the [Decisions reference](/arc/reference/decisions).
+The response names the `model` and `thinking` configuration to run in your own stack. See [Routes API](/arc/routes) and the [Routes API reference](/arc/reference/routes).
 </Step>
 <Step title="Inspect the request">
 Find the request in [usage](/platform/usage), with the model ARC chose and the tokens it used.

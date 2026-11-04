@@ -1017,7 +1017,8 @@
     "source": "/arc/pricing",
     "destination": "/arc/pricing",
     "fragments": [
-      "agent-gateway"
+      "agent-gateway",
+      "arc-decisions"
     ]
   },
   {
@@ -1054,6 +1055,85 @@
       "routing-controls",
       "starting-and-stopping",
       "what-it-shows"
+    ]
+  },
+  {
+    "source": "/arc/decisions",
+    "destination": "/arc/routes",
+    "fragments": [
+      "the-loop",
+      "swift-sage-or-your-own-value",
+      "your-own-prices",
+      "multi-turn-conversations",
+      "what-you-own",
+      "how-billing-differs"
+    ]
+  },
+  {
+    "source": "/arc/decisions/prices",
+    "destination": "/arc/routes/prices",
+    "fragments": [
+      "send-prices",
+      "check-what-was-applied",
+      "price-profiles",
+      "use-a-profile",
+      "check-the-profile-that-was-applied",
+      "decisions-only"
+    ]
+  },
+  {
+    "source": "/arc/decisions/applying-effort",
+    "destination": "/arc/routes/applying-effort",
+    "fragments": [
+      "what-the-decision-tells-you",
+      "run-the-turn-through-the-rayline-gateway",
+      "the-private-append-pattern",
+      "code-sketch",
+      "reference-implementation",
+      "cache-and-privacy-caveats",
+      "or-let-our-router-apply-it"
+    ]
+  },
+  {
+    "source": "/arc/decisions/claude-code-agent",
+    "destination": "/arc/routes/claude-code-agent",
+    "fragments": [
+      "before-you-start",
+      "the-prompt",
+      "what-to-expect",
+      "where-to-go-next"
+    ]
+  },
+  {
+    "source": "/arc/reference/decisions",
+    "destination": "/arc/reference/routes",
+    "fragments": [
+      "authentication",
+      "request",
+      "routing-controls",
+      "conversation-headers",
+      "response",
+      "presets",
+      "custom-and-routing-echo",
+      "usage",
+      "conversations",
+      "conversation-identity",
+      "warnings",
+      "errors-and-limits"
+    ]
+  },
+  {
+    "source": "/arc/concepts/caching",
+    "destination": "/arc/concepts/caching",
+    "fragments": [
+      "decisions"
+    ]
+  },
+  {
+    "source": "/arc/reference/compatibility",
+    "destination": "/arc/reference/compatibility",
+    "fragments": [
+      "decisions"
     ]
   }
 ]

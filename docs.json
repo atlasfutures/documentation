@@ -130,13 +130,13 @@
             ]
           },
           {
-            "group": "Routing and decisions",
+            "group": "Model Routing",
             "pages": [
               "arc/dynamic",
-              "arc/decisions/index",
-              "arc/decisions/prices",
-              "arc/decisions/applying-effort",
-              "arc/decisions/claude-code-agent",
+              "arc/routes/index",
+              "arc/routes/prices",
+              "arc/routes/applying-effort",
+              "arc/routes/claude-code-agent",
               "tools/custom-agents"
             ]
           },
@@ -174,7 +174,7 @@
             "pages": [
               "arc/reference/compatibility",
               "arc/reference/generation",
-              "arc/reference/decisions",
+              "arc/reference/routes",
               "arc/reference/errors"
             ]
           },
@@ -603,7 +603,37 @@
     },
     {
       "source": "/api-reference/decisions:-where-would-arc-send-this-request",
-      "destination": "/api-reference/create-a-routing-decision",
+      "destination": "/api-reference/route-a-request",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/create-a-routing-decision",
+      "destination": "/api-reference/route-a-request",
+      "permanent": true
+    },
+    {
+      "source": "/arc/decisions",
+      "destination": "/arc/routes",
+      "permanent": true
+    },
+    {
+      "source": "/arc/decisions/prices",
+      "destination": "/arc/routes/prices",
+      "permanent": true
+    },
+    {
+      "source": "/arc/decisions/applying-effort",
+      "destination": "/arc/routes/applying-effort",
+      "permanent": true
+    },
+    {
+      "source": "/arc/decisions/claude-code-agent",
+      "destination": "/arc/routes/claude-code-agent",
+      "permanent": true
+    },
+    {
+      "source": "/arc/reference/decisions",
+      "destination": "/arc/reference/routes",
       "permanent": true
     },
     {

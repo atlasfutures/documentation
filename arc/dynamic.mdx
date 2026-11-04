@@ -19,10 +19,10 @@ Requests to `arc-1.0` are billed at the **served model's catalog price**, with n
 | --- | --- |
 | A fixed price per token and no tuning | [`arc-swift-1.0` or `arc-sage-1.0`](/arc/models) |
 | Your own cost/quality trade-off, billed at what the chosen model costs | `arc-1.0` |
-| A model choice to run in your own stack, with your own prices | [Decisions](/arc/decisions) |
+| A model choice to run in your own stack, with your own prices | [Routes API](/arc/routes) |
 
 ## Data and exploration
 
-On hosted inference, ARC explores a small share of requests (about 5%) so it keeps learning which models work, and may use eligible requests to improve ARC. Exploration happens, and requests are used for training, only when your organization has chosen the Contributor data setting; with Standard, the default, or zero data retention, exploration is 0 and no request is used for training. A hosted routing temperature you set is capped. Decisions requests are never used for training. See [data and privacy](/platform/data-privacy).
+On hosted inference, ARC explores a small share of requests (about 5%) so it keeps learning which models work, and may use eligible requests to improve ARC. Exploration happens, and requests are used for training, only when your organization has chosen the Contributor data setting; with Standard, the default, or zero data retention, exploration is 0 and no request is used for training. A hosted routing temperature you set is capped. Routes API requests are never used for training. See [data and privacy](/platform/data-privacy).
 
-Send these as `routing.value_usd` and `routing.temperature` on a [generation request](/arc/reference/generation#routing-extension) to `arc-1.0`, or on a [decision](/arc/reference/decisions#routing-controls).
+Send these as `routing.value_usd` and `routing.temperature` on a [generation request](/arc/reference/generation#routing-extension) to `arc-1.0`, or on a [Routes API request](/arc/reference/routes#routing-controls).
