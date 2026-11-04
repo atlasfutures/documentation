@@ -626,6 +626,33 @@ components:
           type: number
       title: PriceLegs
       type: object
+    ProfilePrice:
+      additionalProperties: false
+      description: One model's price as the profile resolved it, USD per million tokens. A model the profile cannot price on every leg is listed in `unpriced` instead.
+      properties:
+        input:
+          minimum: 0
+          title: Input
+          type: number
+        cache_read:
+          minimum: 0
+          title: Cache Read
+          type: number
+        cache_write:
+          minimum: 0
+          title: Cache Write
+          type: number
+        output:
+          minimum: 0
+          title: Output
+          type: number
+      required:
+      - input
+      - cache_read
+      - cache_write
+      - output
+      title: ProfilePrice
+      type: object
     PriceProfileRef:
       additionalProperties: false
       properties:
@@ -1083,7 +1110,7 @@ components:
           type: string
         prices:
           additionalProperties:
-            $ref: '#/components/schemas/PriceLegs'
+            $ref: '#/components/schemas/ProfilePrice'
           description: The table the profile resolved to, by model ID.
           title: Prices
           type: object
