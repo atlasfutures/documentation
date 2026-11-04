@@ -1112,6 +1112,15 @@ components:
           title: Card Version
       required:
       - status
+      - id
+      - version
+      - content_hash
+      - schema
+      - prices
+      - unpriced
+      - ineligible
+      - not_offered
+      - card_version
       title: PriceProfileEcho
       type: object
     ModelsEcho:

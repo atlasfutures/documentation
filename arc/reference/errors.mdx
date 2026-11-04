@@ -24,7 +24,7 @@ Error bodies on the Messages and Routes API endpoints use the Anthropic format, 
 ```
  See the [Routes API reference](/arc/reference/routes#errors-and-limits) for causes and limits specific to the Routes API.
 
-A `404` with `model_not_found` means the model ID is not an ARC model; check the [tier IDs](/arc/quickstart#choose-a-tier).
+A `404` with `model_not_found` means the endpoint does not accept that model ID. The Routes API accepts only ARC IDs; generation returns it for prefixed IDs such as `rayline/arc-swift` and unknown `arc-*` IDs. Check the [tier IDs](/arc/quickstart#choose-a-tier).
 
 ## Troubleshooting
 
