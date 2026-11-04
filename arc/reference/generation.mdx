@@ -31,7 +31,7 @@ Add a `routing` object to the request body. Only `arc-1.0` takes your own value;
 | Member | Type | Meaning |
 | --- | --- | --- |
 | `value_usd` | number, 0.1 to 30 | Your value (V), the US-dollar value of one successful result. On `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's V, or the request is refused with `tier_value_immutable`. |
-| `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and your organization's data setting allows ARC to learn from the request. An `unsupported` status means the requested temperature was not applied. |
+| `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and the request runs in Contributor ([data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)). An `unsupported` status means the requested temperature was not applied. |
 
 `routing.models`, `routing.excluded_models`, `routing.prices`, and `routing.price_profile` are accepted on the [Routes API](/arc/reference/routes#routing-controls) only; on generation they return `400` (`routes_only_member`). The model's own `temperature` field is separate and passes to the provider as usual.
 
