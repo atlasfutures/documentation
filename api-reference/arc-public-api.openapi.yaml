@@ -21,6 +21,30 @@ x-arc-model-ids:
       mode: configurable
       tier: null
       value_usd: null
+  description: 'A mode entry is its product run in a data mode of its own, whatever the organization''s setting: it decides
+    exactly as its product does. A Contributor entry is refused with 403 contributor_models_off in an organization with Contributor
+    models off. On Rayline API traffic (an rlk- key, or a Platform token naming X-Rayline-Org) the ARC id decides the mode:
+    a product id runs in standard, and an organization in Zero data retention may name only the product''s ZDR entry; any
+    other ARC id is refused with 403 zdr_model_required.'
+  mode_entries:
+    arc-swift-contributor-1.0:
+      product: arc-swift-1.0
+      data_mode: contributor
+    arc-swift-zdr-1.0:
+      product: arc-swift-1.0
+      data_mode: zdr
+    arc-sage-contributor-1.0:
+      product: arc-sage-1.0
+      data_mode: contributor
+    arc-sage-zdr-1.0:
+      product: arc-sage-1.0
+      data_mode: zdr
+    arc-contributor-1.0:
+      product: arc-1.0
+      data_mode: contributor
+    arc-zdr-1.0:
+      product: arc-1.0
+      data_mode: zdr
   aliases:
     arc-1: arc-1.0
   x-status: proposed
@@ -81,6 +105,12 @@ x-arc-error-codes:
     status: 402
     type: billing_error
   price_profile_forbidden:
+    status: 403
+    type: permission_error
+  contributor_models_off:
+    status: 403
+    type: permission_error
+  zdr_model_required:
     status: 403
     type: permission_error
   model_not_found:
@@ -156,7 +186,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '403':
-          description: 'Error; `error.code` is one of: price_profile_forbidden.'
+          description: 'Error; `error.code` is one of: contributor_models_off, price_profile_forbidden, zdr_model_required.'
           content:
             application/json:
               schema:
@@ -239,6 +269,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'Error; `error.code` is one of: contributor_models_off, zdr_model_required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         '404':
           description: 'Error; `error.code` is one of: model_not_found, model_not_served.'
           content:
@@ -272,6 +308,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'Error; `error.code` is one of: contributor_models_off, zdr_model_required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         '404':
           description: 'Error; `error.code` is one of: model_not_found, model_not_served.'
           content:
@@ -299,6 +341,12 @@ paths:
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
             temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'Error; `error.code` is one of: contributor_models_off, zdr_model_required.'
           content:
             application/json:
               schema:
