@@ -1099,6 +1099,7 @@ components:
           type: integer
         content_hash:
           description: '`sha256:` and 64 hexadecimal characters, identifying the version''s content.'
+          pattern: ^sha256:[a-f0-9]{64}$
           title: Content Hash
           type: string
         schema:
