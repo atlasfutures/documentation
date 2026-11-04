@@ -148,7 +148,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `thinking` | object | The reasoning configuration the choice was scored under. `mode` is `on` or `off`. `budget_tokens` is the reasoning budget, or `null` when thinking is off. Apply it as given: the choice was scored for this configuration, not for the model alone. |
 | `thinking_level` | string | Present when the route includes a per-turn steering level, for example `up`, `down`, or `none`. Apply it as a private steering instruction; see [Applying effort](/arc/routes/applying-effort). |
 | `checkpoint` | string | The ARC checkpoint that chose the route. |
-| `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
+| `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. `score` is the number ARC ranked the worker by for this route: higher is better. It has no fixed range. Compare scores only within one response: each checkpoint scores on its own scale. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
 | `baseline` | object | A reference `model` and its rate card (`input`, `cache_read`, `cache_write`, `output`), for comparing cost. Omitted when the checkpoint declares no reference. |
 | `selected_pricing` | object | The chosen worker's rate card: `input`, `cache_read`, `cache_write`, and `output`, in USD per million tokens, the same legs as [`routing.prices`](#routing-controls). |
 | `warnings` | array of strings | Always present. Until the Routes API keeps conversations, every lookup carries `episode_not_tracked`. See [Warnings](#warnings). |
@@ -159,7 +159,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
 | `routing` | object | Present when you sent `routing`. |
 
-ARC does not return a confidence score or an explanation.
+ARC does not explain its choice, and `alternatives[].score` is a ranking, not a confidence measure.
 
 ### Presets
 

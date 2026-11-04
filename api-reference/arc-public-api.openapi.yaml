@@ -335,6 +335,7 @@ components:
           default: null
           title: Provider
         score:
+          description: 'The number ARC ranked this worker by for the route: higher is better. No fixed range; compare only within one response, since each checkpoint scores on its own scale.'
           title: Score
           type: number
       required:
