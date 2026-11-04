@@ -1,6 +1,6 @@
 ---
-title: "Decisions reference"
-description: "Request, response, and conversation fields for ARC Decisions."
+title: "Routes API reference"
+description: "Request, response, and conversation fields for the Routes API."
 icon: "brackets-curly"
 ---
 
@@ -8,7 +8,7 @@ icon: "brackets-curly"
 POST https://api.rayline.ai/v1/routes
 ```
 
-Returns ARC's choice of model and reasoning configuration for a request, without running it. Execute the choice in your own stack.
+Model Routing picks the model and reasoning configuration for a request without running it. Execute the choice in your own stack.
 
 ## Authentication
 
@@ -31,9 +31,9 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
 | `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted). Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `409` (`non_arc_lookup`). |
-| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, and prices. |
-| `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the decision. Chat Completions and Responses bodies do not need it. |
-| `temperature`, `stream` | No | Ignored. A decision is always returned as a single JSON response. |
+| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, candidate models, and prices. |
+| `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the route. Chat Completions and Responses bodies do not need it. |
+| `temperature`, `stream` | No | Ignored. A route is always returned as a single JSON response. |
 
 ARC reads the format from the body. A body with `input` is read as OpenAI Responses. A `messages` body is read as Anthropic Messages when it carries an Anthropic-only field, such as a top-level `system`, a `tool_use` or `tool_result` block, or a tool with `input_schema`; it is read as OpenAI Chat Completions when it carries a Chat-only marker, such as a `system` or `tool` role in `messages` or a tool with `function`. A `messages` body with neither, for example a single user message with string content, is read as OpenAI Chat Completions (`openai.chat.v1`). ARC reads the format from the body only; to make it unambiguous, include one of these markers, for example a `system` role message for Chat Completions or a top-level `system` for Anthropic Messages.
 
@@ -44,11 +44,11 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 | Member | Type | Meaning |
 | --- | --- | --- |
 | `value_usd` | number, 0.1 to 5 | Your V: what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
-| `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on Decisions. Separate from the model's generation `temperature`. |
-| `prices` | object | Your inference prices: up to 256 model IDs, each with `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. All four are required; 0 is a price, a missing leg is an error. They change which model ARC selects, never what the decision costs. See [bring your own prices](/arc/decisions/prices). |
-| `price_profile_id` | string | A saved [price profile](/arc/decisions/prices#price-profiles) to use instead of `prices`. Sending both is refused with `price_profile_conflict`. |
-| `price_profile_version` | integer | The profile version to use. Requires `price_profile_id`; defaults to the current version. |
-| `exclusive` | boolean | `true` limits the candidates to the models in `prices` or the profile. Requires `prices` or `price_profile_id`. |
+| `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on the Routes API. Separate from the model's generation `temperature`. |
+| `models` | array of strings | The models ARC may choose from: up to 256 model IDs or `*` wildcards. Without it, ARC chooses from every model it can select. See [candidate models](#candidate-models). |
+| `excluded_models` | array of strings | Models ARC must not choose: up to 256 model IDs or `*` wildcards. Wins over `models`. |
+| `prices` | object | Your inference prices: up to 256 exact model IDs, each with any of `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. A leg you leave out is priced by your profile or the catalog. They change which model ARC selects, never what the route costs. See [bring your own prices](/arc/routes/prices). |
+| `price_profile` | object | A saved [price profile](/arc/routes/prices#price-profiles): `{"id": "...", "version": 3}`. `version` is optional and defaults to the profile's current version. Can be combined with `prices`. |
 
 ```json
 {
@@ -57,22 +57,33 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
   "routing": {
     "value_usd": 2,
     "temperature": 0.5,
+    "models": ["anthropic/*", "deepseek/deepseek-v4-pro-0813"],
+    "excluded_models": ["anthropic/claude-opus*"],
     "prices": {
-      "deepseek/deepseek-v4-pro-0813": {"input": 0.4, "cache_read": 0.04, "cache_write": 0.4, "output": 0.9},
-      "anthropic/claude-sonnet-5.5": {"input": 3, "cache_read": 0.3, "cache_write": 3.75, "output": 15}
-    },
-    "exclusive": true
+      "deepseek/deepseek-v4-pro-0813": {"input": 0.4, "output": 0.9}
+    }
   }
 }
 ```
 
-Decisions requests are never used to train ARC.
+Routes API requests are never used to train ARC.
+
+### Candidate models
+
+`models` and `excluded_models` decide which models ARC chooses from. Each entry is an exact model ID, such as `deepseek/deepseek-v4-pro-0813`, or a pattern where `*` matches any run of characters, such as `anthropic/*`. Matching is case-sensitive; `*` is the only wildcard. Entries are matched against the models the answering ARC release can select.
+
+- Without `models`, every model ARC can select is a candidate. With it, only the matched models are: ARC never falls back to the full set.
+- `excluded_models` removes models from the candidates, and wins over `models`.
+- An entry that matches no model is refused with `unknown_model`, so a typo fails instead of being ignored. If no model is left after exclusions, the request is refused with `no_candidate_models`.
+- A wildcard also matches models added to ARC later. The [`routing.models` echo](#custom-and-routing-echo) lists the models a route actually chose from.
+
+Prices never change the candidates: a model you price but leave out of `models` is not a candidate, and a candidate you do not price keeps its profile or catalog price. For each model and price leg, ARC uses the first source that sets it: your inline `prices`, then the profile's model override, then the profile's provider discount applied to the catalog price, then the catalog price. See [bring your own prices](/arc/routes/prices).
 
 ### Conversation headers
 
 | Header | Purpose |
 | --- | --- |
-| `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each decision accounts for the conversation so far. See [Conversations](#conversations). |
+| `x-conversation-id` | A stable ID for the conversation. Send the same value on every turn so each route accounts for the conversation so far. See [Conversations](#conversations). |
 
 See [Conversation identity](#conversation-identity) for how the conversation ID is resolved.
 
@@ -129,22 +140,22 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `route_id` | string | Identifies this decision. Include it when you contact support. |
+| `route_id` | string | Identifies this route. Include it when you contact support. |
 | `object` | string | Always `route`. |
 | `model` | string | The model to run. |
 | `worker` | string | The model and configuration ARC scored, for example `xiaomi/mimo-v2.5-pro@thinking-on`. Two workers can share one model with different reasoning settings. |
 | `provider` | string | The provider the worker is configured for. Omitted when the worker names none. |
 | `thinking` | object | The reasoning configuration the choice was scored under. `mode` is `on` or `off`. `budget_tokens` is the reasoning budget, or `null` when thinking is off. Apply it as given: the choice was scored for this configuration, not for the model alone. |
-| `thinking_level` | string | Present when the decision includes a per-turn steering level, for example `up`, `down`, or `none`. Apply it as a private steering instruction; see [Applying effort](/arc/decisions/applying-effort). |
-| `checkpoint` | string | The ARC checkpoint that made the decision. |
+| `thinking_level` | string | Present when the route includes a per-turn steering level, for example `up`, `down`, or `none`. Apply it as a private steering instruction; see [Applying effort](/arc/routes/applying-effort). |
+| `checkpoint` | string | The ARC checkpoint that chose the route. |
 | `alternatives` | array | Other workers ARC scored and did not choose, highest score first, each with `model`, `worker`, `provider`, and `score`. Workers excluded by a hard constraint are not listed. This is not a fallback order. |
 | `baseline` | object | A reference `model` and its rate card (`input_per_mtok`, `output_per_mtok`, `cache_read_per_mtok`, `cache_write_per_mtok`), for comparing cost. Omitted when the checkpoint declares no reference. |
 | `selected_pricing` | object | The chosen worker's rate card, in USD per million tokens. |
-| `warnings` | array of strings | Always present. Until Decisions keeps conversations, every lookup carries `episode_not_tracked`. See [Warnings](#warnings). |
-| `episode` | object | Reserved for conversation tracking, which Decisions does not yet do; absent today (see [conversations](#conversations)). When present, `turn_index` counts the conversation's turns and `stayed` is `true` when ARC kept the previous turn's worker. |
-| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to make this decision, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until Decisions reuses cached prefixes. |
-| `latency_ms` | integer | Time ARC spent deciding. |
-| `presets` | object | The decisions at ARC Swift and ARC Sage. See [Presets](#presets). |
+| `warnings` | array of strings | Always present. Until the Routes API keeps conversations, every lookup carries `episode_not_tracked`. See [Warnings](#warnings). |
+| `episode` | object | Reserved for conversation tracking, which the Routes API does not yet do; absent today (see [conversations](#conversations)). When present, `turn_index` counts the conversation's turns and `stayed` is `true` when ARC kept the previous turn's worker. |
+| `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to choose this route, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until the Routes API reuses cached prefixes. |
+| `latency_ms` | integer | Time ARC spent choosing the route. |
+| `presets` | object | The routes at ARC Swift and ARC Sage. See [Presets](#presets). |
 | `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
 | `routing` | object | Present when you sent `routing`. |
 
@@ -152,38 +163,47 @@ ARC does not return a confidence score or an explanation.
 
 ### Presets
 
-Every response carries `presets`, with the decision at both fixed tiers, from the same single read of your request:
+Every response carries `presets`, with the route at both fixed tiers, from the same single read of your request:
 
 | Field | Meaning |
 | --- | --- |
-| `presets.swift` | The decision at ARC Swift's value (V 0.1). |
-| `presets.sage` | The decision at ARC Sage's value (V 4.5). |
+| `presets.swift` | The route at ARC Swift's value (V 0.1). |
+| `presets.sage` | The route at ARC Sage's value (V 4.5). |
 
 Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `value_usd`, `cost_weight` (1 / `value_usd`), `prices`, and, when you sent `routing.temperature`, `temperature`.
 
-- `prices.basis` is `catalog` (Rayline catalog prices) or `caller` (your `routing.prices`, identified by `prices.price_sha256`).
+- `prices.basis` is where the result's model prices came from: `catalog` (Rayline catalog prices only), `caller` (your `routing.prices` set at least one leg), `profile` (your `routing.price_profile` set at least one leg), or `mixed` (both did). `prices.price_sha256` identifies the resolved prices of every candidate; it is `null` when you sent none of `models`, `excluded_models`, `prices`, or `price_profile`. See [check what was applied](/arc/routes/prices#check-what-was-applied).
 - `temperature` reports `requested`, `applied`, and `status`: `greedy` (you asked for 0), `applied` (ARC drew the model at the `applied` temperature; `propensity` is the probability of the chosen model, and `pi` lists each candidate's probability), `not_applied` (with a `reason`), or `unsupported` (the serving path did not confirm it, so the result is the top choice).
 
-The top-level `model`, `worker`, and `thinking` are the decision for the `model` you requested. Presets are alternatives: running one does not change the conversation's state.
+The top-level `model`, `worker`, and `thinking` are the route for the `model` you requested. Presets are alternatives: running one does not change the conversation's state.
 
 ### Custom and routing echo
 
 | Field | Present when | Meaning |
 | --- | --- | --- |
-| `custom` | You sent `routing.value_usd` | The decision at your value, with the same fields as a preset. |
-| `routing` | You sent `routing` | Each member you sent, with `status` `applied` or `unsupported`. `routing.prices` also reports `price_sha256`, `exclusive`, and the priced `models`. `unapplied_keys` lists every member that was not applied. |
+| `custom` | You sent `routing.value_usd` | The route at your value, with the same fields as a preset. |
+| `routing` | You sent `routing` | Each member you sent, with `status` `applied` or `unsupported`. `unapplied_keys` lists every member that was not applied. |
 
-Treat `unsupported` as not applied: ARC decided without that control, and the result says so rather than showing your value as used.
+Some members report more than their status:
+
+| Echo | Fields |
+| --- | --- |
+| `routing.models` | `models`, the entries you sent, and `resolved`, the final list of candidate models after `excluded_models`. |
+| `routing.excluded_models` | `excluded_models`, the entries you sent. |
+| `routing.prices` | `models`, the resolved price of every candidate, with a `source` for each leg (`caller`, `profile`, or `catalog`); `unused`, the models you priced that are not candidates; and `price_sha256`, a hash of the resolved prices. Reported when you sent `prices` or `price_profile`. |
+| `routing.price_profile` | The profile and the prices it resolved to; see [check the profile that was applied](/arc/routes/prices#check-the-profile-that-was-applied). |
+
+Treat `unsupported` as not applied: ARC chose the route without that control, and the result says so rather than showing your value as used.
 
 ### Usage
 
-`usage.encoded_input_tokens` and `usage.cache_read_tokens` count one read of your request, however many results the response carries. That read is what a decision is billed for; see [ARC pricing](/arc/pricing).
+`usage.encoded_input_tokens` and `usage.cache_read_tokens` count one read of your request, however many results the response carries. That read is what a route is billed for; see [ARC pricing](/arc/pricing).
 
 ## Conversations
 
-Decisions does not yet keep conversations: each lookup is decided on its own, as if it were the conversation's first turn, and ARC reads the whole request every time. Every lookup returns the `episode_not_tracked` warning, whether or not it sends a conversation ID; the response has no `episode`, and `usage.cache_read_tokens` is 0.
+The Routes API does not yet keep conversations: each lookup is routed on its own, as if it were the conversation's first turn, and ARC reads the whole request every time. Every lookup returns the `episode_not_tracked` warning, whether or not it sends a conversation ID; the response has no `episode`, and `usage.cache_read_tokens` is 0.
 
-When conversation tracking ships, sending the same `x-conversation-id` on every turn will let ARC decide each turn in light of the turns before it, including whether to stay on the current model, and re-use the context it already encoded, reported as `cache_read_tokens`. Sending the header today is harmless.
+When conversation tracking ships, sending the same `x-conversation-id` on every turn will let ARC route each turn in light of the turns before it, including whether to stay on the current model, and re-use the context it already encoded, reported as `cache_read_tokens`. Sending the header today is harmless.
 
 Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
 
@@ -198,9 +218,9 @@ ARC takes the conversation ID from the first of these that is present:
 
 With neither, the request is stateless.
 
-The body field `metadata.user_id` is not read. Anthropic defines it as a per-user identifier, and one ID for every conversation of a user would decide those conversations in each other's context. Send `x-conversation-id` to identify the conversation.
+The body field `metadata.user_id` is not read. Anthropic defines it as a per-user identifier, and one ID for every conversation of a user would route those conversations in each other's context. Send `x-conversation-id` to identify the conversation.
 
-The same order applies to a routed turn. Once Decisions keeps conversations, a lookup and the turn it precedes will land on the same episode.
+The same order applies to a routed turn. Once the Routes API keeps conversations, a lookup and the turn it precedes will land on the same episode.
 
 ## Warnings
 
@@ -209,10 +229,10 @@ Each warning is a string of the form `code: explanation`. Treat the code as stab
 | Code | Meaning |
 | --- | --- |
 | `format_inferred` | The body had no field unique to one format, so ARC read it as Chat Completions. Add a format marker to the body (see [Request](#request)) to make it explicit. |
-| `tools_not_encoded` | The request's tools did not influence this decision. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
-| `tool_schemas_not_encoded` | Tool names influenced this decision; their descriptions and schemas did not. |
-| `episode_not_tracked` | Decisions does not yet keep conversations, so this lookup was decided on its own. Returned on every lookup today, with or without a conversation ID. |
-| `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint made the decision. |
+| `tools_not_encoded` | The request's tools did not influence this route. Current cells can return this warning even though the tools were encoded and billed; a fix is in progress. |
+| `tool_schemas_not_encoded` | Tool names influenced this route; their descriptions and schemas did not. |
+| `episode_not_tracked` | The Routes API does not yet keep conversations, so this lookup was routed on its own. Returned on every lookup today, with or without a conversation ID. |
+| `checkpoint_not_pinned` | A requested checkpoint was ignored; the served checkpoint chose the route. |
 
 ## Errors and limits
 
@@ -226,19 +246,22 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `400` | `routing_invalid`, `routing_unknown_member` | `routing` is not an object, or has a member Rayline does not support | No |
 | `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–5, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
-| `400` | `prices_invalid`, `price_leg_missing`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, misses a leg, has a negative or non-finite price, or names a model ARC cannot select | No |
-| `400` | `exclusive_invalid`, `exclusive_without_prices` | `routing.exclusive` is not a boolean, or has neither `prices` nor `price_profile_id` | No |
+| `400` | `models_invalid` | `routing.models` or `routing.excluded_models` is not an array of strings, or has more than 256 entries | No |
+| `400` | `unknown_model` | An entry in `routing.models` or `routing.excluded_models` matches no model ARC can select | No; fix the entry |
+| `400` | `no_candidate_models` | No model is left after `routing.models` and `routing.excluded_models` | No |
+| `400` | `prices_invalid`, `price_leg_invalid`, `unknown_price_model` | `routing.prices` is malformed, has a negative or non-finite price, or names a model ARC cannot select | No |
+| `400` | `price_profile_invalid` | `routing.price_profile` is not `{id, version?}` with a valid ID and a positive integer version. Other profile errors are listed under [price profiles](/arc/routes/prices#price-profiles) | No |
 | `401` | | Missing or invalid API key | No |
-| `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the decision. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
+| `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the route. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `404` | `model_not_served` | The ARC model is not serving in this environment | No |
 | `409` | `non_arc_lookup` | `model` is not an ARC ID: a provider model, a prefixed ID, or an unknown `arc-*` ID such as `arc-2.0` | No; set `model` to `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` |
 | `413` | | The request body is too large | No |
 | `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |
-| `503` | `unavailable` | Decisions is temporarily unavailable | Yes, with backoff |
-| `504` | `timeout` | The decision did not complete in time | Yes, with backoff |
+| `503` | `unavailable` | The Routes API is temporarily unavailable | Yes, with backoff |
+| `504` | `timeout` | The route did not complete in time | Yes, with backoff |
 | `529` | `capacity` | ARC is at capacity | Yes, with backoff |
 
-Each account can make 30 decision requests per minute across all of its keys. A decision normally completes within about 1.5 seconds.
+Each account can make 30 Routes API requests per minute across all of its keys. A route normally completes within about 1.5 seconds.
 
-See [ARC Decisions](/arc/decisions) for the integration loop and [errors and limits](/arc/reference/errors) for troubleshooting.
+See [Model Routing](/arc/routes) for the integration loop and [errors and limits](/arc/reference/errors) for troubleshooting.

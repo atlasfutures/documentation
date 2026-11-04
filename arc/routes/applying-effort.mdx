@@ -5,7 +5,7 @@ description: "Apply a decision's reasoning configuration without breaking prompt
 icon: "gauge"
 ---
 
-A [decision](/arc/reference/decisions) names a model and how hard it should think on this turn. With Decisions, you run the turn yourself, so you also apply that effort yourself. This page shows how to do that the way ARC's own serving stack does: privately, without changing what your user sees and without breaking the provider's prompt cache.
+A [route](/arc/reference/routes) names a model and how hard it should think on this turn. With the Routes API, you run the turn yourself, so you also apply that effort yourself. This page shows how to do that the way ARC's own serving stack does: privately, without changing what your user sees and without breaking the provider's prompt cache.
 
 If you would rather not maintain this yourself, run [our vLLM Semantic Router fork](#or-let-our-router-apply-it), which applies the same pattern for you.
 
@@ -27,7 +27,7 @@ When `thinking_level` is absent, there is no steering to apply for the turn. The
 
 If you run the chosen model through Rayline's own [Chat Completions endpoint](/arc/reference/generation) (`POST /v1/chat/completions` with the decision's `model`), set `reasoning_effort` from `thinking`. Rayline passes `reasoning_effort` to the provider.
 
-| Decision `thinking` | `reasoning_effort` |
+| Route `thinking` | `reasoning_effort` |
 | --- | --- |
 | `mode` `off` | `"none"` |
 | `mode` `on`, `budget_tokens` `null` | Omit it, so the model uses its provider's default reasoning. This is how ARC's own router runs such a decision. |

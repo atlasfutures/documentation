@@ -6,18 +6,18 @@
 
 - [Use Rayline in your tools](https://docs.rayline.ai/tools): connect OpenCode, Hermes Agent, OpenClaw, Claude Code, Claude Desktop, Codex, pi and oh-my-pi.
 - [ARC Swift and ARC Sage](https://docs.rayline.ai/arc/models): model IDs `arc-swift-1.0`, `arc-sage-1.0`, and ARC Dynamic `arc-1.0`.
-- [API quickstart](https://docs.rayline.ai/arc/quickstart): a first Messages request and a first decision.
+- [API quickstart](https://docs.rayline.ai/arc/quickstart): a first Messages request and a first route.
 
 ## API reference
 
-- [OpenAPI (machine-readable)](https://docs.rayline.ai/api-reference/arc-public-api.openapi.yaml): service-owned contract for ARC model IDs, the `routing` extension, Decisions (`POST /v1/routes`) and error codes.
+- [OpenAPI (machine-readable)](https://docs.rayline.ai/api-reference/arc-public-api.openapi.yaml): service-owned contract for ARC model IDs, the `routing` extension, the Routes API (`POST /v1/routes`) and error codes.
 - [Generation with ARC](https://docs.rayline.ai/arc/reference/generation): Messages, Chat Completions, Responses; `routing.value_usd` and `routing.temperature`.
-- [Decisions reference](https://docs.rayline.ai/arc/reference/decisions): `routing.{value_usd, temperature, prices, exclusive}`, `presets.{swift,sage}`, `custom`, the `routing` echo, `error.code`.
+- [Routes API reference](https://docs.rayline.ai/arc/reference/routes): `routing.{value_usd, temperature, models, excluded_models, prices, price_profile}`, `presets.{swift,sage}`, `custom`, the `routing` echo, `error.code`.
 - [API compatibility](https://docs.rayline.ai/arc/reference/compatibility) and [errors and limits](https://docs.rayline.ai/arc/reference/errors).
 
 ## Guides
 
-- [Decisions](https://docs.rayline.ai/arc/decisions), [bring your own prices](https://docs.rayline.ai/arc/decisions/prices), [applying effort](https://docs.rayline.ai/arc/decisions/applying-effort), [build an agent with Claude Code](https://docs.rayline.ai/arc/decisions/claude-code-agent).
+- [Routes API](https://docs.rayline.ai/arc/routes), [bring your own prices](https://docs.rayline.ai/arc/routes/prices), [applying effort](https://docs.rayline.ai/arc/routes/applying-effort), [build an agent with Claude Code](https://docs.rayline.ai/arc/routes/claude-code-agent).
 - [ARC Dynamic](https://docs.rayline.ai/arc/dynamic): set routing value and temperature.
 - [Funding and billing](https://docs.rayline.ai/platform/billing), [API keys](https://docs.rayline.ai/platform/api-keys), [data and privacy](https://docs.rayline.ai/platform/data-privacy).
 
@@ -25,7 +25,7 @@
 
 - Authenticate with a Rayline API key (`rlk-...`) from the environment, in `x-api-key` or `Authorization: Bearer`. Never write a key into code or config.
 - The base URL is `https://api.rayline.ai`. Do not append `/v1` for Claude Code; OpenAI-style clients use `/v1`.
-- A decision executes nothing: run the chosen model yourself. Treat `routing` members echoed `unsupported` as not applied.
+- A route executes nothing: run the chosen model yourself. Treat `routing` members echoed `unsupported` as not applied.
 
 ## Legacy
 

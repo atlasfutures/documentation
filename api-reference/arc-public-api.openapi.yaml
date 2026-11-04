@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Rayline ARC public API
   version: 0.1.0
-  description: 'ARC model IDs, routing extensions, and routing decisions. Generation endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
+  description: 'ARC model IDs, routing extensions, and the Routes API. Generation endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
 servers:
 - url: https://api.rayline.ai
 security:
@@ -59,19 +59,19 @@ x-arc-error-codes:
   prices_invalid:
     status: 400
     type: invalid_request_error
-  price_leg_missing:
-    status: 400
-    type: invalid_request_error
   price_leg_invalid:
     status: 400
     type: invalid_request_error
-  exclusive_invalid:
+  models_invalid:
     status: 400
     type: invalid_request_error
-  exclusive_without_prices:
+  no_candidate_models:
     status: 400
     type: invalid_request_error
-  prices_not_supported:
+  routes_only_member:
+    status: 400
+    type: invalid_request_error
+  price_profile_invalid:
     status: 400
     type: invalid_request_error
   unknown_price_model:
@@ -80,10 +80,22 @@ x-arc-error-codes:
   insufficient_funds:
     status: 402
     type: billing_error
+  price_profile_forbidden:
+    status: 403
+    type: permission_error
   model_not_served:
     status: 404
     type: not_found_error
+  price_profile_not_found:
+    status: 404
+    type: not_found_error
   non_arc_lookup:
+    status: 409
+    type: invalid_request_error
+  price_profile_archived:
+    status: 409
+    type: invalid_request_error
+  price_profile_unpriced:
     status: 409
     type: invalid_request_error
   rate_limited:
@@ -93,6 +105,9 @@ x-arc-error-codes:
     status: 502
     type: api_error
   unavailable:
+    status: 503
+    type: api_error
+  price_profile_unavailable:
     status: 503
     type: api_error
   timeout:
@@ -105,9 +120,9 @@ paths:
   /v1/routes:
     post:
       operationId: routeLookup
-      summary: Create a routing decision
+      summary: Route a request
       description: One encode; the Swift and Sage presets always, plus the custom result at routing.value_usd. Billed once
-        at the Decisions encode rate. Never trained on.
+        at the Routes API encode rate. Never trained on.
       requestBody:
         required: true
         content:
@@ -127,9 +142,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoutesResponse'
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: invalid_body, models_invalid, no_candidate_models, price_leg_invalid,
+            price_profile_invalid, prices_invalid, routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable,
+            unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -140,14 +155,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'Error; `error.code` is one of: price_profile_forbidden.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         '404':
-          description: 'Error; `error.code` is one of: model_not_served.'
+          description: 'Error; `error.code` is one of: model_not_served, price_profile_not_found.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '409':
-          description: 'Error; `error.code` is one of: non_arc_lookup.'
+          description: 'Error; `error.code` is one of: non_arc_lookup, price_profile_archived, price_profile_unpriced.'
           content:
             application/json:
               schema:
@@ -165,7 +186,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '503':
-          description: 'Error; `error.code` is one of: unavailable.'
+          description: 'Error; `error.code` is one of: price_profile_unavailable, unavailable.'
           content:
             application/json:
               schema:
@@ -212,9 +233,8 @@ paths:
         '200':
           description: The protocol's own response, unchanged.
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
+            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -246,9 +266,8 @@ paths:
         '200':
           description: The protocol's own response, unchanged.
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
+            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -278,9 +297,8 @@ paths:
         '200':
           description: The protocol's own response, unchanged.
         '400':
-          description: 'Error; `error.code` is one of: exclusive_invalid, exclusive_without_prices, invalid_body, price_leg_invalid,
-            price_leg_missing, prices_invalid, prices_not_supported, routing_invalid, routing_unknown_member, temperature_invalid,
-            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
+            temperature_invalid, tier_value_immutable, unknown_model, value_invalid, value_out_of_bounds.'
           content:
             application/json:
               schema:
@@ -373,7 +391,7 @@ components:
       - pi
       title: CandidatePi
       type: object
-    DecisionsRouting:
+    RoutesRouting:
       additionalProperties: false
       description: '``routing`` on ``POST /v1/routes``.'
       properties:
@@ -406,19 +424,49 @@ components:
             type: object
           - type: 'null'
           default: null
-          description: BYO prices per served model id. They change selection only, never the Decisions charge. No catalog
-            price is substituted for a malformed entry.
+          description: BYO prices per exact served model id; each leg is optional and an unset leg keeps its profile or
+            catalog price. They change selection only, never the candidates or the Routes API charge. Takes precedence over
+            `price_profile`.
           title: Prices
           x-status: proposed
-        exclusive:
+        models:
           anyOf:
-          - type: boolean
+          - items:
+              minLength: 1
+              type: string
+            maxItems: 256
+            minItems: 1
+            type: array
           - type: 'null'
           default: null
-          description: 'true: only the priced models are candidates. Requires `prices`.'
-          title: Exclusive
+          description: 'The candidate models: exact served model ids or patterns where `*` matches any run of characters.
+            Case-sensitive. A hard limit: without it every selectable model is a candidate. An entry that matches no model
+            is `unknown_model`.'
+          title: Models
           x-status: proposed
-      title: DecisionsRouting
+        excluded_models:
+          anyOf:
+          - items:
+              minLength: 1
+              type: string
+            maxItems: 256
+            minItems: 1
+            type: array
+          - type: 'null'
+          default: null
+          description: Exact served model ids or `*` patterns removed from the candidates. Wins over `models`. Nothing left
+            is `no_candidate_models`.
+          title: Excluded Models
+          x-status: proposed
+        price_profile:
+          anyOf:
+          - $ref: '#/components/schemas/PriceProfileRef'
+          - type: 'null'
+          default: null
+          description: A saved price profile. Combinable with `prices`, which wins per model and leg.
+          title: Price Profile
+          x-status: proposed
+      title: RoutesRouting
       type: object
       x-status: proposed
     EchoStatus:
@@ -439,7 +487,7 @@ components:
       type: object
     EncodeUsage:
       additionalProperties: false
-      description: 'The request''s one shared encode: billed once at the Decisions rate however many results it returns.'
+      description: 'The request''s one shared encode: billed once at the Routes API rate however many results it returns.'
       properties:
         encoded_input_tokens:
           minimum: 0
@@ -558,7 +606,8 @@ components:
       x-status: proposed
     PriceLegs:
       additionalProperties: false
-      description: USD per million tokens. All four legs are required; 0 is a price.
+      description: USD per million tokens. Each leg is optional, but at least one is required; 0 is a price.
+      minProperties: 1
       properties:
         input:
           minimum: 0
@@ -576,12 +625,22 @@ components:
           minimum: 0
           title: Output
           type: number
-      required:
-      - input
-      - cache_read
-      - cache_write
-      - output
       title: PriceLegs
+      type: object
+    PriceProfileRef:
+      additionalProperties: false
+      properties:
+        id:
+          minLength: 1
+          title: Id
+          type: string
+        version:
+          minimum: 1
+          title: Version
+          type: integer
+      required:
+      - id
+      title: PriceProfileRef
       type: object
     PricesEcho:
       additionalProperties: false
@@ -592,34 +651,96 @@ components:
           - unsupported
           title: Status
           type: string
+        models:
+          additionalProperties:
+            $ref: '#/components/schemas/ResolvedPrice'
+          description: The resolved price of every candidate.
+          title: Models
+          type: object
+        unused:
+          description: Priced models that are not candidates.
+          items:
+            type: string
+          title: Unused
+          type: array
         price_sha256:
+          description: 'SHA-256 of the RFC 8785 JSON ``{"schema": "arc-route-prices.v1", "prices": {id: {input, cache_read,
+            cache_write, output}}}`` over every resolved candidate.'
           pattern: ^[a-f0-9]{64}$
           title: Price Sha256
           type: string
-        exclusive:
-          title: Exclusive
-          type: boolean
-        models:
-          items:
-            type: string
-          minItems: 1
-          title: Models
-          type: array
       required:
       - status
-      - price_sha256
-      - exclusive
       - models
+      - unused
+      - price_sha256
       title: PricesEcho
       type: object
+    ResolvedPrice:
+      additionalProperties: false
+      description: One candidate's resolved price, USD per million tokens, with the source of each leg.
+      properties:
+        input:
+          minimum: 0
+          title: Input
+          type: number
+        cache_read:
+          minimum: 0
+          title: Cache Read
+          type: number
+        cache_write:
+          minimum: 0
+          title: Cache Write
+          type: number
+        output:
+          minimum: 0
+          title: Output
+          type: number
+        source:
+          additionalProperties: false
+          properties:
+            input:
+              $ref: '#/components/schemas/PriceSource'
+            cache_read:
+              $ref: '#/components/schemas/PriceSource'
+            cache_write:
+              $ref: '#/components/schemas/PriceSource'
+            output:
+              $ref: '#/components/schemas/PriceSource'
+          required:
+          - input
+          - cache_read
+          - cache_write
+          - output
+          title: Source
+          type: object
+      required:
+      - input
+      - cache_read
+      - cache_write
+      - output
+      - source
+      title: ResolvedPrice
+      type: object
+    PriceSource:
+      enum:
+      - caller
+      - profile
+      - catalog
+      title: PriceSource
+      type: string
     ResultPrices:
       additionalProperties: false
       description: The price world a result was decided in.
       properties:
         basis:
+          description: '``catalog`` when no caller or profile leg was used, ``caller`` or ``profile`` when only that source
+            set a leg, ``mixed`` when both did.'
           enum:
           - catalog
           - caller
+          - profile
+          - mixed
           title: Basis
           type: string
         price_sha256:
@@ -627,6 +748,7 @@ components:
           - pattern: ^[a-f0-9]{64}$
             type: string
           - type: 'null'
+          description: The routing.prices echo's price_sha256; null when no selection or price member was sent.
           title: Price Sha256
       required:
       - basis
@@ -768,13 +890,13 @@ components:
       - model
       additionalProperties: true
       description: The body the caller was going to send to /v1/messages, /v1/chat/completions or /v1/responses, plus the
-        Decisions `routing` block.
+        Routes API `routing` block.
       properties:
         model:
           type: string
           description: An ARC id or alias (x-arc-model-ids).
         routing:
-          $ref: '#/components/schemas/DecisionsRouting'
+          $ref: '#/components/schemas/RoutesRouting'
     RoutesResponse:
       additionalProperties: false
       description: '``POST /v1/routes`` 200. The top-level route is the decision the byte-identical request would get on the
@@ -898,11 +1020,28 @@ components:
           - $ref: '#/components/schemas/EchoStatus'
           - type: 'null'
           default: null
+        models:
+          anyOf:
+          - $ref: '#/components/schemas/ModelsEcho'
+          - type: 'null'
+          default: null
+        excluded_models:
+          anyOf:
+          - $ref: '#/components/schemas/ExcludedModelsEcho'
+          - type: 'null'
+          default: null
         prices:
           anyOf:
           - $ref: '#/components/schemas/PricesEcho'
           - type: 'null'
           default: null
+          description: Present when `prices` or `price_profile` was sent.
+        price_profile:
+          anyOf:
+          - type: object
+          - type: 'null'
+          default: null
+          description: The profile and the prices it resolved to, including `not_offered`; see the price profiles guide.
         unapplied_keys:
           default: []
           items:
@@ -912,6 +1051,53 @@ components:
       title: RoutingEcho
       type: object
       x-status: proposed
+    ModelsEcho:
+      additionalProperties: false
+      properties:
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+        models:
+          description: The entries sent.
+          items:
+            type: string
+          title: Models
+          type: array
+        resolved:
+          description: The candidate models after `excluded_models`.
+          items:
+            type: string
+          title: Resolved
+          type: array
+      required:
+      - status
+      - models
+      - resolved
+      title: ModelsEcho
+      type: object
+    ExcludedModelsEcho:
+      additionalProperties: false
+      properties:
+        status:
+          enum:
+          - applied
+          - unsupported
+          title: Status
+          type: string
+        excluded_models:
+          description: The entries sent.
+          items:
+            type: string
+          title: Excluded Models
+          type: array
+      required:
+      - status
+      - excluded_models
+      title: ExcludedModelsEcho
+      type: object
     SelectedPricing:
       additionalProperties: false
       properties:

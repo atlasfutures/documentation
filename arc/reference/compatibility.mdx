@@ -4,19 +4,21 @@ description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
 
-Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Decisions support is listed below.
+Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Routes API support is listed below.
 
 Do not assume support for streaming, tool calls, structured output, image or audio inputs, or provider SDK compatibility based on an endpoint's protocol name. Confirm these capabilities before building an integration.
 
-## Decisions
+<span id="decisions" />
+
+## Routes API
 
 | Capability | Support |
 | --- | --- |
 | Request format | Anthropic Messages, OpenAI Chat Completions, and OpenAI Responses bodies |
-| Format selection | Read from the body; see [request formats](/arc/reference/decisions#request) |
+| Format selection | Read from the body; see [request formats](/arc/reference/routes#request) |
 | Multi-turn conversations | Yes, with `x-conversation-id` |
-| Streaming | No; each decision is one JSON response |
-| Tools in the request | Accepted; check the response `warnings` for whether they influenced the decision |
+| Streaming | No; each route is one JSON response |
+| Tools in the request | Accepted; check the response `warnings` for whether they influenced the route |
 
 <span id="coding-tools" />
 
@@ -26,4 +28,4 @@ Follow the [guide for your tool](/tools) for its provider settings, ARC model ID
 
 Cline's Raydock connection uses its OpenAI Compatible provider with provider-native Web Search turned off. See the [Cline setup](/tools/cline#raydock).
 
-See [using ARC models](/arc/reference/generation), [Decisions](/arc/reference/decisions), and [errors and limits](/arc/reference/errors).
+See [using ARC models](/arc/reference/generation), [Routes API](/arc/reference/routes), and [errors and limits](/arc/reference/errors).
