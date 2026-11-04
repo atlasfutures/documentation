@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Rayline ARC public API
   version: 0.1.0
-  description: 'ARC model IDs, routing extensions, and the Routes API. Generation endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
+  description: 'ARC model IDs, routing extensions, the Generation API, and the Routes API. Generation API endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
 servers:
 - url: https://api.rayline.ai
 security:
