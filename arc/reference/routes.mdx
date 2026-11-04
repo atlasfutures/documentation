@@ -43,7 +43,7 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 
 | Member | Type | Meaning |
 | --- | --- | --- |
-| `value_usd` | number, 0.1 to 30 | Your value (V): what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0` for your own value. |
+| `value_usd` | number, 0.1 to 30 | Your value (V): what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With a Swift or Sage ID, in any data mode, it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0`, `arc-contributor-1.0` or `arc-zdr-1.0` for your own value. |
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on the Routes API. Separate from the model's generation `temperature`. |
 | `models` | array of strings | The models ARC may choose from: up to 256 model IDs or `*` wildcards. Without it, ARC chooses from every model it can select. See [candidate models](#candidate-models). |
 | `excluded_models` | array of strings | Models ARC must not choose: up to 256 model IDs or `*` wildcards. Wins over `models`. |

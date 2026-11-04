@@ -4,7 +4,7 @@ description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
 
-Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Routes API support is listed below.
+Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Organizations on zero data retention use `arc-swift-zdr-1.0` or `arc-sage-zdr-1.0`; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Routes API support is listed below.
 
 Do not assume support for streaming, tool calls, structured output, image or audio inputs, or provider SDK compatibility based on an endpoint's protocol name. Confirm these capabilities before building an integration.
 
