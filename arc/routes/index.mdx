@@ -48,13 +48,13 @@ This body is in Anthropic Messages format, which requires `max_tokens`; ARC read
 
 Every route includes `presets`: what ARC would choose at ARC Swift's value (V 0.1) and at ARC Sage's value (V 4.5), from one read of your request. Use the preset that matches the trade-off you want, or compare them.
 
-To route at your own value, request `arc-1.0` with `routing.value_usd`, from 0.1 to 30 US dollars per successful result. The response adds a `custom` result at that value:
+To route at your own value, request `arc-1.0` with `routing.v_value`, from 0.1 to 30 US dollars per successful result. The response adds a `custom` result at that value:
 
 ```python
 json={
     "model": "arc-1.0",
     "messages": messages,
-    "routing": {"value_usd": 2, "temperature": 0.3},
+    "routing": {"v_value": 2, "temperature": 0.3},
 }
 # chosen["presets"]["swift"], chosen["presets"]["sage"], chosen["custom"]
 ```
