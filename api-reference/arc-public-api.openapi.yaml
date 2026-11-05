@@ -77,6 +77,15 @@ x-arc-error-codes:
   tier_value_immutable:
     status: 400
     type: invalid_request_error
+  value_not_accepted:
+    status: 400
+    type: invalid_request_error
+  value_required:
+    status: 400
+    type: invalid_request_error
+  arc_model_required:
+    status: 400
+    type: invalid_request_error
   temperature_invalid:
     status: 400
     type: invalid_request_error
@@ -172,9 +181,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoutesResponse'
         '400':
-          description: 'Error; `error.code` is one of: invalid_body, models_invalid, no_candidate_models, price_leg_invalid,
-            price_profile_invalid, prices_invalid, routing_invalid, routing_unknown_member, temperature_invalid, tier_value_immutable,
-            unknown_model, unknown_price_model, value_invalid, value_out_of_bounds.'
+          description: 'Error; `error.code` is one of: arc_model_required, invalid_body, models_invalid, no_candidate_models,
+            price_leg_invalid, price_profile_invalid, prices_invalid, routing_invalid, routing_unknown_member, temperature_invalid,
+            tier_value_immutable, unknown_model, unknown_price_model, value_invalid, value_not_accepted, value_out_of_bounds,
+            value_required.'
           content:
             application/json:
               schema:
@@ -264,7 +274,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_not_accepted, value_out_of_bounds, value_required.'
           content:
             application/json:
               schema:
@@ -303,7 +313,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_not_accepted, value_out_of_bounds, value_required.'
           content:
             application/json:
               schema:
@@ -340,7 +350,7 @@ paths:
           description: The protocol's own response, unchanged.
         '400':
           description: 'Error; `error.code` is one of: invalid_body, routes_only_member, routing_invalid, routing_unknown_member,
-            temperature_invalid, tier_value_immutable, value_invalid, value_out_of_bounds.'
+            temperature_invalid, tier_value_immutable, value_invalid, value_not_accepted, value_out_of_bounds, value_required.'
           content:
             application/json:
               schema:
@@ -449,7 +459,7 @@ components:
           minimum: 0.1
           type: number
           description: 'The caller''s V: the USD value of one successful result. Adds the `custom` result. Never clamped.
-            On a tier id it must equal the tier''s fixed V.'
+            Required with an ARC Dynamic id (`value_required`); refused with a tier id (`tier_value_immutable`).'
           title: V Value
           x-status: proposed
         temperature:
@@ -596,7 +606,8 @@ components:
           $ref: '#/components/schemas/GenerationRouting'
     GenerationRouting:
       additionalProperties: false
-      description: '``routing`` on generation requests (``arc-1.0``; tiers accept only their own V).'
+      description: '``routing`` on generation requests. ``v_value`` is required with an ARC Dynamic id (``value_required``)
+        and refused with a tier id (``tier_value_immutable``) or any other model (``value_not_accepted``).'
       properties:
         v_value:
           maximum: 30.0

@@ -143,9 +143,10 @@ Each launcher invocation is one conversation. In manual direct connections, Rayl
 
 ## ARC Dynamic
 
-To use ARC Dynamic, add a model entry named `arc-1.0` alongside the Sage and Swift
-entries above, then select it with `--model rayline/arc-1.0`.
-For Raydock, include `arc-1.0` in the gateway endpoint’s model list as well.
+ARC Dynamic (`arc-1.0`) needs your value as `routing.v_value` on every request;
+without it the request returns `400` (`value_required`). The model entries on this
+page do not send `routing`, so use ARC Sage or ARC Swift in OpenCode. To route at
+your own value from a coding tool, use [pi with its routing extension](/tools/pi).
 
 ARC Dynamic uses the served model’s catalog price rather than a fixed tier
 rate; see [ARC Dynamic](/arc/dynamic).

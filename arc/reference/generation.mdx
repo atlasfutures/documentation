@@ -28,11 +28,11 @@ Each ID has a Contributor and a zero data retention ID that behaves the same way
 
 ## Routing extension
 
-Add a `routing` object to the request body. Only `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0` take your own value; the tiers, in every data mode, accept only their own.
+Add a `routing` object to the request body. `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0` require your own value: a request to one of them without `routing.v_value` returns `400` (`value_required`). The tiers, in every data mode, decide at their fixed V and refuse `routing.v_value`.
 
 | Member | Type | Meaning |
 | --- | --- | --- |
-| `v_value` | number, 0.1 to 30 | Your value (V), the US-dollar value of one successful result. On `arc-swift-1.0` or `arc-sage-1.0` it must equal the tier's V, or the request is refused with `tier_value_immutable`. |
+| `v_value` | number, 0.1 to 30 | Your value (V), the US-dollar value of one successful result. Required with `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0`. With a Swift or Sage ID it is refused with `tier_value_immutable`, even at the tier's own V; with any other model it is refused with `value_not_accepted`. |
 | `temperature` | number, 0 or more | Routing temperature for hosted exploration. Capped by Rayline, and applied only where the serving path supports it and the request runs in Contributor ([data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)). An `unsupported` status means the requested temperature was not applied. |
 
 Send V as `v_value`: its former name, `value_usd`, returns `400` (`routing_unknown_member`).

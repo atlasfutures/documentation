@@ -8,7 +8,7 @@ icon: "sliders"
 
 ARC Swift and ARC Sage use settings Rayline fixes for each tier. ARC Dynamic, `arc-1.0`, lets you set them yourself:
 
-- **Value (V)** is how many US dollars a successful result is worth to you. ARC weighs each candidate model's expected quality against its expected cost at that value. V is not a spending limit. Swift uses V 0.1 and Sage uses V 4.5; `arc-1.0` accepts V within the range the current ARC release supports.
+- **Value (V)** is how many US dollars a successful result is worth to you. ARC weighs each candidate model's expected quality against its expected cost at that value. V is not a spending limit. Swift uses V 0.1 and Sage uses V 4.5; `arc-1.0` requires V on every request, within the range the current ARC release supports.
 - **Routing temperature** sets how much ARC explores other candidates instead of always taking its top choice. It is a softmax temperature on ARC's normalized scores; 0 always takes the top choice. It is separate from the model's generation `temperature`. On generation it applies only to Contributor requests (`arc-contributor-1.0`); see [data and exploration](#data-and-exploration).
 
 Requests to `arc-1.0` are billed at the **served model's catalog price**, with no ARC fee. A Swift or Sage request is billed at its tier's fixed rate card instead. Changing V never turns a Swift or Sage request into `arc-1.0`; a tier request that sets a different V is rejected.
