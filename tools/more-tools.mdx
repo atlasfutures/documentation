@@ -111,7 +111,7 @@ After setting up an agent, send a short prompt such as `Reply with the word read
 
 ## Which model runs
 
-Each launcher gives the main agent ARC Sage (`arc-sage-1.0`). Where the agent has a separate setting for small or background work, that setting gets ARC Swift (`arc-swift-1.0`). Hosted omp lists only these two ARC tiers. The launchers write only these standard IDs; an organization on zero data retention must use each agent's [manual setup](#manual-setup-without-the-launcher) with `arc-sage-zdr-1.0` and `arc-swift-zdr-1.0`, because other ARC IDs return `403` (`zdr_model_required`). Some generated configs also list `rayline-router`, the retired Rules Router's model ID; Rayline serves it on ARC, so choose an ARC tier instead.
+Each launcher gives the main agent ARC Sage (`arc-sage-1.0`). Where the agent has a separate setting for small or background work, that setting gets ARC Swift (`arc-swift-1.0`). Hosted omp lists only these two ARC tiers. The launchers write only these standard IDs; an organization on zero data retention must use each agent's [manual setup](#manual-setup-without-the-launcher) with `arc-sage-zdr-1.0` and `arc-swift-zdr-1.0`, because other ARC IDs return `403` (`zdr_model_required`). Some generated configs also list `rayline-router`, the retired Rules Router ID. It has been removed: a request naming it gets `404` `model_not_found`, so choose an ARC tier.
 
 | Launcher | ARC Sage | ARC Swift |
 | --- | --- | --- |

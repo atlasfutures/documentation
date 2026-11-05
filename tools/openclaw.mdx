@@ -149,7 +149,7 @@ From Raydock 0.3.0, the main model is ARC Sage. The config defines two providers
 | `rayline` | Anthropic Messages | The default |
 | `rayline-resp` | OpenAI Responses | Select one of its models |
 
-`rayline-router` is the retired Rules Router's model ID; Rayline serves it on ARC, so choose an ARC tier instead.
+`rayline-router`, the retired Rules Router ID, has been removed: a request naming it gets `404` `model_not_found`. Choose an ARC tier.
 
 It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
 

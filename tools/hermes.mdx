@@ -99,7 +99,7 @@ Raydock sets `HERMES_HOME` to `~/.config/rayline/harness/hermes/<env>/` and writ
 | `rayline-anth` | Anthropic Messages | The default |
 | `rayline-resp` | OpenAI Responses | Select with `--provider rayline-resp` |
 
-`rayline-router` is the retired Rules Router's model ID; Rayline serves it on ARC, so choose an ARC tier instead.
+`rayline-router`, the retired Rules Router ID, has been removed: a request naming it gets `404` `model_not_found`. Choose an ARC tier.
 
 Fallback providers are turned off, so a failed request is not retried against another provider. Hermes keeps its sessions, memories, and skills in `HERMES_HOME`, so they are separate from your normal Hermes setup.
 

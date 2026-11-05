@@ -97,7 +97,7 @@ These examples pass the key as a **bearer** token through `auth_token=` (Python)
 </Note>
 
 <Tip>
-Use `arc-swift-1.0` for Swift, or see [ARC Dynamic](/arc/dynamic) for caller-controlled routing value and temperature. Integrations that still request `rayline-router`, the retired Rules Router's model ID, keep working: Rayline serves them on ARC. Switch them to an ARC model ID.
+Use `arc-swift-1.0` for Swift, or see [ARC Dynamic](/arc/dynamic) for caller-controlled routing value and temperature. `rayline-router`, the retired Rules Router ID, has been removed: a request naming it gets `404` `model_not_found`. Switch existing integrations to an ARC model ID.
 </Tip>
 
 <span id="local" />
