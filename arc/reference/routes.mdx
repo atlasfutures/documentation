@@ -30,8 +30,8 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
-| `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted), or its Contributor or zero data retention ID (`arc-swift-contributor-1.0`, `arc-swift-zdr-1.0` and so on), which routes like the plain ID. An organization on zero data retention must use the zero data retention IDs; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Prefixed IDs such as `rayline/arc-swift` and unknown `arc-*` IDs such as `arc-2.0` return `400` (`unknown_model`); a provider model returns `400` (`arc_model_required`). |
-| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, candidate models, and prices. |
+| `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted), or its Contributor or zero data retention ID (`arc-swift-contributor-1.0`, `arc-swift-zdr-1.0` and so on), which routes like the plain ID. An organization on zero data retention must use the zero data retention IDs; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Prefixed IDs such as `rayline/arc-swift` and unknown `arc-*` IDs such as `arc-2.0` return `400` (`unknown_model`); a provider model returns `400` (`arc_model_required`, or `value_not_accepted` when the request sends `routing.v_value`). |
+| `routing` | With `arc-1.0` | ARC's [routing controls](#routing-controls): your value, routing temperature, candidate models, and prices. Required with `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0`, which need `routing.v_value`; optional otherwise. |
 | `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the route. Chat Completions and Responses bodies do not need it. |
 | `temperature`, `stream` | No | Ignored. A route is always returned as a single JSON response. |
 
@@ -39,7 +39,7 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 
 ### Routing controls
 
-`routing` is an object. Every member is optional; a member Rayline does not recognise is refused with `400` (`routing_unknown_member`), never ignored. Send V as `v_value`: its former name, `value_usd`, is refused the same way.
+`routing` is an object. Every member is optional except `v_value`, which `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0` require; a member Rayline does not recognise is refused with `400` (`routing_unknown_member`), never ignored. Send V as `v_value`: its former name, `value_usd`, is refused the same way.
 
 | Member | Type | Meaning |
 | --- | --- | --- |
@@ -248,8 +248,8 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `400` | `value_invalid`, `value_out_of_bounds` | `routing.v_value` is not a number in 0.1–30 | No |
 | `400` | `value_required` | `model` is `arc-1.0`, `arc-contributor-1.0` or `arc-zdr-1.0` without `routing.v_value` | No; add `routing.v_value` |
 | `400` | `tier_value_immutable` | `routing.v_value` was sent with a Swift or Sage ID, which decides at its fixed V | No; drop `routing.v_value`, or use `arc-1.0` |
-| `400` | `value_not_accepted` | `routing.v_value` was sent with a model that is not an ARC ID | No; use `arc-1.0` with `routing.v_value` |
-| `400` | `arc_model_required` | `model` is not an ARC ID, such as a provider model | No; set `model` to `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` with `routing.v_value`, or its Contributor or zero data retention ID |
+| `400` | `value_not_accepted` | `model` is not an ARC ID, such as a provider model, and the request sends `routing.v_value` | No; use `arc-1.0` with `routing.v_value` |
+| `400` | `arc_model_required` | `model` is not an ARC ID, such as a provider model, and the request sends no `routing.v_value` | No; set `model` to `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` with `routing.v_value`, or its Contributor or zero data retention ID |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
 | `400` | `models_invalid` | `routing.models` or `routing.excluded_models` is not an array of strings, or has more than 256 entries | No |
 | `400` | `unknown_model` | `model` is a prefixed ID or an unknown `arc-*` ID such as `arc-2.0`, or an entry in `routing.models` or `routing.excluded_models` matches no model ARC can select | No; fix the ID or the entry |
@@ -260,7 +260,8 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `402` | | `error.type` is `billing_error`: the workspace has no balance to pay for the route. The message links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
 | `403` | `zdr_model_required` | The organization uses zero data retention and `model` is not a zero data retention ID. The message names the ID to use | No; use that ID |
 | `403` | `contributor_models_off` | `model` is a Contributor ID and **Allow Contributor models** is off for the organization | No; use another ID, or an owner turns Contributor models on |
-| `404` | `model_not_found`, `model_not_served` | The ARC model is not serving in this environment | No |
+| `404` | `model_not_found` | `model` is a Swift or Sage ID this environment does not serve | No |
+| `404` | `model_not_served` | The ARC model is not serving in this environment | No |
 | `413` | | The request body is too large | No |
 | `429` | `rate_limited` | Rate limit reached, or the conversation already has a request in progress | Yes, after `Retry-After` seconds |
 | `502` | `inconsistent_upstream` | The routing service returned an inconsistent answer | Yes, with backoff |
