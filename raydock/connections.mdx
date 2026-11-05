@@ -97,7 +97,7 @@ The endpoint's `protocol` is what the gateway speaks *to the upstream*, not what
 | Codex with ARC | Use the same `anthropic_messages` settings to support [Codex sub-agent tools](/tools/codex#use-arc-through-raydock). |
 | Existing Legacy Rules Router integration | Use `anthropic_messages` with `https://api.rayline.ai`, add `rayline-router` to the endpoint's `models`, and request that model. Chat Completions does not serve Legacy Rules Router. |
 
-Messages-to-Chat conversion drops the `routing` extension and `metadata.user_id`. The gateway also does not forward clients' session-affinity headers; see [conversation grouping](/tools/more-tools#the-conversation-id) for the difference from a direct connection.
+`arc-1.0` needs `routing.v_value` on every request and returns `400` (`value_required`) without it, so request it only from a tool that sends the `routing` extension, through an upstream that keeps it: `anthropic_messages` for Messages clients, or a native `openai_responses` endpoint, which passes Responses requests through with only the model rewritten, where the model [supports Responses](/arc/availability#check-protocol-support). Messages-to-Chat conversion drops the `routing` extension and `metadata.user_id`. The gateway also does not forward clients' session-affinity headers; see [conversation grouping](/tools/more-tools#the-conversation-id) for the difference from a direct connection.
 
 Load your [Rayline API key](/platform/api-keys) into `RAYLINE_API_KEY`, then start the gateway. The ports below are explicit choices; change them if another process already uses them.
 
