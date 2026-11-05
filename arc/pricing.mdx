@@ -7,7 +7,7 @@ Current rates for ARC Swift, ARC Sage and the Routes API are on [rayline.ai/pric
 
 ## ARC Swift and Sage
 
-Each tier has a fixed rate card for each data mode, in US dollars per million tokens, with four legs: input, cache read, cache write, and output. Every request is billed at its tier's card, whichever model serves it. Swift and Sage Contributor have their own cards. See [Swift and Sage](/arc/models).
+Each tier has a fixed rate card for each data mode, in US dollars per million tokens, with four legs: input, cache read, cache write, and output. Every request is billed at its tier's card, whichever model serves it; the served model is reported in the `x-vsr-served-model` response header. A tier request chooses and runs the model in one call, so there is no separate route charge. Swift and Sage Contributor have their own cards. See [Swift and Sage](/arc/models).
 
 <span id="agent-gateway" />
 
@@ -15,15 +15,21 @@ Each tier has a fixed rate card for each data mode, in US dollars per million to
 
 Pay the served model’s catalog inference price. ARC adds **0% commission**, with no additional routing fee. This applies to `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0`. See [configure ARC routing](/arc/dynamic).
 
+A request that names a concrete catalog model instead of an ARC ID is a pin: it goes straight to that provider and is billed at that entry's own catalog row, with no platform fee and no route charge.
+
 <span id="arc-decisions" />
 
 ## Routes API
 
-The Routes API bills the tokens ARC reads to choose a route, once per request, however many results it returns. Its rate card has an encoded-input rate and a cache-read rate, with no charge for cache writes or output.
+The Routes API bills the tokens ARC reads to choose a route, once per request, whether or not you run the model it names, however many results it returns. Its rate card has an encoded-input rate and a cache-read rate, with no charge for cache writes or output.
 
 The Routes API does not yet reuse a cached prefix between requests. So every token a route reads is billed at the encoded-input rate, and `usage.cache_read_tokens` is 0. Once the Routes API reuses a conversation's prefix, the cache-read rate will apply and `cache_read_tokens` will report those tokens.
 
-Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Routes API](/arc/routes).
+Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee; pricing a model you run yourself at 0 does not reduce the lookup's charge. See [Routes API](/arc/routes).
+
+## Hybrid sessions
+
+Raydock's hybrid mode makes one Routes API call per turn and then runs the turn itself. Every turn bills that lookup, including the turns that run on your own machine. A turn that runs in the cloud through Rayline additionally bills the served model's catalog price, pass-through with no platform fee. Nothing is charged for the inference your own hardware serves. See the [Raydock CLI](/raydock/cli).
 
 ## How requests are billed
 

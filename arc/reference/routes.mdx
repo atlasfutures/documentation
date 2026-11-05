@@ -10,6 +10,8 @@ POST https://api.rayline.ai/v1/routes
 
 Model Routing picks the model and reasoning configuration for a request without running it. Execute the choice in your own stack.
 
+A route is advice, returned as plain JSON. `model` is the catalog's namespaced provider ID, readable as sent; nothing in the response is signed or withheld, and nothing enforces that you run what it names. ARC is not told what you did with it: there is no endpoint for reporting the outcome of a turn you executed. Every lookup is billed, whatever it returns and whatever you do with it.
+
 ## Authentication
 
 Send your Rayline API key (`rlk-...`) in either header:
@@ -30,8 +32,8 @@ Send the same body you would send to generate the turn, in any of three formats:
 | `messages` | Yes | A non-empty array of messages. ARC reads the whole conversation you send. |
 | `system` | No | Your system prompt. |
 | `tools` | No | Read with your system prompt: ARC encodes each tool's name, description and schema, and those tokens count in `usage.encoded_input_tokens`. |
-| `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted), or its Contributor or zero data retention ID (`arc-swift-contributor-1.0`, `arc-swift-zdr-1.0` and so on), which routes like the plain ID. An organization on zero data retention must use the zero data retention IDs; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `404` (`model_not_found`). |
-| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, candidate models, and prices. |
+| `model` | Yes | An ARC model ID: `arc-swift-1.0`, `arc-sage-1.0`, or `arc-1.0` (`arc-1` is also accepted), or its Contributor or zero data retention ID (`arc-swift-contributor-1.0`, `arc-swift-zdr-1.0` and so on), which routes like the plain ID. `rayline-router`, or an omitted `model`, is accepted on accounts under the default routing strategy and is looked up as `arc-1.0`; an account that has switched to the rules strategy gets `404` (`model_not_found`). Raydock's hybrid mode sends it. An organization on zero data retention must use the zero data retention IDs; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Prefixed IDs such as `rayline/arc-swift`, provider models, and unknown `arc-*` IDs such as `arc-2.0` return `404` (`model_not_found`). |
+| `routing` | No | ARC's [routing controls](#routing-controls): your value, routing temperature, candidate models, prices, routing policy, execution envelope, and opt-in response fields. |
 | `max_tokens` | Anthropic Messages only | Required in an Anthropic Messages body, as it is when you generate; it does not affect the route. Chat Completions and Responses bodies do not need it. |
 | `temperature`, `stream` | No | Ignored. A route is always returned as a single JSON response. |
 
@@ -49,6 +51,10 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 | `excluded_models` | array of strings | Models ARC must not choose: up to 256 model IDs or `*` wildcards. Wins over `models`. |
 | `prices` | object | Your inference prices: up to 256 exact model IDs, each with at least one of `input`, `cache_read`, `cache_write`, and `output` in USD per million tokens. A leg you leave out is priced by your profile or the catalog. They change which model ARC selects, never what the route costs. See [bring your own prices](/arc/routes/prices). |
 | `price_profile` | object | A saved [price profile](/arc/routes/prices#price-profiles): `{"id": "...", "version": 3}`. `version` is optional and defaults to the profile's current version. Can be combined with `prices`. |
+| `policy` | object | A versioned routing policy: `{"preset": "arc-policy.package-default.v1"}` (today's behaviour, named), `arc-policy.hybrid-default.v1`, or `arc-policy.prefer-local.v1`, with optional `overrides` for the switch schedule and, on prefer-local, the selection threshold. An absent `policy` is the package default. All three presets are served in production; a preset the serving cell does not admit is refused with `policy_preset_not_admitted`. |
+| `execution` | object | An executor's state, `arc-execution-context.v2`: the turn, the event, what last ran, and the targets it could run, each with an `action_id`, a `worker` and a `placement` of `local` or `cloud`. Written by an executor such as Raydock's hybrid mode, never by hand. A lookup that carries it is routed statelessly (see [Conversations](#conversations)). Served in production. |
+| `response_fields` | array of strings | `["predictions"]` asks for `candidates`: every candidate ARC scored, with its predicted pass probability, token counts and cost. Served where `GET /v1/arc/prices` reports `serving.routes.predictions: true`; elsewhere the member is echoed `unsupported` and no `candidates` are returned. |
+| `signals` | array of strings | Up to 32 typed signal names, for example `topic.operation`, returned in the response's `signals` block where the cell serves them. Signals change no route. |
 
 ```json
 {
@@ -67,6 +73,8 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 ```
 
 Routes API requests are never used to train ARC.
+
+Prices you send, including a price of 0 for a model you run yourself, change which model ARC selects. They never change what the lookup costs.
 
 ### Candidate models
 
@@ -160,7 +168,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
 | `routing` | object | Present when you sent `routing`. |
 
-ARC does not explain its choice, and `alternatives[].score` is a ranking, not a confidence measure.
+ARC does not explain its choice, and `alternatives[].score` is a ranking, not a confidence measure. Per-candidate predictions are returned only when you request `routing.response_fields: ["predictions"]` and the environment serves them.
 
 ### Presets
 
@@ -208,6 +216,8 @@ When conversation tracking ships, sending the same `x-conversation-id` on every 
 
 Keep one ID per conversation. For parallel subagents, give each subagent its own ID. Send one request per conversation at a time: a second concurrent request for the same conversation returns `429` until the first completes.
 
+A lookup that carries `routing.execution` is always routed statelessly, including once conversation tracking ships: the executor owns the conversation's state and resends it in the envelope, so ARC opens a fresh episode for the lookup, reads and writes no stored state, and returns no `episode`.
+
 A conversation's state expires after a period of inactivity.
 
 ### Conversation identity
@@ -247,6 +257,8 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | `400` | `routing_invalid`, `routing_unknown_member` | `routing` is not an object, or has a member Rayline does not support | No |
 | `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–30, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
+| `400` | `response_fields_invalid`, `policy_invalid`, `execution_invalid`, `signals_invalid` | `routing.response_fields`, `routing.policy`, `routing.execution` or `routing.signals` is malformed | No |
+| `400` | `policy_preset_not_admitted`, `policy_schedule_not_admitted`, `execution_no_feasible_target` | The serving cell does not admit that preset or schedule class, or no offered target can run the request | No; see the preset list above |
 | `400` | `models_invalid` | `routing.models` or `routing.excluded_models` is not an array of strings, or has more than 256 entries | No |
 | `400` | `unknown_model` | An entry in `routing.models` or `routing.excluded_models` matches no model ARC can select | No; fix the entry |
 | `400` | `no_candidate_models` | No model is left after `routing.models` and `routing.excluded_models` | No |

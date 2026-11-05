@@ -5,9 +5,13 @@ description: "What you can use today, and what is still coming."
 
 | Surface | Status |
 | --- | --- |
-| ARC models (Anthropic Messages and OpenAI Chat Completions) and the Routes API | Beta, open to any Rayline API key, with tier IDs `arc-swift-1.0` and `arc-sage-1.0` (`arc-swift-zdr-1.0` and `arc-sage-zdr-1.0` for organizations on zero data retention; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)) |
+| ARC models (Anthropic Messages and OpenAI Chat Completions) and the Routes API | Beta, open to any Rayline API key, with `arc-swift-1.0`, `arc-sage-1.0` and `arc-1.0` and their Contributor and zero data retention IDs (`arc-swift-zdr-1.0` and so on; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)) |
 | ARC on the OpenAI Responses API (`/v1/responses`) | Environment-dependent; check the model's advertised protocols below |
-| Routes API request and response contract | [Documented](/arc/reference/routes), including multi-turn conversations |
+| Routes API request and response contract | [Documented](/arc/reference/routes). Conversation tracking is not yet live: each lookup is decided from the conversation in the request body |
+| Routes API routing policy presets (`routing.policy`: `arc-policy.package-default.v1`, `arc-policy.hybrid-default.v1`, `arc-policy.prefer-local.v1`) | Served in production |
+| Routes API execution envelope (`routing.execution`, `arc-execution-context.v2`) | Served in production |
+| Routes API per-candidate predictions (`routing.response_fields: ["predictions"]`) | Served where `GET /v1/arc/prices` reports `serving.routes.predictions: true` |
+| Raydock hybrid local and cloud routing (`raydock hybrid start`) | The production service serves it; the released CLI still needs the development flags. See the [Raydock CLI](/raydock/cli) |
 | Responses streaming, tool calls, images, structured output | Confirm availability with the Rayline team before integrating |
 | Semantic Router source | [Public fork available](https://github.com/atlasfutures/semantic-router) |
 | ARC weights and model-specific self-hosting instructions | Coming soon |
