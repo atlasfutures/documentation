@@ -4,7 +4,7 @@ description: "Confirm supported capabilities before integrating with ARC."
 icon: "list-check"
 ---
 
-Any Rayline API key can use ARC. Request ARC with a tier model ID, `arc-swift-1.0` or `arc-sage-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Organizations on zero data retention use `arc-swift-zdr-1.0` or `arc-sage-zdr-1.0`; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Routes API support is listed below.
+Any Rayline API key can use ARC. Request ARC with an ARC model ID, `arc-swift-1.0`, `arc-sage-1.0` or `arc-1.0`, on the Anthropic Messages API (`POST https://api.rayline.ai/v1/messages`). Organizations on zero data retention use `arc-swift-zdr-1.0` or `arc-sage-zdr-1.0`; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode). Routes API support is listed below.
 
 Do not assume support for streaming, tool calls, structured output, image or audio inputs, or provider SDK compatibility based on an endpoint's protocol name. Confirm these capabilities before building an integration.
 
@@ -16,7 +16,10 @@ Do not assume support for streaming, tool calls, structured output, image or aud
 | --- | --- |
 | Request format | Anthropic Messages, OpenAI Chat Completions, and OpenAI Responses bodies |
 | Format selection | Read from the body; see [request formats](/arc/reference/routes#request) |
-| Multi-turn conversations | Yes, with `x-conversation-id` |
+| Multi-turn conversations | Not yet; each lookup is decided from the conversation in the request body. Send `x-conversation-id` on every turn |
+| Routing policy presets (`routing.policy`) | `arc-policy.package-default.v1`, `arc-policy.hybrid-default.v1` and `arc-policy.prefer-local.v1`, served in production |
+| Execution envelope (`routing.execution`) | `arc-execution-context.v2`, served in production |
+| Per-candidate predictions (`routing.response_fields`) | Served where `GET /v1/arc/prices` reports `serving.routes.predictions: true` |
 | Streaming | No; each route is one JSON response |
 | Tools in the request | Accepted; check the response `warnings` for whether they influenced the route |
 
