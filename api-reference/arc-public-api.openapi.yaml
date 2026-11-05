@@ -12,15 +12,15 @@ x-arc-model-ids:
     arc-swift-1.0:
       mode: tier
       tier: swift
-      value_usd: 0.1
+      v_value: 0.1
     arc-sage-1.0:
       mode: tier
       tier: sage
-      value_usd: 4.5
+      v_value: 4.5
     arc-1.0:
       mode: configurable
       tier: null
-      value_usd: null
+      v_value: null
   description: 'A mode entry is its product run in a data mode of its own, whatever the organization''s setting: it decides
     exactly as its product does. A Contributor entry is refused with 403 contributor_models_off in an organization with Contributor
     models off. On Rayline API traffic (an rlk- key, or a Platform token naming X-Rayline-Org) the ARC id decides the mode:
@@ -151,7 +151,7 @@ paths:
     post:
       operationId: routeLookup
       summary: Route a request
-      description: One encode; the Swift and Sage presets always, plus the custom result at routing.value_usd. Billed once
+      description: One encode; the Swift and Sage presets always, plus the custom result at routing.v_value. Billed once
         at the Routes API encode rate. Never trained on.
       requestBody:
         required: true
@@ -444,13 +444,13 @@ components:
       additionalProperties: false
       description: '``routing`` on ``POST /v1/routes``.'
       properties:
-        value_usd:
+        v_value:
           maximum: 30.0
           minimum: 0.1
           type: number
           description: 'The caller''s V: the USD value of one successful result. Adds the `custom` result. Never clamped.
             On a tier id it must equal the tier''s fixed V.'
-          title: Value Usd
+          title: V Value
           x-status: proposed
         temperature:
           minimum: 0
@@ -598,11 +598,11 @@ components:
       additionalProperties: false
       description: '``routing`` on generation requests (``arc-1.0``; tiers accept only their own V).'
       properties:
-        value_usd:
+        v_value:
           maximum: 30.0
           minimum: 0.1
           type: number
-          title: Value Usd
+          title: V Value
           x-status: proposed
         temperature:
           minimum: 0
@@ -911,10 +911,10 @@ components:
           - type: 'null'
           default: null
           title: Policy Action Id
-        value_usd:
+        v_value:
           maximum: 30.0
           minimum: 0.1
-          title: Value Usd
+          title: V Value
           type: number
         cost_weight:
           exclusiveMinimum: 0
@@ -931,7 +931,7 @@ components:
       - model
       - worker
       - thinking
-      - value_usd
+      - v_value
       - cost_weight
       - prices
       title: RouteResult
@@ -1063,7 +1063,7 @@ components:
 
         applying is ``unsupported`` and listed in ``unapplied_keys``; it is never shown as applied.'
       properties:
-        value_usd:
+        v_value:
           anyOf:
           - $ref: '#/components/schemas/EchoStatus'
           - type: 'null'

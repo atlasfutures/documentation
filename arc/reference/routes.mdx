@@ -39,11 +39,11 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
 
 ### Routing controls
 
-`routing` is an object. Every member is optional; a member Rayline does not recognise is refused with `400` (`routing_unknown_member`), never ignored.
+`routing` is an object. Every member is optional; a member Rayline does not recognise is refused with `400` (`routing_unknown_member`), never ignored. Send V as `v_value`: its former name, `value_usd`, is refused the same way.
 
 | Member | Type | Meaning |
 | --- | --- | --- |
-| `value_usd` | number, 0.1 to 30 | Your value (V): what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With a Swift or Sage ID, in any data mode, it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0`, `arc-contributor-1.0` or `arc-zdr-1.0` for your own value. |
+| `v_value` | number, 0.1 to 30 | Your value (V): what one successful result is worth to you, in US dollars. Adds a [`custom`](#custom-and-routing-echo) result decided at this value. Out-of-range values are refused, never clamped. With a Swift or Sage ID, in any data mode, it must equal the tier's fixed V (0.1 or 4.5), or the request is refused with `tier_value_immutable`; use `arc-1.0`, `arc-contributor-1.0` or `arc-zdr-1.0` for your own value. |
 | `temperature` | number, 0 or more | Routing temperature: a softmax temperature over ARC's normalized scores for each result. 0 always takes the top choice. Uncapped on the Routes API. Separate from the model's generation `temperature`. |
 | `models` | array of strings | The models ARC may choose from: up to 256 model IDs or `*` wildcards. Without it, ARC chooses from every model it can select. See [candidate models](#candidate-models). |
 | `excluded_models` | array of strings | Models ARC must not choose: up to 256 model IDs or `*` wildcards. Wins over `models`. |
@@ -55,7 +55,7 @@ ARC reads the format from the body. A body with `input` is read as OpenAI Respon
   "model": "arc-1.0",
   "messages": [{"role": "user", "content": "Review a database migration for data-loss risks."}],
   "routing": {
-    "value_usd": 2,
+    "v_value": 2,
     "temperature": 0.5,
     "models": ["anthropic/*", "deepseek/deepseek-v4-pro-0813"],
     "excluded_models": ["anthropic/claude-opus*"],
@@ -122,7 +122,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
       "worker": "deepseek/deepseek-v4-pro@thinking-off",
       "provider": "openrouter",
       "thinking": { "mode": "off", "budget_tokens": null },
-      "value_usd": 0.1,
+      "v_value": 0.1,
       "cost_weight": 10,
       "prices": { "basis": "catalog", "price_sha256": null }
     },
@@ -131,7 +131,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
       "worker": "xiaomi/mimo-v2.5-pro@thinking-on",
       "provider": "openrouter",
       "thinking": { "mode": "on", "budget_tokens": 8192 },
-      "value_usd": 4.5,
+      "v_value": 4.5,
       "cost_weight": 0.2222222222222222,
       "prices": { "basis": "catalog", "price_sha256": null }
     }
@@ -157,7 +157,7 @@ See [Conversation identity](#conversation-identity) for how the conversation ID 
 | `usage` | object | `encoded_input_tokens` and `cache_read_tokens`: the tokens ARC read to choose this route, once for all results. These are the metered quantities; see [ARC pricing](/arc/pricing). `cache_read_tokens` is 0 until the Routes API reuses cached prefixes. |
 | `latency_ms` | integer | Time ARC spent choosing the route. |
 | `presets` | object | The routes at ARC Swift and ARC Sage. See [Presets](#presets). |
-| `custom` | object | Present when you sent `routing.value_usd`. See [Custom and routing echo](#custom-and-routing-echo). |
+| `custom` | object | Present when you sent `routing.v_value`. See [Custom and routing echo](#custom-and-routing-echo). |
 | `routing` | object | Present when you sent `routing`. |
 
 ARC does not explain its choice, and `alternatives[].score` is a ranking, not a confidence measure.
@@ -171,7 +171,7 @@ Every response carries `presets`, with the route at both fixed tiers, from the s
 | `presets.swift` | The route at ARC Swift's value (V 0.1). |
 | `presets.sage` | The route at ARC Sage's value (V 4.5). |
 
-Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `value_usd`, `cost_weight` (1 / `value_usd`), `prices`, and, when you sent `routing.temperature`, `temperature`.
+Each result has `model`, `worker`, `provider`, `thinking`, `thinking_level`, `v_value`, `cost_weight` (1 / `v_value`), `prices`, and, when you sent `routing.temperature`, `temperature`.
 
 - `prices.basis` is where the result's model prices came from: `catalog` (Rayline catalog prices only), `caller` (your `routing.prices` set at least one leg), `profile` (your `routing.price_profile` set at least one leg), or `mixed` (both did). `prices.price_sha256` identifies the resolved prices of every candidate; it is `null` when you sent none of `models`, `excluded_models`, `prices`, or `price_profile`. See [check what was applied](/arc/routes/prices#check-what-was-applied).
 - `temperature` reports `requested`, `applied`, and `status`: `greedy` (you asked for 0), `applied` (ARC drew the model at the `applied` temperature; `propensity` is the probability of the chosen model, and `pi` lists each candidate's probability), `not_applied` (with a `reason`), or `unsupported` (the serving path did not confirm it, so the result is the top choice).
@@ -182,7 +182,7 @@ The top-level `model`, `worker`, and `thinking` are the route for the `model` yo
 
 | Field | Present when | Meaning |
 | --- | --- | --- |
-| `custom` | You sent `routing.value_usd` | The route at your value, with the same fields as a preset. |
+| `custom` | You sent `routing.v_value` | The route at your value, with the same fields as a preset. |
 | `routing` | You sent `routing` | Each member you sent, with `status` `applied` or `unsupported`. `unapplied_keys` lists every member that was not applied. |
 
 Some members report more than their status:
@@ -245,7 +245,7 @@ Errors from the routing contract carry a stable `error.code`. A body ARC cannot 
 | --- | --- | --- | --- |
 | `400` | | The body is not a JSON object with messages, or cannot be read in its format (for example, an Anthropic Messages body without `max_tokens`) | No; fix the request |
 | `400` | `routing_invalid`, `routing_unknown_member` | `routing` is not an object, or has a member Rayline does not support | No |
-| `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.value_usd` is not a number in 0.1–30, or differs from a tier's fixed V | No |
+| `400` | `value_invalid`, `value_out_of_bounds`, `tier_value_immutable` | `routing.v_value` is not a number in 0.1–30, or differs from a tier's fixed V | No |
 | `400` | `temperature_invalid` | `routing.temperature` is not a finite number of 0 or more | No |
 | `400` | `models_invalid` | `routing.models` or `routing.excluded_models` is not an array of strings, or has more than 256 entries | No |
 | `400` | `unknown_model` | An entry in `routing.models` or `routing.excluded_models` matches no model ARC can select | No; fix the entry |

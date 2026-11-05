@@ -135,7 +135,7 @@ export default function (pi) {
     if (!Number.isFinite(value) || value < 0.1 || value > 30) {
       throw new Error("RAYLINE_VALUE_USD must be between 0.1 and 30");
     }
-    return { ...event.payload, routing: { value_usd: value } };
+    return { ...event.payload, routing: { v_value: value } };
   });
   pi.on("after_provider_response", (event) => {
     console.error("ARC routing:", event.headers["x-rayline-routing"] ?? "not exposed");
