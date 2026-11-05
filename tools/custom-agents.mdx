@@ -97,7 +97,7 @@ These examples pass the key as a **bearer** token through `auth_token=` (Python)
 </Note>
 
 <Tip>
-Use `arc-swift-1.0` for Swift, or see [ARC Dynamic](/arc/dynamic) for caller-controlled routing value and temperature. Existing `rayline-router` integrations use [Legacy Rules Router](/legacy/rules-router), whose saved policies are separate from ARC.
+Use `arc-swift-1.0` for Swift, or see [ARC Dynamic](/arc/dynamic) for caller-controlled routing value and temperature. `rayline-router`, the retired Rules Router ID, has been removed: a request naming it gets `404` `model_not_found`. Switch existing integrations to an ARC model ID.
 </Tip>
 
 <span id="local" />
@@ -266,9 +266,6 @@ For more on what routes locally and the hardware requirements, see [On-Device Ro
   </Card>
   <Card title="Custom endpoints" icon="plug" href="https://github.com/rayline-ai/raydock/tree/main/examples">
     Route subagents to Ollama, OpenRouter, or any OpenAI-compatible endpoint — see `openrouter.json`, `openai-compatible.json`, and `local-router.json`.
-  </Card>
-  <Card title="Routing settings" icon="sliders" href="/legacy/rules-router/index">
-    Choose ML or rules-based routing and override models per slot.
   </Card>
   <Card title="On-device routing" icon="microchip" href="/raydock/local-models">
     What routes locally, plus hardware requirements.

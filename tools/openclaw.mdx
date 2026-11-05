@@ -52,7 +52,6 @@ Add the provider to `models.providers` in `~/.openclaw/openclaw.json`, and make 
 
 - Give the key as this SecretRef, never as the `${RAYLINE_API_KEY}` shorthand, which OpenClaw writes to its model cache in plain text.
 - On a direct Chat Completions connection, `sendSessionAffinityHeaders` makes OpenClaw send its session ID on every request, so Rayline keeps each session in one conversation across relaunches with `--session-id`.
-- For an existing Legacy Rules Router integration, use `"api": "anthropic-messages"`, `"baseUrl": "https://api.rayline.ai"`, and model `rayline-router`. Chat Completions does not serve Legacy Rules Router. Through Raydock, also use the gateway's `anthropic_messages` upstream and add `rayline-router` to its model list.
 - For the Responses API, add a second provider, `rayline-resp`, with `"api": "openai-responses"`, the same `apiKey`, and `"compat": { "supportsPromptCacheKey": true }` on its model. Set `baseUrl` to your API origin plus `/v1`. Use it with ARC only where that environment [advertises Responses support](/arc/availability#check-protocol-support); otherwise, keep the Chat Completions provider above.
 - The launcher also turns off background requests. Add these if you want the same behaviour; otherwise memory search sends embedding requests to its own provider, and the heartbeat sends periodic turns through Rayline:
 
@@ -150,7 +149,7 @@ From Raydock 0.3.0, the main model is ARC Sage. The config defines two providers
 | `rayline` | Anthropic Messages | The default |
 | `rayline-resp` | OpenAI Responses | Select one of its models |
 
-To use Legacy Rules Router, switch the session's model to `rayline/rayline-router`. Raydock rewrites the config on every launch, so choose Legacy on each run. You can also use the manual configuration above with model `rayline-router`.
+`rayline-router`, the retired Rules Router ID, has been removed: a request naming it gets `404` `model_not_found`. Choose an ARC tier.
 
 It also turns off memory search, the heartbeat, and the compaction memory flush, so OpenClaw sends no background requests to the router and no embedding requests to another provider.
 

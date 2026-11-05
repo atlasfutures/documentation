@@ -27,6 +27,3 @@
 - The base URL is `https://api.rayline.ai`. Do not append `/v1` for Claude Code; OpenAI-style clients use `/v1`.
 - A route executes nothing: run the chosen model yourself. Treat `routing` members echoed `unsupported` as not applied.
 
-## Legacy
-
-- [Rules Router](https://docs.rayline.ai/legacy/rules-router): existing saved routing policies, available under Settings → Legacy.
