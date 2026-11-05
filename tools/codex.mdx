@@ -79,8 +79,6 @@ fallback metadata. Set context limits to match the models you use.
 
 Check [protocol support](/arc/availability#check-protocol-support) for your environment and ARC model. If it advertises `responses`, set the provider's `base_url` to that API origin plus `/v1` and load your real Rayline API key into `RAYLINE_API_KEY`. Keep the ARC model and `wire_api = "responses"` settings above. If Responses is not advertised, use the Raydock setup.
 
-Existing [Legacy Rules Router](/legacy/rules-router) integrations can use `https://api.rayline.ai/v1` with `model = "rayline-router"` and their real Rayline API key.
-
 <span id="launch-with-rayline-local" />
 
 ## Launch with Raydock
@@ -105,7 +103,7 @@ Raydock starts the router, points Codex at it for this run, and passes everythin
 | `--auth subscription`, or `--subscription` | Your existing ChatGPT/Codex login for the main agent; subagents go to your local model when one is configured | Your ChatGPT plan |
 | `--auth none` | No Codex subscription auth; uses the local default or endpoints in `--config` | The configured provider, if any |
 
-The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model, such as `arc-swift-1.0`; without it, the routes decide. `--model rayline-router` does not select [Legacy Rules Router](/legacy/rules-router) for Codex. To use Legacy Rules Router, set the route models in `~/.config/rayline/router.json` to `rayline-router`.
+The default needs a Rayline sign-in. If you have not signed in, run `raydock auth login`. With `--config <path>`, the endpoints in that file determine routing and billing, including when `--auth none` is set. Use `--model <model>` to request a specific model, such as `arc-swift-1.0`; without it, the routes decide.
 
 ```bash
 raydock codex --subscription -- exec "summarize this repo"
@@ -141,7 +139,7 @@ If the Codex desktop app was already running before you updated Raydock, quit an
 
 ## Explicit routes
 
-Custom configurations can select local or API endpoints, or hosted Rules Router routes. See the [CLI configuration guide](https://github.com/rayline-ai/raydock/blob/main/docs/getting-started.md) for the schema.
+Custom configurations can select local or API endpoints. See the [CLI configuration guide](https://github.com/rayline-ai/raydock/blob/main/docs/getting-started.md) for the schema.
 
 Codex uses `/v1/responses`. The requested model determines whether it uses an ARC tier or another configured route; the protocol alone does not establish that.
 

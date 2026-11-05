@@ -10,12 +10,11 @@ icon: "wallet"
 | --- | --- | --- |
 | `arc-swift-1.0` or `arc-sage-1.0` | The tier's fixed rate card for input, cache-read, cache-write, and output tokens, whichever model serves it | Included in the card |
 | `arc-1.0` | The served model's Rayline catalog price | None |
-| A model through legacy Rules Router settings | The served model's Rayline catalog price | 0% commission |
 | A route (`/v1/routes`) | The tokens ARC reads to choose the route, once per request | The Routes API rate; your inference is billed by your own provider |
 | A subscription path, such as `raydock codex --subscription` | Your subscription provider | None from Rayline |
 | Local inference through Raydock | Your hardware or endpoint | None |
 
-Current rates are on [rayline.ai/pricing](https://rayline.ai/pricing); [ARC pricing](/arc/pricing) and [Rules Router pricing](/legacy/rules-router/pricing) explain how requests are billed. A rate is recorded with each request, so a later price change does not alter what an earlier request cost.
+Current rates are on [rayline.ai/pricing](https://rayline.ai/pricing); [ARC pricing](/arc/pricing) explains how requests are billed. A rate is recorded with each request, so a later price change does not alter what an earlier request cost.
 
 ## Which balance pays
 

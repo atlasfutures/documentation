@@ -31,7 +31,6 @@ The last two commands require the running preview and installed Playwright brows
 - `arc/`: generation, the Routes API, open source, compatibility, and pricing.
 - `raydock/`: on-device setup, CLI, and troubleshooting.
 - `tools/`: harness integration guides.
-- `legacy/rules-router/`: existing saved routing policies and billing.
 - `workshop/`: migrated Workshop articles, including Cloud and Desktop sidebar sections.
 - `platform/`: shared Rayline workspace keys and usage.
 
@@ -45,7 +44,7 @@ This is an implementation preview, not a billing or API launch.
 2. Test the hosted Mintlify preview, including real search indexing and old-domain redirects. Search is unavailable in the local CLI preview.
    The local CLI also drops query strings on configured redirects. Verify query preservation on the hosted deployment; implement host-level forwarding if needed. Do not treat the local path-redirect check as evidence that query forwarding works.
 3. Confirm ARC production contracts, live inference, and supported features before removing preview notices or publishing executable production examples.
-4. Never put ARC, Routes or model prices in the docs; link to https://rayline.ai/pricing for current rates. ARC Dynamic's authored pricing policy is served-model catalog inference pricing with 0% ARC commission and no additional routing fee. Coordinate the separate Rules Router commission cutover with billing enforcement.
+4. Never put ARC, Routes or model prices in the docs; link to https://rayline.ai/pricing for current rates. ARC Dynamic's authored pricing policy is served-model catalog inference pricing with 0% ARC commission and no additional routing fee.
 5. Release the matching Raydock CLI, installers, and Homebrew formula before publishing the new install and upgrade instructions.
 6. Publish the documentation repository and update the parent submodule pointer together. Verify in-app documentation links through the redirects before retiring the old Workshop publishing source.
 

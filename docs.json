@@ -187,18 +187,6 @@
               "POST /v1/chat/completions",
               "POST /v1/responses"
             ]
-          },
-          {
-            "group": "Legacy",
-            "pages": [
-              {
-                "group": "Rules Router",
-                "pages": [
-                  "legacy/rules-router/index",
-                  "legacy/rules-router/pricing"
-                ]
-              }
-            ]
           }
         ]
       },
@@ -425,7 +413,7 @@
     },
     {
       "source": "/guides/billing",
-      "destination": "/legacy/rules-router/pricing",
+      "destination": "/platform/billing",
       "permanent": true
     },
     {
@@ -445,12 +433,12 @@
     },
     {
       "source": "/guides/routing-settings",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
       "source": "/how-it-works",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
@@ -465,12 +453,12 @@
     },
     {
       "source": "/how-it-works/routing",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
       "source": "/pricing",
-      "destination": "/legacy/rules-router/pricing",
+      "destination": "/arc/pricing",
       "permanent": true
     },
     {
@@ -515,17 +503,17 @@
     },
     {
       "source": "/rules-router/how-it-works",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
       "source": "/rules-router/how-it-works/routing",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
       "source": "/rules-router/guides/routing-settings",
-      "destination": "/legacy/rules-router/index",
+      "destination": "/arc",
       "permanent": true
     },
     {
@@ -540,7 +528,7 @@
     },
     {
       "source": "/rules-router/guides/billing",
-      "destination": "/legacy/rules-router/pricing",
+      "destination": "/platform/billing",
       "permanent": true
     },
     {
@@ -647,11 +635,11 @@
     },
     {
       "source": "/rules-router/policies",
-      "destination": "/legacy/rules-router/index"
+      "destination": "/arc"
     },
     {
       "source": "/rules-router/pricing/index",
-      "destination": "/legacy/rules-router/pricing"
+      "destination": "/arc/pricing"
     },
     {
       "source": "/rules-router/reference",
@@ -763,7 +751,7 @@
     },
     {
       "source": "/rules-router/pricing",
-      "destination": "/legacy/rules-router/pricing"
+      "destination": "/arc/pricing"
     },
     {
       "source": "/rules-router/cli",
@@ -776,6 +764,21 @@
     {
       "source": "/raydock/menubar",
       "destination": "/raydock/cli"
+    },
+    {
+      "source": "/legacy/rules-router",
+      "destination": "/arc",
+      "permanent": true
+    },
+    {
+      "source": "/legacy/rules-router/index",
+      "destination": "/arc",
+      "permanent": true
+    },
+    {
+      "source": "/legacy/rules-router/pricing",
+      "destination": "/arc/pricing",
+      "permanent": true
     }
   ],
   "api": {

@@ -104,21 +104,6 @@
     ]
   },
   {
-    "source": "/guides/billing",
-    "destination": "/legacy/rules-router/pricing",
-    "fragments": [
-      "pricing-model",
-      "adding-funds",
-      "during-onboarding",
-      "from-the-dashboard",
-      "auto-top-up",
-      "checking-your-balance",
-      "what-counts-as-usage",
-      "cost-tracking",
-      "enterprise"
-    ]
-  },
-  {
     "source": "/guides/dashboard",
     "destination": "/platform/usage",
     "fragments": [
@@ -179,33 +164,6 @@
     ]
   },
   {
-    "source": "/guides/routing-settings",
-    "destination": "/legacy/rules-router/index",
-    "fragments": [
-      "routing-strategies",
-      "ml-routing-default",
-      "rules-based-routing",
-      "slots",
-      "overriding-a-slot",
-      "resetting-to-defaults",
-      "main-model-pin",
-      "local-model-port",
-      "how-classification-maps-to-slots",
-      "tips"
-    ]
-  },
-  {
-    "source": "/how-it-works",
-    "destination": "/legacy/rules-router/index",
-    "fragments": [
-      "the-problem",
-      "the-solution",
-      "what-rayline-routes",
-      "architecture-at-a-glance",
-      "key-concepts"
-    ]
-  },
-  {
     "source": "/how-it-works/models",
     "destination": "/platform/models",
     "fragments": [
@@ -234,33 +192,6 @@
       "custom-models",
       "combining-cloud-and-local",
       "next-steps"
-    ]
-  },
-  {
-    "source": "/how-it-works/routing",
-    "destination": "/legacy/rules-router/index",
-    "fragments": [
-      "step-1-classify-the-task",
-      "subagent-detection",
-      "step-2-select-the-model",
-      "ml-routing-default",
-      "rules-based-routing",
-      "model-pinning",
-      "step-3-dispatch",
-      "what-about-vision",
-      "stickiness",
-      "fallback-behavior",
-      "latency-impact"
-    ]
-  },
-  {
-    "source": "/pricing",
-    "destination": "/legacy/rules-router/pricing",
-    "fragments": [
-      "how-rayline-pricing-works",
-      "why-it-still-saves-money",
-      "plans",
-      "getting-started"
     ]
   },
   {
@@ -381,61 +312,6 @@
       "agent-gateway-versus-arc",
       "agents-and-subagents",
       "choose-your-gateway"
-    ]
-  },
-  {
-    "source": "/rules-router/policies",
-    "destination": "/legacy/rules-router/index",
-    "fragments": [
-      "a-practical-configuration",
-      "architecture-at-a-glance",
-      "failures-and-scope",
-      "fallback-behavior",
-      "how-classification-maps-to-slots",
-      "key-concepts",
-      "latency-impact",
-      "local-model-port",
-      "main-agent-pinning",
-      "main-model-pin",
-      "ml-routing-default",
-      "model-pinning",
-      "overriding-a-slot",
-      "resetting-to-defaults",
-      "routing-strategies",
-      "rules-based-routing",
-      "slots",
-      "step-1-classify-the-task",
-      "step-2-select-the-model",
-      "step-3-dispatch",
-      "stickiness",
-      "subagent-detection",
-      "the-problem",
-      "the-solution",
-      "tips",
-      "what-about-vision",
-      "what-rayline-routes"
-    ]
-  },
-  {
-    "source": "/rules-router/pricing/index",
-    "destination": "/legacy/rules-router/pricing",
-    "fragments": [
-      "adding-funds",
-      "auto-top-up",
-      "check-an-example",
-      "checking-your-balance",
-      "cost-tracking",
-      "during-onboarding",
-      "enterprise",
-      "from-the-dashboard",
-      "getting-started",
-      "how-rayline-pricing-works",
-      "not-arc-decisions",
-      "plans",
-      "pricing-model",
-      "what-counts-as-usage",
-      "what-you-pay-for",
-      "why-it-still-saves-money"
     ]
   },
   {
@@ -947,28 +823,6 @@
       "agent-gateway-versus-arc",
       "agents-and-subagents",
       "choose-your-gateway"
-    ]
-  },
-  {
-    "source": "/rules-router/pricing",
-    "destination": "/legacy/rules-router/pricing",
-    "fragments": [
-      "adding-funds",
-      "auto-top-up",
-      "check-an-example",
-      "checking-your-balance",
-      "cost-tracking",
-      "during-onboarding",
-      "enterprise",
-      "from-the-dashboard",
-      "getting-started",
-      "how-rayline-pricing-works",
-      "not-arc-decisions",
-      "plans",
-      "pricing-model",
-      "what-counts-as-usage",
-      "what-you-pay-for",
-      "why-it-still-saves-money"
     ]
   },
   {
