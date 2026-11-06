@@ -1,0 +1,142 @@
+---
+title: "Decisions API quickstart"
+sidebarTitle: "Quickstart"
+description: "Send your first Decisions API request with curl, Python or TypeScript."
+icon: "bolt"
+---
+
+<Steps>
+<Step title="Get a key and add funds">
+Create a key in **API Keys** on the [Rayline Platform](https://platform.rayline.ai/keys) and add funds to the workspace; see [API keys](/platform/api-keys) and [funding and billing](/platform/billing). Without a balance, requests return `402` (`billing_error`). Keep the key in `RAYLINE_API_KEY`, outside your source code:
+
+```bash
+export RAYLINE_API_KEY="<your Rayline API key>"
+```
+</Step>
+<Step title="Ask a question">
+
+Send a `state` and a map of `questions`. Each question has an ID you choose, which keys its answer in the response.
+
+```bash
+curl --fail-with-body https://api.rayline.ai/v1/decisions \
+  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "arc-decisions-0.1",
+    "state": {
+      "messages": [
+        {"role": "user", "content": "Add retries to the upload client."},
+        {"role": "assistant", "content": "Added exponential backoff with three attempts and a test for it."}
+      ]
+    },
+    "questions": {
+      "done": {"type": "noul", "instructions": "Has the assistant completed the user request?"},
+      "area": {
+        "type": "choice",
+        "instructions": "Which part of the system does this change touch?",
+        "criteria": {"networking": "HTTP clients and transport", "storage": "Databases and files", "ui": "User interface"}
+      },
+      "risk": {
+        "type": "score",
+        "instructions": "How risky is this change to ship?",
+        "criteria": ["Trivial", "Low", "Moderate", "High"]
+      }
+    }
+  }'
+```
+</Step>
+<Step title="Read the answers">
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "done": {"type": "noul", "noul": 0.91},
+    "area": {
+      "type": "choice",
+      "choice": "networking",
+      "confidence": 0.88,
+      "probabilities": {"networking": 0.92, "storage": 0.05, "ui": 0.03}
+    },
+    "risk": {
+      "type": "score",
+      "score": 1.12,
+      "confidence": 0.64,
+      "legend": {"0": "Trivial", "1": "Low", "2": "Moderate", "3": "High"},
+      "probabilities": {"0": 0.12, "1": 0.69, "2": 0.14, "3": 0.05}
+    }
+  },
+  "usage": {"input_tokens": 212, "output_tokens": 0}
+}
+```
+
+The values above are illustrative. `noul` is the probability that the answer is true. `choice` is the most likely option. `score` is the expected level, counting levels from `0`; `legend` maps each level back to your text. See [answers](/arc/reference/decisions-api#answers).
+</Step>
+<Step title="Inspect the request">
+Find the request in [usage](/platform/usage) with the tokens it was billed for.
+</Step>
+</Steps>
+
+## Python
+
+```python
+import os
+import requests
+
+def ask(state, questions, model="arc-decisions-0.1"):
+    response = requests.post(
+        "https://api.rayline.ai/v1/decisions",
+        headers={"Authorization": f"Bearer {os.environ['RAYLINE_API_KEY']}"},
+        json={"model": model, "state": state, "questions": questions},
+        timeout=30,
+    )
+    if response.status_code != 200:
+        # Decisions errors are {"error": "<code>", "detail": {...}}
+        raise RuntimeError(f"{response.status_code}: {response.text}")
+    return response.json()["answers"]
+
+answers = ask(
+    {"messages": [{"role": "user", "content": "Rename the helper and update every caller."}]},
+    {"is_refactor": {"type": "noul", "instructions": "Is this request a refactor?"}},
+)
+if answers["is_refactor"]["noul"] > 0.5:
+    print("Refactor")
+```
+
+## TypeScript
+
+```typescript
+type Question =
+  | { type: "noul"; instructions?: string; criteria?: { true?: string; false?: string } }
+  | { type: "choice"; instructions?: string; criteria: Record<string, string | null> }
+  | { type: "score"; instructions?: string; criteria: string[] };
+
+async function ask(state: unknown, questions: Record<string, Question>, model = "arc-decisions-0.1") {
+  const response = await fetch("https://api.rayline.ai/v1/decisions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RAYLINE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ model, state, questions }),
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!response.ok) {
+    // Decisions errors are {"error": "<code>", "detail": {...}}
+    throw new Error(`${response.status}: ${await response.text()}`);
+  }
+  return (await response.json()).answers;
+}
+
+const answers = await ask(
+  { messages: [{ role: "user", content: "Rename the helper and update every caller." }] },
+  { is_refactor: { type: "noul", instructions: "Is this request a refactor?" } },
+);
+console.log(answers.is_refactor.noul);
+```
+
+## Next steps
+
+- Retry `429` after `Retry-After`, and `503` with backoff; fix the request on any other error. See [errors](/arc/reference/decisions-api#errors).
+- Keep a state and its longest question within 32,768 tokens, and ask at most 16 questions a request. See [limits](/arc/reference/decisions-api#limits).
+- If your organization uses zero data retention, send `"model": "arc-decisions-zdr-0.1"`.

@@ -141,6 +141,13 @@
             ]
           },
           {
+            "group": "Decisions API",
+            "pages": [
+              "arc/decisions-api/index",
+              "arc/decisions-api/quickstart"
+            ]
+          },
+          {
             "group": "Model behavior",
             "pages": [
               "arc/concepts/checkpoints",
@@ -175,6 +182,7 @@
               "arc/reference/compatibility",
               "arc/reference/generation",
               "arc/reference/routes",
+              "arc/reference/decisions-api",
               "arc/reference/errors"
             ]
           },

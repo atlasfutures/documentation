@@ -1,9 +1,9 @@
 ---
 title: "ARC pricing"
-description: "How ARC Swift, ARC Sage, ARC Dynamic and the Routes API are billed. Current rates are on rayline.ai/pricing."
+description: "How ARC Swift, ARC Sage, ARC Dynamic, the Routes API and the Decisions API are billed. Current rates are on rayline.ai/pricing."
 ---
 
-Current rates for ARC Swift, ARC Sage and the Routes API are on [rayline.ai/pricing](https://rayline.ai/pricing). This page explains how each is billed.
+Current rates for ARC Swift, ARC Sage, the Routes API and the Decisions API are on [rayline.ai/pricing](https://rayline.ai/pricing). This page explains how each is billed.
 
 ## ARC Swift and Sage
 
@@ -24,6 +24,10 @@ The Routes API bills the tokens ARC reads to choose a route, once per request, h
 The Routes API does not yet reuse a cached prefix between requests. So every token a route reads is billed at the encoded-input rate, and `usage.cache_read_tokens` is 0. Once the Routes API reuses a conversation's prefix, the cache-read rate will apply and `cache_read_tokens` will report those tokens.
 
 Your provider bills the inference you run. Prices you send in `routing.prices` change which model ARC selects, not this fee. See [Routes API](/arc/routes).
+
+## Decisions API
+
+The Decisions API bills the input tokens ARC reads to answer a request: the state plus every question, as reported in `usage.input_tokens`. There is no output charge. Each data mode has its own rate: `arc-decisions-0.1` (Standard), `arc-decisions-zdr-0.1` (zero data retention) and `arc-decisions-contributor-0.1` (Contributor). Tokens reported as `usage.input_tokens_details.cached_tokens` are billed at the same input rate. Refused requests are not billed. See [Decisions API](/arc/decisions-api).
 
 ## How requests are billed
 
