@@ -225,7 +225,7 @@ A score of `1.91` sits close to "Needs attention today", with most of the probab
 
 ## Several questions in one call
 
-Ask up to 16 questions about one state in a request. ARC reads the state once, so each extra question adds only its own tokens. This ticket triage mixes all three types:
+Ask up to 16 questions about one state in a request. ARC reads the state once, so each extra question adds only its own tokens. This ticket triage asks one question of each type:
 
 ```json
 {
@@ -245,8 +245,7 @@ Ask up to 16 questions about one state in a request. ARC reads the state once, s
       "type": "score",
       "instructions": "How urgent is this ticket?",
       "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
-    },
-    "contains_pii": {"type": "noul", "instructions": "Does the message include an email address or phone number?"}
+    }
   }
 }
 ```
@@ -267,15 +266,14 @@ Ask up to 16 questions about one state in a request. ARC reads the state once, s
       "score": 1.91,
       "confidence": 0.26,
       "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
-      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.37, "3": 0.33}
-    },
-    "contains_pii": {"type": "noul", "noul": 0.69}
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.36, "3": 0.33}
+    }
   },
-  "usage": {"input_tokens": 258, "output_tokens": 0}
+  "usage": {"input_tokens": 218, "output_tokens": 0}
 }
 ```
 
-The four questions cost 258 input tokens; asked alone, the urgency question cost 129.
+The three questions cost 218 input tokens; asked alone, the urgency question cost 129.
 
 ## A conversation as it grows
 

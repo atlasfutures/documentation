@@ -40,8 +40,7 @@ curl --fail-with-body https://api.rayline.ai/v1/decisions \
       "type": "score",
       "instructions": "How urgent is this ticket?",
       "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
-    },
-    "contains_pii": {"type": "noul", "instructions": "Does the message include an email address or phone number?"}
+    }
   }
 }
 JSON
@@ -65,11 +64,10 @@ JSON
       "score": 1.91,
       "confidence": 0.26,
       "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
-      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.37, "3": 0.33}
-    },
-    "contains_pii": {"type": "noul", "noul": 0.69}
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.36, "3": 0.33}
+    }
   },
-  "usage": {"input_tokens": 258, "output_tokens": 0}
+  "usage": {"input_tokens": 218, "output_tokens": 0}
 }
 ```
 
