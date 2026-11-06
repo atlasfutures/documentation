@@ -36,14 +36,14 @@ A JSON object with these members. Any other member is refused with `400` (`inval
 {
   "model": "arc-decisions-0.1",
   "state": {
-    "system": "You are a coding assistant.",
+    "system": "You are the support assistant for a project-management app.",
     "messages": [
-      {"role": "user", "content": "Add retries to the upload client."},
-      {"role": "assistant", "content": "Added exponential backoff with three attempts."}
+      {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
+      {"role": "assistant", "content": "Sorry about that. I've refunded the duplicate charge."}
     ]
   },
   "questions": {
-    "done": {"type": "noul", "instructions": "Has the assistant completed the user request?"}
+    "resolved": {"type": "noul", "instructions": "Has the customer's issue been resolved?"}
   }
 }
 ```
@@ -75,16 +75,16 @@ The state and its longest question must fit within 32,768 tokens; see [limits](#
 
 ```json
 {
-  "done": {"type": "noul", "instructions": "Has the assistant completed the user request?"},
-  "area": {
+  "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+  "team": {
     "type": "choice",
-    "instructions": "Which part of the system does this change touch?",
-    "criteria": {"networking": "HTTP clients and transport", "storage": "Databases and files", "ui": null}
+    "instructions": "Which team should own this ticket?",
+    "criteria": {"payments": "Checkout, payment and billing problems", "accounts": "Sign-in and user accounts", "docs": null}
   },
-  "risk": {
+  "urgency": {
     "type": "score",
-    "instructions": "How risky is this change to ship?",
-    "criteria": ["Trivial", "Low", "Moderate", "High"]
+    "instructions": "How urgent is this ticket?",
+    "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
   }
 }
 ```
@@ -97,24 +97,26 @@ Image questions (`box`) and image `assets` are not supported and return `422` (`
 {
   "model": "arc-decisions-0.1",
   "answers": {
-    "done": {"type": "noul", "noul": 0.91},
-    "area": {
+    "is_bug": {"type": "noul", "noul": 0.6},
+    "team": {
       "type": "choice",
-      "choice": "networking",
-      "confidence": 0.88,
-      "probabilities": {"networking": 0.92, "storage": 0.05, "ui": 0.03}
+      "choice": "payments",
+      "confidence": 0.81,
+      "probabilities": {"payments": 0.87, "accounts": 0.07, "docs": 0.06}
     },
-    "risk": {
+    "urgency": {
       "type": "score",
-      "score": 1.12,
-      "confidence": 0.64,
-      "legend": {"0": "Trivial", "1": "Low", "2": "Moderate", "3": "High"},
-      "probabilities": {"0": 0.12, "1": 0.69, "2": 0.14, "3": 0.05}
+      "score": 1.91,
+      "confidence": 0.26,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.37, "3": 0.33}
     }
   },
-  "usage": {"input_tokens": 212, "output_tokens": 0}
+  "usage": {"input_tokens": 258, "output_tokens": 0}
 }
 ```
+
+This response is the [ticket triage example](/arc/decisions-api/examples#several-questions-in-one-call), shortened to three of its four answers.
 
 | Field | Type | Description |
 | --- | --- | --- |

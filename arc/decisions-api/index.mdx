@@ -6,29 +6,37 @@ icon: "circle-question"
 
 With the Decisions API, you send a state, such as a conversation, a document or a JSON record, and up to 16 typed questions about it. ARC answers each question with a probability, a choice or a score in one request, and generates no text.
 
-Use it to make decisions inside your application from what a conversation says: whether a task is finished, which category a request falls into, or how risky a change looks.
+Use it to make decisions inside your application from what a conversation or document says: whether a customer's issue is resolved, which queue a ticket belongs in, how urgent it is, or which model should handle a request.
 
 ```bash
 curl --fail-with-body https://api.rayline.ai/v1/decisions \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "state": {"messages": [{"role": "user", "content": "Rename the helper and update every caller."}]},
-    "questions": {
-      "is_refactor": {"type": "noul", "instructions": "Is this request a refactor?"}
-    }
-  }'
+  -d @- <<'JSON'
+{
+  "state": {
+    "messages": [
+      {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
+      {"role": "assistant", "content": "Sorry about that. I've refunded the duplicate charge; it will show on your card in 3-5 business days."},
+      {"role": "user", "content": "Got it, thanks for sorting that out so fast!"}
+    ]
+  },
+  "questions": {
+    "resolved": {"type": "noul", "instructions": "Has the customer's issue been resolved?"}
+  }
+}
+JSON
 ```
 
 ```json
 {
   "model": "arc-decisions-0.1",
-  "answers": {"is_refactor": {"type": "noul", "noul": 0.73}},
-  "usage": {"input_tokens": 66, "output_tokens": 0}
+  "answers": {"resolved": {"type": "noul", "noul": 0.81}},
+  "usage": {"input_tokens": 99, "output_tokens": 0}
 }
 ```
 
-Start with the [Decisions API quickstart](/arc/decisions-api/quickstart). Every field is in the [Decisions API reference](/arc/reference/decisions-api).
+Start with the [Decisions API quickstart](/arc/decisions-api/quickstart), then see [examples](/arc/decisions-api/examples) for classification, scores, ticket triage, growing conversations and routing. Every field is in the [Decisions API reference](/arc/reference/decisions-api).
 
 ## Question types
 

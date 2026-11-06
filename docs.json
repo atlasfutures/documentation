@@ -144,7 +144,8 @@
             "group": "Decisions API",
             "pages": [
               "arc/decisions-api/index",
-              "arc/decisions-api/quickstart"
+              "arc/decisions-api/quickstart",
+              "arc/decisions-api/examples"
             ]
           },
           {

@@ -1,0 +1,385 @@
+---
+title: "Decisions API examples"
+sidebarTitle: "Examples"
+description: "Yes/no checks, classification, scores, several questions in one call, growing conversations and routing."
+icon: "list-check"
+---
+
+Each example below is a request body and the response it returned. Send a body with the same request as the [quickstart](/arc/decisions-api/quickstart):
+
+```bash
+curl --fail-with-body https://api.rayline.ai/v1/decisions \
+  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @body.json
+```
+
+Probabilities in the responses are rounded to two decimals. Read them as estimates and pick your own thresholds; see [answers](/arc/reference/decisions-api#answers).
+
+## Yes or no
+
+A `noul` question returns the probability that the answer is true.
+
+### Is the issue resolved?
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "state": {
+    "messages": [
+      {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
+      {"role": "assistant", "content": "Sorry about that. I've refunded the duplicate charge; it will show on your card in 3-5 business days."},
+      {"role": "user", "content": "Got it, thanks for sorting that out so fast!"}
+    ]
+  },
+  "questions": {
+    "resolved": {"type": "noul", "instructions": "Has the customer's issue been resolved?"}
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {"resolved": {"type": "noul", "noul": 0.81}},
+  "usage": {"input_tokens": 99, "output_tokens": 0}
+}
+```
+
+### Is the request on topic?
+
+Use `criteria` to say what `true` and `false` mean. A `system` member in the state is read before the messages.
+
+```json
+{
+  "state": {
+    "system": "You are the support assistant for a project-management app.",
+    "messages": [{"role": "user", "content": "Can you write me a poem about my cat?"}]
+  },
+  "questions": {
+    "on_topic": {
+      "type": "noul",
+      "instructions": "Is the user's request within the assistant's job?",
+      "criteria": {
+        "true": "A question about using the project-management app or the user's account.",
+        "false": "Anything else."
+      }
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {"on_topic": {"type": "noul", "noul": 0.07}},
+  "usage": {"input_tokens": 90, "output_tokens": 0}
+}
+```
+
+With the message "How do I move a task to another board?" instead, the same question returns `0.86`.
+
+## Classify
+
+A `choice` question picks one option from `criteria` and returns every option's probability.
+
+### Support category
+
+```json
+{
+  "state": "I've been charged for a plan I cancelled last month. Please refund it.",
+  "questions": {
+    "category": {
+      "type": "choice",
+      "instructions": "Which support queue should handle this message?",
+      "criteria": {
+        "billing": "Charges, invoices, refunds and plans",
+        "technical": "Bugs, errors and outages",
+        "account": "Sign-in, passwords and profile settings",
+        "feedback": "Feature requests and general comments"
+      }
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "category": {
+      "type": "choice",
+      "choice": "billing",
+      "confidence": 0.85,
+      "probabilities": {"billing": 0.89, "technical": 0.04, "account": 0.03, "feedback": 0.04}
+    }
+  },
+  "usage": {"input_tokens": 90, "output_tokens": 0}
+}
+```
+
+### Sentiment
+
+When an option's name says enough, give it `null` instead of a description.
+
+```json
+{
+  "state": "The new dashboard is so much faster. Great work, team!",
+  "questions": {
+    "sentiment": {
+      "type": "choice",
+      "instructions": "What is the sentiment of this message?",
+      "criteria": {"positive": null, "neutral": null, "negative": null}
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "sentiment": {
+      "type": "choice",
+      "choice": "positive",
+      "confidence": 0.82,
+      "probabilities": {"positive": 0.88, "neutral": 0.05, "negative": 0.07}
+    }
+  },
+  "usage": {"input_tokens": 56, "output_tokens": 0}
+}
+```
+
+## Score on a scale
+
+A `score` question takes levels ordered low to high. `score` is the expected level, counting from `0`, and `legend` maps each level back to your text.
+
+### Urgency
+
+```json
+{
+  "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
+  "questions": {
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is this ticket?",
+      "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "urgency": {
+      "type": "score",
+      "score": 1.91,
+      "confidence": 0.27,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.38, "3": 0.32}
+    }
+  },
+  "usage": {"input_tokens": 129, "output_tokens": 0}
+}
+```
+
+A score of `1.91` sits close to "Needs attention today", with most of the probability on the top two levels.
+
+### Helpfulness of a reply
+
+```json
+{
+  "state": {
+    "messages": [
+      {"role": "user", "content": "How do I export my data as CSV?"},
+      {"role": "assistant", "content": "Open Settings, choose Data, then click Export and pick CSV. The file downloads when it's ready."}
+    ]
+  },
+  "questions": {
+    "helpfulness": {
+      "type": "score",
+      "instructions": "How helpful is the assistant's last reply?",
+      "criteria": ["Not helpful", "Somewhat helpful", "Helpful", "Very helpful"]
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "helpfulness": {
+      "type": "score",
+      "score": 2.23,
+      "confidence": 0.23,
+      "legend": {"0": "Not helpful", "1": "Somewhat helpful", "2": "Helpful", "3": "Very helpful"},
+      "probabilities": {"0": 0.09, "1": 0.1, "2": 0.29, "3": 0.52}
+    }
+  },
+  "usage": {"input_tokens": 98, "output_tokens": 0}
+}
+```
+
+## Several questions in one call
+
+Ask up to 16 questions about one state in a request. ARC reads the state once, so each extra question adds only its own tokens. This ticket triage mixes all three types:
+
+```json
+{
+  "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
+  "questions": {
+    "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should own this ticket?",
+      "criteria": {
+        "payments": "Checkout, payment and billing problems",
+        "accounts": "Sign-in and user accounts",
+        "docs": "Documentation questions"
+      }
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is this ticket?",
+      "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+    },
+    "contains_pii": {"type": "noul", "instructions": "Does the message include an email address or phone number?"}
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "is_bug": {"type": "noul", "noul": 0.6},
+    "team": {
+      "type": "choice",
+      "choice": "payments",
+      "confidence": 0.81,
+      "probabilities": {"payments": 0.87, "accounts": 0.07, "docs": 0.06}
+    },
+    "urgency": {
+      "type": "score",
+      "score": 1.91,
+      "confidence": 0.26,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.37, "3": 0.33}
+    },
+    "contains_pii": {"type": "noul", "noul": 0.69}
+  },
+  "usage": {"input_tokens": 258, "output_tokens": 0}
+}
+```
+
+The four questions cost 258 input tokens; asked alone, the urgency question cost 129.
+
+## A conversation as it grows
+
+Keep your questions fixed and send the whole conversation each time it changes. These are the same two questions after the first, third and fourth messages of a sign-in support chat:
+
+```json
+{
+  "state": {
+    "messages": [
+      {"role": "user", "content": "I can't sign in. It says my password is wrong but I just reset it."},
+      {"role": "assistant", "content": "Let's check. Did you use the link in the newest reset email? Older links stop working."},
+      {"role": "user", "content": "I used an older one. Trying the newest now."},
+      {"role": "user", "content": "That worked, I'm in. Thanks!"}
+    ]
+  },
+  "questions": {
+    "resolved": {"type": "noul", "instructions": "Has the customer's issue been resolved?"},
+    "frustration": {
+      "type": "score",
+      "instructions": "How frustrated is the customer?",
+      "criteria": ["Calm", "Mildly frustrated", "Very frustrated"]
+    }
+  }
+}
+```
+
+| Messages sent | `resolved` | `frustration` | `input_tokens` |
+| --- | --- | --- | --- |
+| First message | 0.4 | 1.36 | 111 |
+| First three | 0.7 | 0.65 | 152 |
+| All four | 0.73 | 0.57 | 166 |
+
+The response for all four messages:
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "resolved": {"type": "noul", "noul": 0.73},
+    "frustration": {
+      "type": "score",
+      "score": 0.57,
+      "confidence": 0.15,
+      "legend": {"0": "Calm", "1": "Mildly frustrated", "2": "Very frustrated"},
+      "probabilities": {"0": 0.55, "1": 0.32, "2": 0.12}
+    }
+  },
+  "usage": {"input_tokens": 166, "output_tokens": 0}
+}
+```
+
+Each request is billed for the whole conversation it sends.
+
+## Routing a request
+
+You can route on your own criteria: ask about a request before you send it, then map the answers to your own models or queues. To have ARC pick the model and reasoning configuration itself, use the [Routes API](/arc/routes) instead.
+
+```json
+{
+  "state": {
+    "messages": [
+      {"role": "user", "content": "Our Postgres queries slowed down 10x after the upgrade. Here's the EXPLAIN output; find the cause and propose a migration that fixes it without downtime."}
+    ]
+  },
+  "questions": {
+    "difficulty": {
+      "type": "score",
+      "instructions": "How hard is this request for an AI assistant?",
+      "criteria": ["Trivial lookup", "Routine task", "Multi-step reasoning", "Expert, open-ended problem"]
+    },
+    "needs_tools": {"type": "noul", "instructions": "Does answering well require running code or reading files?"},
+    "domain": {
+      "type": "choice",
+      "instructions": "Which kind of work is this?",
+      "criteria": {
+        "coding": "Writing or debugging code",
+        "writing": "Prose, email or docs",
+        "data": "Databases, SQL and analytics",
+        "chat": "Casual conversation"
+      }
+    }
+  }
+}
+```
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "difficulty": {
+      "type": "score",
+      "score": 1.01,
+      "confidence": 0.3,
+      "legend": {"0": "Trivial lookup", "1": "Routine task", "2": "Multi-step reasoning", "3": "Expert, open-ended problem"},
+      "probabilities": {"0": 0.34, "1": 0.39, "2": 0.18, "3": 0.09}
+    },
+    "needs_tools": {"type": "noul", "noul": 0.58},
+    "domain": {
+      "type": "choice",
+      "choice": "coding",
+      "confidence": 0.57,
+      "probabilities": {"coding": 0.68, "writing": 0.08, "data": 0.16, "chat": 0.08}
+    }
+  },
+  "usage": {"input_tokens": 203, "output_tokens": 0}
+}
+```

@@ -15,34 +15,36 @@ export RAYLINE_API_KEY="<your Rayline API key>"
 </Step>
 <Step title="Ask a question">
 
-Send a `state` and a map of `questions`. Each question has an ID you choose, which keys its answer in the response.
+Send a `state` and a map of `questions`. Each question has an ID you choose, which keys its answer in the response. This request triages a support ticket with one question of each type:
 
 ```bash
 curl --fail-with-body https://api.rayline.ai/v1/decisions \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "model": "arc-decisions-0.1",
-    "state": {
-      "messages": [
-        {"role": "user", "content": "Add retries to the upload client."},
-        {"role": "assistant", "content": "Added exponential backoff with three attempts and a test for it."}
-      ]
-    },
-    "questions": {
-      "done": {"type": "noul", "instructions": "Has the assistant completed the user request?"},
-      "area": {
-        "type": "choice",
-        "instructions": "Which part of the system does this change touch?",
-        "criteria": {"networking": "HTTP clients and transport", "storage": "Databases and files", "ui": "User interface"}
-      },
-      "risk": {
-        "type": "score",
-        "instructions": "How risky is this change to ship?",
-        "criteria": ["Trivial", "Low", "Moderate", "High"]
+  -d @- <<'JSON'
+{
+  "model": "arc-decisions-0.1",
+  "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
+  "questions": {
+    "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should own this ticket?",
+      "criteria": {
+        "payments": "Checkout, payment and billing problems",
+        "accounts": "Sign-in and user accounts",
+        "docs": "Documentation questions"
       }
-    }
-  }'
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is this ticket?",
+      "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+    },
+    "contains_pii": {"type": "noul", "instructions": "Does the message include an email address or phone number?"}
+  }
+}
+JSON
 ```
 </Step>
 <Step title="Read the answers">
@@ -51,26 +53,27 @@ curl --fail-with-body https://api.rayline.ai/v1/decisions \
 {
   "model": "arc-decisions-0.1",
   "answers": {
-    "done": {"type": "noul", "noul": 0.91},
-    "area": {
+    "is_bug": {"type": "noul", "noul": 0.6},
+    "team": {
       "type": "choice",
-      "choice": "networking",
-      "confidence": 0.88,
-      "probabilities": {"networking": 0.92, "storage": 0.05, "ui": 0.03}
+      "choice": "payments",
+      "confidence": 0.81,
+      "probabilities": {"payments": 0.87, "accounts": 0.07, "docs": 0.06}
     },
-    "risk": {
+    "urgency": {
       "type": "score",
-      "score": 1.12,
-      "confidence": 0.64,
-      "legend": {"0": "Trivial", "1": "Low", "2": "Moderate", "3": "High"},
-      "probabilities": {"0": 0.12, "1": 0.69, "2": 0.14, "3": 0.05}
-    }
+      "score": 1.91,
+      "confidence": 0.26,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.37, "3": 0.33}
+    },
+    "contains_pii": {"type": "noul", "noul": 0.69}
   },
-  "usage": {"input_tokens": 212, "output_tokens": 0}
+  "usage": {"input_tokens": 258, "output_tokens": 0}
 }
 ```
 
-The values above are illustrative. `noul` is the probability that the answer is true. `choice` is the most likely option. `score` is the expected level, counting levels from `0`; `legend` maps each level back to your text. See [answers](/arc/reference/decisions-api#answers).
+Probabilities are rounded to two decimals. `noul` is the probability that the answer is true. `choice` is the most likely option. `score` is the expected level, counting levels from `0`; `legend` maps each level back to your text. See [answers](/arc/reference/decisions-api#answers), and [examples](/arc/decisions-api/examples) for more question shapes.
 </Step>
 <Step title="Inspect the request">
 Find the request in [usage](/platform/usage) with the tokens it was billed for.
@@ -96,11 +99,14 @@ def ask(state, questions, model="arc-decisions-0.1"):
     return response.json()["answers"]
 
 answers = ask(
-    {"messages": [{"role": "user", "content": "Rename the helper and update every caller."}]},
-    {"is_refactor": {"type": "noul", "instructions": "Is this request a refactor?"}},
+    "The new dashboard is so much faster. Great work, team!",
+    {"sentiment": {
+        "type": "choice",
+        "instructions": "What is the sentiment of this message?",
+        "criteria": {"positive": None, "neutral": None, "negative": None},
+    }},
 )
-if answers["is_refactor"]["noul"] > 0.5:
-    print("Refactor")
+print(answers["sentiment"]["choice"])  # positive
 ```
 
 ## TypeScript
@@ -129,10 +135,16 @@ async function ask(state: unknown, questions: Record<string, Question>, model = 
 }
 
 const answers = await ask(
-  { messages: [{ role: "user", content: "Rename the helper and update every caller." }] },
-  { is_refactor: { type: "noul", instructions: "Is this request a refactor?" } },
+  "The new dashboard is so much faster. Great work, team!",
+  {
+    sentiment: {
+      type: "choice",
+      instructions: "What is the sentiment of this message?",
+      criteria: { positive: null, neutral: null, negative: null },
+    },
+  },
 );
-console.log(answers.is_refactor.noul);
+console.log(answers.sentiment.choice); // positive
 ```
 
 ## Next steps
