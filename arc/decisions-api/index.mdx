@@ -50,7 +50,7 @@ JSON
 | Billing | Per input token (state plus questions); output is free. Current rates are on [rayline.ai/pricing](https://rayline.ai/pricing). |
 | Context | 32,768 tokens: the state plus its longest question |
 | Rate limit | 30 requests per minute per user |
-| Model list | `GET /v1/models` lists the Decisions model IDs in a `models` array, as TypeSafe's API does |
+| Model list | `GET /v1/models` lists the three Decisions model IDs in a `models` array of `{name, description, release_date}`, as TypeSafe's API does |
 
 ## Guides
 

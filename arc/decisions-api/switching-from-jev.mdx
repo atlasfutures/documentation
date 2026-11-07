@@ -67,7 +67,7 @@ Send <code>{decisionsModel}</code>, or the [ID for your data mode](/arc/decision
 | `https://openrouter.ai/api/alpha/decisions` | `https://api.rayline.ai/v1/systemone` (`/v1/decisions` is the same endpoint) |
 | An OpenRouter or TypeSafe key | A Rayline API key, in `Authorization: Bearer` or `x-api-key`; see [API keys](/platform/api-keys) |
 | `model`: a Jev model ID, such as `jev-latest` or `typesafe/jev-1.13` | Required: <code>{decisionsModel}</code> or the ID for your data mode. A Jev model ID returns `404` (`model_not_found`) |
-| `GET /v1/models` | Same: the `models` array lists the Decisions model IDs |
+| `GET /v1/models` | Same: the `models` array lists the three Decisions model IDs, each as `{name, description, release_date}`. The OpenAI-style `data` array in the same response is unchanged |
 | `state`: a string, object or array | Same. An object with a `messages` (or `input`) array is read as a conversation, one message at a time; see [state](/arc/reference/decisions-api#state) |
 | `questions`: a map of question ID to question | Same, with at most 16 questions |
 | `noul`, `choice`, `score` questions | Same members: `type`, `instructions`, `criteria`. **`choice` takes at most 64 options, not Jev's 255**; `score` takes 1 to 10 levels, as on Jev. See [question types](/arc/decisions-api/question-types) |
