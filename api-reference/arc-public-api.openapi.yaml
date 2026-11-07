@@ -243,16 +243,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
-  /v1/decisions:
+  /v1/systemone:
     post:
-      operationId: decisions
+      operationId: systemone
       summary: Ask typed questions about a state
       description: 'ARC answers up to 16 typed questions (`noul`, `choice`, `score`) about one `state` in one request,
-        and generates no text. Billed on `usage.input_tokens` (the state plus every question) at the named model ID''s
-        rate; there is no output charge and refused requests are not billed. Errors use `{"error": "<code>", "detail":
-        {...}}`, except `use_routes_endpoint` and `decisions_not_available`, which use the Anthropic envelope and are
-        answered before the key is checked. Rate limit: 30 requests per minute per user, counted separately from the
-        Routes API. Priced the same as the Routes API.'
+        and generates no text. The path and body match TypeSafe''s API; `POST /v1/decisions` is the same endpoint.
+        Billed on `usage.input_tokens` (the state plus every question) at the named model ID''s rate; there is no
+        output charge and refused requests are not billed. Errors use TypeSafe''s bodies, `{"detail": "<message>"}`
+        and on `422` `{"detail": [{"loc", "msg", "type"}]}`, with the error code in the `x-rayline-error-code` header.
+        Rate limit: 30 requests per minute per user, counted separately from the Routes API. Priced the same as the
+        Routes API.'
       requestBody:
         required: true
         content:
@@ -260,7 +261,7 @@ paths:
             schema:
               $ref: '#/components/schemas/DecisionsRequest'
             example:
-              model: arc-1.0
+              model: arc-decisions-0.1
               state: I've been charged for a plan I cancelled last month. Please refund it.
               questions:
                 category:
@@ -279,6 +280,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DecisionsResponse'
               example:
+                model: arc-decisions-0.1
                 answers:
                   category:
                     type: choice
@@ -293,76 +295,79 @@ paths:
                   input_tokens: 90
                   output_tokens: 0
         '400':
-          description: '`invalid_body`: the body has no `state`, has a member other than `model`, `state` and
-            `questions`, `model` is not a string, or a `state` message has no string `role` (`detail.field`
-            `state`). A body that is not JSON at all is refused with `400` and no JSON body. A body without a top-level
-            `questions` is `use_routes_endpoint`, in the Anthropic envelope.'
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/DecisionsError'
-                - $ref: '#/components/schemas/ErrorEnvelope'
-              example:
-                error: invalid_body
-                detail: {}
-        '401':
-          description: '`authentication_error`: the key is missing or invalid; `detail.message` says which.'
+          description: '`invalid_body`: the body has no `state` or no `questions`, has a member other than `model`, `state` and `questions`, or a `state` message has no string `role`. A body that is not JSON at all is refused with `400` and no JSON body. On `/v1/decisions` only, a body without `questions` is `use_routes_endpoint`, in the Anthropic envelope.'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
               example:
-                error: authentication_error
-                detail:
-                  message: Invalid credentials.
+                detail: 'Invalid request body: state.'
+        '401':
+          description: '`authentication_error`: the key is missing or invalid.'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+              example:
+                detail: Invalid credentials.
         '402':
-          description: '`billing_error`: the workspace has no balance to pay for the request; `detail.message` links to
-            the top-up page.'
+          description: '`billing_error`: the workspace has no balance to pay for the request; the message links to the top-up page.'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
         '403':
-          description: '`zdr_model_required` (the organization uses zero data retention; `detail.model` names the ID to
-            use) or `contributor_models_off` (a Contributor ID while Allow Contributor models is off).'
+          description: '`zdr_model_required` (the organization uses zero data retention; the message names the ID to use), `contributor_models_off` (a Contributor ID while Allow Contributor models is off) or `model_not_allowed` (the organization''s data mode does not allow the request right now; the state was not sent).'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
         '404':
-          description: '`model_not_found`: `model` is not a Decisions model ID (`detail.model` echoes it).
-            `decisions_not_available`, in the Anthropic envelope: the Decisions API is not enabled on this host.'
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/DecisionsError'
-                - $ref: '#/components/schemas/ErrorEnvelope'
-              example:
-                error: model_not_found
-                detail:
-                  model: arc-swift-1.0
-        '422':
-          description: '`invalid_question` (`detail.question` names the question at fault, or is null; more than 16
-            questions adds `detail.reason` `too_many_questions` and `detail.max` 16), `question_type_not_supported`
-            (a `box` question or `assets`), `state_too_long` (`detail.tokens`, `detail.max_tokens` 32768) or
-            a question over its token limit (`detail.reason` `suffix_too_long`).'
+          description: '`model_not_found`: `model` is not a Decisions model ID. `decisions_not_available`: the Decisions API is not enabled on this host.'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
               example:
-                error: state_too_long
-                detail:
-                  tokens: 65429
-                  max_tokens: 32768
-        '429':
-          description: '`rate_limited` (`detail.retry_after_s` and the `Retry-After` header give the wait) or `capacity`
-            (retry with backoff).'
+                detail: Model arc-swift-1.0 is not served on ARC Decisions. Name model "arc-decisions-0.1", or its Contributor or Zero data retention entry.
+        '422':
+          description: 'A validation error; `type` is the code: `missing` or `string_type` (`model`), `invalid_question` (more than 16 questions, an empty or malformed `questions`, an unknown type or member, bad `criteria`, or a question over 8,192 tokens), `question_type_not_supported` (a `box` question or `assets`) or `state_too_long` (the state plus its longest question is over 32,768 tokens).'
           headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsValidationError'
+              example:
+                detail:
+                - loc:
+                  - body
+                  - state
+                  msg: state is 65429 tokens; at most 32768 are read
+                  type: state_too_long
+        '429':
+          description: '`rate_limited` (the `Retry-After` header gives the wait) or `capacity` (retry after `Retry-After` when sent, otherwise with backoff).'
+          headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
             Retry-After:
-              description: Seconds to wait before retrying a `rate_limited` request.
+              description: Seconds to wait before retrying.
               schema:
                 type: integer
           content:
@@ -370,13 +375,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
               example:
-                error: rate_limited
-                detail:
-                  retry_after_s: 33
+                detail: Too many requests. Retry after 33 seconds.
         '503':
-          description: '`question_head_unavailable`: temporarily unavailable. While ARC is starting up, the response
-            carries `Retry-After: 30`.'
+          description: '`question_head_unavailable`: temporarily unavailable. While ARC is starting up, the response carries `Retry-After: 30`.'
           headers:
+            x-rayline-error-code:
+              $ref: '#/components/headers/RaylineErrorCode'
             Retry-After:
               description: Seconds to wait before retrying, sent while ARC is starting up.
               schema:
@@ -386,8 +390,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
               example:
-                error: question_head_unavailable
-                detail: {}
+                detail: ARC Decisions is temporarily unavailable. Retry shortly.
   /v1/messages:
     post:
       operationId: createMessage
@@ -513,6 +516,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 components:
+  headers:
+    RaylineErrorCode:
+      description: The Decisions error code, such as `model_not_found` or `rate_limited`.
+      schema:
+        type: string
   securitySchemes:
     raylineApiKey:
       type: apiKey
@@ -1433,12 +1441,12 @@ components:
       title: Thinking
       type: object
     DecisionsModel:
-      description: 'A Decisions model ID, the same IDs as ARC Dynamic. The ID sets the data mode and its rate:
-        Standard, Contributor or zero data retention. Any other ID returns `404` `model_not_found`.'
+      description: 'A Decisions model ID. The ID sets the data mode and its rate: Standard, Contributor or zero data
+        retention. Any other ID returns `404` `model_not_found`.'
       enum:
-      - arc-1.0
-      - arc-contributor-1.0
-      - arc-zdr-1.0
+      - arc-decisions-0.1
+      - arc-decisions-contributor-0.1
+      - arc-decisions-zdr-0.1
       title: DecisionsModel
       type: string
     DecisionsRequest:
@@ -1576,16 +1584,6 @@ components:
           const: 0
           description: Always 0.
           type: integer
-        input_tokens_details:
-          description: May appear.
-          properties:
-            cached_tokens:
-              description: Input ARC reused from an earlier request, billed at the same rate as other input tokens.
-              minimum: 0
-              type: integer
-          required:
-          - cached_tokens
-          type: object
       required:
       - input_tokens
       - output_tokens
@@ -1676,16 +1674,42 @@ components:
       title: DecisionsScoreAnswer
       type: object
     DecisionsError:
+      description: TypeSafe's error body. The error code is in the `x-rayline-error-code` header.
       properties:
-        error:
-          description: A stable error code.
-          type: string
         detail:
-          additionalProperties: true
-          description: The code's details, such as `question`, `reason`, `tokens`, `retry_after_s` or `message`.
-          type: object
+          description: A message saying what went wrong.
+          type: string
       required:
-      - error
       - detail
       title: DecisionsError
+      type: object
+    DecisionsValidationError:
+      description: TypeSafe's `422` body. The error code is in each entry's `type` and in the `x-rayline-error-code`
+        header.
+      properties:
+        detail:
+          items:
+            properties:
+              loc:
+                description: Where the problem is, such as `["body", "questions", "urgency"]`.
+                items:
+                  oneOf:
+                  - type: string
+                  - type: integer
+                type: array
+              msg:
+                description: What went wrong.
+                type: string
+              type:
+                description: The error code.
+                type: string
+            required:
+            - loc
+            - msg
+            - type
+            type: object
+          type: array
+      required:
+      - detail
+      title: DecisionsValidationError
       type: object

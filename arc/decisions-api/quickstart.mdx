@@ -20,12 +20,12 @@ export RAYLINE_API_KEY="<your Rayline API key>"
 Send a `state` and a map of `questions`. Each question has an ID you choose, which keys its answer in the response. This request triages a support ticket with one question of each type:
 
 ```bash
-curl --fail-with-body https://api.rayline.ai/v1/decisions \
+curl --fail-with-body https://api.rayline.ai/v1/systemone \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
   -d @- <<'JSON'
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
   "questions": {
     "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
@@ -52,7 +52,7 @@ JSON
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "is_bug": {"type": "noul", "noul": 0.6},
     "team": {
@@ -86,16 +86,17 @@ Find the request in [usage](/platform/usage) with the tokens it was billed for.
 import os
 import requests
 
-def ask(state, questions, model="arc-1.0"):
+def ask(state, questions, model="arc-decisions-0.1"):
     response = requests.post(
-        "https://api.rayline.ai/v1/decisions",
+        "https://api.rayline.ai/v1/systemone",
         headers={"Authorization": f"Bearer {os.environ['RAYLINE_API_KEY']}"},
         json={"model": model, "state": state, "questions": questions},
         timeout=30,
     )
     if response.status_code != 200:
-        # Decisions errors are {"error": "<code>", "detail": {...}}
-        raise RuntimeError(f"{response.status_code}: {response.text}")
+        # The error code is in the x-rayline-error-code header; the body is {"detail": ...}
+        code = response.headers.get("x-rayline-error-code")
+        raise RuntimeError(f"{response.status_code} {code}: {response.text}")
     return response.json()["answers"]
 
 answers = ask(
@@ -117,8 +118,8 @@ type Question =
   | { type: "choice"; instructions?: string; criteria: Record<string, string | null> }
   | { type: "score"; instructions?: string; criteria: string[] };
 
-async function ask(state: unknown, questions: Record<string, Question>, model = "arc-1.0") {
-  const response = await fetch("https://api.rayline.ai/v1/decisions", {
+async function ask(state: unknown, questions: Record<string, Question>, model = "arc-decisions-0.1") {
+  const response = await fetch("https://api.rayline.ai/v1/systemone", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.RAYLINE_API_KEY}`,
@@ -128,8 +129,9 @@ async function ask(state: unknown, questions: Record<string, Question>, model = 
     signal: AbortSignal.timeout(30_000),
   });
   if (!response.ok) {
-    // Decisions errors are {"error": "<code>", "detail": {...}}
-    throw new Error(`${response.status}: ${await response.text()}`);
+    // The error code is in the x-rayline-error-code header; the body is {"detail": ...}
+    const code = response.headers.get("x-rayline-error-code");
+    throw new Error(`${response.status} ${code}: ${await response.text()}`);
   }
   return (await response.json()).answers;
 }

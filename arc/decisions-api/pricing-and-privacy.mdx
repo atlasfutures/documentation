@@ -10,7 +10,6 @@ import { decisionsModel, decisionsZdrModel, decisionsContributorModel, decisions
 
 A Decisions request is billed for the input tokens ARC reads: your state plus every question, as reported in `usage.input_tokens`. There is no output charge, and `usage.output_tokens` is always 0. The Decisions API is priced the same as the Routes API, in each data mode; current rates are on <a href={decisionsPricingUrl}>rayline.ai/pricing</a>.
 
-- Tokens reported as `usage.input_tokens_details.cached_tokens` are billed at the same rate as other input tokens.
 - Refused requests are not billed.
 - Asking several questions about one state in one request costs the state's tokens once, plus each question's own tokens. In the [ticket triage example](/arc/decisions-api/examples#several-questions-in-one-call), three questions cost 218 input tokens; the urgency question alone cost 129.
 
@@ -18,7 +17,7 @@ Each request appears in [usage](/platform/usage) with the tokens it was billed f
 
 ## Data modes
 
-`model` is required, and the ID you send sets the data mode, whatever your organization's data setting. These are the same IDs as [ARC Dynamic](/arc/dynamic):
+`model` is required, and the ID you send sets the data mode, whatever your organization's data setting:
 
 | Model ID | Data mode | Who can use it |
 | --- | --- | --- |
@@ -26,7 +25,7 @@ Each request appears in [usage](/platform/usage) with the tokens it was billed f
 | <code>{decisionsZdrModel}</code> | Zero data retention | Any organization; required on zero data retention |
 | <code>{decisionsContributorModel}</code> | Contributor | Organizations on Standard or Contributor with **Allow Contributor models** on |
 
-An organization on zero data retention can use only <code>{decisionsZdrModel}</code>: any other ID is refused with `403` (`zdr_model_required`), which names the ID to use. A Contributor ID in an organization with **Allow Contributor models** off is refused with `403` (`contributor_models_off`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
+An organization on zero data retention can use only <code>{decisionsZdrModel}</code>: any other ID is refused with `403` (`zdr_model_required`), and the message names the ID to use. A Contributor ID in an organization with **Allow Contributor models** off is refused with `403` (`contributor_models_off`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
 
 ## What is kept
 
@@ -38,6 +37,6 @@ In every data mode, ARC reads your state and questions to answer the request and
 | Answers | Never; they are returned to you only |
 | Usage record | Token counts, the model ID, timings and request metadata, in every data mode, including zero data retention. No state or question text. |
 
-ARC may reuse the encoded start of a state from an earlier request of your own, reported as `usage.input_tokens_details.cached_tokens`. That reuse is held in memory only, never stored, and never shared with another user or organization.
+ARC may reuse the encoded start of a state from an earlier request of your own. That reuse is held in memory only, never stored, and never shared with another user or organization. Reused input is billed like any other input token.
 
 See [data and privacy](/platform/data-privacy#decisions-api) for the organization-wide policy.

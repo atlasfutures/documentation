@@ -7,8 +7,10 @@ icon: "brackets-curly"
 import { decisionsModel, decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
 
 ```
-POST https://api.rayline.ai/v1/decisions
+POST https://api.rayline.ai/v1/systemone
 ```
+
+`POST /v1/decisions` is the same endpoint. The path `/v1/systemone` matches TypeSafe's API.
 
 ARC answers typed questions about a state you send, in one request, without generating text. See [Decisions API](/arc/decisions-api) for an overview.
 
@@ -25,7 +27,7 @@ See [API keys](/platform/api-keys).
 
 ## Request
 
-A JSON object with exactly these three members, in the same shape as TypeSafe's Jev API. A member the API does not accept is refused with `400` (`invalid_body`).
+A JSON object with exactly these three members, in the same shape as TypeSafe's Jev API. A member the API does not accept is refused with `400` (`invalid_body`). A missing `model` is refused with `422` (`missing`), and a `model` that is not a string with `422` (`string_type`).
 
 | Field | Required | Notes |
 | --- | --- | --- |
@@ -35,7 +37,7 @@ A JSON object with exactly these three members, in the same shape as TypeSafe's 
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "system": "You are the support assistant for a project-management app.",
     "messages": [
@@ -96,7 +98,7 @@ Image questions (`box`) and image `assets` are not supported and return `422` (`
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "is_bug": {"type": "noul", "noul": 0.6},
     "team": {
@@ -125,7 +127,6 @@ This response is the [ticket triage example](/arc/decisions-api/examples#several
 | `answers` | object | One answer per question, under the question's ID. See [answers](#answers). |
 | `usage.input_tokens` | integer | The tokens ARC read: your state plus every question. This is what the request is billed for; see [ARC pricing](/arc/pricing#decisions-api). |
 | `usage.output_tokens` | integer | Always `0`. |
-| `usage.input_tokens_details.cached_tokens` | integer | May appear: input ARC reused from an earlier request. Cached tokens are billed at the same rate as other input tokens. |
 
 ### Answers
 
@@ -150,4 +151,4 @@ At most 16 questions a request; the state plus its longest question within 32,76
 
 ## Errors
 
-Errors use `{"error": "<code>", "detail": {...}}`, except `use_routes_endpoint` and `decisions_not_available`, which use the Anthropic format. Retry `429` after `Retry-After`, and `503` after `Retry-After` or with backoff; fix the request on any other error. Every code, with its body, is in [limits and errors](/arc/decisions-api/limits-and-errors#errors), and the schemas are in the [`POST /v1/decisions` endpoint](/api-reference/ask-typed-questions-about-a-state).
+Errors use TypeSafe's bodies: `{"detail": "<message>"}`, and on `422` a list of `{"loc", "msg", "type"}` entries. The error code is in the `x-rayline-error-code` response header on every refusal. Retry `429` after `Retry-After`, and `503` after `Retry-After` or with backoff; fix the request on any other error. Every code is in [limits and errors](/arc/decisions-api/limits-and-errors#errors), and the schemas are in the [`POST /v1/systemone` endpoint](/api-reference/ask-typed-questions-about-a-state).

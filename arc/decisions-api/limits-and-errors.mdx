@@ -4,7 +4,7 @@ description: "Decisions API sizes, rate limit, retries and every error code with
 icon: "triangle-exclamation"
 ---
 
-import { decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
+import { decisionsModel, decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
 
 ## Limits
 
@@ -17,14 +17,14 @@ import { decisionsZdrModel, decisionsContributorModel } from '/snippets/decision
 | `score` levels | 1 to 10 |
 | Rate | 30 requests per minute per user, counted separately from the Routes API |
 
-A request normally completes within about a second. ARC answers all of a request's questions in one read of the state, so adding questions costs their own tokens, not another read of the state.
+ARC answers all of a request's questions in one read of the state, so adding questions costs their own tokens, not another read of the state.
 
 ## Retries
 
 | Status | What to do |
 | --- | --- |
-| `429` `rate_limited` | Wait the seconds in the `Retry-After` header (also `detail.retry_after_s`), then retry |
-| `429` `capacity` | Retry with backoff |
+| `429` `rate_limited` | Wait the seconds in the `Retry-After` header, then retry |
+| `429` `capacity` | Wait the `Retry-After` header when it is sent; otherwise retry with backoff |
 | `503` `question_head_unavailable` | Retry. While ARC is starting up after a quiet period, the response carries `Retry-After: 30`; otherwise back off |
 | Any other error | Don't retry; fix the request |
 
@@ -35,7 +35,7 @@ import requests
 def decide(body, key, attempts=5):
     for _ in range(attempts):
         r = requests.post(
-            "https://api.rayline.ai/v1/decisions",
+            "https://api.rayline.ai/v1/systemone",
             headers={"Authorization": f"Bearer {key}"},
             json=body,
             timeout=30,
@@ -49,35 +49,39 @@ def decide(body, key, attempts=5):
 
 ## Errors
 
-Decisions errors use this body, with a stable `error` code and a `detail` object:
+Errors use the same bodies as TypeSafe's API. The error code is in the `x-rayline-error-code` response header on every refusal, so branch on that header rather than on the message text.
+
+Most refusals carry a message:
 
 ```json
-{"error": "state_too_long", "detail": {"tokens": 65429, "max_tokens": 32768}}
+{"detail": "Too many requests. Retry after 33 seconds."}
 ```
 
-Two refusals use the Anthropic format instead, `{"type": "error", "error": {"type": "...", "code": "...", "message": "..."}}`: `use_routes_endpoint` and `decisions_not_available`. Both are answered before your key is checked.
+A `422` carries a list of validation errors, each with the location of the problem (`loc`), a message (`msg`) and the error code (`type`):
 
-| Status | `error` | Meaning | Example body |
-| --- | --- | --- | --- |
-| `400` | `use_routes_endpoint` (Anthropic format) | The body has no top-level `questions`: it is a route lookup. Send it to [`POST /v1/routes`](/arc/reference/routes) | `{"type": "error", "error": {"type": "invalid_request_error", "code": "use_routes_endpoint", "message": "Route lookups are served at POST /v1/routes. ..."}}` |
-| `400` | `invalid_body` | The body has no `state`, has a member other than `model`, `state` and `questions`, or `model` is not a string | `{"error": "invalid_body", "detail": {}}` |
-| `400` | `invalid_body` | A `state` message has no string `role` | `{"error": "invalid_body", "detail": {"field": "state"}}` |
-| `401` | `authentication_error` | Missing or invalid API key | `{"error": "authentication_error", "detail": {"message": "Invalid credentials."}}`, or `"Missing authentication."` |
-| `402` | `billing_error` | The workspace has no balance to pay for the request. `detail.message` links to the top-up page; [add funds](/platform/billing#which-balance-pays) | `{"error": "billing_error", "detail": {"message": "..."}}` |
-| `403` | `zdr_model_required` | The organization uses zero data retention and `model` is not <code>{decisionsZdrModel}</code>. `detail.model` names the ID to use | `{"error": "zdr_model_required", "detail": {"message": "...", "model": "..."}}` |
-| `403` | `contributor_models_off` | `model` is <code>{decisionsContributorModel}</code> and **Allow Contributor models** is off for the organization | `{"error": "contributor_models_off", "detail": {"message": "..."}}` |
-| `404` | `model_not_found` | `model` is not one of the three Decisions model IDs | `{"error": "model_not_found", "detail": {"model": "arc-swift-1.0"}}` |
-| `404` | `decisions_not_available` (Anthropic format) | The Decisions API is not enabled on this host | `{"type": "error", "error": {"type": "not_found_error", "code": "decisions_not_available", "message": "..."}}` |
-| `422` | `invalid_question` | More than 16 questions | `{"error": "invalid_question", "detail": {"question": null, "reason": "too_many_questions", "max": 16}}` |
-| `422` | `invalid_question` | `questions` is empty or not an object, or a question is not an object under a non-empty ID | `{"error": "invalid_question", "detail": {"question": null}}` |
-| `422` | `invalid_question` | A question has an unknown `type` or member, or malformed or out-of-range `criteria`. `detail.question` names it | `{"error": "invalid_question", "detail": {"question": "urgency"}}` |
-| `422` | `invalid_question` | A question is over 8,192 tokens | `{"error": "invalid_question", "detail": {"reason": "suffix_too_long"}}` |
-| `422` | `question_type_not_supported` | A `box` question, or `assets` in a question | `{"error": "question_type_not_supported", "detail": {"question": "where"}}` |
-| `422` | `question_type_not_supported` | `assets` at the top level of the body | `{"error": "question_type_not_supported", "detail": {"field": "assets"}}` |
-| `422` | `state_too_long` | The state plus its longest question is over 32,768 tokens. Shorten the state | `{"error": "state_too_long", "detail": {"tokens": 65429, "max_tokens": 32768}}` |
-| `429` | `rate_limited` | Rate limit reached; the `Retry-After` header carries the same wait | `{"error": "rate_limited", "detail": {"retry_after_s": 33}}` |
-| `429` | `capacity` | ARC is at capacity | `{"error": "capacity", "detail": {...}}` |
-| `503` | `question_head_unavailable` | Temporarily unavailable, or starting up (with `Retry-After: 30`) | `{"error": "question_head_unavailable", "detail": {}}` |
+```json
+{"detail": [{"loc": ["body", "state"], "msg": "state is 65429 tokens; at most 32768 are read", "type": "state_too_long"}]}
+```
+
+| Status | Code | When |
+| --- | --- | --- |
+| `400` | `invalid_body` | The body has no `state`, has a member other than `model`, `state` and `questions`, or a `state` message has no string `role` (`"Invalid request body: state."`). On `/v1/systemone`, also a body with no `questions`. |
+| `400` | `use_routes_endpoint` | `/v1/decisions` only: the body has no `questions`, so it is a route lookup. Send it to [`POST /v1/routes`](/arc/reference/routes). This one refusal uses the Anthropic format, `{"type": "error", "error": {...}}`, and is answered before your key is checked. |
+| `401` | `authentication_error` | The API key is missing (`"Missing authentication."`) or invalid (`"Invalid credentials."`) |
+| `402` | `billing_error` | The workspace has no balance to pay for the request. The message links to the top-up page; see [add funds](/platform/billing#which-balance-pays). |
+| `403` | `zdr_model_required` | Your organization uses zero data retention and `model` is not <code>{decisionsZdrModel}</code>. The message names the ID to use. |
+| `403` | `contributor_models_off` | `model` is <code>{decisionsContributorModel}</code> and **Allow Contributor models** is off for the organization |
+| `403` | `model_not_allowed` | Your organization's data mode does not allow this request right now. Your state was not sent. |
+| `404` | `model_not_found` | `model` is not one of the three Decisions model IDs. The message names <code>{decisionsModel}</code>. |
+| `404` | `decisions_not_available` | The Decisions API is not enabled on this host |
+| `422` | `missing` | `model` is missing (`loc` `["body", "model"]`) |
+| `422` | `string_type` | `model` is not a string (`loc` `["body", "model"]`) |
+| `422` | `invalid_question` | More than 16 questions; `questions` is empty or not an object; or a question has an unknown `type` or member, malformed or out-of-range `criteria`, or more than 8,192 tokens. `loc` names the question when there is one, such as `["body", "questions", "urgency"]`. |
+| `422` | `question_type_not_supported` | A `box` question, or `assets` in a question or at the top level of the body |
+| `422` | `state_too_long` | The state plus its longest question is over 32,768 tokens. `msg` gives the count. Shorten the state. |
+| `429` | `rate_limited` | Rate limit reached. `Retry-After` gives the wait in seconds. |
+| `429` | `capacity` | ARC is at capacity |
+| `503` | `question_head_unavailable` | Temporarily unavailable, or starting up after a quiet period (with `Retry-After: 30`) |
 
 A body that is not valid JSON is refused with `400` before any of these checks, and that response has no JSON body.
 

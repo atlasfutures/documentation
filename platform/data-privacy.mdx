@@ -26,7 +26,7 @@ On the Rayline API, the ARC model ID you send decides the data mode of an ARC re
 | `arc-swift-contributor-1.0`, `arc-sage-contributor-1.0`, `arc-contributor-1.0` | Contributor |
 | `arc-swift-zdr-1.0`, `arc-sage-zdr-1.0`, `arc-zdr-1.0` | Zero data retention |
 
-The [Decisions API](/arc/decisions-api) uses the same <code>{decisionsModel}</code>, <code>{decisionsContributorModel}</code> and <code>{decisionsZdrModel}</code> IDs with the same data modes.
+The [Decisions API](/arc/decisions-api) uses its own IDs with the same data modes: <code>{decisionsModel}</code> (Standard), <code>{decisionsContributorModel}</code> (Contributor) and <code>{decisionsZdrModel}</code> (zero data retention).
 
 An organization on zero data retention can use only the zero data retention IDs. Any other ARC ID is refused with a `403` `zdr_model_required` error, which names the ID to use, before any model is called. Requests to other models follow the organization's setting.
 

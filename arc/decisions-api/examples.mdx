@@ -8,7 +8,7 @@ icon: "list-check"
 Each example below is a request body and the response it returned. Send a body with the same request as the [quickstart](/arc/decisions-api/quickstart):
 
 ```bash
-curl --fail-with-body https://api.rayline.ai/v1/decisions \
+curl --fail-with-body https://api.rayline.ai/v1/systemone \
   -H "Authorization: Bearer $RAYLINE_API_KEY" \
   -H "Content-Type: application/json" \
   -d @body.json
@@ -24,7 +24,7 @@ A `noul` question returns the probability that the answer is true.
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "messages": [
       {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
@@ -40,7 +40,7 @@ A `noul` question returns the probability that the answer is true.
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {"resolved": {"type": "noul", "noul": 0.81}},
   "usage": {"input_tokens": 99, "output_tokens": 0}
 }
@@ -52,7 +52,7 @@ Use `criteria` to say what `true` and `false` mean. A `system` member in the sta
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "system": "You are the support assistant for a project-management app.",
     "messages": [{"role": "user", "content": "Can you write me a poem about my cat?"}]
@@ -72,7 +72,7 @@ Use `criteria` to say what `true` and `false` mean. A `system` member in the sta
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {"on_topic": {"type": "noul", "noul": 0.07}},
   "usage": {"input_tokens": 90, "output_tokens": 0}
 }
@@ -88,7 +88,7 @@ A `choice` question picks one option from `criteria` and returns every option's 
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": "I've been charged for a plan I cancelled last month. Please refund it.",
   "questions": {
     "category": {
@@ -107,7 +107,7 @@ A `choice` question picks one option from `criteria` and returns every option's 
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "category": {
       "type": "choice",
@@ -126,7 +126,7 @@ When an option's name says enough, give it `null` instead of a description.
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": "The new dashboard is so much faster. Great work, team!",
   "questions": {
     "sentiment": {
@@ -140,7 +140,7 @@ When an option's name says enough, give it `null` instead of a description.
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "sentiment": {
       "type": "choice",
@@ -161,7 +161,7 @@ A `score` question takes levels ordered low to high. `score` is the expected lev
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
   "questions": {
     "urgency": {
@@ -175,7 +175,7 @@ A `score` question takes levels ordered low to high. `score` is the expected lev
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "urgency": {
       "type": "score",
@@ -195,7 +195,7 @@ A score of `1.91` sits close to "Needs attention today", with most of the probab
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "messages": [
       {"role": "user", "content": "How do I export my data as CSV?"},
@@ -214,7 +214,7 @@ A score of `1.91` sits close to "Needs attention today", with most of the probab
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "helpfulness": {
       "type": "score",
@@ -234,7 +234,7 @@ Ask up to 16 questions about one state in a request. ARC reads the state once, s
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
   "questions": {
     "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
@@ -258,7 +258,7 @@ Ask up to 16 questions about one state in a request. ARC reads the state once, s
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "is_bug": {"type": "noul", "noul": 0.6},
     "team": {
@@ -287,7 +287,7 @@ Keep your questions fixed and send the whole conversation each time it changes. 
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "messages": [
       {"role": "user", "content": "I can't sign in. It says my password is wrong but I just reset it."},
@@ -317,7 +317,7 @@ The response for all four messages:
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "resolved": {"type": "noul", "noul": 0.73},
     "frustration": {
@@ -340,7 +340,7 @@ You can route on your own criteria: ask about a request before you send it, then
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "state": {
     "messages": [
       {"role": "user", "content": "Our Postgres queries slowed down 10x after the upgrade. Here's the EXPLAIN output; find the cause and propose a migration that fixes it without downtime."}
@@ -369,7 +369,7 @@ You can route on your own criteria: ask about a request before you send it, then
 
 ```json
 {
-  "model": "arc-1.0",
+  "model": "arc-decisions-0.1",
   "answers": {
     "difficulty": {
       "type": "score",
