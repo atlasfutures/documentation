@@ -1,0 +1,115 @@
+---
+title: "Hybrid local and cloud routing"
+sidebarTitle: "Hybrid local and cloud"
+description: "Keep easy work on a local Qwen model and send harder work to the cloud, with ARC choosing each turn."
+icon: "laptop-code"
+---
+
+Hybrid routing keeps easy work on a model running on your computer and sends harder work, or work that no longer fits the local context window, to a cloud model. ARC chooses each turn through the [Routes API](/arc/routes). Raydock's hybrid mode runs the choice, and your agent harness runs unmodified.
+
+<Note>
+The production service serves hybrid routing: the routing policy presets and the execution envelope it uses. The released Raydock CLI does not yet start a production hybrid session. Until the next Raydock release, sign in with `raydock --env dev auth login` and start with `raydock hybrid start --env dev --cell pf-5505cbf8-v2`; the development environment must be defined in `~/.config/rayline/settings.json`. After that release, the plain commands below apply. Hybrid mode runs on macOS 13 or later, and on Linux.
+</Note>
+
+## What it costs
+
+Every turn of a hybrid session is one Routes API lookup, billed from your workspace's prepaid balance, **including the turns that run on your own machine**. A local turn costs you that lookup and nothing else. A cloud turn costs the lookup plus the served model's own catalog price, billed pass-through with no platform fee. See [ARC pricing](/arc/pricing#hybrid-sessions).
+
+The price Raydock sends for your local model (0 by default) tells ARC how to weigh it against the cloud models. It changes which target ARC selects; it never changes what the lookup costs.
+
+## Setup
+
+You need a local inference server running Qwen3.8-27B, such as llama.cpp, Ollama, or MLX. Raydock does not start, download, or stop it. No profile file is needed.
+
+<Steps>
+  <Step title="Sign in">
+    ```bash
+    raydock auth login
+    ```
+
+    `start` uses the saved Rayline API key only for the environment it signed in to. `RAYLINE_ROUTER_API_KEY` set in the launch environment takes precedence.
+  </Step>
+  <Step title="Point Raydock at your local model">
+    ```bash
+    raydock local custom --url http://127.0.0.1:11434/v1 --model qwen3.8:27b
+    ```
+
+    The model must be Qwen3.8-27B. `start` checks what the runtime has loaded and runs the session cloud only if it is another model. Load the runtime with a context window of at least 98,304 tokens; a smaller window is used as loaded, and a turn that does not fit it goes to the cloud.
+  </Step>
+  <Step title="Start and connect a harness">
+    ```bash
+    raydock hybrid start
+    raydock hybrid run pi -- "Fix the failing test in parser.py"
+    raydock hybrid status
+    raydock hybrid stop
+    ```
+
+    `start` prints the routing policy it applied and the local model it bound. `run` also supports `claude`, `codex`, `opencode`, `omp`, `hermes`, and `openclaw`. Start a fresh harness session after every `start`.
+  </Step>
+</Steps>
+
+With no profile, `start` offers ARC three targets: your local Qwen, and Claude Opus 5.5 and Claude Sonnet 5.5 through the Rayline API. On every lookup it sends the **hybrid default** policy, `arc-policy.hybrid-default.v1`:
+
+- **The model** may change at cache boundaries: task start, a subagent start, a compaction, or a typed user turn whose cache has gone cold.
+- **The reasoning configuration** may change on every turn.
+- **A request that outgrows the local window** is handed to a cloud model, at any turn.
+
+Easy work stays on your computer. Harder work and context spills go to the cloud.
+
+## Optional overrides
+
+To change the defaults, add a `hybrid.routing` block to `~/.config/rayline/settings.json`. Every key is optional:
+
+```json
+{"hybrid": {"routing": {"policy": "prefer_local",
+                        "min_p_pass": 0.65,
+                        "schedule": {"model": ["cache_boundaries", "user_messages"]},
+                        "value_usd": 1.0}}}
+```
+
+| Key | Meaning |
+| --- | --- |
+| `policy` | `utility` (the default) uses the hybrid default policy. `prefer_local` uses `arc-policy.prefer-local.v1`: the local model whenever ARC predicts it will pass, and utility selection over the cloud models otherwise. Prefer-local needs a counted local capacity, which the default profile does not have; it requires a profile file with a qualified llama.cpp prompt counter. |
+| `min_p_pass` | The prefer-local threshold: ARC's predicted pass probability, greater than 0 and less than 1. The service default is 0.65. Valid only with `prefer_local`. |
+| `schedule` | When the model (`model`) and the reasoning configuration (`thinking`) may change. Each is a list of `cache_boundaries`, `user_messages` (any typed user turn), and `all_turns`. |
+| `local_price` | The local model's price in USD per million tokens, applied to every leg. Default 0. It steers selection only. |
+| `value_usd` | Your V: what a successful task is worth to you. `start` accepts 0.1 to 5; the Routes API itself accepts 0.1 to 30. A higher V favours more capable, more expensive models. |
+
+Unknown keys are refused when Raydock starts. Raydock maps the block onto the Routes API request: `policy` to `routing.policy.preset`, `min_p_pass` to `routing.policy.overrides.selection`, `schedule` to `routing.policy.overrides.schedule`, and `value_usd` to `routing.value_usd`. See the [routing controls](/arc/reference/routes#routing-controls).
+
+<Tip>
+Prefer-local's threshold is deliberately conservative. ARC's pass prediction for a small local model separates easy tasks from hard ones only weakly, so a lower threshold keeps more work local at a higher risk of failed tasks.
+</Tip>
+
+## When work moves to the cloud
+
+Before each request, Raydock estimates the prompt the local model would receive, including tools, history, and the output limit, and tells ARC whether it fits the local window. When a conversation grows past it, for example in a long tool loop with no compaction, ARC hands the turn to a cloud model. The conversation continues there. No tool is replayed, and nothing is switched in the middle of a response.
+
+For llama.cpp, set `--ctx-size` to the window you want and use `--parallel 1`, so the window Raydock reports is the one llama.cpp serves.
+
+## What ARC sees, and what it does not
+
+Each lookup carries the session's execution facts in `routing.execution`: the turn, the event, what last ran, and each target's capacity and cache state. A lookup that carries them is routed statelessly: ARC opens a fresh episode for it and keeps no conversation state of its own. Raydock supplies the whole conversation every turn, so the metered tokens grow with it.
+
+A route is plain advice: a readable model ID, nothing signed or hidden, and nothing that enforces running it. ARC learns nothing about a turn you executed. There is no outcome or report endpoint; the next lookup's `last_served` and history are all that reaches it. A cloud turn is sent to the Rayline API as an ordinary pin of the chosen model and is billed as one; in your usage records it is not linked to the lookup that chose it. Routes API traffic is never used for training.
+
+## See what ARC chose
+
+Every route carries a receipt. For example, `decided_by.model: capacity_handoff` means the local model no longer fit, and `prefer_local_threshold` means prefer-local kept the turn local. Raydock writes each receipt to `runtime.log` in its state directory, `~/.rayline/hybrid` by default, without prompts.
+
+If a lookup is refused, the harness shows the error:
+
+| Error | Meaning |
+| --- | --- |
+| `policy_preset_not_admitted` | The ARC deployment does not serve that policy. |
+| `policy_schedule_not_admitted` | The ARC checkpoint does not support that schedule class. |
+| `execution_no_feasible_target` | No offered model can run the request. |
+| `402` | The workspace has no balance for the lookup. [Add funds](/platform/billing#which-balance-pays). |
+
+Routes API lookups are limited to 30 per minute per account across all keys. A long agent loop with short turns can reach that limit.
+
+## Use the policy without Raydock
+
+`routing.policy` and `routing.execution` are part of the [Routes API](/arc/reference/routes#routing-controls), so your own executor can send them: offer your targets with `placement: local` or `cloud`, read the chosen `action_id`, and run it yourself. The capacity handoff and the prefer-local threshold depend on the facts you supply; without an execution envelope, a preset changes only when the model and reasoning configuration may change. Request `routing.response_fields: ["predictions"]` to read each candidate's predicted pass probability where the environment serves it.
+
+The CLI's own reference is `docs/hybrid-local-setup.md` in the [raydock repository](https://github.com/rayline-ai/raydock).

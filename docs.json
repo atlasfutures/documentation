@@ -136,6 +136,7 @@
               "arc/routes/index",
               "arc/routes/prices",
               "arc/routes/applying-effort",
+              "arc/routes/hybrid-local",
               "arc/routes/claude-code-agent",
               "tools/custom-agents"
             ]
