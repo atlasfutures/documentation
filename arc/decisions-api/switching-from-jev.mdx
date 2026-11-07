@@ -1,0 +1,126 @@
+---
+title: "Switching from Jev"
+description: "Move a Jev decisions request, through OpenRouter or TypeSafe, to the Rayline Decisions API."
+icon: "right-left"
+---
+
+import { decisionsModel } from '/snippets/decisions-ids.mdx';
+
+The Decisions API serves TypeSafe's API shape at the same path, `POST /v1/systemone`: a `state`, and a `questions` map of `noul`, `choice` and `score` questions, with the same answers and error bodies.
+
+- **From TypeSafe's API or SDK:** change the base URL from `https://api.typesafe.ai` to `https://api.rayline.ai`, use a Rayline API key, and set `model` to <code>{decisionsModel}</code>.
+- **From OpenRouter** (`POST /api/alpha/decisions`): change the URL to `https://api.rayline.ai/v1/systemone`, the key and the model ID, and remove OpenRouter's own members (below).
+
+## The change
+
+<CodeGroup>
+
+```bash OpenRouter
+curl https://openrouter.ai/api/alpha/decisions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @- <<'JSON'
+{
+  "model": "~typesafe/jev-latest",
+  "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
+  "questions": {
+    "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is this ticket?",
+      "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+    }
+  }
+}
+JSON
+```
+
+```bash Rayline
+curl --fail-with-body https://api.rayline.ai/v1/systemone \
+  -H "Authorization: Bearer $RAYLINE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @- <<'JSON'
+{
+  "model": "arc-decisions-0.1",
+  "state": "Subject: Checkout broken\n\nHi, since this morning our checkout page shows a blank screen after customers click Pay. We've lost about 40 orders already. Tried Chrome and Safari. You can reach me at dana.reyes@example.com or +1 415 555 0134.",
+  "questions": {
+    "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+    "urgency": {
+      "type": "score",
+      "instructions": "How urgent is this ticket?",
+      "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+    }
+  }
+}
+JSON
+```
+
+</CodeGroup>
+
+Send <code>{decisionsModel}</code>, or the [ID for your data mode](/arc/decisions-api/pricing-and-privacy#data-modes).
+
+## Request mapping
+
+| Jev request | Rayline Decisions API |
+| --- | --- |
+| `https://api.typesafe.ai/v1/systemone` | `https://api.rayline.ai/v1/systemone` |
+| `https://openrouter.ai/api/alpha/decisions` | `https://api.rayline.ai/v1/systemone` (`/v1/decisions` is the same endpoint) |
+| An OpenRouter or TypeSafe key | A Rayline API key, in `Authorization: Bearer` or `x-api-key`; see [API keys](/platform/api-keys) |
+| `model`: a Jev model ID, such as `jev-latest` or `typesafe/jev-1.13` | Required: <code>{decisionsModel}</code> or the ID for your data mode. A Jev model ID returns `404` (`model_not_found`) |
+| `GET /v1/models` | Same: the `models` array lists the three Decisions model IDs, each as `{name, description, release_date}`. The OpenAI-style `data` array in the same response is unchanged |
+| `state`: a string, object or array | Same. An object with a `messages` (or `input`) array is read as a conversation, one message at a time; see [state](/arc/reference/decisions-api#state) |
+| `questions`: a map of question ID to question | Same, with at most 16 questions |
+| `noul`, `choice`, `score` questions | Same members: `type`, `instructions`, `criteria`. **`choice` takes at most 64 options, not Jev's 255**; `score` takes 1 to 10 levels, as on Jev. See [question types](/arc/decisions-api/question-types) |
+| `box` questions | Not supported: `422` (`question_type_not_supported`) |
+| `assets` (images) | Not supported: `422` (`question_type_not_supported`) |
+| `TypeSafe-Danger-Zone-Images`, `TypeSafe-Danger-Zone-Long-Context` headers | Not used. Images are not supported, and the context is 32,768 tokens |
+| `session_id`, `provider`, `trace`, `user` (OpenRouter) | Not accepted: remove them, or the request returns `400` (`invalid_body`) |
+
+## Response mapping
+
+| Jev response | Rayline Decisions API |
+| --- | --- |
+| `model` | The model ID you sent |
+| `answers` | Same shapes: `noul`; `choice` with `confidence` and `probabilities`; `score` with `confidence`, `legend` and `probabilities` |
+| `confidence` on a `noul` answer | Not returned: the `noul` probability is the answer |
+| `box` answers, refusal answers | Never returned |
+| `id`, `provider`, `annotations` (OpenRouter) | Not returned |
+| `usage.input_tokens`, `usage.output_tokens` | Same. `output_tokens` is always 0 |
+| `usage.cost`, `usage.cost_details`, `usage.is_byok` (OpenRouter) | Not returned. Find each request's cost in [usage](/platform/usage) |
+
+The Rayline response to the request above:
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "is_bug": {"type": "noul", "noul": 0.6},
+    "urgency": {
+      "type": "score",
+      "score": 1.91,
+      "confidence": 0.27,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.38, "3": 0.32}
+    }
+  },
+  "usage": {"input_tokens": 165, "output_tokens": 0}
+}
+```
+
+Answers come from a different model than Jev's, so their probabilities differ. Check the thresholds you set on Jev's answers against your own data before you switch.
+
+## Errors
+
+Errors use TypeSafe's bodies: `{"detail": "<message>"}`, and on `422` a list of `{"loc", "msg", "type"}` entries. Code that handles TypeSafe's errors keeps working. OpenRouter's `{"error": {"code", "message", "metadata"}}` is not used. Every refusal also carries the error code in the `x-rayline-error-code` header. A `box` question or `assets` is refused with `422` (`question_type_not_supported`). See [limits and errors](/arc/decisions-api/limits-and-errors).
+
+## Limits
+
+| Limit | Jev | Rayline Decisions API |
+| --- | --- | --- |
+| Questions per request | No published limit | 16 |
+| Context | 262K tokens, as listed on OpenRouter | 32,768 tokens: the state plus its longest question |
+| `choice` options | 255 | **64** |
+| `score` levels | 10 | 10 |
+| Rate | Not published | 30 requests per minute per user |
+
+See [limits](/arc/decisions-api/limits-and-errors#limits).

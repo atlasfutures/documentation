@@ -1,0 +1,154 @@
+---
+title: "Decisions API reference"
+description: "Request, response, limits, and errors for the Decisions API."
+icon: "brackets-curly"
+---
+
+import { decisionsModel, decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
+
+```
+POST https://api.rayline.ai/v1/systemone
+```
+
+`POST /v1/decisions` is the same endpoint. The path `/v1/systemone` matches TypeSafe's API.
+
+ARC answers typed questions about a state you send, in one request, without generating text. See [Decisions API](/arc/decisions-api) for an overview.
+
+## Authentication
+
+Send your Rayline API key (`rlk-...`) in either header:
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer $RAYLINE_API_KEY` |
+| `x-api-key` | `$RAYLINE_API_KEY` |
+
+See [API keys](/platform/api-keys).
+
+## Request
+
+A JSON object with exactly these three members, in the same shape as TypeSafe's Jev API. A member the API does not accept is refused with `400` (`invalid_body`). A missing `model` is refused with `422` (`missing`), and a `model` that is not a string with `422` (`string_type`).
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `model` | Yes | <code>{decisionsModel}</code> (Standard), <code>{decisionsContributorModel}</code> (Contributor) or <code>{decisionsZdrModel}</code> (zero data retention). The ID sets the data mode and its rate. Any other ID returns `404` (`model_not_found`), including `arc-1.0`, `arc-swift-1.0`, `arc-sage-1.0` and their data-mode IDs. An organization on zero data retention must use <code>{decisionsZdrModel}</code>. |
+| `state` | Yes | What the questions are about: any JSON value. See [state](#state). |
+| `questions` | Yes | A non-empty object of up to 16 questions, keyed by an ID you choose. See [questions](#questions). |
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "state": {
+    "system": "You are the support assistant for a project-management app.",
+    "messages": [
+      {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
+      {"role": "assistant", "content": "Sorry about that. I've refunded the duplicate charge."}
+    ]
+  },
+  "questions": {
+    "resolved": {"type": "noul", "instructions": "Has the customer's issue been resolved?"}
+  }
+}
+```
+
+### State
+
+ARC reads `state` as text:
+
+- An object with a `messages` array, or an `input` array, is read as a conversation: one block per message, in order, with an optional top-level `system` first. Each message is an object with a string `role`; its `content` is read as is when it is a string, and as JSON text otherwise. A message without a string `role` returns `400` (`invalid_body`).
+- Any other value is read as one user message: a string as is, other JSON as its text.
+
+The state and its longest question must fit within 32,768 tokens; see [limits](#limits).
+
+### Questions
+
+`questions` is an object whose keys are your question IDs (non-empty strings) and whose values are questions. Each question has only these members:
+
+| Member | Required | Notes |
+| --- | --- | --- |
+| `type` | Yes | `noul`, `choice`, or `score`. |
+| `instructions` | No | The question, as a string, object or array. Objects and arrays are read as JSON text. |
+| `criteria` | For `choice` and `score` | The options or scale; shape depends on `type`, below. |
+
+| Type | `criteria` |
+| --- | --- |
+| `noul` | Optional. An object with `true` and/or `false`, each describing what that answer means. |
+| `choice` | Required. An object mapping each option name (a non-empty string) to its description, or to `null` for none. 1 to 64 options. |
+| `score` | Required. An array of levels, ordered low to high, each a description (not `null`). 1 to 10 levels. |
+
+```json
+{
+  "is_bug": {"type": "noul", "instructions": "Is the customer reporting a bug?"},
+  "team": {
+    "type": "choice",
+    "instructions": "Which team should own this ticket?",
+    "criteria": {"payments": "Checkout, payment and billing problems", "accounts": "Sign-in and user accounts", "docs": "Documentation questions"}
+  },
+  "urgency": {
+    "type": "score",
+    "instructions": "How urgent is this ticket?",
+    "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+  }
+}
+```
+
+Image questions (`box`) and image `assets` are not supported and return `422` (`question_type_not_supported`). See [question types](/arc/decisions-api/question-types) for each type with an example.
+
+## Response
+
+```json
+{
+  "model": "arc-decisions-0.1",
+  "answers": {
+    "is_bug": {"type": "noul", "noul": 0.6},
+    "team": {
+      "type": "choice",
+      "choice": "payments",
+      "confidence": 0.81,
+      "probabilities": {"payments": 0.87, "accounts": 0.07, "docs": 0.06}
+    },
+    "urgency": {
+      "type": "score",
+      "score": 1.91,
+      "confidence": 0.26,
+      "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+      "probabilities": {"0": 0.11, "1": 0.2, "2": 0.36, "3": 0.33}
+    }
+  },
+  "usage": {"input_tokens": 218, "output_tokens": 0}
+}
+```
+
+This response is the [ticket triage example](/arc/decisions-api/examples#several-questions-in-one-call).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `model` | string | The model ID you sent. |
+| `answers` | object | One answer per question, under the question's ID. See [answers](#answers). |
+| `usage.input_tokens` | integer | The tokens ARC read: your state plus every question. This is what the request is billed for; see [ARC pricing](/arc/pricing#decisions-api). |
+| `usage.output_tokens` | integer | Always `0`. |
+
+### Answers
+
+Every answer carries its question's `type`.
+
+| Type | Field | Meaning |
+| --- | --- | --- |
+| `noul` | `noul` | The probability, from 0 to 1, that the answer is true. |
+| `choice` | `choice` | The option name with the highest probability. |
+| | `probabilities` | Each option name's probability; they sum to 1. |
+| | `confidence` | From 0 to 1: 0 when every option is equally likely, 1 when one option has all the probability. Computed as `(p_max - 1/n) / (1 - 1/n)` over `n` options; 1 when there is one option. |
+| `score` | `score` | The expected level: the probability-weighted mean of the level indexes, from `0` (your first level) to `n - 1`. |
+| | `probabilities` | Each level's probability, keyed `"0"` to `"n-1"`; they sum to 1. |
+| | `legend` | Each level's key mapped to the text you sent. |
+| | `confidence` | From 0 to 1: how concentrated the probabilities are around the most likely level, relative to a uniform spread. |
+
+The exact `score` confidence formula is in [question types](/arc/decisions-api/question-types#score-a-level-on-a-scale). Probabilities are calibrated per question type. Read them as estimates and set your own thresholds for the decisions you make from them.
+
+## Limits
+
+At most 16 questions a request; the state plus its longest question within 32,768 tokens; `choice` 1 to 64 options and `score` 1 to 10 levels; 30 requests per minute per user. Every limit is in [limits and errors](/arc/decisions-api/limits-and-errors#limits).
+
+## Errors
+
+Errors use TypeSafe's bodies: `{"detail": "<message>"}`, and on `422` a list of `{"loc", "msg", "type"}` entries. The error code is in the `x-rayline-error-code` response header on every refusal. Retry `429` after `Retry-After`, and `503` after `Retry-After` or with backoff; fix the request on any other error. Every code is in [limits and errors](/arc/decisions-api/limits-and-errors#errors), and the schemas are in the [`POST /v1/systemone` endpoint](/api-reference/ask-typed-questions-about-a-state).
