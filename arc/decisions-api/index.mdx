@@ -14,6 +14,7 @@ curl --fail-with-body https://api.rayline.ai/v1/decisions \
   -H "Content-Type: application/json" \
   -d @- <<'JSON'
 {
+  "model": "arc-1.0",
   "state": {
     "messages": [
       {"role": "user", "content": "My March invoice charged me twice for the Pro plan."},
@@ -30,7 +31,7 @@ JSON
 
 ```json
 {
-  "model": "arc-decisions-0.1",
+  "model": "arc-1.0",
   "answers": {"resolved": {"type": "noul", "noul": 0.81}},
   "usage": {"input_tokens": 99, "output_tokens": 0}
 }
@@ -46,17 +47,21 @@ Start with the [Decisions API quickstart](/arc/decisions-api/quickstart), then s
 | `choice` | `instructions` and the options in `criteria` | `choice`: the most likely option, with `confidence` and the `probabilities` of every option |
 | `score` | `instructions` and an ordered scale, low to high, in `criteria` | `score`: the expected level on the scale, with `confidence`, the `probabilities` of every level, and a `legend` |
 
+Questions are free-form: write each one in plain language in `instructions`. The request carries only `model`, `state` and `questions`, in the same shape as TypeSafe's Jev API. Image questions (`box`) are not supported.
+
 See [questions](/arc/reference/decisions-api#questions) for each type's fields and [answers](/arc/reference/decisions-api#answers) for what comes back.
 
 ## Model IDs
 
+Send the ARC model ID for your data mode in `model`. The Decisions API uses the same IDs as [ARC Dynamic](/arc/dynamic).
+
 | Model ID | Data mode |
 | --- | --- |
-| `arc-decisions-0.1` | Standard. The default when you leave out `model`. |
-| `arc-decisions-zdr-0.1` | Zero data retention |
-| `arc-decisions-contributor-0.1` | Contributor |
+| `arc-1.0` | Standard |
+| `arc-contributor-1.0` | Contributor |
+| `arc-zdr-1.0` | Zero data retention |
 
-An organization on zero data retention must use `arc-decisions-zdr-0.1`; other IDs return `403` (`zdr_model_required`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
+An organization on zero data retention must use `arc-zdr-1.0`; other IDs return `403` (`zdr_model_required`). See [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode).
 
 ## How it differs from the Routes API
 
@@ -68,9 +73,9 @@ The Routes API and the Decisions API both read your input and generate nothing. 
 | What it answers | Which model and reasoning configuration should run this turn | Your own questions about a state |
 | Input | The body you would send to generate the turn (Anthropic Messages, Chat Completions or Responses) | A `state` of any JSON, and a `questions` map |
 | Output | A route: `model`, `thinking`, presets and alternatives | One answer per question: a probability, choice or score |
-| Model IDs | `arc-swift-1.0`, `arc-sage-1.0`, `arc-1.0` and their data-mode IDs | `arc-decisions-0.1` and its data-mode IDs |
+| Model IDs | `arc-swift-1.0`, `arc-sage-1.0`, `arc-1.0` and their data-mode IDs | `arc-1.0` and its data-mode IDs |
 | Error body | Anthropic format, `{"type": "error", "error": {...}}` | `{"error": "<code>", "detail": {...}}`, with two exceptions listed in [errors](/arc/reference/decisions-api#errors) |
-| Billing | Input tokens ARC reads, no output charge | Input tokens ARC reads, including your questions, no output charge |
+| Billing | Input tokens ARC reads, no output charge | The same rates as the Routes API: input tokens ARC reads, including your questions, no output charge |
 
 A body without a top-level `questions` member is a route lookup: `/v1/decisions` refuses it with `400` (`use_routes_endpoint`). Send it to [`POST /v1/routes`](/arc/routes) instead.
 
@@ -80,7 +85,7 @@ Earlier versions of these docs called the Routes API "Decisions". Links to those
 
 ## Billing
 
-A Decisions request is billed for the input tokens ARC reads: your state plus every question you ask, as reported in `usage.input_tokens`. There is no output charge. Refused requests are not billed. The model ID you send sets the rate card and the data mode. See [ARC pricing](/arc/pricing#decisions-api) and current rates on [rayline.ai/pricing](https://rayline.ai/pricing).
+The Decisions API is priced the same as the Routes API, in each data mode: Standard, Contributor and zero data retention. A request is billed for the input tokens ARC reads: your state plus every question you ask, as reported in `usage.input_tokens`. There is no output charge. Refused requests are not billed. The model ID you send sets the data mode and its rate. See [ARC pricing](/arc/pricing#decisions-api) and current rates on [rayline.ai/pricing](https://rayline.ai/pricing).
 
 ## Data use
 

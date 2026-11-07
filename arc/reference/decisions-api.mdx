@@ -23,18 +23,17 @@ See [API keys](/platform/api-keys).
 
 ## Request
 
-A JSON object with these members. Any other member is refused with `400` (`invalid_body`).
+A JSON object with exactly these three members, in the same shape as TypeSafe's Jev API. A member the API does not accept is refused with `400` (`invalid_body`).
 
 | Field | Required | Notes |
 | --- | --- | --- |
+| `model` | Yes | `arc-1.0` (Standard), `arc-contributor-1.0` (Contributor) or `arc-zdr-1.0` (zero data retention). The ID sets the data mode and its rate. Any other ID returns `404` (`model_not_found`). An organization on zero data retention must use `arc-zdr-1.0`. |
 | `state` | Yes | What the questions are about: any JSON value. See [state](#state). |
 | `questions` | Yes | A non-empty object of up to 16 questions, keyed by an ID you choose. See [questions](#questions). |
-| `model` | No | `arc-decisions-0.1` (the default when you leave it out), `arc-decisions-zdr-0.1` or `arc-decisions-contributor-0.1`. The ID sets the data mode and the rate card. Any other model returns `404` (`model_not_found`). An organization on zero data retention must use `arc-decisions-zdr-0.1`. |
-| `session_id` | No | A string of 1 to 256 characters naming your session. Reserved: it does not change answers today. Any other value returns `422` (`invalid_session_id`). |
 
 ```json
 {
-  "model": "arc-decisions-0.1",
+  "model": "arc-1.0",
   "state": {
     "system": "You are the support assistant for a project-management app.",
     "messages": [
@@ -95,7 +94,7 @@ Image questions (`box`) and image `assets` are not supported and return `422` (`
 
 ```json
 {
-  "model": "arc-decisions-0.1",
+  "model": "arc-1.0",
   "answers": {
     "is_bug": {"type": "noul", "noul": 0.6},
     "team": {
@@ -120,7 +119,7 @@ This response is the [ticket triage example](/arc/decisions-api/examples#several
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `model` | string | The model ID you sent, or `arc-decisions-0.1` if you sent none. |
+| `model` | string | The model ID you sent. |
 | `answers` | object | One answer per question, under the question's ID. See [answers](#answers). |
 | `usage.input_tokens` | integer | The tokens ARC read: your state plus every question. This is what the request is billed for; see [ARC pricing](/arc/pricing#decisions-api). |
 | `usage.output_tokens` | integer | Always `0`. |
@@ -152,8 +151,8 @@ Probabilities are calibrated per question type. Read them as estimates and set y
 | One question | 8,192 tokens |
 | `choice` options | 1 to 64 |
 | `score` levels | 1 to 10 |
-| `session_id` | 256 characters |
-| Rate | 30 requests per minute per account, across all of its keys, counted separately from the Routes API |
+| Question types | `noul`, `choice` and `score`. Image questions (`box`) are refused |
+| Rate | 30 requests per minute per user, counted separately from the Routes API |
 
 A request normally completes within about a second. ARC answers all of a request's questions in one read of the state, so adding questions costs their own tokens, not another read of the state.
 
@@ -170,20 +169,19 @@ Two refusals use the Anthropic format instead, `{"type": "error", "error": {"typ
 | Status | `error` | Meaning | Retry? |
 | --- | --- | --- | --- |
 | `400` | `use_routes_endpoint` (Anthropic format) | The body has no top-level `questions`: it is a route lookup | No; send it to [`POST /v1/routes`](/arc/reference/routes) |
-| `400` | `invalid_body` | The body is not JSON, has no `state`, has a member other than `model`, `state`, `questions` and `session_id`, `model` is not a string, or a `state` message has no string `role` | No; fix the request |
+| `400` | `invalid_body` | The body is not JSON, has no `state`, has a member the API does not accept, `model` is not a string, or a `state` message has no string `role` | No; fix the request |
 | `401` | `authentication_error` | Missing or invalid API key. `detail.message` says which | No |
 | `402` | `billing_error` | The workspace has no balance to pay for the request. `detail.message` links to the top-up page | No; [add funds](/platform/billing#which-balance-pays) |
-| `403` | `zdr_model_required` | The organization uses zero data retention and `model` is not `arc-decisions-zdr-0.1`. `detail.model` names the ID to use | No; use that ID |
-| `403` | `contributor_models_off` | `model` is `arc-decisions-contributor-0.1` and **Allow Contributor models** is off for the organization | No |
-| `404` | `model_not_found` | `model` is not a Decisions model ID. `detail.model` echoes it | No |
+| `403` | `zdr_model_required` | The organization uses zero data retention and `model` is not `arc-zdr-1.0`. `detail.model` names the ID to use | No; use that ID |
+| `403` | `contributor_models_off` | `model` is `arc-contributor-1.0` and **Allow Contributor models** is off for the organization | No |
+| `404` | `model_not_found` | `model` is not `arc-1.0`, `arc-contributor-1.0` or `arc-zdr-1.0`. `detail.model` echoes it | No |
 | `404` | `decisions_not_available` (Anthropic format) | The Decisions API is not enabled on this host | No |
-| `422` | `invalid_question` | `questions` is empty or not an object, a question is malformed, a question is over its token limit, or there are more than 16 questions (`detail.reason` `too_many_questions`, `detail.max` 16). `detail.question` names the question when one is at fault | No; fix the question |
+| `422` | `invalid_question` | `questions` is empty or not an object, a question is malformed, a question is over its token limit, or there are more than 16 questions (`detail.reason` is `too_many_questions` and `detail.max` is 16). `detail.question` names the question when one is at fault | No; fix the question |
 | `422` | `question_type_not_supported` | A `box` question, or image `assets` | No |
 | `422` | `state_too_long` | The state plus its longest question is over the limit. `detail.tokens` is the count; `detail.max_tokens` the limit | No; shorten the state |
-| `422` | `invalid_session_id` | `session_id` is not a string of 1 to 256 characters. `detail.max_length` is 256 | No |
 | `429` | `rate_limited` | Rate limit reached. `detail.retry_after_s` and the `Retry-After` header give the wait | Yes, after `Retry-After` seconds |
 | `429` | `capacity` | ARC is at capacity | Yes, with backoff |
-| `503` | `question_head_unavailable` | The Decisions API is temporarily unavailable. When it is starting up, the response carries `Retry-After` | Yes, after `Retry-After` or with backoff |
+| `503` | `question_head_unavailable` | The Decisions API is temporarily unavailable. When it is starting up, the response carries `Retry-After: 30` | Yes, after `Retry-After` or with backoff |
 
 Refused requests are not billed. A request refused with `invalid_body`, `invalid_question`, `question_type_not_supported`, `state_too_long`, `capacity` or `question_head_unavailable` can still count toward the rate limit.
 

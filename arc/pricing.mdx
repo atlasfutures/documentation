@@ -27,7 +27,7 @@ Your provider bills the inference you run. Prices you send in `routing.prices` c
 
 ## Decisions API
 
-The Decisions API bills the input tokens ARC reads to answer a request: the state plus every question, as reported in `usage.input_tokens`. There is no output charge. Each data mode has its own rate: `arc-decisions-0.1` (Standard), `arc-decisions-zdr-0.1` (zero data retention) and `arc-decisions-contributor-0.1` (Contributor). Tokens reported as `usage.input_tokens_details.cached_tokens` are billed at the same input rate. Refused requests are not billed. See [Decisions API](/arc/decisions-api).
+The Decisions API is priced the same as the Routes API, in each data mode: `arc-1.0` (Standard), `arc-contributor-1.0` (Contributor) and `arc-zdr-1.0` (zero data retention). It bills the input tokens ARC reads to answer a request: the state plus every question, as reported in `usage.input_tokens`. There is no output charge. Tokens reported as `usage.input_tokens_details.cached_tokens` are billed at the same input rate. Refused requests are not billed. See [Decisions API](/arc/decisions-api).
 
 ## How requests are billed
 
