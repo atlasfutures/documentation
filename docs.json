@@ -144,12 +144,10 @@
             "group": "Decisions API",
             "pages": [
               "arc/decisions-api/index",
-              "arc/decisions-api/quickstart",
               "arc/decisions-api/examples",
               "arc/decisions-api/question-types",
               "arc/decisions-api/limits-and-errors",
-              "arc/decisions-api/pricing-and-privacy",
-              "arc/decisions-api/switching-from-jev"
+              "arc/decisions-api/pricing-and-privacy"
             ]
           },
           {
@@ -395,6 +393,16 @@
     "placeholder": "Search Rayline docs..."
   },
   "redirects": [
+    {
+      "source": "/arc/decisions-api/quickstart",
+      "destination": "/arc/decisions-api/examples",
+      "permanent": true
+    },
+    {
+      "source": "/arc/decisions-api/switching-from-jev",
+      "destination": "/arc/decisions-api",
+      "permanent": true
+    },
     {
       "source": "/",
       "destination": "/tools",

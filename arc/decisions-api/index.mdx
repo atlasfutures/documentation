@@ -45,7 +45,7 @@ JSON
 | --- | --- |
 | Endpoint | `POST https://api.rayline.ai/v1/systemone`, the same path as TypeSafe's API. `POST /v1/decisions` is the same endpoint. |
 | Model ID | <code>{decisionsModel}</code>; <code>{decisionsContributorModel}</code> and <code>{decisionsZdrModel}</code> for the other [data modes](#model-ids) |
-| Request | `model`, `state` and `questions`: the same shape as Jev, through TypeSafe or OpenRouter. See [switching from Jev](/arc/decisions-api/switching-from-jev). |
+| Request | `model`, `state` and `questions`: the same shape as Jev, through TypeSafe or OpenRouter. See the [request reference](/arc/reference/decisions-api#request). |
 | Question types | `noul`, `choice` and `score`. Images (`box`, `assets`) are not supported. |
 | Billing | Per input token (state plus questions); output is free. Current rates are on [rayline.ai/pricing](https://rayline.ai/pricing). |
 | Context | 32,768 tokens: the state plus its longest question |
@@ -55,12 +55,10 @@ JSON
 ## Guides
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="bolt" href="/arc/decisions-api/quickstart">Your first request with curl, Python or TypeScript.</Card>
   <Card title="Examples" icon="list-check" href="/arc/decisions-api/examples">Yes/no checks, classification, scores, triage, growing conversations and routing.</Card>
   <Card title="Question types" icon="shapes" href="/arc/decisions-api/question-types">`noul`, `choice` and `score`: what you send and what comes back.</Card>
   <Card title="Limits and errors" icon="triangle-exclamation" href="/arc/decisions-api/limits-and-errors">Sizes, rate limit, retries and every error body.</Card>
   <Card title="Pricing and privacy" icon="shield-halved" href="/arc/decisions-api/pricing-and-privacy">How requests are billed and what each data mode keeps.</Card>
-  <Card title="Switching from Jev" icon="right-left" href="/arc/decisions-api/switching-from-jev">Move a Jev request to Rayline: what maps and what is not supported.</Card>
 </CardGroup>
 
 Every field is in the [Decisions API reference](/arc/reference/decisions-api) and the [`POST /v1/systemone` endpoint](/api-reference/ask-typed-questions-about-a-state).
