@@ -1,0 +1,114 @@
+---
+title: "Question types"
+description: "The three Decisions question types, noul, choice and score: what each takes and what each answers."
+icon: "shapes"
+---
+
+`questions` is an object keyed by question IDs you choose (non-empty strings). Each question has only these members; any other member is refused with `422` (`invalid_question`):
+
+| Member | Required | Notes |
+| --- | --- | --- |
+| `type` | Yes | `noul`, `choice` or `score` |
+| `instructions` | No | The question, as a string, object or array. Objects and arrays are read as JSON text. Write it as a question about the state. |
+| `criteria` | For `choice` and `score` | What the answers mean. The shape depends on `type`, below. |
+
+Every answer carries its question's `type` and comes back under the question's ID. Probabilities are calibrated per type: read them as estimates, and set your own thresholds for the decisions you make from them.
+
+## `noul`: yes or no
+
+`criteria` is optional: an object with `true` and/or `false`, each describing what that answer means. Each defaults to the word itself. Any other key is refused.
+
+```json
+{
+  "on_topic": {
+    "type": "noul",
+    "instructions": "Is the user's request within the assistant's job?",
+    "criteria": {
+      "true": "A question about using the project-management app or the user's account.",
+      "false": "Anything else."
+    }
+  }
+}
+```
+
+```json
+{"on_topic": {"type": "noul", "noul": 0.07}}
+```
+
+| Answer field | Meaning |
+| --- | --- |
+| `noul` | The probability, from 0 to 1, that the answer is true |
+
+A `noul` answer has no `confidence`: the probability is the answer.
+
+## `choice`: one option from a set
+
+`criteria` is required: an object mapping 1 to 64 option names (non-empty strings) to a description each, or to `null` when the name says enough.
+
+```json
+{
+  "sentiment": {
+    "type": "choice",
+    "instructions": "What is the sentiment of this message?",
+    "criteria": {"positive": null, "neutral": null, "negative": null}
+  }
+}
+```
+
+```json
+{
+  "sentiment": {
+    "type": "choice",
+    "choice": "positive",
+    "confidence": 0.82,
+    "probabilities": {"positive": 0.88, "neutral": 0.05, "negative": 0.07}
+  }
+}
+```
+
+| Answer field | Meaning |
+| --- | --- |
+| `choice` | The option name with the highest probability |
+| `probabilities` | Each option name's probability; they sum to 1 |
+| `confidence` | `(p_max - 1/n) / (1 - 1/n)` over `n` options: 0 when every option is equally likely, 1 when one option has all the probability. 1 when there is one option. |
+
+## `score`: a level on a scale
+
+`criteria` is required: an array of 1 to 10 levels, ordered low to high. Each level is a description; `null` is refused.
+
+```json
+{
+  "urgency": {
+    "type": "score",
+    "instructions": "How urgent is this ticket?",
+    "criteria": ["Can wait", "Needs attention this week", "Needs attention today", "Blocking revenue right now"]
+  }
+}
+```
+
+```json
+{
+  "urgency": {
+    "type": "score",
+    "score": 1.91,
+    "confidence": 0.27,
+    "legend": {"0": "Can wait", "1": "Needs attention this week", "2": "Needs attention today", "3": "Blocking revenue right now"},
+    "probabilities": {"0": 0.11, "1": 0.2, "2": 0.38, "3": 0.32}
+  }
+}
+```
+
+| Answer field | Meaning |
+| --- | --- |
+| `score` | The expected level, `sum(i * p_i)`, from `0` (your first level) to `n - 1` |
+| `probabilities` | Each level's probability, keyed `"0"` to `"n-1"`; they sum to 1 |
+| `legend` | Each level's key mapped to the text you sent |
+| `confidence` | How concentrated the probabilities are around the most likely level `m`: `max(0, 1 - sum(p_i * abs(i - m)) / U)`, where `U` is the same spread for a uniform distribution. 1 when there is one level. |
+
+Use `probabilities` when you need more than the mean: in the answer above, `1.91` sits near "Needs attention today", but 0.32 of the probability is on "Blocking revenue right now".
+
+## Not supported
+
+Image questions (`box`) and image `assets`, in a question or at the top level of the body, are refused with `422` (`question_type_not_supported`). Any other `type` is refused with `422` (`invalid_question`). See [limits and errors](/arc/decisions-api/limits-and-errors).
+
+The answers on this page come from the [examples](/arc/decisions-api/examples), rounded to two decimals.

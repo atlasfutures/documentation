@@ -33,4 +33,4 @@ A `404` with `model_not_found` means generation does not accept that model ID: a
 - Do not retry `400`, `401`, `402`, `403`, `409`, or `413`; fix the request, add funds, or fix access first.
 - Retry `429` after the `Retry-After` interval, and `503` or `504` with exponential backoff.
 
-Routes API limits are in the [Routes API reference](/arc/reference/routes#errors-and-limits). The Decisions API uses its own error body, `{"error": "<code>", "detail": {...}}`; see the [Decisions API reference](/arc/reference/decisions-api#errors).
+Routes API limits are in the [Routes API reference](/arc/reference/routes#errors-and-limits). The Decisions API uses its own error body, `{"error": "<code>", "detail": {...}}`; see [Decisions API limits and errors](/arc/decisions-api/limits-and-errors).

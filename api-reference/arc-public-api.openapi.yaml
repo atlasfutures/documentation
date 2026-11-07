@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Rayline ARC public API
   version: 0.1.0
-  description: 'ARC model IDs, routing extensions, the Generation API, and the Routes API. Generation API endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
+  description: 'ARC model IDs, routing extensions, the Generation API, the Routes API, and the Decisions API. Generation API endpoints document ARC-specific fields; use the corresponding protocol schema for the complete request body.'
 servers:
 - url: https://api.rayline.ai
 security:
@@ -243,6 +243,151 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/decisions:
+    post:
+      operationId: decisions
+      summary: Ask typed questions about a state
+      description: 'ARC answers up to 16 typed questions (`noul`, `choice`, `score`) about one `state` in one request,
+        and generates no text. Billed on `usage.input_tokens` (the state plus every question) at the named model ID''s
+        rate; there is no output charge and refused requests are not billed. Errors use `{"error": "<code>", "detail":
+        {...}}`, except `use_routes_endpoint` and `decisions_not_available`, which use the Anthropic envelope and are
+        answered before the key is checked. Rate limit: 30 requests per minute per user, counted separately from the
+        Routes API. Priced the same as the Routes API.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionsRequest'
+            example:
+              model: arc-1.0
+              state: I've been charged for a plan I cancelled last month. Please refund it.
+              questions:
+                category:
+                  type: choice
+                  instructions: Which support queue should handle this message?
+                  criteria:
+                    billing: Charges, invoices, refunds and plans
+                    technical: Bugs, errors and outages
+                    account: Sign-in, passwords and profile settings
+                    feedback: Feature requests and general comments
+      responses:
+        '200':
+          description: One answer per question, keyed by the question's ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsResponse'
+              example:
+                answers:
+                  category:
+                    type: choice
+                    choice: billing
+                    confidence: 0.85
+                    probabilities:
+                      billing: 0.89
+                      technical: 0.04
+                      account: 0.03
+                      feedback: 0.04
+                usage:
+                  input_tokens: 90
+                  output_tokens: 0
+        '400':
+          description: '`invalid_body`: the body has no `state`, has a member other than `model`, `state` and
+            `questions`, `model` is not a string, or a `state` message has no string `role` (`detail.field`
+            `state`). A body that is not JSON at all is refused with `400` and no JSON body. A body without a top-level
+            `questions` is `use_routes_endpoint`, in the Anthropic envelope.'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/DecisionsError'
+                - $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error: invalid_body
+                detail: {}
+        '401':
+          description: '`authentication_error`: the key is missing or invalid; `detail.message` says which.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+              example:
+                error: authentication_error
+                detail:
+                  message: Invalid credentials.
+        '402':
+          description: '`billing_error`: the workspace has no balance to pay for the request; `detail.message` links to
+            the top-up page.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+        '403':
+          description: '`zdr_model_required` (the organization uses zero data retention; `detail.model` names the ID to
+            use) or `contributor_models_off` (a Contributor ID while Allow Contributor models is off).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+        '404':
+          description: '`model_not_found`: `model` is not a Decisions model ID (`detail.model` echoes it).
+            `decisions_not_available`, in the Anthropic envelope: the Decisions API is not enabled on this host.'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/DecisionsError'
+                - $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error: model_not_found
+                detail:
+                  model: arc-swift-1.0
+        '422':
+          description: '`invalid_question` (`detail.question` names the question at fault, or is null; more than 16
+            questions adds `detail.reason` `too_many_questions` and `detail.max` 16), `question_type_not_supported`
+            (a `box` question or `assets`), `state_too_long` (`detail.tokens`, `detail.max_tokens` 32768) or
+            a question over its token limit (`detail.reason` `suffix_too_long`).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+              example:
+                error: state_too_long
+                detail:
+                  tokens: 65429
+                  max_tokens: 32768
+        '429':
+          description: '`rate_limited` (`detail.retry_after_s` and the `Retry-After` header give the wait) or `capacity`
+            (retry with backoff).'
+          headers:
+            Retry-After:
+              description: Seconds to wait before retrying a `rate_limited` request.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+              example:
+                error: rate_limited
+                detail:
+                  retry_after_s: 33
+        '503':
+          description: '`question_head_unavailable`: temporarily unavailable. While ARC is starting up, the response
+            carries `Retry-After: 30`.'
+          headers:
+            Retry-After:
+              description: Seconds to wait before retrying, sent while ARC is starting up.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsError'
+              example:
+                error: question_head_unavailable
+                detail: {}
   /v1/messages:
     post:
       operationId: createMessage
@@ -1286,4 +1431,261 @@ components:
       - mode
       - budget_tokens
       title: Thinking
+      type: object
+    DecisionsModel:
+      description: 'A Decisions model ID, the same IDs as ARC Dynamic. The ID sets the data mode and its rate:
+        Standard, Contributor or zero data retention. Any other ID returns `404` `model_not_found`.'
+      enum:
+      - arc-1.0
+      - arc-contributor-1.0
+      - arc-zdr-1.0
+      title: DecisionsModel
+      type: string
+    DecisionsRequest:
+      additionalProperties: false
+      properties:
+        model:
+          $ref: '#/components/schemas/DecisionsModel'
+        state:
+          description: 'What the questions are about: any JSON value. An object with a `messages` (or `input`) array is
+            read as a conversation, one block per message after an optional top-level `system`; each message needs a
+            string `role`, and its `content` is read as is when it is a string and as JSON text otherwise. Any other
+            value is read as one user message. The state plus its longest question must fit within 32,768 tokens.'
+        questions:
+          additionalProperties:
+            $ref: '#/components/schemas/DecisionsQuestion'
+          description: 1 to 16 questions, keyed by an ID you choose (a non-empty string). Each answer comes back under
+            its question's ID.
+          maxProperties: 16
+          minProperties: 1
+          title: Questions
+          type: object
+      required:
+      - model
+      - state
+      - questions
+      title: DecisionsRequest
+      type: object
+    DecisionsInstructions:
+      description: The question. An object or array is read as JSON text.
+      oneOf:
+      - type: string
+      - type: object
+      - type: array
+      title: Instructions
+    DecisionsQuestion:
+      discriminator:
+        propertyName: type
+        mapping:
+          noul: '#/components/schemas/DecisionsNoulQuestion'
+          choice: '#/components/schemas/DecisionsChoiceQuestion'
+          score: '#/components/schemas/DecisionsScoreQuestion'
+      oneOf:
+      - $ref: '#/components/schemas/DecisionsNoulQuestion'
+      - $ref: '#/components/schemas/DecisionsChoiceQuestion'
+      - $ref: '#/components/schemas/DecisionsScoreQuestion'
+      title: DecisionsQuestion
+    DecisionsNoulQuestion:
+      additionalProperties: false
+      properties:
+        type:
+          const: noul
+          type: string
+        instructions:
+          $ref: '#/components/schemas/DecisionsInstructions'
+        criteria:
+          additionalProperties: false
+          description: What a true and a false answer mean. Each defaults to the word itself.
+          properties:
+            'true':
+              description: What a true answer means. An object or array is read as JSON text.
+            'false':
+              description: What a false answer means. An object or array is read as JSON text.
+          type: object
+      required:
+      - type
+      title: DecisionsNoulQuestion
+      type: object
+    DecisionsChoiceQuestion:
+      additionalProperties: false
+      properties:
+        type:
+          const: choice
+          type: string
+        instructions:
+          $ref: '#/components/schemas/DecisionsInstructions'
+        criteria:
+          additionalProperties:
+            description: The option's description, or null for none. An object or array is read as JSON text.
+          description: 1 to 64 options, each a non-empty option name mapped to its description.
+          maxProperties: 64
+          minProperties: 1
+          type: object
+      required:
+      - type
+      - criteria
+      title: DecisionsChoiceQuestion
+      type: object
+    DecisionsScoreQuestion:
+      additionalProperties: false
+      properties:
+        type:
+          const: score
+          type: string
+        instructions:
+          $ref: '#/components/schemas/DecisionsInstructions'
+        criteria:
+          description: 1 to 10 levels, ordered low to high. Each is a description (not null); an object or array is
+            read as JSON text.
+          items:
+            not:
+              type: 'null'
+          maxItems: 10
+          minItems: 1
+          type: array
+      required:
+      - type
+      - criteria
+      title: DecisionsScoreQuestion
+      type: object
+    DecisionsResponse:
+      properties:
+        model:
+          description: The model ID you sent.
+          type: string
+        answers:
+          additionalProperties:
+            $ref: '#/components/schemas/DecisionsAnswer'
+          description: One answer per question, under the question's ID.
+          type: object
+        usage:
+          $ref: '#/components/schemas/DecisionsUsage'
+      required:
+      - model
+      - answers
+      - usage
+      title: DecisionsResponse
+      type: object
+    DecisionsUsage:
+      properties:
+        input_tokens:
+          description: 'The tokens ARC read: the state plus every question. What the request is billed for.'
+          minimum: 0
+          type: integer
+        output_tokens:
+          const: 0
+          description: Always 0.
+          type: integer
+        input_tokens_details:
+          description: May appear.
+          properties:
+            cached_tokens:
+              description: Input ARC reused from an earlier request, billed at the same rate as other input tokens.
+              minimum: 0
+              type: integer
+          required:
+          - cached_tokens
+          type: object
+      required:
+      - input_tokens
+      - output_tokens
+      title: DecisionsUsage
+      type: object
+    DecisionsAnswer:
+      discriminator:
+        propertyName: type
+        mapping:
+          noul: '#/components/schemas/DecisionsNoulAnswer'
+          choice: '#/components/schemas/DecisionsChoiceAnswer'
+          score: '#/components/schemas/DecisionsScoreAnswer'
+      oneOf:
+      - $ref: '#/components/schemas/DecisionsNoulAnswer'
+      - $ref: '#/components/schemas/DecisionsChoiceAnswer'
+      - $ref: '#/components/schemas/DecisionsScoreAnswer'
+      title: DecisionsAnswer
+    DecisionsNoulAnswer:
+      properties:
+        type:
+          const: noul
+          type: string
+        noul:
+          description: The probability, from 0 to 1, that the answer is true.
+          maximum: 1
+          minimum: 0
+          type: number
+      required:
+      - type
+      - noul
+      title: DecisionsNoulAnswer
+      type: object
+    DecisionsChoiceAnswer:
+      properties:
+        type:
+          const: choice
+          type: string
+        choice:
+          description: The option name with the highest probability.
+          type: string
+        confidence:
+          description: (p_max - 1/n) / (1 - 1/n) over n options; 1 when there is one option.
+          maximum: 1
+          minimum: 0
+          type: number
+        probabilities:
+          additionalProperties:
+            type: number
+          description: Each option name's probability; they sum to 1.
+          type: object
+      required:
+      - type
+      - choice
+      - confidence
+      - probabilities
+      title: DecisionsChoiceAnswer
+      type: object
+    DecisionsScoreAnswer:
+      properties:
+        type:
+          const: score
+          type: string
+        score:
+          description: The expected level, sum of i * p_i, from 0 (the first level) to n - 1.
+          type: number
+        confidence:
+          description: 'max(0, 1 - sum_i p_i |i - m| / U): m the most likely level, U the same spread under a uniform
+            distribution. 1 when there is one level.'
+          maximum: 1
+          minimum: 0
+          type: number
+        legend:
+          additionalProperties:
+            type: string
+          description: Each level's key ("0" to "n-1") mapped to the level you sent.
+          type: object
+        probabilities:
+          additionalProperties:
+            type: number
+          description: Each level's probability, keyed "0" to "n-1"; they sum to 1.
+          type: object
+      required:
+      - type
+      - score
+      - confidence
+      - legend
+      - probabilities
+      title: DecisionsScoreAnswer
+      type: object
+    DecisionsError:
+      properties:
+        error:
+          description: A stable error code.
+          type: string
+        detail:
+          additionalProperties: true
+          description: The code's details, such as `question`, `reason`, `tokens`, `retry_after_s` or `message`.
+          type: object
+      required:
+      - error
+      - detail
+      title: DecisionsError
       type: object

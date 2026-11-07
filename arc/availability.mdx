@@ -3,12 +3,14 @@ title: "Availability"
 description: "What you can use today, and what is still coming."
 ---
 
+import { decisionsModel, decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
+
 | Surface | Status |
 | --- | --- |
 | ARC models (Anthropic Messages and OpenAI Chat Completions) and the Routes API | Beta, open to any Rayline API key, with tier IDs `arc-swift-1.0` and `arc-sage-1.0` (`arc-swift-zdr-1.0` and `arc-sage-zdr-1.0` for organizations on zero data retention; see [data and privacy](/platform/data-privacy#arc-model-ids-choose-the-data-mode)) |
 | ARC on the OpenAI Responses API (`/v1/responses`) | Environment-dependent; check the model's advertised protocols below |
 | Routes API request and response contract | [Documented](/arc/reference/routes), including multi-turn conversations |
-| Decisions API (`POST /v1/decisions`) | Rolling out, with model IDs `arc-1.0`, `arc-contributor-1.0` and `arc-zdr-1.0` (the last for organizations on zero data retention). A host where it is not yet enabled answers `404` (`decisions_not_available`). See the [Decisions API reference](/arc/reference/decisions-api) |
+| Decisions API (`POST /v1/decisions`) | Rolling out, with model IDs <code>{decisionsModel}</code>, <code>{decisionsContributorModel}</code> and <code>{decisionsZdrModel}</code> (the last for organizations on zero data retention). A host where it is not yet enabled answers `404` (`decisions_not_available`). See the [Decisions API reference](/arc/reference/decisions-api) |
 | Responses streaming, tool calls, images, structured output | Confirm availability with the Rayline team before integrating |
 | Semantic Router source | [Public fork available](https://github.com/atlasfutures/semantic-router) |
 | ARC weights and model-specific self-hosting instructions | Coming soon |

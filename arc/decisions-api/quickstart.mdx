@@ -5,6 +5,8 @@ description: "Send your first Decisions API request with curl, Python or TypeScr
 icon: "bolt"
 ---
 
+import { decisionsModel, decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
+
 <Steps>
 <Step title="Get a key and add funds">
 Create a key in **API Keys** on the [Rayline Platform](https://platform.rayline.ai/keys) and add funds to the workspace; see [API keys](/platform/api-keys) and [funding and billing](/platform/billing). Without a balance, requests return `402` (`billing_error`). Keep the key in `RAYLINE_API_KEY`, outside your source code:
@@ -147,6 +149,6 @@ console.log(answers.sentiment.choice); // positive
 
 ## Next steps
 
-- Retry `429` after `Retry-After`, and `503` with backoff; fix the request on any other error. See [errors](/arc/reference/decisions-api#errors).
-- Keep a state and its longest question within 32,768 tokens, and ask at most 16 questions a request. See [limits](/arc/reference/decisions-api#limits).
-- If your organization uses zero data retention, send `"model": "arc-zdr-1.0"`; for Contributor, `"model": "arc-contributor-1.0"`.
+- Retry `429` after `Retry-After`, and `503` with backoff; fix the request on any other error. See [limits and errors](/arc/decisions-api/limits-and-errors).
+- Keep a state and its longest question within 32,768 tokens, and ask at most 16 questions a request. See [limits](/arc/decisions-api/limits-and-errors#limits).
+- If your organization uses zero data retention, send <code>{decisionsZdrModel}</code> as `model`; for Contributor, <code>{decisionsContributorModel}</code>. See [pricing and privacy](/arc/decisions-api/pricing-and-privacy).

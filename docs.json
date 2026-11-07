@@ -145,7 +145,11 @@
             "pages": [
               "arc/decisions-api/index",
               "arc/decisions-api/quickstart",
-              "arc/decisions-api/examples"
+              "arc/decisions-api/examples",
+              "arc/decisions-api/question-types",
+              "arc/decisions-api/limits-and-errors",
+              "arc/decisions-api/pricing-and-privacy",
+              "arc/decisions-api/switching-from-jev"
             ]
           },
           {
@@ -192,6 +196,7 @@
             "openapi": "api-reference/arc-public-api.openapi.yaml",
             "pages": [
               "POST /v1/routes",
+              "POST /v1/decisions",
               "POST /v1/messages",
               "POST /v1/chat/completions",
               "POST /v1/responses"

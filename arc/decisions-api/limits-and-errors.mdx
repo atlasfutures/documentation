@@ -1,0 +1,86 @@
+---
+title: "Limits and errors"
+description: "Decisions API sizes, rate limit, retries and every error code with its body."
+icon: "triangle-exclamation"
+---
+
+import { decisionsZdrModel, decisionsContributorModel } from '/snippets/decisions-ids.mdx';
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Questions per request | 16 |
+| State plus the longest question | 32,768 tokens, counted by ARC's tokenizer; `422` (`state_too_long`) reports the count |
+| One question | 8,192 tokens |
+| `choice` options | 1 to 64 |
+| `score` levels | 1 to 10 |
+| Rate | 30 requests per minute per user, counted separately from the Routes API |
+
+A request normally completes within about a second. ARC answers all of a request's questions in one read of the state, so adding questions costs their own tokens, not another read of the state.
+
+## Retries
+
+| Status | What to do |
+| --- | --- |
+| `429` `rate_limited` | Wait the seconds in the `Retry-After` header (also `detail.retry_after_s`), then retry |
+| `429` `capacity` | Retry with backoff |
+| `503` `question_head_unavailable` | Retry. While ARC is starting up after a quiet period, the response carries `Retry-After: 30`; otherwise back off |
+| Any other error | Don't retry; fix the request |
+
+```python
+import time
+import requests
+
+def decide(body, key, attempts=5):
+    for _ in range(attempts):
+        r = requests.post(
+            "https://api.rayline.ai/v1/decisions",
+            headers={"Authorization": f"Bearer {key}"},
+            json=body,
+            timeout=30,
+        )
+        if r.status_code not in (429, 503):
+            r.raise_for_status()
+            return r.json()
+        time.sleep(int(r.headers.get("Retry-After", "5")))
+    r.raise_for_status()
+```
+
+## Errors
+
+Decisions errors use this body, with a stable `error` code and a `detail` object:
+
+```json
+{"error": "state_too_long", "detail": {"tokens": 65429, "max_tokens": 32768}}
+```
+
+Two refusals use the Anthropic format instead, `{"type": "error", "error": {"type": "...", "code": "...", "message": "..."}}`: `use_routes_endpoint` and `decisions_not_available`. Both are answered before your key is checked.
+
+| Status | `error` | Meaning | Example body |
+| --- | --- | --- | --- |
+| `400` | `use_routes_endpoint` (Anthropic format) | The body has no top-level `questions`: it is a route lookup. Send it to [`POST /v1/routes`](/arc/reference/routes) | `{"type": "error", "error": {"type": "invalid_request_error", "code": "use_routes_endpoint", "message": "Route lookups are served at POST /v1/routes. ..."}}` |
+| `400` | `invalid_body` | The body has no `state`, has a member other than `model`, `state` and `questions`, or `model` is not a string | `{"error": "invalid_body", "detail": {}}` |
+| `400` | `invalid_body` | A `state` message has no string `role` | `{"error": "invalid_body", "detail": {"field": "state"}}` |
+| `401` | `authentication_error` | Missing or invalid API key | `{"error": "authentication_error", "detail": {"message": "Invalid credentials."}}`, or `"Missing authentication."` |
+| `402` | `billing_error` | The workspace has no balance to pay for the request. `detail.message` links to the top-up page; [add funds](/platform/billing#which-balance-pays) | `{"error": "billing_error", "detail": {"message": "..."}}` |
+| `403` | `zdr_model_required` | The organization uses zero data retention and `model` is not <code>{decisionsZdrModel}</code>. `detail.model` names the ID to use | `{"error": "zdr_model_required", "detail": {"message": "...", "model": "..."}}` |
+| `403` | `contributor_models_off` | `model` is <code>{decisionsContributorModel}</code> and **Allow Contributor models** is off for the organization | `{"error": "contributor_models_off", "detail": {"message": "..."}}` |
+| `404` | `model_not_found` | `model` is not one of the three Decisions model IDs | `{"error": "model_not_found", "detail": {"model": "arc-swift-1.0"}}` |
+| `404` | `decisions_not_available` (Anthropic format) | The Decisions API is not enabled on this host | `{"type": "error", "error": {"type": "not_found_error", "code": "decisions_not_available", "message": "..."}}` |
+| `422` | `invalid_question` | More than 16 questions | `{"error": "invalid_question", "detail": {"question": null, "reason": "too_many_questions", "max": 16}}` |
+| `422` | `invalid_question` | `questions` is empty or not an object, or a question is not an object under a non-empty ID | `{"error": "invalid_question", "detail": {"question": null}}` |
+| `422` | `invalid_question` | A question has an unknown `type` or member, or malformed or out-of-range `criteria`. `detail.question` names it | `{"error": "invalid_question", "detail": {"question": "urgency"}}` |
+| `422` | `invalid_question` | A question is over 8,192 tokens | `{"error": "invalid_question", "detail": {"reason": "suffix_too_long"}}` |
+| `422` | `question_type_not_supported` | A `box` question, or `assets` in a question | `{"error": "question_type_not_supported", "detail": {"question": "where"}}` |
+| `422` | `question_type_not_supported` | `assets` at the top level of the body | `{"error": "question_type_not_supported", "detail": {"field": "assets"}}` |
+| `422` | `state_too_long` | The state plus its longest question is over 32,768 tokens. Shorten the state | `{"error": "state_too_long", "detail": {"tokens": 65429, "max_tokens": 32768}}` |
+| `429` | `rate_limited` | Rate limit reached; the `Retry-After` header carries the same wait | `{"error": "rate_limited", "detail": {"retry_after_s": 33}}` |
+| `429` | `capacity` | ARC is at capacity | `{"error": "capacity", "detail": {...}}` |
+| `503` | `question_head_unavailable` | Temporarily unavailable, or starting up (with `Retry-After: 30`) | `{"error": "question_head_unavailable", "detail": {}}` |
+
+A body that is not valid JSON is refused with `400` before any of these checks, and that response has no JSON body.
+
+Refused requests are not billed. A request refused with `invalid_body`, `invalid_question`, `question_type_not_supported`, `state_too_long`, `capacity` or `question_head_unavailable` can still count toward the rate limit.
+
+See [errors and limits](/arc/reference/errors) for troubleshooting that applies to every Rayline API.
