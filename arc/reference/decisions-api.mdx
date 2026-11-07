@@ -31,7 +31,7 @@ A JSON object with exactly these three members, in the same shape as TypeSafe's 
 
 | Field | Required | Notes |
 | --- | --- | --- |
-| `model` | Yes | <code>{decisionsModel}</code> (Standard), <code>{decisionsContributorModel}</code> (Contributor) or <code>{decisionsZdrModel}</code> (zero data retention). The ID sets the data mode and its rate. Any other ID returns `404` (`model_not_found`). An organization on zero data retention must use <code>{decisionsZdrModel}</code>. |
+| `model` | Yes | <code>{decisionsModel}</code> (Standard), <code>{decisionsContributorModel}</code> (Contributor) or <code>{decisionsZdrModel}</code> (zero data retention). The ID sets the data mode and its rate. Any other ID returns `404` (`model_not_found`), including `arc-1.0`, `arc-swift-1.0`, `arc-sage-1.0` and their data-mode IDs. An organization on zero data retention must use <code>{decisionsZdrModel}</code>. |
 | `state` | Yes | What the questions are about: any JSON value. See [state](#state). |
 | `questions` | Yes | A non-empty object of up to 16 questions, keyed by an ID you choose. See [questions](#questions). |
 

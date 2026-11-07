@@ -87,7 +87,7 @@ Send the Decisions model ID for your data mode in `model`.
 | <code>{decisionsContributorModel}</code> | Contributor |
 | <code>{decisionsZdrModel}</code> | Zero data retention |
 
-An organization on zero data retention must use <code>{decisionsZdrModel}</code>; other IDs return `403` (`zdr_model_required`). See [pricing and privacy](/arc/decisions-api/pricing-and-privacy).
+An organization on zero data retention must use <code>{decisionsZdrModel}</code>; other IDs return `403` (`zdr_model_required`). The ARC IDs for generation and the Routes API, such as `arc-1.0`, `arc-swift-1.0` and `arc-sage-1.0`, are not Decisions IDs: they return `404` (`model_not_found`). See [pricing and privacy](/arc/decisions-api/pricing-and-privacy).
 
 ## How it differs from the Routes API
 

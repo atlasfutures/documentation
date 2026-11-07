@@ -335,7 +335,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DecisionsError'
         '404':
-          description: '`model_not_found`: `model` is not a Decisions model ID. `decisions_not_available`: the Decisions API is not enabled on this host.'
+          description: '`model_not_found`: `model` is not a Decisions model ID; `arc-1.0`, `arc-swift-1.0`, `arc-sage-1.0` and their data-mode IDs included. `decisions_not_available`: the Decisions API is not enabled on this host.'
           headers:
             x-rayline-error-code:
               $ref: '#/components/headers/RaylineErrorCode'

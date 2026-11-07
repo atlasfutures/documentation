@@ -72,11 +72,11 @@ A `422` carries a list of validation errors, each with the location of the probl
 | `403` | `zdr_model_required` | Your organization uses zero data retention and `model` is not <code>{decisionsZdrModel}</code>. The message names the ID to use. |
 | `403` | `contributor_models_off` | `model` is <code>{decisionsContributorModel}</code> and **Allow Contributor models** is off for the organization |
 | `403` | `model_not_allowed` | Your organization's data mode does not allow this request right now. Your state was not sent. |
-| `404` | `model_not_found` | `model` is not one of the three Decisions model IDs. The message names <code>{decisionsModel}</code>. |
+| `404` | `model_not_found` | `model` is not one of the three Decisions model IDs. ARC model IDs for generation and the Routes API, such as `arc-1.0`, `arc-swift-1.0` and `arc-sage-1.0` and their data-mode IDs, are refused too. The message names <code>{decisionsModel}</code>. |
 | `404` | `decisions_not_available` | The Decisions API is not enabled on this host |
 | `422` | `missing` | `model` is missing (`loc` `["body", "model"]`) |
 | `422` | `string_type` | `model` is not a string (`loc` `["body", "model"]`) |
-| `422` | `invalid_question` | More than 16 questions; `questions` is empty or not an object; or a question has an unknown `type` or member, malformed or out-of-range `criteria`, or more than 8,192 tokens. `loc` names the question when there is one, such as `["body", "questions", "urgency"]`. |
+| `422` | `invalid_question` | More than 16 questions (`loc` `["body", "questions"]`, `msg` `at most 16 questions per request`); `questions` is empty or not an object; or a question has an unknown `type` or member, malformed or out-of-range `criteria`, or more than 8,192 tokens. `loc` names the question when there is one, such as `["body", "questions", "urgency"]`. |
 | `422` | `question_type_not_supported` | A `box` question, or `assets` in a question or at the top level of the body |
 | `422` | `state_too_long` | The state plus its longest question is over 32,768 tokens. `msg` gives the count. Shorten the state. |
 | `429` | `rate_limited` | Rate limit reached. `Retry-After` gives the wait in seconds. |
